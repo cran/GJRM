@@ -1,0 +1,104 @@
+export(AT, AT2, RR, OR, rMVN, post.check,mm,enu.tr,llpsi,imputeSS,
+prev, distrHs, numch, numgh,distrHsAT,distrHsAT1,distrHsDiscr,distrHsATDiscr,
+adjCov, copgHsCont, BCDF, BiCDF, jc.probs,probm,probmS,postVb,ass.ms,edf.loop,pred.var,form.check,
+adjCovSD,int.postcheck, overall.svG, susutsn, susu,pscr, pscr0, 
+gt.bpm, esp.tr, eta.tr, teta.tr,copgHsAT,dof.tr,ass.dp,form.eq12,startsn, overall.sv,
+bprobgHs,bprobgHstwoParC, mb, H.tri, g.tri, triprobgHs, H.triSS, g.triSS, triprobgHsSS, 
+H.triESS, g.triESS, triprobgHsESS, pp, SS,
+bprobgHsPO, bcorrec, bcorrec2, bcorrecDiscr,  Xdpred, 
+bprobgHsSS,
+bprobgHsContUniv,
+copgHs, copgHs2, copgHs3, PosDefCor,
+logLik.SemiParBIV,
+LM.bpm, hazsurv.plot,
+VuongClarke,
+plot.SemiParBIV, vis.SemiParBIV,
+predict.SemiParBIV,
+print.AT, print.AT2, print.RR, print.OR, 
+print.prev, 
+print.mb,
+print.SemiParBIV,
+print.SemiParTRIV,
+print.copulaReg, sim.resp,
+print.gamlss,
+print.copulaSampleSel,
+print.summary.SemiParBIV,
+print.summary.SemiParTRIV,
+print.summary.copulaReg,
+print.summary.gamlss,
+print.summary.copulaSampleSel,
+S.m, 
+conv.check,
+SemiParBIV.fit.post,
+SemiParTRIV.fit.post,
+SemiParBIV.fit,
+SemiParBIV,
+SemiParTRIV,
+gamlss,
+gamlss.fit.post,
+copulaReg.fit.post,
+copulaReg,
+copulaSampleSel.fit.post,
+copulaSampleSel,
+summary.SemiParBIV,
+summary.SemiParTRIV,
+summary.copulaReg,
+summary.gamlss,
+summary.copulaSampleSel,
+working.comp,
+resp.check,
+polys.map, polys.setup)
+
+importFrom(magic, adiag)
+importFrom(survey, svyrecvar, twophasevar, twophase2var, svyCprod)
+importFrom(trust,trust)
+importFrom(scam, scam)
+importFrom(VGAM,pbinorm,dbinorm)
+importFrom(survival, survfit, Surv)
+import(mgcv)
+importFrom(psych, tetrachoric)
+importFrom(copula, tau, plackettCopula, iTau) 
+importFrom(VineCopula, BiCopHfunc1, BiCopHfunc2, BiCopHfuncDeriv, BiCopCDF, BiCopTau2Par, BiCopPar2Tau, BiCopPDF, BiCopDeriv, BiCopDeriv2, BiCopHfuncDeriv2)
+importFrom(ggplot2, fortify)
+importFrom(matrixStats, rowQuantiles, colQuantiles, colWeightedMeans)
+importFrom(gamlss.dist, pNBI, dNBI, pNBII, dNBII, pPIG, dPIG, pDEL, dDEL, pSICHEL, dSICHEL, pPO, rNO,rGU,rRG,rLO,rLOGNO,rWEI,rIG,rGA,rGB2,rBE,rNBI,rNBII,rPIG,rPO)
+
+importFrom(Rmpfr,getPrec,mpfr,pmax)
+importFrom(mnormt, pmnorm)
+importFrom(graphics, axTicks, abline, hist, lines, par, polygon, plot, rug, points) 
+importFrom(grDevices, cm.colors, gray, heat.colors, terrain.colors, topo.colors, dev.new, dev.interactive, devAskNewPage)   
+importFrom(stats, qt, dpois, qpois, qlogis, plogis, dgamma, dlnorm, dlogis, dnorm, density, cor, coef, as.formula, aggregate.data.frame, integrate, 
+           model.matrix, na.omit, na.pass, pbinom, pchisq, pgamma, plnorm, pnorm, printCoefmat,
+           qnorm, qqnorm, quantile, residuals, rnorm, sd, uniroot, update, var, weighted.mean, dbeta, pbeta,
+           ks.test, shapiro.test, runif, update.formula, qqplot, .checkMFClasses, delete.response,
+           model.frame, model.offset, napredict, predict, reformulate, termplot)           
+importFrom(utils, getFromNamespace)
+
+S3method(plot, SemiParBIV)
+S3method(summary, SemiParBIV)
+S3method(summary, SemiParTRIV)
+S3method(summary, copulaReg)
+S3method(summary, copulaSampleSel)
+S3method(summary, gamlss)
+S3method(print, AT)
+S3method(print, AT2)
+S3method(print, RR)
+S3method(print, OR)
+S3method(print, SemiParBIV)
+S3method(print, SemiParTRIV)
+S3method(print, copulaReg)
+S3method(print, gamlss)
+S3method(print, copulaSampleSel)
+S3method(print, summary.SemiParBIV)
+S3method(print, summary.SemiParTRIV)
+S3method(print, summary.copulaReg)
+S3method(print, summary.gamlss)
+S3method(print, summary.copulaSampleSel)
+S3method(logLik, SemiParBIV)
+S3method(predict, SemiParBIV)
+S3method(print, prev)
+S3method(print, mb)
+
+
+
+

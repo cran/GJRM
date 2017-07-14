@@ -1,0 +1,18 @@
+Package: GJRM
+Version: 0.1-1
+Author: Giampiero Marra <giampiero.marra@ucl.ac.uk> and Rosalba Radice <r.radice@bbk.ac.uk>
+Maintainer: Giampiero Marra <giampiero.marra@ucl.ac.uk>
+Title: Generalised Joint Regression Modelling
+Description: Routines for fitting various joint regression models, with several types of covariate effects, in the presence of associated error equations, endogeneity, non-random sample selection or partial observability.
+Depends: R (>= 3.2.1), mgcv
+Imports: magic, VGAM, survey, trust, VineCopula, graphics, stats,
+        utils, grDevices, ggplot2, matrixStats, mnormt, gamlss.dist,
+        Rmpfr, scam, survival, psych, copula
+Enhances: sp
+LazyLoad: yes
+License: GPL (>= 2)
+URL: http://www.ucl.ac.uk/statistics/people/giampieromarra
+Repository: CRAN
+Date/Publication: 2017-07-14 05:45:41 UTC
+NeedsCompilation: no
+Packaged: 2017-07-13 17:32:04 UTC; GM

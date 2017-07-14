@@ -1,0 +1,125 @@
+citEntry(
+  entry="Article",
+  title="Penalized Likelihood Estimation of a Trivariate Additive Probit Model",
+  journal="Biostatistics",
+  year="2017", 
+  author="Filippou P, Marra G, Radice R",
+  textVersion="Filippou P, Marra G, Radice R (2017), Penalized Likelihood Estimation of a Trivariate Additive Probit Model. Biostatistics."
+ ) 
+ 
+ citEntry(
+   entry="Article",
+   title="Bivariate Copula Additive Models for Location, Scale and Shape",
+   journal="Computational Statistics and Data Analysis",
+   year="2017", 
+   author="Marra G, Radice R",
+   textVersion="Marra G, Radice R (2017), Bivariate Copula Additive Models for Location, Scale and Shape. Computational Statistics and Data Analysis, 112, 99-113."
+ ) 
+ 
+ citEntry(
+   entry="Article",
+   title="A Simultaneous Equation Approach to Estimating HIV Prevalence with Non-Ignorable Missing Responses",
+   journal="Journal of the American Statistical Association",
+   year="2017", 
+   author="Marra G, Radice R, Barnighausen T, Wood SN, McGovern ME",
+   textVersion="Marra G, Radice R, Barnighausen T, Wood SN, McGovern ME (2017), A Simultaneous Equation Approach to Estimating HIV Prevalence with Non-Ignorable Missing Responses. Journal of the American Statistical Association, 112(518), 484-496."
+ )  
+ 
+ 
+ citEntry(
+   entry="Article",
+   title="Semi-Parametric Copula Sample Selection Models for Count Responses",
+   journal="Computational Statistics and Data Analysis",
+   year="2016", 
+   author="Marra G, Wyszynski K",
+   textVersion="Marra G, Wyszynski K (2016), Semi-Parametric Copula Sample Selection Models for Count Responses. Computational Statistics and Data Analysis, 104, 110-129."
+ )  
+ 
+ citEntry(
+   entry="Article",
+   title="Copula Regression Spline Models for Binary Outcomes",
+   journal="Statistics and Computing",
+   year="2016", 
+   author="Radice R, Marra G, Wojtys M",
+   textVersion="Radice R, Marra G, Wojtys M (2016), Copula Regression Spline Models for Binary Outcomes. Statistics and Computing, 26(5), 981-995."
+ )  
+
+
+ citEntry(
+   entry="Article",
+   title="Testing the Hypothesis of Exogeneity in Regression Spline Bivariate Probit Models",
+   journal="Communications in Statistics - Simulation and Computation",
+   year="2017", 
+   author="Marra G, Radice R, Filippou P",
+   textVersion="Marra G, Radice R, Filippou P (2017), Testing the Hypothesis of Exogeneity in Regression Spline Bivariate Probit Models. Communications in Statistics - Simulation and Computation, 46(3), 2283-2298."
+ ) 
+ 
+ 
+ 
+  citEntry(
+    entry="Article",
+    title="Bankruptcy Prediction of Small and Medium Enterprises Using a Flexible Binary Generalized Extreme Value Model",
+    journal="Journal of the Operational Research Society",
+    year="2016", 
+    author="Calabrese R, Marra G, Osmetti SA",
+    textVersion="Calabrese R, Marra G, Osmetti SA (2016), Bankruptcy Prediction of Small and Medium Enterprises Using a Flexible Binary Generalized Extreme Value Model. Journal of the Operational Research Society, 67(4), 604-615."
+ ) 
+ 
+ 
+
+  citEntry(
+    entry="Article",
+    title="A Penalized Likelihood Estimation Approach to Semiparametric Sample Selection Binary Response Modeling",
+    journal="Electronic Journal of Statistics",
+    year="2013", 
+    author="Marra G, Radice R",
+    textVersion="Marra G, Radice R (2013), A Penalized Likelihood Estimation Approach to Semiparametric Sample Selection Binary Response Modeling. Electronic Journal of Statistics, 7, 1432-1455."
+ ) 
+  
+ 
+  citEntry(
+    entry="Article",
+    title="Estimation of a Regression Spline Sample Selection Model ",
+    journal="Computational Statistics and Data Analysis",
+    year="2013", 
+    author="Marra G, Radice R",
+    textVersion="Marra G, Radice R (2013), Estimation of a Regression Spline Sample Selection Model . Computational Statistics and Data Analysis, 61, 158-173."
+ ) 
+  
+ 
+
+  citEntry(
+    entry="Article",
+    title="Estimation of a Regression Spline Sample Selection Model ",
+    journal="Computational Statistics and Data Analysis",
+    year="2013", 
+    author="Marra G, Radice R",
+    textVersion="Marra G, Radice R (2013), Estimation of a Regression Spline Sample Selection Model . Computational Statistics and Data Analysis, 61, 158-173."
+ ) 
+  
+
+  citEntry(
+    entry="Article",
+    title="Coverage Properties of Confidence Intervals for Generalized Additive Model Components",
+    journal="Scandinavian Journal of Statistics",
+    year="2012", 
+    author="Marra G, Wood SN",
+    textVersion="Marra G, Wood SN (2012), Coverage Properties of Confidence Intervals for Generalized Additive Model Components. Scandinavian Journal of Statistics, 39(1), 53-74."
+ ) 
+  
+
+  citEntry(
+    entry="Article",
+    title="Estimation of a Semiparametric Recursive Bivariate Probit Model in the Presence of Endogeneity",
+    journal="Canadian Journal of Statistics",
+    year="2011", 
+    author="Marra G, Radice R",
+    textVersion="Marra G, Radice R (2011), Estimation of a Semiparametric Recursive Bivariate Probit Model in the Presence of Endogeneity. Canadian Journal of Statistics, 39(2), 259-279."
+ ) 
+  
+
+
+
+
+
+

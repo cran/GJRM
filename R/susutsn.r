@@ -132,6 +132,10 @@ if(BivD == "T") ec <- 1 else ec <- 0
   if(object$VC$margins[1] %in% cont1par && object$VC$margins[2] %in% cont2par) epds <- object$X4%*%t(bs[,(object$X1.d2+object$X2.d2+object$X3.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2)])
   if(object$VC$margins[1] %in% cont1par && object$VC$margins[2] %in% cont3par) epds <- object$X5%*%t(bs[,(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2)])  	
   
+  if(object$VC$margins[1] %in% cont2par && object$VC$margins[2] %in% cont1par && object$surv.flex == TRUE) epds <- object$X4%*%t(bs[,(object$X1.d2+object$X2.d2+object$X3.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2)])
+  if(object$VC$margins[1] %in% cont3par && object$VC$margins[2] %in% cont1par && object$surv.flex == TRUE) epds <- object$X5%*%t(bs[,(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2)])
+  
+  
   if(object$VC$margins[1] %in% cont2par && object$VC$margins[2] %in% cont2par) epds <- object$X5%*%t(bs[,(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2)])
   if((object$VC$margins[1] %in% cont3par && object$VC$margins[2] %in% cont2par) || (object$VC$margins[1] %in% cont2par && object$VC$margins[2] %in% cont3par) ) epds <- object$X6%*%t(bs[,(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2+object$X6.d2)])
   if(object$VC$margins[1] %in% cont3par && object$VC$margins[2] %in% cont3par) epds <- object$X7%*%t(bs[,(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2+object$X6.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2+object$X6.d2+object$X7.d2)])
@@ -177,6 +181,11 @@ if(object$VC$margins[1] %in% cont1par && object$VC$margins[2] %in% cont1par ){ p
 if(object$VC$margins[1] %in% cont1par && object$VC$margins[2] %in% cont2par ){ ps1 <- lf - 1 - ec; ps2 <- lf - 1 - ec}
 if(object$VC$margins[1] %in% cont1par && object$VC$margins[2] %in% cont3par ){ ps1 <- lf - 2 - ec; ps2 <- lf - 2 - ec}
 if(object$VC$margins[1] %in% cont2par && object$VC$margins[2] %in% cont2par ){ ps1 <- lf - 2 - ec; ps2 <- lf - 1 - ec}
+
+if(object$VC$margins[1] %in% cont2par && object$VC$margins[2] %in% cont1par && object$surv.flex == TRUE  ){ ps1 <- ps2 <- lf - 1 - ec}
+if(object$VC$margins[1] %in% cont3par && object$VC$margins[2] %in% cont1par && object$surv.flex == TRUE  ){ ps1 <- ps2 <- lf - 2 - ec}
+
+
 if(object$VC$margins[1] %in% cont3par && object$VC$margins[2] %in% cont3par ){ ps1 <- lf - 4 - ec; ps2 <- lf - 3 - ec}
 if((object$VC$margins[1] %in% cont2par && object$VC$margins[2] %in% cont3par) || (object$VC$margins[1] %in% cont3par && object$VC$margins[2] %in% cont2par) ){ ps1 <- lf - 3 - ec; ps2 <- lf - 2 - ec}
       
@@ -200,8 +209,14 @@ if(object$VC$margins[1] %in% cont1par){
                                       
 if(object$VC$margins[1] %in% cont1par && object$VC$margins[2] %in% cont1par){
        sigma2.1.star <- sigma2.2.star <- c(0, 0)
-                                      }                                      
+                                      } 
                                       
+if(object$VC$margins[1] %in% c(cont2par,cont3par) && object$VC$margins[2] %in% cont1par && object$surv.flex == TRUE  ){
+       sigma2.1.star <- object$X3%*%t(bs[,(object$X1.d2+object$X2.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2)])
+       sigma2.2.star <- c(0, 0) 
+                                      }                                      
+ 
+ 
 
                                 }  
 
@@ -263,6 +278,36 @@ nu2 <- esp.tr(nu2.st, object$VC$margins[2])$vrb
 
    
 } 
+
+
+
+
+if(object$VC$margins[1] %in% c(cont3par) && object$VC$margins[2] %in% cont1par && object$surv.flex == TRUE){  
+  
+
+  if( is.null(object$X3) )  {  pn1 <- lf - 1 - ec; nu1.st <- t(as.matrix(bs[, pn1]))  } 
+  
+  if( !is.null(object$X3) ) {  
+ 
+       nu1.st <- object$X4%*%t(bs[,(object$X1.d2 + object$X2.d2 + object$X3.d2 + 1):(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2)]) 
+  
+                }   
+  
+nu1 <- esp.tr(nu1.st, object$VC$margins[1])$vrb   
+ 
+   
+   CInu1 <- rowQuantiles(nu1, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+   if( is.null(object$X3) ) CInu1 <- t(CInu1) 
+
+   
+} 
+
+
+
+
+
+
+
 
 
 
@@ -491,6 +536,7 @@ BivDt <- object$VC$BivD
   
 ass.msR <- ass.ms(BivDt, nCa, est.RHOb)
 tau     <- ass.msR$tau
+if(!is.null(object$X3) && BivDt %in% c("AMH", "FGM")) tau <- matrix(tau, nrow(object$X3), nrow(bs))
 CIkt <- rowQuantiles(tau, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
 if( is.null(object$X3) ) CIkt <- t(CIkt) 
 

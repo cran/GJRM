@@ -45,7 +45,12 @@ if(type == "copR"){
   if(margins[1] %in% M$m3 && margins[2] %in% M$m2 && M$BivD == "T") func.opt <- bcont32twoParC 
   
   if(margins[1] %in% M$m2 && margins[2] %in% M$m2 && M$surv == TRUE)  func.opt <- bcontSurv
-  if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvG 
+  if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvG
+  
+  if(margins[1] %in% M$m2 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont2Surv 
+  #if(margins[1] %in% M$m3 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont3Surv 
+  
+
   
   
 

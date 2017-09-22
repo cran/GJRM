@@ -9,6 +9,10 @@ Xdpred <- function(gamob, data, v.n){
     data1 <- data2 <- data
     data1[, v.n ] <- data1[, v.n ] - h
     data2[, v.n ] <- data2[, v.n ] + h
+    
+    data1[, v.n ] <- ifelse(data1[, v.n ] < 1e-06, 1e-06, data1[, v.n ]) 
+    data2[, v.n ] <- ifelse(data2[, v.n ] < 1e-06, 1e-06, data2[, v.n ]) 
+    
     attr(data1, "terms") <- attr(data2, "terms") <- NULL 
   Xd <- (predict(gamob, data2, type = "lpmatrix") - predict(gamob, data1, type = "lpmatrix"))/twoeps 
   rm(data1, data2)

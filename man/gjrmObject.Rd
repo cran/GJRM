@@ -1,9 +1,9 @@
-\name{copulaSampleSelObject}
-\alias{copulaSampleSelObject}
+\name{gjrmObject}
+\alias{gjrmObject}
 
-\title{Fitted copulaSampleSel object}
+\title{Fitted gjrm object}
 
-\description{A fitted semiparametric bivariate object returned by function \code{copulaSampleSel} and of class "copulaSampleSel" and "SemiParBIV".}
+\description{A fitted joint model returned by function \code{gjrm} and of class "gjrm", "SemiParBIV", "SemiParTRIV", etc.}
 
 
 \value{ 
@@ -43,7 +43,7 @@
 
 \item{Vb}{Inverse of \code{He}. This corresponds to the Bayesian variance-covariance matrix 
           used for confidence/credible interval calculations.}
- 
+
 \item{F}{This is obtained multiplying Vb by HeSh.} 
  
 \item{t.edf}{Total degrees of freedom of the estimated bivariate model. It is calculated as \code{sum(diag(F))}.}
@@ -83,7 +83,7 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 
 \seealso{
-\code{\link{copulaSampleSel}}, \code{\link{summary.copulaSampleSel}}
+\code{\link{gjrm}}, \code{\link{summary.gjrm}}
 }
 
 

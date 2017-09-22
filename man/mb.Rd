@@ -70,7 +70,7 @@ the non-response probability,
 which provides a measure of the uncertainty about the prevalence caused by non-response. Again, this may be useful to check whether 
 the prevalence from a bivariate non-random sample selection model is included within the possibilites of the bounds.
 
-See \code{\link{SemiParBIV}} for some examples.
+See \code{\link{gjrm}} for some examples.
 
 }
 
@@ -94,11 +94,11 @@ Imbens G.W. and Manski C.F (2004), Confidence Intervals for Partially Identified
 
 
 \seealso{
-\code{\link{SemiParBIV}}  
+\code{\link{gjrm}}  
 }
 
 \examples{
-## see examples for SemiParBIV
+## see examples for gjrm
 }
 
 \keyword{Manski's bounds} 

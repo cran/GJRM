@@ -20,7 +20,7 @@ gamlss(formula, data = list(), weights = NULL, subset = NULL,
        robust = FALSE, rc = 3, lB = NULL, uB = NULL, infl.fac = 1, 
        rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
        gc.l = FALSE, parscale, extra.regI = "t", gev.par = -0.25,
-       chunk.size = 10000)
+       chunk.size = 10000, k.tvc = 0, knots = NULL)
 }
 
 
@@ -50,7 +50,7 @@ gamlss(formula, data = list(), weights = NULL, subset = NULL,
 \item{surv}{If \code{TRUE} then a survival model is fitted. Here margin can be "PH" (generalised proportional hazards), "PO" (generalised proportional odds), 
             "probit" (generalised probit).}
 
-\item{cens}{Binary censoring indicator. This is required when \code{surv = TRUE}.}
+\item{cens}{Binary censoring indicator. This is required when \code{surv = TRUE}. This variable has to be equal to 1 if the event occurred and 0 otherwise.}
  
 \item{robust}{If \code{TRUE} then the robust version of the model is fitted.}
              
@@ -85,6 +85,10 @@ documentation of \code{trust} for more details.}
 \item{gev.par}{GEV link parameter.}
       
 \item{chunk.size}{This is used for discrete robust models.}  
+
+\item{k.tvc}{Only used for tvc ps smoothers when using survival models.}  
+
+\item{knots}{Optional list containing user specified knot values to be used for basis construction.}
   
 }
 

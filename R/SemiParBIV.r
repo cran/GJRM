@@ -3,7 +3,7 @@ SemiParBIV <- function(formula, data = list(), weights = NULL, subset = NULL,
                              dof = 3, gamlssfit = FALSE,
                              fp = FALSE, hess = TRUE, infl.fac = 1, theta.fx = NULL, 
                              rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
-                             gc.l = FALSE, parscale, extra.regI = "t", intf = FALSE){
+                             gc.l = FALSE, parscale, extra.regI = "t", intf = FALSE, knots = NULL){
   
   ##########################################################################################################################
   # model set up and starting values
@@ -86,7 +86,7 @@ if(BivD %in% BivD2){
   fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
-  mf$dof <- mf$intf <- mf$theta.fx <- mf$Model <- mf$BivD <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
+  mf$knots <- mf$dof <- mf$intf <- mf$theta.fx <- mf$Model <- mf$BivD <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
   mf$drop.unused.levels <- TRUE 
   
   if(Model=="BSS") mf$na.action <- na.pass
@@ -127,7 +127,7 @@ if(BivD %in% BivD2){
  ##############################################################  
    
   gam1 <- eval(substitute(gam(formula.eq1, binomial(link = margins[1]), gamma=infl.fac, weights=weights, 
-                              data=data),list(weights=weights))) 
+                              data=data, knots = knots),list(weights=weights))) 
 
   X1 <- model.matrix(gam1)
   X1.d2 <- dim(X1)[2]
@@ -146,7 +146,7 @@ if(BivD %in% BivD2){
   if((Model=="B" || Model=="BPO" || Model=="BPO0") && margins[2] %in% bl){
   
   gam2  <- eval(substitute(gam(formula.eq2, binomial(link=margins[2]), gamma=infl.fac, weights=weights, 
-                           data=data),list(weights=weights))) # check at later stage the need of eval and substitute
+                           data=data, knots = knots),list(weights=weights))) # check at later stage the need of eval and substitute
 
   X2 <- model.matrix(gam2)
   X2.d2 <- dim(X2)[2]
@@ -178,7 +178,7 @@ if(BivD %in% BivD2){
     y2.test      <- form.eq12R$y1.test 
     y2m          <- form.eq12R$y1m  
   
-    gam2         <- eval(substitute(gam(formula.eq2, gamma=infl.fac, weights=weights, data=data),list(weights=weights)))
+    gam2         <- eval(substitute(gam(formula.eq2, gamma=infl.fac, weights=weights, data=data, knots = knots),list(weights=weights)))
     gam2$formula <- formula.eq2r  
     names(gam2$model)[1] <- as.character(formula.eq2r[2])
 
@@ -203,7 +203,7 @@ if(BivD %in% BivD2){
   inde <- as.logical(y1)
 
   gam2 <- eval(substitute(gam(formula.eq2, binomial(link = margins[2]), gamma=infl.fac, weights=weights, 
-                              data=data, subset=inde),list(weights=weights,inde=inde)))  
+                              data=data, subset=inde, knots = knots),list(weights=weights,inde=inde)))  
   
 ######
 # TEST
@@ -212,7 +212,7 @@ X2s <- try(predict.gam(gam2, newdata = data[,-dim(data)[2]], type = "lpmatrix"),
 if(class(X2s)=="try-error") stop("Check that the numbers of factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?SemiParBIV for more information.") 
 ######  
   
-  X2.d2 <- length(coef(gam2))
+  X2.d2 <- length(gam2$coefficients)
   X2 <- model.matrix(gam2) 
   y2 <- gam2$y
   n.sel <- sum(as.numeric(inde))
@@ -231,13 +231,13 @@ if(class(X2s)=="try-error") stop("Check that the numbers of factor variables' le
   p.g1 <- predict.gam(gam1)
   imrGUANN <- data$imrGUANN <- dnorm(p.g1)/pnorm(p.g1)
     
-  gam2.1 <- eval(substitute(gam(form.eq2imr, gamma=infl.fac, binomial(link = margins[2]), weights=weights, data=data, subset=inde),list(weights = weights, inde = inde)))
-  pimr   <- which(names(coef(gam2.1))=="imrGUANN")
+  gam2.1 <- eval(substitute(gam(form.eq2imr, gamma=infl.fac, binomial(link = margins[2]), weights=weights, data=data, subset=inde, knots = knots),list(weights = weights, inde = inde)))
+  pimr   <- which(names(gam2.1$coefficients)=="imrGUANN")
   
-  c.gam2 <- coef(gam2.1)[-pimr]
+  c.gam2 <- gam2.1$coefficients[-pimr]
   
-  sia <- sqrt(mean(residuals(gam2.1, type = "deviance")^2)+mean(imrGUANN[inde]*(imrGUANN[inde]+p.g1[inde]))*gam2.1$coef["imrGUANN"]^2)[[1]]
-  co  <- (gam2.1$coef["imrGUANN"]/sia)[[1]] 
+  sia <- sqrt(mean(residuals(gam2.1, type = "deviance")^2)+mean(imrGUANN[inde]*(imrGUANN[inde]+p.g1[inde]))*gam2.1$coefficients["imrGUANN"]^2)[[1]]
+  co  <- (gam2.1$coefficients["imrGUANN"]/sia)[[1]] 
   
   ass.s <- co 
   ass.s <- sign(ass.s)*ifelse(abs(ass.s) > 0.2, 0.2, abs(ass.s))
@@ -288,11 +288,11 @@ names(i.rho) <- "theta.star"
            
          
            
-if(margins[1] %in% bl && margins[2] %in% c(bl,m1d) && Model %in% c("B","BPO") && is.null(theta.fx)) start.v <- c(coef(gam1), coef(gam2), i.rho) 
+if(margins[1] %in% bl && margins[2] %in% c(bl,m1d) && Model %in% c("B","BPO") && is.null(theta.fx)) start.v <- c(gam1$coefficients, gam2$coefficients, i.rho) 
 
-if(Model == "BSS")  start.v <- c(coef(gam1), c.gam2, i.rho) 
-if(Model == "BPO0") start.v <- c(coef(gam1), coef(gam2))      
-if(!is.null(theta.fx) && Model == "B" && margins[2] %in% bl ) start.v <- c(coef(gam1), coef(gam2)) 
+if(Model == "BSS")  start.v <- c(gam1$coefficients, c.gam2, i.rho) 
+if(Model == "BPO0") start.v <- c(gam1$coefficients, gam2$coefficients)      
+if(!is.null(theta.fx) && Model == "B" && margins[2] %in% bl ) start.v <- c(gam1$coefficients, gam2$coefficients) 
 
 if(margins[1] %in% bl && margins[2] %in% c(m2,m3,m2d) ){
 
@@ -300,8 +300,8 @@ if(margins[1] %in% bl && margins[2] %in% c(m2,m3,m2d) ){
    log.sig2  <- start.snR$log.sig2.1; names(log.sig2) <- "sigma2.star"
    if( margins[2] %in% c(m3) ){ log.nu <- start.snR$log.nu.1; names(log.nu) <- "nu.star"}       
      
-   if(margins[2] %in% c(m2,m2d)) start.v <- c(coef(gam1), coef(gam2), log.sig2,         i.rho)        
-   if(margins[2] %in% m3)        start.v <- c(coef(gam1), coef(gam2), log.sig2, log.nu, i.rho)                                  
+   if(margins[2] %in% c(m2,m2d)) start.v <- c(gam1$coefficients, gam2$coefficients, log.sig2,         i.rho)        
+   if(margins[2] %in% m3)        start.v <- c(gam1$coefficients, gam2$coefficients, log.sig2, log.nu, i.rho)                                  
 
                                                        } 
     
@@ -313,7 +313,7 @@ if(l.flist > 2){
  
 vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2 = log.sig2, log.nu = log.nu, n = n)  
   
-    overall.svGR <- overall.svG(formula, data, ngc = 2, margins, M, vo, gam1, gam2, type = "biv", inde = inde, c.gam2 = c.gam2)
+    overall.svGR <- overall.svG(formula, data, ngc = 2, margins, M, vo, gam1, gam2, type = "biv", inde = inde, c.gam2 = c.gam2, knots = knots)
     
     start.v = overall.svGR$start.v 
     X3 = overall.svGR$X3; X4 = overall.svGR$X4; X5 = overall.svGR$X5
@@ -345,8 +345,8 @@ GAM <- list(gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4,
 
 if( (l.sp1!=0 || l.sp2!=0 || l.sp3!=0 || l.sp4!=0 || l.sp5!=0 || l.sp6!=0 || l.sp7!=0 || l.sp8!=0) && fp==FALSE ){ 
 
-L.GAM <- list(l.gam1 = length(coef(gam1)), l.gam2 = length(coef(gam2)), l.gam3 = length(coef(gam3)), l.gam4 = length(coef(gam4)),
-              l.gam5 = length(coef(gam5)), l.gam6 = length(coef(gam6)), l.gam7 = length(coef(gam7)), l.gam8 = length(coef(gam8)))
+L.GAM <- list(l.gam1 = length(gam1$coefficients), l.gam2 = length(gam2$coefficients), l.gam3 = length(gam3$coefficients), l.gam4 = length(gam4$coefficients),
+              l.gam5 = length(gam5$coefficients), l.gam6 = length(gam6$coefficients), l.gam7 = length(gam7$coefficients), l.gam8 = length(gam8$coefficients))
 
 L.SP <- list(l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, l.sp4 = l.sp4, 
              l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8)
@@ -517,7 +517,7 @@ if( !(Model=="B" && !(margins[2] %in% bl) && end == 2) ) {dataset <- NULL; rm(da
 L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula,
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, 
           gam7 = gam7, gam8 = gam8,  
-          coefficients = SemiParFit$fit$argument,  iterlimsp = iterlimsp,
+          coefficients = SemiParFit$fit$argument, coef.t = NULL, iterlimsp = iterlimsp,
           weights = weights, 
           sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, 
           l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, 

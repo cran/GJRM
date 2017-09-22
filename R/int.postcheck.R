@@ -1,6 +1,6 @@
 int.postcheck <- function(mo, margin, n.rep = 50, prob.lev = 0.05, y2m, eq = 1){
 
-cont <- c("N", "N2", "GU", "rGU", "LO", "LN", "WEI","iG", "GA", "GAi", "DAGUM", "SM", "BE", "FISK")
+cont <- c("N", "N2", "GU", "rGU", "LO", "LN", "WEI","iG", "GA", "DAGUM", "SM", "BE", "FISK")
 disc <- c("NBI", "NBII", "PIG", "PO", "ZTP") 
 
 

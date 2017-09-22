@@ -1,4 +1,4 @@
-print.summary.copulaReg <- function(x, digits = max(3, getOption("digits") - 3),
+print.summary.gjrm <- function(x, digits = max(3, getOption("digits") - 3),
                                              signif.stars = getOption("show.signif.stars"),...){
 
 
@@ -92,7 +92,18 @@ print.summary.copulaReg <- function(x, digits = max(3, getOption("digits") - 3),
  }else{
  
  
- 
+   if( x$margins[1] %in% cont2par && x$margins[2] %in% cont1par && x$surv == TRUE  ) cat(s1,format(s1.p,digits=nodi),"(",format(CIsig21[1],digits=nodi),",",format(CIsig21[2],digits=nodi),")",
+                                                                      "\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
+                                                                      ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                      "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
+
+                        
+  if( x$margins[1] %in% cont3par && x$margins[2] %in% cont1par && x$surv == TRUE) cat(s1,format(s1.p,digits=nodi),"(",format(CIsig21[1],digits=nodi),",",format(CIsig21[2],digits=nodi),")",
+                                                                     "\n",n1,format(n1.p,digits=nodi),"(",format(CInu1[1],digits=nodi),",",format(CInu1[2],digits=nodi),")",
+                                                                     "\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
+                                                                     ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                     "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
+       
 
   
   if( x$margins[1] %in% cont2par && x$margins[2] %in% cont2par) cat(s1,format(s1.p,digits=nodi),"(",format(CIsig21[1],digits=nodi),",",format(CIsig21[2],digits=nodi),")",

@@ -4,7 +4,7 @@
 \title{Missing values' imputation}
 
 \description{ 
-\code{imputeSS} imputes missing values for a copulaSampleSel model object.
+\code{imputeSS} imputes missing values for a gjrm model object.
 
 }
 
@@ -18,7 +18,7 @@ imputeSS(x, m)
 
 \arguments{ 
 
-\item{x}{A fitted \code{copulaSampleSel} object as produced by the respective fitting function.}
+\item{x}{A fitted \code{gjrm} object.}
 
 \item{m}{Number of imputed response vectors.} 
 
@@ -72,11 +72,11 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 
 \seealso{
-\code{\link{copulaSampleSel}} 
+\code{\link{gjrm}} 
 }
 
 \examples{
-## see examples for copulaSampleSel
+## see examples for gjrm
 }
 
 \keyword{generalised joint regression modelling} 

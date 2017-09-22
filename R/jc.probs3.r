@@ -10,7 +10,7 @@ dof <- x$dof
 #############################################################################################
 #############################################################################################
 
-if(type == "bivariate"){
+if(type == "joint"){
 
 
 if(!missing(newdata)){
@@ -34,7 +34,9 @@ theta <- x$theta
 
 
 
-
+p1 <- as.numeric(p1)
+p2 <- as.numeric(p2)
+theta <- as.numeric(theta) 
 
 
 
@@ -154,6 +156,7 @@ if( is.null(x$X3) ) est.RHOb <- matrix(rep(est.RHOb, each = dim(p1s)[1]), ncol =
 
 if(x$VC$BivD %in% c("N","T")) p12s <- matrix(BiCDF(p1s, p2s, x$nC, est.RHOb, dof, test = FALSE), dim(p1s)[1], n.sim) else{
 
+if(!(x$BivD %in% x$BivD2)) p12s <- matrix(BiCDF(p1s, p2s, x$nC, est.RHOb, dof, test = FALSE), dim(p1s)[1], n.sim)
 
 if(x$BivD %in% x$BivD2){
 
@@ -165,7 +168,6 @@ if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- BiCDF(p1s[x$teta.ind2,], p2s[x$t
 }
 
 
-if(!(x$BivD %in% x$BivD2)) p12s <- BiCDF(p1s, p2s, x$nC, est.RHOb, dof, test = FALSE)
 
 
 
@@ -247,6 +249,10 @@ p2 <- probm( predict.SemiParBIV(x, eq = 2, type = "lpmatrix")%*%x$gam2$coefficie
 
 }
 
+
+
+p1 <- as.numeric(p1)
+p2 <- as.numeric(p2)
 
 
 if(y1 == 1 && y2 == 1){ 
@@ -354,7 +360,7 @@ if(y1 == 0 && y2 == 0){
     
   
 
-list(p12 = p12, p12s = p12s, p1 = p1, p2 = p2)
+list(p12 = p12, p12s = p12s, p1 = p1, p2 = p2, p3 = NULL)
 
 
 

@@ -21,9 +21,9 @@ AT2(x1, x2, index1, index2, n.sim = 100, prob.lev = 0.05,
 
 \arguments{ 
 
-\item{x1}{A fitted \code{SemiParBIV} object as produced by \code{SemiParBIV()}.}
+\item{x1}{A fitted \code{gjrm} object.}
 
-\item{x2}{A fitted \code{SemiParBIV} object as produced by \code{SemiParBIV()}.}
+\item{x2}{A fitted \code{gjrm} object.}
 
 \item{index1}{This is useful to pick a particular individual.}
 
@@ -34,8 +34,7 @@ AT2(x1, x2, index1, index2, n.sim = 100, prob.lev = 0.05,
 
 \item{prob.lev}{Overall probability of the left and right tails of the AT distribution used for interval calculations.} 
 
-\item{hd.plot}{If \code{TRUE} then a plot of the histogram and kernel density estimate of the simulated average effects is produced. This can 
-               only be produced when \code{delta = FALSE}.}
+\item{hd.plot}{If \code{TRUE} then a plot of the histogram and kernel density estimate of the simulated average effects is produced.}
 
 
 \item{main}{Title for the plot.}
@@ -60,7 +59,7 @@ with a continuous outcome) takes values 0 and 1. Posterior simulation is used to
 
 \section{WARNINGS}{
 
-This function is only suitable for \code{SemiParBIV()}.
+This function is only suitable for binary models.
 
 } 
 
@@ -80,12 +79,12 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 
 \seealso{
-\code{\link{GJRM-package}}, \code{\link{SemiParBIV}}, \code{\link{summary.SemiParBIV}}  
+\code{\link{GJRM-package}}, \code{\link{gjrm}}
 }
 
-\examples{
-## see examples for SemiParBIV
-}
+
+
+
 
 \keyword{copulae} 
 \keyword{bivariate binary model} 

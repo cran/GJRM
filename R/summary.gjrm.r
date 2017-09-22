@@ -1,4 +1,4 @@
-summary.copulaReg <- function(object, n.sim = 100, prob.lev = 0.05, ...){
+summary.gjrm <- function(object, n.sim = 100, prob.lev = 0.05, ...){
 
   bs <- SE <- Vb <- epds <- sigma2.st <- sigma2 <- nu.st <- nu <- est.RHOb <- XX <- Xt <- V <- 1 
   
@@ -68,7 +68,7 @@ rm(bs, SE, Vb, XX, Xt, V)
               
               
               
-  class(res) <- "summary.copulaReg"
+  class(res) <- "summary.gjrm"
       
                                         
 

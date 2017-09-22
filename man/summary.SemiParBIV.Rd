@@ -5,7 +5,7 @@
 \title{SemiParBIV summary}
 
 \description{
-It takes a fitted \code{SemiParBIV} object produced by \code{SemiParBIV()} and produces some summaries from it.
+It takes a fitted \code{SemiParBIV} object and produces some summaries from it.
 
 }
 
@@ -21,7 +21,7 @@ It takes a fitted \code{SemiParBIV} object produced by \code{SemiParBIV()} and p
 
 \arguments{ 
 
-\item{object}{A fitted \code{SemiParBIV} object as produced by \code{SemiParBIV()}.}
+\item{object}{A fitted \code{SemiParBIV} object.}
 
 \item{x}{\code{summary.SemiParBIV} object produced by \code{summary.SemiParBIV()}.}
 
@@ -53,8 +53,6 @@ using a single penalty shrinkage approach as shown in Marra and Wood (2011).
 Posterior simulation is used to obtain intervals of nonlinear functions of parameters, such as the association and dispersion parameters
 as well as the odds ratio and gamma measure discussed by Tajar et al. (2001) if \code{gm = TRUE}. 
 
-The bivariate contour meta plot has been introduced to provide the user with a pictorial representation of the
-latent distribution of the model errors.  
 
 \code{print.summary.SemiParBIV} prints model term summaries. 
 
@@ -109,12 +107,10 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 
 \seealso{
-\code{\link{AT}}, \code{\link{prev}}, \code{\link{SemiParBIVObject}}, \code{\link{plot.SemiParBIV}}, \code{\link{predict.SemiParBIV}}
+\code{\link{AT}}, \code{\link{prev}}
 }
 
-\examples{
-## see examples for SemiParBIV
-}
+
 
 
 \keyword{information criteria}

@@ -4,6 +4,7 @@
 \alias{copgHs3}
 \alias{copgHsAT}
 \alias{copgHsCont}
+\alias{copgHsCond}
 
 \title{Internal Function}
 

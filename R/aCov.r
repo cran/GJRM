@@ -1,7 +1,7 @@
 aCov <- function(x){
 
 
-# no correction for gamlss
+# no correction for gamlss and surv for the flexible case given complex deriv structure
 
 if(x$VC$triv == TRUE){
 

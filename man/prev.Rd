@@ -12,7 +12,7 @@ obtained using the delta method or posterior simulation.}
 
 \usage{
 
-prev(x, sw = NULL, type = "simultaneous", ind = NULL, delta = FALSE,  
+prev(x, sw = NULL, type = "joint", ind = NULL, delta = FALSE,  
      n.sim = 100, prob.lev = 0.05, hd.plot = FALSE, 
      main = "Histogram and Kernel Density of Simulated Prevalences", 
      xlab = "Simulated Prevalences", ...)
@@ -21,13 +21,13 @@ prev(x, sw = NULL, type = "simultaneous", ind = NULL, delta = FALSE,
 
 \arguments{ 
 
-\item{x}{A fitted \code{SemiParBIV}/\code{SemiParTRIV} object.}
+\item{x}{A fitted \code{gjrm} object.}
 
 \item{sw}{Survey weights.}  
 
 \item{type}{This argument can take three values: \code{"naive"} (the prevalence is calculated ignoring the presence of observed 
             and unobserved confounders), \code{"univariate"} (the prevalence is obtained from the univariate probit/single imputation model 
-            which neglects the presence of unobserved confounders) and \code{"simultaneous"} (the prevalence is obtained from the 
+            which neglects the presence of unobserved confounders) and \code{"joint"} (the prevalence is obtained from the 
             bivariate/trivariate model 
             which accounts for observed and unobserved confounders).}
              
@@ -88,9 +88,7 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 \references{
 
-McGovern M.E., Barnighausen T., Marra G. and Radice R. (2015), On the Assumption of Joint Normality in Selection Models: A Copula Approach Applied to Estimating HIV Prevalence. \emph{Epidemiology}, 26(2), 229-237.
-
-Marra G., Radice R., Barnighausen T., Wood S.N. and McGovern M.E. (in press), A Simultaneous Equation Approach to Estimating HIV Prevalence with Non-Ignorable Missing Responses. \emph{Journal of the American Statistical Association}.
+Marra G., Radice R., Barnighausen T., Wood S.N. and McGovern M.E. (2017), A Simultaneous Equation Approach to Estimating HIV Prevalence with Non-Ignorable Missing Responses. \emph{Journal of the American Statistical Association}, 112(518), 484-496.
 
 
 
@@ -100,12 +98,9 @@ Marra G., Radice R., Barnighausen T., Wood S.N. and McGovern M.E. (in press), A 
 
 
 \seealso{
-\code{\link{GJRM-package}}, \code{\link{SemiParBIV}}, \code{\link{SemiParTRIV}}  
+\code{\link{GJRM-package}}, \code{\link{gjrm}}  
 }
 
-\examples{
-## see examples for SemiParBIV and SemiParTRIV
-}
 
 
 \keyword{prevalence} 

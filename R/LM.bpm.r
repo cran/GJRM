@@ -81,7 +81,7 @@ LM.bpm <- function(formula, data = list(), weights = NULL, subset = NULL, Model,
   inde <- y1 > 0
   gam2 <- eval(substitute(gam(formula.eq2, binomial(link="probit"), weights=weights, 
                               data=data, subset=inde),list(weights=weights,inde=inde)))                              
-  X2.d2 <- length(coef(gam2))
+  X2.d2 <- length(gam2$coefficients)
   X2 <- model.matrix(gam2) 
   y2 <- gam2$y # rep(0,length(inde)); y2[inde] <- gam2$y
   l.sp2 <- length(gam2$sp)
@@ -108,7 +108,7 @@ if( l.sp1!=0 || l.sp2!=0){
  L.SP <- list(l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = 0, l.sp4 = 0, 
              l.sp5 = 0, l.sp6 = 0, l.sp7 = 0, l.sp8 = 0)    
              
- L.GAM <- list(l.gam1 = length(coef(gam1)), l.gam2 = 0, l.gam3 = 0, l.gam4 = 0,
+ L.GAM <- list(l.gam1 = length(gam1$coefficients), l.gam2 = 0, l.gam3 = 0, l.gam4 = 0,
               l.gam5 = 0, l.gam6 = 0, l.gam7 = 0, l.gam8 = 0)             
  
  qu.mag <- S.m(GAM, L.SP, L.GAM)               
@@ -141,7 +141,7 @@ if( l.sp1!=0 || l.sp2!=0){
              bl = c("probit", "logit", "cloglog", "cauchit"), triv = FALSE, univ.gamls = FALSE , n = n)
 
 
-params <- c(coef(gam1),coef(gam2),0)
+params <- c(gam1$coefficients, gam2$coefficients,0)
 
 
 l.splist <- list( l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = 0, 

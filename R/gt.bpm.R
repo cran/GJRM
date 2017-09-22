@@ -10,7 +10,7 @@ if(!is.null(x$X3) ) stop("This test is not designed for a varying correlation co
 if( !(x$margins[2] == "probit") ) stop("This test is not designed for bivariate models with continuous response.")
 
 eta1 <- (x$gam1$linear.predictors)
-eta2 <- (x$VC$X2 %*% coef(x$gam2) )
+eta2 <- (x$VC$X2 %*% x$gam2$coefficients )
 
 inde <- rep(TRUE, length(eta1))
 

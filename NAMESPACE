@@ -19,12 +19,12 @@ print.prev,
 print.mb,
 print.SemiParBIV,
 print.SemiParTRIV,
-print.copulaReg, sim.resp,
+print.gjrm, sim.resp,
 print.gamlss,
 print.copulaSampleSel,
 print.summary.SemiParBIV,
 print.summary.SemiParTRIV,
-print.summary.copulaReg,
+print.summary.gjrm,
 print.summary.gamlss,
 print.summary.copulaSampleSel,
 S.m, 
@@ -37,12 +37,12 @@ SemiParTRIV,
 gamlss,
 gamlss.fit.post,
 copulaReg.fit.post,
-copulaReg,
+gjrm,
 copulaSampleSel.fit.post,
 copulaSampleSel,
 summary.SemiParBIV,
 summary.SemiParTRIV,
-summary.copulaReg,
+summary.gjrm,
 summary.gamlss,
 summary.copulaSampleSel,
 working.comp,
@@ -66,7 +66,7 @@ importFrom(gamlss.dist, pNBI, dNBI, pNBII, dNBII, pPIG, dPIG, pDEL, dDEL, pSICHE
 importFrom(Rmpfr,getPrec,mpfr,pmax)
 importFrom(mnormt, pmnorm)
 importFrom(graphics, axTicks, abline, hist, lines, par, polygon, plot, rug, points) 
-importFrom(grDevices, cm.colors, gray, heat.colors, terrain.colors, topo.colors, dev.new, dev.interactive, devAskNewPage)   
+importFrom(grDevices, boxplot.stats, cm.colors, gray, heat.colors, terrain.colors, topo.colors, dev.new, dev.interactive, devAskNewPage)   
 importFrom(stats, qt, dpois, qpois, qlogis, plogis, dgamma, dlnorm, dlogis, dnorm, density, cor, coef, as.formula, aggregate.data.frame, integrate, 
            model.matrix, na.omit, na.pass, pbinom, pchisq, pgamma, plnorm, pnorm, printCoefmat,
            qnorm, qqnorm, quantile, residuals, rnorm, sd, uniroot, update, var, weighted.mean, dbeta, pbeta,
@@ -77,7 +77,7 @@ importFrom(utils, getFromNamespace)
 S3method(plot, SemiParBIV)
 S3method(summary, SemiParBIV)
 S3method(summary, SemiParTRIV)
-S3method(summary, copulaReg)
+S3method(summary, gjrm)
 S3method(summary, copulaSampleSel)
 S3method(summary, gamlss)
 S3method(print, AT)
@@ -86,12 +86,12 @@ S3method(print, RR)
 S3method(print, OR)
 S3method(print, SemiParBIV)
 S3method(print, SemiParTRIV)
-S3method(print, copulaReg)
+S3method(print, gjrm)
 S3method(print, gamlss)
 S3method(print, copulaSampleSel)
 S3method(print, summary.SemiParBIV)
 S3method(print, summary.SemiParTRIV)
-S3method(print, summary.copulaReg)
+S3method(print, summary.gjrm)
 S3method(print, summary.gamlss)
 S3method(print, summary.copulaSampleSel)
 S3method(logLik, SemiParBIV)

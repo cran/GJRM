@@ -1,8 +1,10 @@
 hazsurv.plot <- function(x, eq, newdata, type = "surv", intervals = TRUE, n.sim = 100, prob.lev = 0.05, 
-                         shade = FALSE, ylim, ylab, xlab, ...){
+                         shade = FALSE, ylim, ylab, xlab, ls = 100, ...){
 
-pr <- h <- hs <- prs <- CIpr <- CIh <- NULL
+pr <- h <- hs <- prs <- CIpr <- CIh <- poe <- poet <- NULL
 
+
+if(x$univar.gamlss == FALSE && x$surv.flex == TRUE && x$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$margins[2] %in% c(x$bl) ) eq <- 2
 if(missing(eq) && x$univar.gamlss == FALSE) stop("You must provide the equation number (either 1 or 2).")
 if(x$univar.gamlss == TRUE) eq <- 1
 if(missing(newdata))        stop("You have to provide a new data frame.")   
@@ -17,14 +19,22 @@ if(missing(ylim)) ylim <- NULL
 
 if(eq == 1){
   ntv  <- as.character(x$formula[[1]][2])
-  tv   <- seq(range(x$y1)[1], range(x$y1)[2], length.out = 100)
+  
+  rlb <- range(x$y1)[1]
+  rlb <- ifelse(rlb < 1e-06, 1e-06, rlb)
+  tv   <- seq(rlb, range(x$y1)[2], length.out = ls)
+  
   indp <- 1:x$VC$X1.d2
   gob  <- x$gam1
 }
 
 if(eq == 2){
   ntv  <- as.character(x$formula[[2]][2])
-  tv   <- seq(range(x$y2)[1], range(x$y2)[2], length.out = 100)
+  
+  rlb <- range(x$y2)[1]
+  rlb <- ifelse(rlb < 1e-06, 1e-06, rlb)
+  tv   <- seq(rlb, range(x$y2)[2], length.out = ls)  
+  
   indp <- (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)
   gob  <- x$gam2
 }
@@ -47,7 +57,6 @@ if(!is.null(x$VC$mono.sm.pos)) mono.sm.pos <- x$VC$mono.sm.pos else mono.sm.pos 
 
 bs[, mono.sm.pos] <- ifelse(bs[, mono.sm.pos] < 0, 0, bs[, mono.sm.pos]) 
 
-
 #bs[, mono.sm.pos] <- exp(bs[, mono.sm.pos]) 
 
 eta1s <- Xpred%*%t(bs[,indp])
@@ -58,6 +67,14 @@ prs <- pds$pr
 #################################################################################################
 
 if(type == "surv"){
+
+for(i in 1:ls){ poe <- which(prs[i,] %in% boxplot.stats(prs[i,])$out)
+                prs[, poe] <- NA 
+                poe  <- union(poe, poet)
+                poet <- poe 
+                
+                
+              }  
 
 if(intervals == TRUE) CIpr <- rowQuantiles(prs, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
 
@@ -83,18 +100,7 @@ if(intervals == TRUE){
 
 if(type == "hazard"){
 
-h <- .Machine$double.eps^(1/3) * ifelse(abs(newdata[, ntv ]) > 1, abs(newdata[, ntv ]), 1)
-temp <- newdata[, ntv ] + h
-h.hi <- temp - newdata[, ntv ]
-temp <- newdata[, ntv ] - h
-h.lo <- newdata[, ntv ] - temp
-twoeps <- h.hi + h.lo
-newdata1 <- newdata2 <- newdata
-newdata1[, ntv ] <- newdata1[, ntv ] - h
-newdata2[, ntv ] <- newdata2[, ntv ] + h
-attr(newdata1, "terms") <- attr(newdata2, "terms") <- NULL 
-Xd   <- (predict(gob, newdata2, type = "lpmatrix") - predict(gob, newdata1, type = "lpmatrix"))/twoeps 
-rm(newdata1, newdata2)
+Xd <- Xdpred(gob, newdata, ntv)
 
 Xthe <- Xd%*%params1   
   
@@ -106,7 +112,18 @@ Xthes <- Xd%*%t(bs[,indp])
 
 hs <- -Gps/prs*Xthes
 
-if(intervals == TRUE) CIh <- rowQuantiles(hs, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+# safety check
+for(i in 1:ls){ poe <- which(hs[i,] %in% boxplot.stats(hs[i,])$out)
+                hs[, poe] <- NA 
+                poe  <- union(poe, poet)
+                poet <- poe 
+              }        
+
+
+if(intervals == TRUE){ CIh <- rowQuantiles(hs, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+                       CIh <- ifelse(CIh < 0, 0, CIh)
+                     }
+
 
 if(is.null(ylim) && intervals == TRUE) ylim <- c(min(CIh[,1]),max(CIh[,2]) )  
 if(missing(ylab))                      ylab <- "Hazard"  
@@ -127,7 +144,7 @@ if(intervals == TRUE){
 
 #################################################################################################
 
-out.r <- list(s = pr, h = h, h.sim = hs, s.sim = prs)
+out.r <- list(s = pr, h = h, h.sim = hs, s.sim = prs, l.poe = length(poe))
 invisible(out.r)
 
 }

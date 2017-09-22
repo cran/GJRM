@@ -2,11 +2,11 @@
 \alias{adjCov}
 \alias{aCov}
 
-\title{Adjustment for the covariance matrix from a fitted SemiParBIV/copulaReg/copulaSampleSel/SemiParTRIV model}
+\title{Adjustment for the covariance matrix from a fitted gjrm model}
 
 \description{ 
 
-\code{adjCov} can be used to adjust the covariance matrix of a fitted \code{SemiParBIV}, \code{copulaReg}, \code{copulaSampleSel}, \code{SemiParTRIV} object.}
+\code{adjCov} can be used to adjust the covariance matrix of a fitted \code{gjrm} object.}
 
 
 \usage{
@@ -17,7 +17,7 @@ adjCov(x, id)
 
 \arguments{ 
 
-\item{x}{A fitted \code{SemiParBIV}, \code{copulaReg}, \code{copulaSampleSel}, \code{SemiParTRIV} object as produced by the respective fitting function.}
+\item{x}{A fitted \code{gjrm} object as produced by the respective fitting function.}
  
 \item{id}{Cluster identifier.} 
 
@@ -75,10 +75,7 @@ Liang K.-Y. and Zeger S. (1986), Longitudinal Data Analysis Using Generalized Li
 
 
 \seealso{
-\code{\link{GJRM-package}}, \code{\link{SemiParBIV}}, \code{\link{summary.SemiParBIV}},
-\code{\link{SemiParTRIV}}, \code{\link{summary.SemiParTRIV}},
-\code{\link{copulaReg}}, \code{\link{summary.copulaReg}},
-\code{\link{copulaSampleSel}}, \code{\link{summary.copulaSampleSel}}
+\code{\link{GJRM-package}}, \code{\link{gjrm}}
 }
 
 

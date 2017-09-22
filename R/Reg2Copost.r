@@ -71,6 +71,9 @@ if(length(theta) == 1){
 
 
 
+#if(length(tau) > 1){tau1 <- theta; tau1[1:length(tau),] <- tau; tau <- tau1}
+
+
 list(theta = theta, tau = tau, theta.a = mean(theta), tau.a = mean(tau) )
 
 }

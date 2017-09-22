@@ -19,22 +19,25 @@ if(BivD %in% c("HO")){ theta <- ifelse(theta == 0, 0.0000001 , theta)
                        theta <- ifelse(theta == 1, 0.9999999 , theta)
                       }
 
+tau <- 0
+if(BivD %in% c("F", "J0","J180","J90","J270")) tau <- BiCopPar2Tau(family = nCa, par = theta) # this function is slow
+if(BivD == "AMH")                              tau <- 1 - (2/3)/theta^2*(theta + (1-theta)^2*log(1-theta))
+if(BivD == "FGM")                              tau <- 2/9*theta
+if(BivD == "HO")                               tau <- 1 - theta  
+if(BivD %in% c("T","N"))                       tau <- 2/pi*asin(theta) 
+if(BivD %in% c("G0","G180"))                   tau <- 1-1/theta  
+if(BivD %in% c("G90","G270"))                  tau <- -(1-1/abs(theta))  
+if(BivD %in% c("C0","C180"))                   tau <- theta/(theta+2)  
+if(BivD %in% c("C90","C270"))                  tau <- -(abs(theta)/(abs(theta)+2))  
 
-if(!(BivD %in% c("AMH","FGM","PL","HO"))) tau <- BiCopPar2Tau(family = nCa, par = theta)
-if(BivD == "AMH")                         tau <- t(as.numeric(1 - (2/3)/theta^2*(theta + (1-theta)^2*log(1-theta))))
-if(BivD == "FGM")                         tau <- t(as.numeric(2/9*theta))
-if(BivD == "HO")                          tau <- 1 - theta  
+if(length(theta)==1) tau <- as.numeric(tau)   
+
+
 
 if(BivD == "PL"){
   if(length(theta)==1)   tau <- as.numeric(tau(plackettCopula(theta)))   
   if(length(theta) > 1){ tau <- NA; for(i in 1:length(theta)) tau[i] <- as.numeric(tau(plackettCopula(theta[i])))   }
-  if(dim(as.matrix(theta))[2] > 1)  tau <- matrix(tau, nrow = dim(theta)[1] , ncol = dim(theta)[2] )
-  #tau <- t(tau)
-  
-  #if(dim(as.matrix(theta))[2] == 1) tau <- t(t(tau)) 
-  #if(length(theta) == 1) tau <- as.numeric(tau) 
-  
-  
+  if(dim(as.matrix(theta))[2] > 1)  tau <- matrix(tau, nrow = dim(theta)[1], ncol = dim(theta)[2] )  
 }
 
 tau.a   <- mean(tau) 

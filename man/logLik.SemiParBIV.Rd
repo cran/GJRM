@@ -4,7 +4,7 @@
 \title{Extract the log likelihood for a fitted copula model}
 
 
-\description{It extracts the log-likelihood for a fitted \code{SemiParBIV}/\code{copulaReg}/\code{copulaSampleSel}/\code{SemiParTRIV} model.
+\description{It extracts the log-likelihood for a fitted \code{gjrm} model.
 
 }
 
@@ -15,7 +15,7 @@
 
 \arguments{ 
   
-\item{object}{A fitted \code{SemiParBIV}/\code{copulaReg}/\code{copulaSampleSel}/\code{SemiParTRIV} object.}
+\item{object}{A fitted \code{gjrm} object.}
 
 \item{...}{Un-used for this function.}
 
@@ -25,7 +25,7 @@
 
 \details{
 
-Modification of the classic \code{logLik} which accounts for the estimated degrees of freedom used in \code{SemiParBIV}/\code{copulaReg}/\code{copulaSampleSel}/\code{SemiParTRIV} objects.
+Modification of the classic \code{logLik} which accounts for the estimated degrees of freedom used in \code{gjrm}.
 This function is provided so that information criteria work correctly by using the correct number of degrees 
 of freedom. 
 
@@ -54,10 +54,6 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 }
 
 
-
-\examples{
-## see examples for SemiParBIV
-}
 
 \keyword{logLik} 
 \keyword{AIC} 

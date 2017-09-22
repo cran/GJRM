@@ -58,8 +58,8 @@ if( VC$penCor %in% c("lasso", "alasso") ) VC$sp <- sp
                                iterlim = iterlim/10), silent = sc)   
 
 
-if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == FALSE ) stop("It is not possible to fit the model.\nTry re-fitting the model and setting gamlssfit = TRUE if allowed.\nAlso, read the WARNINGS section in one of ?SemiParBIV,\n?copulaReg, ?copulaSample or ?SemiParTRIV.")
-if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop("It is not possible to fit the model.\nRead the WARNINGS section in one of ?SemiParBIV,\n?copulaReg, ?copulaSample or ?SemiParTRIV.")         
+if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == FALSE ) stop("It is not possible to fit the model.\nTry re-fitting the model and setting gamlssfit = TRUE if allowed.\nAlso, read the WARNINGS section of ?gjrm.")
+if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop("It is not possible to fit the model.\nRead the WARNINGS section of ?gjrm.")         
  
              
                                      }
@@ -73,7 +73,7 @@ if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop
   
   #####################################################################
 
-  
+  #VC$fp <- TRUE
     if((VC$fp==FALSE && (l.sp1!=0 || l.sp2!=0 || l.sp3!=0 || l.sp4!=0 || l.sp5!=0 || l.sp6!=0 || l.sp7!=0 || l.sp8!=0)) ){
 
        stoprule.SP <- 1; conv.sp <- TRUE; iter.inner <- iter.sp <- 0  
@@ -102,6 +102,8 @@ if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop
 
              ps <- pen(qu.mag, sp, VC, univ = respvec$univ, l.splist) # in triv case, I reset ridge penalty but ok
                
+             # VC$my.env$k <- VC$k, does not like it  
+               
              fit <- try( trust(func.opt, o.ests, rinit=rinit, rmax = rmax,  parscale = parsc,  
                           respvec = respvec, VC = VC, 
                           ps = ps, 
@@ -117,8 +119,8 @@ if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop
                                                                       blather = TRUE, iterlim = iterlim), silent = sc)  
                                                                       
 
-if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == FALSE ) stop("It is not possible to fit the model.\nTry re-fitting the model and setting gamlssfit = TRUE if allowed.\nAlso, read the WARNINGS section in one of ?SemiParBIV,\n?copulaReg, ?copulaSample or ?SemiParTRIV.")
-if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop("It is not possible to fit the model.\nRead the WARNINGS section in one of ?SemiParBIV,\n?copulaReg, ?copulaSample or ?SemiParTRIV.")         
+if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == FALSE ) stop("It is not possible to fit the model.\nTry re-fitting the model and setting gamlssfit = TRUE if allowed.\nAlso, read the WARNINGS section of ?gjrm.")
+if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop("It is not possible to fit the model.\nRead the WARNINGS section of ?gjrm.")         
  
     
                                                         # break

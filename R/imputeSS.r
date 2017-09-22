@@ -1,7 +1,7 @@
 imputeSS <- function(x, m){
 
 
-if(x$VC$Cont != "NO" && x$VC$ccss != "yes") stop("This function can only be used with a copulaSampleSel object.")
+if(x$VC$Cont != "NO" && x$VC$ccss != "yes") stop("This function can only be used for a selection model with continuous outcome margin.")
 
 if(x$margins[2] %in% c("NBI", "NBII", "PIG", "PO", "ZTP")) stop("This function is not currently suitable for discrete margins.")
 
@@ -9,11 +9,11 @@ sim.beta.y <- function(x, s){
 
 nu <- NULL
 
-l1 <- length(coef(x$gam1))
-l2 <- length(coef(x$gam2))
-l3 <- length(coef(x$gam3))
-l4 <- length(coef(x$gam4))
-l5 <- length(coef(x$gam5))
+l1 <- length(x$gam1$coefficients)
+l2 <- length(x$gam2$coefficients)
+l3 <- length(x$gam3$coefficients)
+l4 <- length(x$gam4$coefficients)
+l5 <- length(x$gam5$coefficients)
 
 betahatSim <- rMVN(1, x$coefficients, x$Vb)
  

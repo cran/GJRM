@@ -46,7 +46,7 @@ hypothesis that \eqn{\theta}{\theta} is equal to 0 (i.e. no endogeneity, non-ran
 correlated model equations/errors, depending 
 on  the model being fitted). Its main advantage is that it does 
 not require an estimate of the model parameter vector under the alternative hypothesis. Asymptotically, it takes a Chi-squared distribution 
-with one degree of freedom. Full details can be found in Marra et al. (2014) and Marra et al. (in press).
+with one degree of freedom. Full details can be found in Marra et al. (2014) and Marra et al. (2017).
 
 
 }
@@ -86,11 +86,11 @@ Marra G., Radice R. and Missiroli S. (2014), Testing the Hypothesis of Absence o
 
 
 \seealso{
-\code{\link{SemiParBIV}}
+\code{\link{gjrm}}
 }
 
 \examples{
-## see examples for SemiParBIV
+## see examples for gjrm
 }
 
 \keyword{joint regression modelling} 

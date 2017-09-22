@@ -41,6 +41,7 @@ vis.SemiParBIV <- function(x, eq, ...){
                
            ss.plot$coefficients <- x$coefficients[ind]
            ss.plot$Vp <- x$Vb[ind,ind]
+           ss.plot$Vp.t <- x$Vb.t[ind,ind]
            ss.plot$sig2 <- 1
            ss.plot$edf <- diag(x$F)[ind]
            ss.plot$scale.estimated <- FALSE 

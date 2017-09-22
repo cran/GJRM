@@ -285,6 +285,7 @@ triprobgHs <- function(params, respvec, VC, ps, AT = FALSE){
        dl.de3 = gTRI$dl.de3,
        dl.dtheta12.st = gTRI$dl.dtheta12.st, 
        dl.dtheta13.st = gTRI$dl.dtheta13.st, 
-       dl.dtheta23.st = gTRI$dl.dtheta23.st)
+       dl.dtheta23.st = gTRI$dl.dtheta23.st,
+       p1 = p1, p2 = p2, p3 = p3)
   
 }

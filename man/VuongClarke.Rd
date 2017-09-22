@@ -74,7 +74,7 @@ Vuong Q.H. (1989), Likelihood Ratio Tests for Model Selection and Non-Nested Hyp
 
 
 \examples{
-## see examples for SemiParBIV
+## see examples for gjrm
 }
 
 \keyword{Vuong test} 

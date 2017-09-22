@@ -1,4 +1,4 @@
-prev <- function(x, sw = NULL, type = "simultaneous", ind = NULL, delta = FALSE, n.sim = 100, prob.lev = 0.05, 
+prev <- function(x, sw = NULL, type = "joint", ind = NULL, delta = FALSE, n.sim = 100, prob.lev = 0.05, 
                       hd.plot = FALSE, main = "Histogram and Kernel Density of Simulated Prevalences", 
        xlab="Simulated Prevalences", ...){
 
@@ -14,7 +14,7 @@ if((x$Model=="B" || x$Model=="BPO") && x$triv == FALSE) stop("This function is s
 if(x$triv == TRUE && x$Model != "TSS") stop("This function is suitable for sample selection models only.")
 
 
-if( !( type %in% c("naive","univariate","simultaneous") ) ) stop("Error in parameter type value. It should be one of: naive, univariate or simultaneous.")
+if( !( type %in% c("naive","univariate","joint") ) ) stop("Error in parameter type value. It should be one of: naive, univariate or joint.")
 
 
 if(x$Model == "BSS") Xsg <- x$X2s
@@ -24,12 +24,12 @@ if(x$Model == "TSS") Xsg <- x$X3s
 if(type == "univariate"){
 
 if(x$Model == "BSS"){
-        etasg <- Xsg%*%coef(x$gam2)
+        etasg <- Xsg%*%x$gam2$coefficients
         Vv    <- x$gam2$Vp
                     }
 
 if(x$Model == "TSS"){
-        etasg <- Xsg%*%coef(x$gam3)
+        etasg <- Xsg%*%x$gam3$coefficients
         Vv    <- x$gam3$Vp
                     }
 
@@ -37,7 +37,7 @@ if(x$Model == "TSS"){
 
 
 
-if(type == "simultaneous" || type == "naive"){ # naive useful for sw below
+if(type == "joint" || type == "naive"){ # naive useful for sw below
 
 if(x$Model == "BSS") etasg <- x$eta2
 if(x$Model == "TSS") etasg <- x$eta3
@@ -85,7 +85,7 @@ if(delta == TRUE){
 core <- colWeightedMeans( c( probm(etasg, x$margins[2], only.pr = FALSE)$d.n )*Xsg, w = sw, na.rm = FALSE) 
 
 
-if(x$Model == "BSS" && type == "simultaneous"){
+if(x$Model == "BSS" && type == "joint"){
 
 if( is.null(x$X3) ) zerod <- 0
 if(!is.null(x$X3) ) zerod <- rep(0, x$X3.d2)
@@ -95,7 +95,7 @@ G <- c( rep(0,x$X1.d2), core, zerod)
 }
 
 
-if(x$Model == "TSS" && type == "simultaneous"){
+if(x$Model == "TSS" && type == "joint"){
 
 zerod <- c(0,0,0)
 G <- c( rep(0, (x$X1.d2 + x$X2.d2)), core, zerod) 
@@ -123,7 +123,7 @@ if(type == "univariate")  G <- c( core )
 
 if(delta == FALSE){
 
-  if(type == "simultaneous") coefm <- x$coefficients    
+  if(type == "joint") coefm <- x$coefficients    
   
   
   if(type == "univariate"){ 
@@ -137,7 +137,7 @@ if(delta == FALSE){
    bs <- rMVN(n.sim, mean = coefm, sigma=Vv)
   
   
-  if(type == "simultaneous"){
+  if(type == "joint"){
   
     if(x$Model == "BSS") bs <- bs[, x$X1.d2 + (1 : x$X2.d2) ]
     if(x$Model == "TSS") bs <- bs[, x$X1.d2 + x$X2.d2 + (1 : x$X3.d2) ]

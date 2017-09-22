@@ -6,8 +6,8 @@
 \title{Plotting function}
 
 
-\description{It takes a fitted \code{SemiParBIV}/\code{copulaReg}/\code{copulaSampleSel}/\code{SemiParTRIV} object produced 
-by \code{SemiParBIV()}, \code{copulaReg()}, \code{copulaSampleSel()}, \code{SemiParTRIV()} and 
+\description{It takes a fitted \code{gjrm} object produced 
+by \code{gjrm()} and 
 plots the estimated smooth functions on the scale of the linear predictors. This function is a 
 wrapper of \code{plot.gam()} in \code{mgcv}. Please see 
 the documentation of \code{plot.gam()} for full details. 
@@ -22,7 +22,7 @@ the documentation of \code{plot.gam()} for full details.
 
 \arguments{ 
   
-\item{x}{A fitted \code{SemiParBIV}/\code{copulaReg}/\code{copulaSampleSel}/\code{SemiParTRIV()} object.}
+\item{x}{A fitted \code{gjrm} object.}
 
 \item{eq}{The equation from which smooth terms should be considered for printing.}
 
@@ -80,14 +80,10 @@ The function can not deal with smooths of more than 2 variables.
 
 
 \seealso{
-\code{\link{SemiParBIV}}, \code{\link{copulaReg}}, \code{\link{copulaSampleSel}}, \code{\link{SemiParTRIV}}, \code{\link{predict.SemiParBIV}}
+\code{\link{gjrm}}
 }
 
 
-
-\examples{
-## see examples for SemiParBIV
-}
 
 \keyword{smooth} 
 \keyword{regression} 

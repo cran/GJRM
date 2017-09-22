@@ -56,7 +56,7 @@ C.10  <- (p.2 - C.11) / (1 - p.1)                                  ## second equ
 # CIs
 ######
               
-bs <- rMVN(n.sim, mean = coef(x1), sigma=x1$Vb)
+bs <- rMVN(n.sim, mean = x1$coefficients, sigma=x1$Vb)
 
 eta1s <- t(X1)%*%t(bs[,ind1])
 eta2s <- t(X2)%*%t(bs[,ind2])  
@@ -65,7 +65,7 @@ p.1s <- probm(eta1s, x1$margins[1])$pr
 p.2s <- probm(eta2s, x1$margins[1])$pr
 
 if( !is.null(x1$X3) ) etds <- t(x1$X3[index1,])%*%t(bs[,(x1$X1.d2+x1$X2.d2+1):(x1$X1.d2+x1$X2.d2+x1$X3.d2)])
-if(  is.null(x1$X3) ) etds <- bs[, length(coef(x1))]
+if(  is.null(x1$X3) ) etds <- bs[, length(x1$coefficients)]
    
 
 resT    <- teta.tr(x1$VC, etds)
@@ -209,7 +209,7 @@ AT <- C.11*v1 - C.10*v0
 
 
 
-bs <- rMVN(n.sim, mean = coef(x2), sigma=x2$Vb)
+bs <- rMVN(n.sim, mean = x2$coefficients, sigma=x2$Vb)
 
 eta1s <- t(X1)%*%t(bs[,ind1])
 eta2s <- t(X2)%*%t(bs[,ind2])  
@@ -224,10 +224,10 @@ p.1s <- ifelse(p.1s > max.p, max.p, p.1s)
    if(x2$VC$margins[2] %in% m2 ){
    
    if( !is.null(x2$X3) ) sigma2.st <- x2$X3[index2,]%*%t(bs[,(x2$X1.d2+x2$X2.d2+1):(x2$X1.d2+x2$X2.d2+x2$X3.d2)]) 
-   if(  is.null(x2$X3) ) sigma2.st <- bs[, length(coef(x2)) - 1]
+   if(  is.null(x2$X3) ) sigma2.st <- bs[, length(x2$coefficients) - 1]
    
    if( !is.null(x2$X4) ) etds <- x2$X4[index2,]%*%t(bs[,(x2$X1.d2+x2$X2.d2+x2$X3.d2 + 1):(x2$X1.d2+x2$X2.d2+x2$X3.d2+x2$X4.d2)])
-   if(  is.null(x2$X4) ) etds <- bs[, length(coef(x2))]  
+   if(  is.null(x2$X4) ) etds <- bs[, length(x2$coefficients)]  
    
    sigma2s <- esp.tr(sigma2.st, x2$VC$margins[2])$vrb
    
@@ -238,13 +238,13 @@ p.1s <- ifelse(p.1s > max.p, max.p, p.1s)
    if(x2$VC$margins[2] %in% m3 ){
    
    if( !is.null(x2$X3) ) sigma2.st <- x2$X3[index2,]%*%t(bs[,(x2$X1.d2+x2$X2.d2+1):(x2$X1.d2+x2$X2.d2+x2$X3.d2)]) 
-   if(  is.null(x2$X3) ) sigma2.st <- bs[,length(coef(x2)) - 2]
+   if(  is.null(x2$X3) ) sigma2.st <- bs[,length(x2$coefficients) - 2]
    
    if( !is.null(x2$X4) ) nu.st <- x2$X4[index2,]%*%t(bs[,(x2$X1.d2+x2$X2.d2+x2$X3.d2+1):(x2$X1.d2+x2$X2.d2+x2$X3.d2+x2$X4.d2)]) 
-   if(  is.null(x2$X4) ) nu.st <- bs[, length(coef(x2)) - 1]   
+   if(  is.null(x2$X4) ) nu.st <- bs[, length(x2$coefficients) - 1]   
    
    if( !is.null(x2$X5) ) etds <- x2$X5[index2, ]%*%t(bs[,(x2$X1.d2+x2$X2.d2+x2$X3.d2+x2$X4.d2 + 1):(x2$X1.d2+x2$X2.d2+x2$X3.d2+x2$X4.d2+x2$X5.d2)])
-   if(  is.null(x2$X5) ) etds <- bs[,length(coef(x2))]  
+   if(  is.null(x2$X5) ) etds <- bs[,length(x2$coefficients)]  
    
    sigma2s <- esp.tr(sigma2.st, x2$VC$margins[2])$vrb
    

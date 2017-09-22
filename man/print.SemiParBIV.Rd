@@ -17,7 +17,7 @@
 \arguments{ 
 
 
-\item{x}{\code{SemiParBIV} object produced by \code{SemiParBIV()}.}
+\item{x}{\code{SemiParBIV} object.}
 
 \item{...}{Other arguments.}
 
@@ -26,7 +26,7 @@
 
 \details{ 
 
-\code{print.SemiParBIV} prints out the family, model equations, total number of observations, estimated association 
+It prints out the family, model equations, total number of observations, estimated association 
 coefficient and total effective degrees of freedom for the penalized or unpenalized model. 
 
 }
@@ -40,10 +40,6 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 }
 
 
-
-\seealso{
-\code{\link{SemiParBIV}}
-}
 
 
 \keyword{generalised joint regression modelling} 

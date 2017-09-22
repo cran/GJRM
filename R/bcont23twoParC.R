@@ -423,9 +423,32 @@ if(VC$extra.regI == "pC") H <- regH(H, type = 1)
   H     <- H + S.h 
         
 if(VC$extra.regI == "sED") H <- regH(H, type = 2)   
+ 
+ 
+ 
+ 
+if( VC$margins[1] == "LN" || VC$margins[2] == "LN"){
   
   
-         list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l.par=l.par, ps = ps, 
+  if(VC$margins[1] == "LN") dHs1 <- distrHsAT(exp(respvec$y1), eta1, sigma21, 1, margin2 = VC$margins[1])
+
+  pdf1 <- dHs1$pdf2
+  p1   <- dHs1$p2
+ 
+  dH <- copgHsAT(p1, p2, teta, VC$BivD, Ln = TRUE, par2 = nu)
+
+  c.copula2.be1be2 <- dH$c.copula2.be1be2  
+  
+  l.ln <- -sum( VC$weights*( log(pdf1) + log(pdf2) + log(c.copula2.be1be2) ) )
+
+  } 
+ 
+
+ 
+ 
+ 
+  
+         list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l.par=l.par, ps = ps, l.ln = l.ln,
               eta1=eta1, eta2=eta2, etad=etad, etas1 = etas1, etas2 = etas2, etan = etan, etan2 = etan2, 
               BivD=VC$BivD, p1 = p1, p2 = p2,
               dl.dbe1          =dl.dbe1,       

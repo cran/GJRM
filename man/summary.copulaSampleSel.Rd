@@ -5,7 +5,7 @@
 \title{copulaSampleSel summary}
 
 \description{
-It takes a fitted \code{copulaSampleSel} object produced by \code{copulaSampleSel()} and produces some summaries from it.
+It takes a fitted \code{copulaSampleSel} object and produces some summaries from it.
 
 }
 
@@ -22,7 +22,7 @@ It takes a fitted \code{copulaSampleSel} object produced by \code{copulaSampleSe
 
 \arguments{ 
 
-\item{object}{A fitted \code{copulaSampleSel} object as produced by \code{copulaSampleSel()}.}
+\item{object}{A fitted \code{copulaSampleSel} object.}
 
 \item{x}{\code{summary.copulaSampleSel} object produced by \code{summary.copulaSampleSel()}.}
 
@@ -44,21 +44,12 @@ to calculate intervals for the association parameter, dispersion coefficient, fo
 
 \details{ 
 
-This function is very similar to \code{summary.SemiParBIV()}.
-
 \code{print.summary.copulaSampleSel} prints model term summaries. 
 
 
 }
 
 
-
-\value{
-
-Very similar to what obtained when using \code{summary.SemiParBIV()}.
-
-
-}
 
 
 \author{
@@ -72,7 +63,7 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 
 \examples{
-## see examples for copulaSampleSel
+## see examples for gjrm
 }
 
 

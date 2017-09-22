@@ -1,4 +1,4 @@
-print.copulaReg <- function(x, ...){
+print.gjrm <- function(x, ...){
 
    
  ppR <- pp(x)  
@@ -29,8 +29,9 @@ print.copulaReg <- function(x, ...){
 
 
   cat("\n\nEQUATION 1")
-  if(x$surv.flex == FALSE) cat("\nLink function for mu.1:",m1l,"\n")
-  if(x$surv.flex == TRUE)  cat("\n")
+  if(x$surv.flex == FALSE )                                             cat("\nLink function for mu.1:",m1l,"\n")
+  if(x$surv.flex == TRUE && x$VC$margins[1] %in% c(x$VC$m2,x$VC$m3) )   cat("\nLink function for mu.1:",m1l,"\n")
+  if(x$surv.flex == TRUE && !(x$VC$margins[1] %in% c(x$VC$m2,x$VC$m3))) cat("\n")
 
   cat("Formula: "); print(x$gam1$formula) 
   
@@ -244,6 +245,38 @@ if( x$margins[1] %in% cont3par && x$margins[2] %in% cont3par){
   cat("Formula: "); print(x$formula[[5]]) 
      
      }
+     
+     
+  if( x$margins[1] %in% cont2par && x$margins[2] %in% cont1par && x$surv.flex == TRUE){
+  
+
+  cat("\nEQUATION 3")
+  if(x$margins[1] !="BE") cat("\nLink function for sigma2.1:","log","\n") else cat("\nLink function for sigma2.1:","qlogis","\n") 
+  cat("Formula: "); print(x$formula[[3]])   
+    
+  cat("\nEQUATION 4")
+  cat("\nLink function for theta:",lind,"\n") 
+  cat("Formula: "); print(x$formula[[4]]) 
+     
+     }     
+     
+  if( x$margins[1] %in% cont3par && x$margins[2] %in% cont1par && x$surv.flex == TRUE){
+  
+
+  cat("\nEQUATION 3")
+  if(x$margins[1] !="BE") cat("\nLink function for sigma2.1:","log","\n") else cat("\nLink function for sigma2.1:","qlogis","\n") 
+  cat("Formula: "); print(x$formula[[3]]) 
+  
+  cat("\nEQUATION 4")
+  cat("\nLink function for nu.1:","log","\n") 
+  cat("Formula: "); print(x$formula[[4]])  
+    
+  cat("\nEQUATION 5")
+  cat("\nLink function for theta:",lind,"\n") 
+  cat("Formula: "); print(x$formula[[5]]) 
+     
+     }      
+     
      
      
           

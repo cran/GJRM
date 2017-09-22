@@ -5,7 +5,7 @@
 \title{gamlss summary}
 
 \description{
-It takes a fitted \code{gamlss} object produced by \code{gamlss()} and produces some summaries from it.
+It takes a fitted \code{gamlss} object and produces some summaries from it.
 
 }
 
@@ -24,7 +24,7 @@ It takes a fitted \code{gamlss} object produced by \code{gamlss()} and produces 
 
 \arguments{ 
 
-\item{object}{A fitted \code{gamlss} object as produced by \code{gamlss()}.}
+\item{object}{A fitted \code{gamlss} object.}
 
 \item{x}{\code{summary.gamlss} object produced by \code{summary.gamlss()}.}
 
@@ -46,8 +46,6 @@ to calculate intervals for various parameters. It may be increased if
 
 
 \details{ 
-
-This function is very similar to \code{summary.SemiParBIV()}.
 
 \code{print.summary.gamlss} prints model term summaries. 
 

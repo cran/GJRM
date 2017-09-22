@@ -166,7 +166,13 @@ if(VC$univ.gamls == FALSE){
     if(VC$margins[1] %in% c(VC$bl,VC$m1d) && VC$margins[2] %in% VC$m2)           {EQ3P <- 0; EQ4P <- 0;    EQ5P <- NULL; EQ6P <- EQ7P <- EQ8P <- NULL  }
     if(VC$margins[1] %in% c(VC$bl,VC$m1d) && VC$margins[2] %in% VC$m3)           {EQ3P <- 0; EQ4P <- 0;    EQ5P <- 0;    EQ6P <- EQ7P <- EQ8P <- NULL  }     
     
-    if(VC$margins[1] %in% c(VC$m2,VC$m2d) && VC$margins[2] %in% c(VC$m2,VC$m2d)  )  {EQ3P <- 0; EQ4P <- 0; EQ5P <- 0; EQ6P <- NULL; EQ7P <- EQ8P <- NULL  }     
+    if(VC$margins[1] %in% c(VC$m2,VC$m2d) && VC$margins[2] %in% c(VC$m2,VC$m2d)  )  {EQ3P <- 0; EQ4P <- 0; EQ5P <- 0; EQ6P <- NULL; EQ7P <- EQ8P <- NULL  } 
+    
+    if(VC$margins[1] %in% c(VC$m2,VC$m2d) && VC$margins[2] %in% c(VC$bl)  )  {EQ3P <- 0; EQ4P <- 0; EQ5P <- NULL; EQ6P <- NULL; EQ7P <- EQ8P <- NULL  }     
+    if(VC$margins[1] %in% c(VC$m3) && VC$margins[2] %in% c(VC$bl)  )         {EQ3P <- 0; EQ4P <- 0; EQ5P <- 0; EQ6P <- NULL; EQ7P <- EQ8P <- NULL  }     
+
+    
+    
     if(VC$margins[1] %in% VC$m3           && VC$margins[2] %in% VC$m3            )  {EQ3P <- 0; EQ4P <- 0; EQ5P <- 0; EQ6P <- 0;    EQ7P <- 0; EQ8P <- NULL  }   
     if(VC$margins[1] %in% c(VC$m2,VC$m2d) && VC$margins[2] %in% VC$m3            )  {EQ3P <- 0; EQ4P <- 0; EQ5P <- 0; EQ6P <- 0;    EQ7P <- EQ8P <- NULL  }  
     if(VC$margins[1] %in% VC$m3           && VC$margins[2] %in% c(VC$m2,VC$m2d)  )  {EQ3P <- 0; EQ4P <- 0; EQ5P <- 0; EQ6P <- 0;    EQ7P <- EQ8P <- NULL  }  

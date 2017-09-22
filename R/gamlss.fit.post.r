@@ -1,6 +1,6 @@
 gamlss.fit.post <- function(SemiParFit, VC, GAM){
 
-Ve <- R <- edf <- edf1 <- NULL
+Ve <- R <- edf <- edf1 <- coef.t <- NULL
 sigma2 <- sigma2.a <- nu <- nu.a <- NULL
 
 cont1par  <- c(VC$m1d) 

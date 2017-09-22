@@ -11,7 +11,7 @@ corresponding interval obtained using posterior simulation.}
 
 \usage{
 
-AT(x, nm.end, eq = NULL, E = TRUE, treat = TRUE, type = "simultaneous", ind = NULL, 
+AT(x, nm.end, eq = NULL, E = TRUE, treat = TRUE, type = "joint", ind = NULL, 
    n.sim = 100, prob.lev = 0.05, length.out = NULL,
    hd.plot = FALSE, te.plot = FALSE, 
    main = "Histogram and Kernel Density of Simulated Average Effects", 
@@ -21,7 +21,7 @@ AT(x, nm.end, eq = NULL, E = TRUE, treat = TRUE, type = "simultaneous", ind = NU
 
 \arguments{ 
 
-\item{x}{A fitted \code{SemiParBIV}/\code{copulaReg}/ object as produced by the respective fitting function.}
+\item{x}{A fitted \code{gjrm} object as produced by the respective fitting function.}
 
 \item{nm.end}{Name of the endogenous variable.} 
 
@@ -35,14 +35,13 @@ the control group. This only makes sense if \code{E = FALSE}.}
 
 \item{type}{This argument can take three values: \code{"naive"} (the effect is calculated ignoring the presence of observed and unobserved 
             confounders), \code{"univariate"} (the effect is obtained from the univariate model 
-            which neglects the presence of unobserved confounders) and \code{"simultaneous"} (the effect is obtained from 
+            which neglects the presence of unobserved confounders) and \code{"joint"} (the effect is obtained from 
             the simultaneous model which accounts for observed and unobserved confounders).}
 
 
 
 \item{ind}{Binary logical variable. It can be used to calculate the AT for a subset of the data. Note that it does not make sense to 
-           use \code{ind} 
-           when some observations are excluded from the AT calculation (e.g., when using \code{E = FALSE}).}  
+           use \code{ind} when some observations are excluded from the AT calculation (e.g., when using \code{E = FALSE}).}  
 
 \item{n.sim}{Number of simulated coefficient vectors from the posterior distribution of the estimated model parameters. This is used 
              when \code{delta = FALSE}. It may be increased if more precision is required.} 
@@ -117,12 +116,13 @@ Marra G. and Radice R. (2011), Estimation of a Semiparametric Recursive Bivariat
 
 
 \seealso{
-\code{\link{GJRM-package}}, \code{\link{SemiParBIV}}, \code{\link{copulaReg}} 
+\code{\link{GJRM-package}}, \code{\link{gjrm}} 
 }
 
-\examples{
-## see examples for SemiParBIV and copulaReg
-}
+
+
+
+
 
 \keyword{copulae} 
 \keyword{bivariate model} 

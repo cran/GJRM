@@ -6,7 +6,7 @@
 
 \description{
 
-This package provides functions for fitting various generalised joint regression models with several types of covariate 
+This package provides a function for fitting various generalised joint regression models with several types of covariate 
 effects and distributions. Many modelling options are supported and all parameters of the joint distribution can be specified as 
 flexible functions of covariates.
 
@@ -16,20 +16,15 @@ no longer gave a clue about all modelling options available. The new name should
 
 The main fitting functions are listed below.
 
-\code{SemiParBIV()} fits bivariate regression models with binary responses. This is useful to fit bivariate binary models in the presence of 
-(i) non-random sample selection or (ii) associated responses/endogeneity or (iii) partial observability. This function includes
-the \code{Model} argument which allows the user to fit the model in one of three situations mentioned above.
-
-\code{copulaReg()} fits bivariate models with binary/discrete/continuous/survival margins in the presence of 
-associated responses/endogeneity. 
-
-\code{copulaSampleSel()} fits bivariate sample selection models with continuous/discrete response (instead of 
-binary as it would be the case when using \code{SemiParBIV()}).  
-
-\code{SemiParTRIV()} fits trivariate binary models (with and without double sample selection).  
+\code{gjrm()} which fits bivariate regression models with binary responses (useful for fitting bivariate binary models in the presence of 
+(i) non-random sample selection or (ii) associated responses/endogeneity or (iii) partial observability), bivariate models with 
+binary/discrete/continuous/survival margins in the presence of 
+associated responses/endogeneity, bivariate sample selection models with continuous/discrete response, trivariate binary 
+models (with and without double sample selection). This function essentially merges all previously available fitting functions, namely
+\code{SemiParBIV()}, \code{SemiParTRIV()}, \code{copulaReg()} and \code{copulaSampleSel()}.
 
 \code{gamlss()} fits flexible univariate regression models where the response can be 
-binary (only the extreme value distribution is allowed for, continuous, discrete and survival). The 
+binary (only the extreme value distribution is allowed for), continuous, discrete and survival. The 
 purpose of this function was only to provide, in some cases, starting values 
 for the above functions, but it has now been made available in the form of a proper function should the user wish to fit 
 univariate models using the general estimation approach of this package.
@@ -62,11 +57,11 @@ selection is also possible via the use of shrinakge smoothers and/or information
 
 Giampiero Marra (University College London, Department of Statistical Science) and Rosalba Radice (Birkbeck, University of London, Department of Economics, Mathematics and Statistics)
 
-with contributions from Panagiota Filippou.
+with contributions from Panagiota Filippou (specifically on the trivariate binary models).
 
 Thanks to Bear Braumoeller (Department of Political Science, The Ohio State University) for suggesting the implementation of bivariate models with partial observability.
 
-Thanks also to Carmen Cadarso and Francisco Gude for suggesting various modelling extensions and improvements, and importantly for sharing their vision for joint modelling. 
+Thanks also to Carmen Cadarso and Francisco Gude for suggesting various modelling extensions and improvements, and for sharing their vision for joint modelling. 
 
 Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
@@ -78,19 +73,21 @@ Part funded by EPSRC: EP/J006742/1
 
 Key references:
 
-Filippou P., Marra G. and Radice R. (in press), Penalized Likelihood Estimation of a Trivariate Additive Probit Model. \emph{Biostatistics}.
+Filippou P., Marra G. and Radice R. (2017), Penalized Likelihood Estimation of a Trivariate Additive Probit Model. \emph{Biostatistics}, 18(3), 569-585.
 
 Marra G. and Radice R. (2011), Estimation of a Semiparametric Recursive Bivariate Probit in the Presence of Endogeneity. \emph{Canadian Journal of Statistics}, 39(2), 259-279.
 
 Marra G. and Radice R. (2013), A Penalized Likelihood Estimation Approach to Semiparametric Sample Selection Binary Response Modeling. \emph{Electronic Journal of Statistics}, 7, 1432-1455.
+
+Marra G. and Radice R. (2013), Estimation of a Regression Spline Sample Selection Model. \emph{Computational Statistics and Data Analysis}, 61, 158-173.
+
+Marra G., Radice R., Filippou P. (2017), Testing the Hypothesis of Exogeneity in Regression Spline Bivariate Probit Models. \emph{Communications in Statistics - Simulation and Computation}, 46(3), 2283-2298.
 
 Marra G. and Radice R. (2017), Bivariate Copula Additive Models for Location, Scale and Shape. \emph{Computational Statistics and Data Analysis}, 112, 99-113.
 
 Marra G., Radice R., Barnighausen T., Wood S.N. and McGovern M.E. (2017), A Simultaneous Equation Approach to Estimating HIV Prevalence with Non-Ignorable Missing Responses. \emph{Journal of the American Statistical Association}, 112(518), 484-496.
 
 Marra G. and Wyszynski K. (2016), Semi-Parametric Copula Sample Selection Models for Count Responses. \emph{Computational Statistics and Data Analysis}, 104, 110-129.
-
-McGovern M.E., Barnighausen T., Marra G. and Radice R. (2015), On the Assumption of Joint Normality in Selection Models: A Copula Approach Applied to Estimating HIV Prevalence. \emph{Epidemiology}, 26(2), 229-237.
 
 Radice R., Marra G. and Wojtys M. (2016), Copula Regression Spline Models for Binary Outcomes. \emph{Statistics and Computing}, 26(5), 981-995. 
 
@@ -99,7 +96,7 @@ Wojtys M. and Marra G. (submitted). Copula-Based Generalized Additive Models wit
 }
 
 
-\seealso{\code{\link{SemiParBIV}}, \code{\link{copulaReg}}, \code{\link{copulaSampleSel}}, \code{\link{gamlss}}, \code{\link{SemiParTRIV}}}
+\seealso{ \code{\link{gjrm}}, \code{\link{gamlss}} }
 
 
 \keyword{endogeneity} 

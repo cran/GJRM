@@ -274,8 +274,8 @@ if(type == "copR"){
 
 
   cat("\n\nEQUATION 1")    
-  if(x$surv.flex == FALSE) cat("\nLink function for mu.1:",m1l,"\n")
-  if(x$surv.flex == TRUE) cat("\n")  
+  if(x$surv.flex == FALSE || (x$surv.flex == TRUE && x$margins[1] %in% c(x$m2,x$m3)) ) cat("\nLink function for mu.1:",m1l,"\n")
+  if(x$surv.flex == TRUE && !(x$surv.flex == TRUE && x$margins[1] %in% c(x$m2,x$m3))) cat("\n")  
 
   cat("Formula: "); print(x$formula[[1]]) 
   cat("\n") 
@@ -662,6 +662,100 @@ if( x$margins[1] %in% cont2par && x$margins[2] %in% cont2par){
 
 
 }else{
+
+
+
+if( x$margins[1] %in% cont2par && x$margins[2] %in% cont1par && x$surv.flex == TRUE){
+
+
+  cat("\nEQUATION 3")
+  if(x$margins[1] !="BE") cat("\nLink function for sigma2.1:","log","\n") else cat("\nLink function for sigma2.1:","qlogis","\n") 
+  cat("Formula: "); print(x$formula[[3]]) 
+  cat("\n")
+    cat("Parametric coefficients:\n")
+    printCoefmat(x$tableP3,digits = digits, signif.stars = signif.stars,na.print = "NA",...)
+    cat("\n")
+  
+      if(x$l.sp3!=0){
+      cat("Smooth components' approximate significance:\n")
+      printCoefmat(x$tableNP3,digits = digits, signif.stars = signif.stars,has.Pvalue = TRUE,na.print = "NA",cs.ind = 1,...)
+      cat("\n")
+      }
+    
+  
+  cat("\nEQUATION 4")
+  cat("\nLink function for theta:",lind,"\n") 
+  cat("Formula: "); print(x$formula[[4]])
+    cat("\n")
+      cat("Parametric coefficients:\n")
+      printCoefmat(x$tableP4,digits = digits, signif.stars = signif.stars,na.print = "NA",...)
+      cat("\n")
+    
+        if(x$l.sp4!=0){
+        cat("Smooth components' approximate significance:\n")
+        printCoefmat(x$tableNP4,digits = digits, signif.stars = signif.stars,has.Pvalue = TRUE,na.print = "NA",cs.ind = 1,...)
+        cat("\n")
+      }  
+
+
+}
+
+
+
+
+
+
+
+
+if( x$margins[1] %in% cont3par && x$margins[2] %in% cont1par && x$surv.flex == TRUE){
+
+
+  cat("\nEQUATION 3")
+  cat("\nLink function for sigma2.1:","log","\n") 
+  cat("Formula: "); print(x$formula[[3]])  
+    cat("\n")
+      cat("Parametric coefficients:\n")
+      printCoefmat(x$tableP3,digits = digits, signif.stars = signif.stars,na.print = "NA",...)
+      cat("\n")
+    
+        if(x$l.sp3!=0){
+        cat("Smooth components' approximate significance:\n")
+        printCoefmat(x$tableNP3,digits = digits, signif.stars = signif.stars,has.Pvalue = TRUE,na.print = "NA",cs.ind = 1,...)
+        cat("\n")
+      }
+     
+
+  cat("\nEQUATION 4")
+  cat("\nLink function for nu.1:","log","\n") 
+  cat("Formula: "); print(x$formula[[4]])  
+      cat("\n")
+        cat("Parametric coefficients:\n")
+        printCoefmat(x$tableP4,digits = digits, signif.stars = signif.stars,na.print = "NA",...)
+        cat("\n")
+      
+          if(x$l.sp4!=0){
+          cat("Smooth components' approximate significance:\n")
+          printCoefmat(x$tableNP4,digits = digits, signif.stars = signif.stars,has.Pvalue = TRUE,na.print = "NA",cs.ind = 1,...)
+          cat("\n")
+      }  
+     
+
+  cat("\nEQUATION 5")
+  cat("\nLink function for theta:",lind,"\n") 
+  cat("Formula: "); print(x$formula[[5]])
+      cat("\n")
+        cat("Parametric coefficients:\n")
+        printCoefmat(x$tableP5,digits = digits, signif.stars = signif.stars,na.print = "NA",...)
+        cat("\n")
+      
+          if(x$l.sp5!=0){
+          cat("Smooth components' approximate significance:\n")
+          printCoefmat(x$tableNP5,digits = digits, signif.stars = signif.stars,has.Pvalue = TRUE,na.print = "NA",cs.ind = 1,...)
+          cat("\n")
+      }  
+
+}
+
 
 
 

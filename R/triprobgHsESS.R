@@ -211,6 +211,7 @@ triprobgHsESS <- function (params, respvec, VC, ps, AT = FALSE){
        dl.de3 = dl.de3,
        dl.dtheta12.st = dl.dtheta12.st, 
        dl.dtheta13.st = dl.dtheta13.st, 
-       dl.dtheta23.st = dl.dtheta23.st)
+       dl.dtheta23.st = dl.dtheta23.st,
+       p1 = p1, p2 = p2, p3 = p3)
   
 }

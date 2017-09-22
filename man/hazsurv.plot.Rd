@@ -7,7 +7,7 @@
 
 hazsurv.plot(x, eq, newdata, type = "surv", intervals = TRUE, 
              n.sim = 100, prob.lev = 0.05, 
-             shade = FALSE, ylim, ylab, xlab, ...)
+             shade = FALSE, ylim, ylab, xlab, ls = 100, ...)
 
 
 
@@ -15,7 +15,7 @@ hazsurv.plot(x, eq, newdata, type = "surv", intervals = TRUE,
 
 \arguments{
 
-  \item{x}{A fitted \code{gamlss}/\code{copulaReg} object as produced by the respective fitting function.}
+  \item{x}{A fitted \code{gamlss}/\code{gjrm} object.}
 
   \item{eq}{Equation number. This can be ignored for univariate models.}
 
@@ -34,14 +34,16 @@ hazsurv.plot(x, eq, newdata, type = "surv", intervals = TRUE,
   \item{shade}{If \code{TRUE} then it produces shaded regions as confidence bands.}
    
   \item{ylim, ylab, xlab}{Usual plot arguments.}
-   
+  
+  \item{ls}{Length of sequence to use for time variable.}
+  
   \item{...}{Other arguments to pass to plot.}
 
 }
 
 
 
-\value{It produces a plot.}
+\value{It produces a plot or set of plots.}
 
 
 

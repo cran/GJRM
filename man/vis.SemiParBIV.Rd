@@ -6,8 +6,8 @@
 
 \description{
 
-It takes a fitted \code{SemiParBIV}/\code{copulaReg}/\code{copulaSampleSel}/\code{SemiParTRIV}/\code{gamlss} object produced 
-by \code{SemiParBIV()}, \code{copulaReg()}, \code{copulaSampleSel()}, \code{SemiParTRIV()}, \code{gamlss()} and 
+It takes a fitted \code{gjrm} object produced 
+by \code{gjrm()} and 
 produces perspective or contour plot views of model predictions. This function is a 
 wrapper of \code{vis.gam()} in \code{mgcv}. Please see 
 the documentation of \code{vis.gam()} for full details. 
@@ -21,7 +21,7 @@ vis.SemiParBIV(x, eq, ...)
 
 \arguments{ 
   
-\item{x}{A fitted \code{SemiParBIV}/\code{copulaReg}/\code{copulaSampleSel}/\code{SemiParTRIV()} object.}
+\item{x}{A fitted \code{gjrm} object.}
 
 \item{eq}{The equation from which smooth terms should be considered for printing.}
 
@@ -46,7 +46,7 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 
 \seealso{
-\code{\link{SemiParBIV}}, \code{\link{copulaReg}}, \code{\link{copulaSampleSel}}, \code{\link{SemiParTRIV}}
+\code{\link{gjrm}}
 }
 
 

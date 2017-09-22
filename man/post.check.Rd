@@ -21,7 +21,7 @@ post.check(x, main = "Histogram and Density Estimate of Residuals",
 
 \arguments{ 
 
-\item{x}{A fitted \code{copulaReg}/\code{copulaSampleSel} object.}
+\item{x}{A fitted \code{gjrm} object.}
 
 \item{main}{Title for the plot.}
 
@@ -70,7 +70,7 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 
 \seealso{
-\code{\link{copulaReg}}, \code{\link{copulaSampleSel}}  
+\code{\link{gjrm}}  
 }
 
 

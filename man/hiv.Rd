@@ -69,7 +69,7 @@ McGovern M.E., Barnighausen T., Marra G. and Radice R. (2015), On the Assumption
 
 \references{
 
-Marra G., Radice R., Barnighausen T., Wood S.N. and McGovern M.E. (in press), A Simultaneous Equation Approach to Estimating HIV Prevalence with Non-Ignorable Missing Responses. \emph{Journal of the American Statistical Association}.
+Marra G., Radice R., Barnighausen T., Wood S.N. and McGovern M.E. (2017), A Simultaneous Equation Approach to Estimating HIV Prevalence with Non-Ignorable Missing Responses. \emph{Journal of the American Statistical Association}, 112(518), 484-496.
 
 
 }
@@ -174,7 +174,8 @@ fl <- list(sel.eq, out.eq, theta.eq)
 # complex and it serves to illustrate the 
 # flexibility of the modelling approach
      
-bss <- SemiParBIV(fl, data = hiv, BivD = "J90", Model = "BSS")
+bss <- gjrm(fl, data = hiv, BivD = "J90", Model = "BSS",
+            margins = c("probit", "probit"))
 
 conv.check(bss)
 

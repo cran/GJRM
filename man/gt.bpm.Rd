@@ -16,7 +16,7 @@ gt.bpm(x)
 
 \arguments{ 
 
-\item{x}{A fitted \code{SemiParBIV} object as produced by \code{SemiParBIV()}.} 
+\item{x}{A fitted \code{gjrm} object.} 
 
 }
 
@@ -25,8 +25,6 @@ gt.bpm(x)
 
 The gradient test was first proposed by Terrell (2002) and it is based on classic likelihood 
 theory. See Marra et al. (in press) for full details. 
-
-
 
 }
 
@@ -66,14 +64,8 @@ Terrell G. (2002), The Gradient Statistic. \emph{Computing Science and Statistic
 }
 
 
-
-
-\seealso{
-\code{\link{SemiParBIV}}
-}
-
 \examples{
-## see examples for SemiParBIV
+## see examples for gjrm
 }
 
 \keyword{generalised joint regression modelling} 

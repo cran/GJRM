@@ -2,7 +2,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
                              BivD = "N", margins = c("probit","N"), dof = 3,
                              fp = FALSE, infl.fac = 1, 
                              rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
-                             gc.l = FALSE, parscale, extra.regI = "t"){
+                             gc.l = FALSE, parscale, extra.regI = "t", knots = NULL){
   
   ##########################################################################################################################
   # model set up and starting values
@@ -97,7 +97,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
-  mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- NULL                           
+  mf$knots <- mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- NULL                           
   mf$drop.unused.levels <- TRUE 
   mf$na.action <- na.pass
   mf[[1]] <- as.name("model.frame")
@@ -124,7 +124,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
  ##############################################################  
    
   gam1 <- eval(substitute(gam(formula.eq1, binomial(link = margins[1]), gamma=infl.fac, weights=weights, 
-                              data=data),list(weights=weights))) 
+                              data=data, knots = knots),list(weights=weights))) 
 
   X1 <- model.matrix(gam1) ## this may have to be changed to make it more generic using predict maybe
                            ## also in other functions in the package but not really needed maybe
@@ -151,7 +151,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
  y2.test      <- form.eq12R$y1.test 
  y2m          <- form.eq12R$y1m
  
- gam2 <- eval(substitute(gam(formula.eq2, gamma=infl.fac, weights=weights, data=data, subset=inde),list(weights = weights, inde = inde)))
+ gam2 <- eval(substitute(gam(formula.eq2, gamma=infl.fac, weights=weights, data=data, subset=inde, knots = knots),list(weights = weights, inde = inde)))
     
     # gam2 not entirely efficient given that we will do gam2.1 but we keep for now
     ######
@@ -163,7 +163,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
     
     gam2$formula <- formula.eq2r  
     names(gam2$model)[1] <- as.character(formula.eq2r[2])
-    X2.d2 <- length(coef(gam2))    
+    X2.d2 <- length(gam2$coefficients)    
     X2 <- model.matrix(gam2) 
     l.sp2 <- length(gam2$sp)
     if(l.sp2 != 0) sp2 <- gam2$sp     
@@ -183,14 +183,14 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   p.g1 <- predict.gam(gam1)
   imrGUANN <- data$imrGUANN <- dnorm(p.g1)/pnorm(p.g1)
     
-  gam2.1 <- eval(substitute(gam(form.eq2imr, gamma=infl.fac, weights=weights, data=data, subset=inde),list(weights = weights, inde = inde)))
-  pimr   <- which(names(coef(gam2.1))=="imrGUANN")
-  c.gam2 <- coef(gam2.1)[-pimr]
+  gam2.1 <- eval(substitute(gam(form.eq2imr, gamma=infl.fac, weights=weights, data=data, subset=inde, knots = knots),list(weights = weights, inde = inde)))
+  pimr   <- which(names(gam2.1$coefficients)=="imrGUANN")
+  c.gam2 <- gam2.1$coefficients[-pimr]
   
   if(l.sp2 != 0) sp2 <- gam2.1$sp
   
-  sia <- sqrt(mean(residuals(gam2.1, type = "deviance")^2)+mean(imrGUANN[inde]*(imrGUANN[inde]+p.g1[inde]))*gam2.1$coef["imrGUANN"]^2)[[1]]
-  co  <- (gam2.1$coef["imrGUANN"]/sia)[[1]] 
+  sia <- sqrt(mean(residuals(gam2.1, type = "deviance")^2)+mean(imrGUANN[inde]*(imrGUANN[inde]+p.g1[inde]))*gam2.1$coefficients["imrGUANN"]^2)[[1]]
+  co  <- (gam2.1$coefficients["imrGUANN"]/sia)[[1]] 
   
   ass.s <- sign(co)*ifelse(abs(co) > 0.5, 0.5, abs(co))
 
@@ -222,7 +222,7 @@ start.v <- overall.sv(margins, M, vo, type = "copSS", c.gam2 = c.gam2)
   
     if(l.flist > 2){
     
-    overall.svGR <- overall.svG(formula, data, ngc = 2, margins, M, vo, gam1, gam2, type = "copSS", inde = inde, c.gam2 = c.gam2)
+    overall.svGR <- overall.svG(formula, data, ngc = 2, margins, M, vo, gam1, gam2, type = "copSS", inde = inde, c.gam2 = c.gam2, knots = knots)
     
     start.v = overall.svGR$start.v 
     X3 = overall.svGR$X3; X4 = overall.svGR$X4; X5 = overall.svGR$X5
@@ -249,8 +249,8 @@ GAM <- list(gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4,
 
 if( (l.sp1!=0 || l.sp2!=0 || l.sp3!=0 || l.sp4!=0 || l.sp5!=0 || l.sp6!=0 || l.sp7!=0 || l.sp8!=0) && fp==FALSE ){ 
 
-L.GAM <- list(l.gam1 = length(coef(gam1)), l.gam2 = length(coef(gam2)), l.gam3 = length(coef(gam3)), l.gam4 = length(coef(gam4)),
-              l.gam5 = length(coef(gam5)), l.gam6 = length(coef(gam6)), l.gam7 = length(coef(gam7)), l.gam8 = length(coef(gam8)))
+L.GAM <- list(l.gam1 = length(gam1$coefficients), l.gam2 = length(gam2$coefficients), l.gam3 = length(gam3$coefficients), l.gam4 = length(gam4$coefficients),
+              l.gam5 = length(gam5$coefficients), l.gam6 = length(gam6$coefficients), l.gam7 = length(gam7$coefficients), l.gam8 = length(gam8$coefficients))
 
 L.SP <- list(l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, l.sp4 = l.sp4, 
              l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8)
@@ -390,7 +390,7 @@ gam1$call$data <- gam2$call$data <- gam3$call$data <- gam4$call$data <- gam5$cal
 L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula,
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, 
           gam6 = gam6, gam7 = gam7, gam8 = gam8,  
-          coefficients = SemiParFit$fit$argument,  iterlimsp = iterlimsp,
+          coefficients = SemiParFit$fit$argument, coef.t = NULL, iterlimsp = iterlimsp,
           weights = weights, 
           sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, 
           l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, 

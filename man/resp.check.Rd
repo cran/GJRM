@@ -84,12 +84,11 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 
 \seealso{
-\code{\link{copulaReg}}  
+\code{\link{gjrm}}  
 }
 
-\examples{
-## see examples in copulaReg
-}
+
+
 
 \keyword{generalised joint regression modelling} 
 \keyword{regression} 

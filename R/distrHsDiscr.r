@@ -62,6 +62,12 @@ y2  <- mpfr( y2, prec)
         
 }        
         
+        
+# exp(y2*log(mu2) - mu2 - log(gamma(y2 + 1)))
+# should be more stable but looks the same
+# from a few experiments
+        
+        
 pdf2 <-  as.numeric( (exp(-mu2)*mu2^y2)/factorial(y2) )   
 
 derpdf2.dermu2FUNCpo <- function(y2, mu2) exp(-mu2) * (mu2^(y2 - 1) * y2 - mu2^y2)/factorial(y2) 

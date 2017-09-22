@@ -1,4 +1,4 @@
-AT <- function(x, nm.end, eq = NULL, E = TRUE, treat = TRUE, type = "simultaneous", ind = NULL, 
+AT <- function(x, nm.end, eq = NULL, E = TRUE, treat = TRUE, type = "joint", ind = NULL, 
    n.sim = 100, prob.lev = 0.05, length.out = NULL, hd.plot = FALSE, te.plot = FALSE, 
    main = "Histogram and Kernel Density of Simulated Average Effects", 
    xlab = "Simulated Average Effects", ...){
@@ -31,7 +31,7 @@ if(eq==1){ X.int <- as.matrix(x$X1); ind.int <- 1:x$X1.d2                       
 if(eq==2){ X.int <- as.matrix(x$X2); ind.int <- (1:x$X2.d2) + x$X1.d2           }  
 if(eq==3){ X.int <- as.matrix(x$X3); ind.int <- (1:x$X3.d2) + x$X1.d2 + x$X2.d2 }  
 
-if(type == "simultaneous") coef.int <- as.numeric(coef(x)[ind.int])
+if(type == "joint") coef.int <- as.numeric(x$coefficients[ind.int])
 
 if(type == "univariate"){
 
@@ -39,7 +39,7 @@ if(type == "univariate"){
 	if(eq==2) ngam <- x$gam2 
 	if(eq==3) ngam <- x$gam3 
 	
-	coef.int <- coef(ngam)  
+	coef.int <- ngam$coefficients  
 
                         }
 
@@ -61,7 +61,7 @@ if(type == "univariate") {bs <- rMVN(n.sim, mean = coef.int, sigma=ngam$Vp)
                           eti1s <- d1%*%t(bs)
                           eti0s <- d0%*%t(bs) }
 
-if(type == "simultaneous")  {bs <- rMVN(n.sim, mean = coef(x), sigma=x$Vb)
+if(type == "joint")  {bs <- rMVN(n.sim, mean = x$coefficients, sigma=x$Vb)
                           eti1s <- d1%*%t(bs[,ind.int])
                           eti0s <- d0%*%t(bs[,ind.int]) } 
 
@@ -130,7 +130,7 @@ if(x$margins[2] == "SM"    && eq == 2) { if( min(sqrt(x$sigma2)*x$nu) <= 1) stop
 if(x$margins[2] == "FISK"  && eq == 2) { if( min(sqrt(x$sigma2)) <= 1) stop("sigma parameter has value(s) smaller than 1, hence the mean is indeterminate.")}
 # not sure about FISK2 
 
-if( !( type %in% c("naive","univariate","simultaneous") ) ) stop("Error in parameter type value. It should be one of: naive, univariate or simultaneous.")
+if( !( type %in% c("naive","univariate","joint") ) ) stop("Error in parameter type value. It should be one of: naive, univariate or joint.")
 
 
 if(missing(nm.end)) stop("You must provide the name of the endogenous variable.")
@@ -225,20 +225,20 @@ if(type != "naive" && x$margins[2] %in% bin.link){ ## binary binary case with eq
 
 #############
 
-if(type == "simultaneous"){
+if(type == "joint"){
 	indD[[1]] <- 1:x$X1.d2 
 	indD[[2]] <- x$X1.d2+(1:x$X2.d2)
                        }
 
 if(eq==1){ X.int <- as.matrix(x$X1[ind,])
-    if(type == "simultaneous") ind.int <- indD[[1]]
+    if(type == "joint") ind.int <- indD[[1]]
          }
 
 if(eq==2){ X.int <- as.matrix(x$X2[ind,])
-    if(type == "simultaneous") ind.int <- indD[[2]] 
+    if(type == "joint") ind.int <- indD[[2]] 
          }
 
-if(type == "simultaneous") coef.int <- as.numeric(coef(x)[ind.int])
+if(type == "joint") coef.int <- as.numeric(x$coefficients[ind.int])
 	   
              
 d0 <- d1 <- X.int
@@ -246,7 +246,7 @@ d0[,nm.end] <- 0
 d1[,nm.end] <- 1
 
 
-if(type == "simultaneous"){
+if(type == "joint"){
 	eti1 <- d1%*%coef.int 
 	eti0 <- d0%*%coef.int 
                        }
@@ -255,8 +255,8 @@ if(type == "univariate"){
 	if(eq==1) ngam <- x$gam1
 	if(eq==2) ngam <- x$gam2
 
-	eti1 <- d1%*%coef(ngam) 
-	eti0 <- d0%*%coef(ngam) 
+	eti1 <- d1%*%ngam$coefficients 
+	eti0 <- d0%*%ngam$coefficients
                          }
 
 #############
@@ -272,8 +272,8 @@ est.AT <- mean(p.int1, na.rm = TRUE) - mean(p.int0, na.rm = TRUE)
 
 if(delta == FALSE){
 
- if(type == "univariate") {bs <- rMVN(n.sim, mean = coef(ngam), sigma=ngam$Vp); eti1s <- d1%*%t(bs);           eti0s <- d0%*%t(bs) }
- if(type == "simultaneous")  {bs <- rMVN(n.sim, mean = coef(x), sigma=x$Vb);       eti1s <- d1%*%t(bs[,ind.int]); eti0s <- d0%*%t(bs[,ind.int]) } 
+ if(type == "univariate") {bs <- rMVN(n.sim, mean = ngam$coefficients, sigma=ngam$Vp); eti1s <- d1%*%t(bs);           eti0s <- d0%*%t(bs) }
+ if(type == "joint")  {bs <- rMVN(n.sim, mean = x$coefficients, sigma=x$Vb);       eti1s <- d1%*%t(bs[,ind.int]); eti0s <- d0%*%t(bs[,ind.int]) } 
 
  peti1s  <- probm(eti1s, x$margins[eq])$pr 
  peti0s  <- probm(eti0s, x$margins[eq])$pr 
@@ -311,16 +311,16 @@ if(type != "naive" && x$margins[2] %in% c("GA") && x$VC$ccss == "yes"){ ## binar
 
 eq <- 2
 
-if(type == "simultaneous"){
+if(type == "joint"){
 	indD[[1]] <- 1:x$X1.d2 
 	indD[[2]] <- x$X1.d2+(1:x$X2.d2)
                        }
 
 if(eq==2){ X.int <- as.matrix(x$X2s[ind,])
-    if(type == "simultaneous") ind.int <- indD[[2]] 
+    if(type == "joint") ind.int <- indD[[2]] 
          }
 
-if(type == "simultaneous") coef.int <- as.numeric(coef(x)[ind.int])
+if(type == "joint") coef.int <- as.numeric(x$coefficients[ind.int])
 	   
              
 d0 <- d1 <- X.int
@@ -328,7 +328,7 @@ d0[,nm.end] <- 0
 d1[,nm.end] <- 1
 
 
-if(type == "simultaneous"){
+if(type == "joint"){
 	eti1 <- d1%*%coef.int 
 	eti0 <- d0%*%coef.int 
                        }
@@ -337,8 +337,8 @@ if(type == "univariate"){
 
 	ngam <- x$gamlss 
 
-	eti1 <- d1%*%coef(ngam)[1:x$X2.d2] 
-	eti0 <- d0%*%coef(ngam)[1:x$X2.d2] 
+	eti1 <- d1%*%ngam$coefficients[1:x$X2.d2] 
+	eti0 <- d0%*%ngam$coefficients[1:x$X2.d2] 
                          }
 
 #############
@@ -354,8 +354,8 @@ est.AT <- mean(p.int1, na.rm = TRUE) - mean(p.int0, na.rm = TRUE)
 
 if(delta == FALSE){
 
- if(type == "univariate")    {bs <- rMVN(n.sim, mean = coef(ngam), sigma=ngam$Vb); eti1s <- d1%*%t(bs[,1:x$X2.d2]); eti0s <- d0%*%t(bs[,1:x$X2.d2]) }
- if(type == "simultaneous")  {bs <- rMVN(n.sim, mean = coef(x),    sigma=x$Vb);    eti1s <- d1%*%t(bs[,ind.int]);   eti0s <- d0%*%t(bs[,ind.int]) } 
+ if(type == "univariate")    {bs <- rMVN(n.sim, mean = ngam$coefficients, sigma=ngam$Vb); eti1s <- d1%*%t(bs[,1:x$X2.d2]); eti0s <- d0%*%t(bs[,1:x$X2.d2]) }
+ if(type == "joint")  {bs <- rMVN(n.sim, mean = x$coefficients,    sigma=x$Vb);    eti1s <- d1%*%t(bs[,ind.int]);   eti0s <- d0%*%t(bs[,ind.int]) } 
 
  peti1s  <- exp(eti1s) 
  peti0s  <- exp(eti0s) 
@@ -409,16 +409,16 @@ y2   <- round( seq( min(ceiling(x$y2)) , max(floor(x$y2)), length.out = length.o
  ly2  <- length(y2)
  data <- x$dataset[ind,]
  
- if(type == "simultaneous")  {
+ if(type == "joint")  {
                            ind.int <- 1:x$X1.d2
-                           bs <- rMVN(n.sim, mean = coef(x), sigma = x$Vb) 
-                           coefe  <- x$coef[ind.int] 
+                           bs <- rMVN(n.sim, mean = x$coefficients, sigma = x$Vb) 
+                           coefe  <- x$coefficients[ind.int] 
                            coefes <- t(bs[, ind.int]) 
  
                           }
  
- if(type == "univariate") {bs <- rMVN(n.sim, mean = coef(x$gam1), sigma = x$gam1$Vp) 
-                           coefe  <- x$gam1$coefficient 
+ if(type == "univariate") {bs <- rMVN(n.sim, mean = x$gam1$coefficients, sigma = x$gam1$Vp) 
+                           coefe  <- x$gam1$coefficients
                            coefes <- t(bs) 
                           }
  
@@ -488,12 +488,12 @@ for (i in 1:(ly2-1)) lines( y = c(diffEfSquant[i,1], diffEfSquant[i,2]), x = c(y
 
 if(type != "naive" && x$margins[2] %in% c("N","N2") && eq == 2){
 
- if(type == "univariate") {bs <- rMVN(n.sim, mean = coef(x$gamlss), sigma=x$gamlss$Vb)
-                           est.AT  <- est.ATso <- coef(x$gamlss)[nm.end] 
-                           est.ATb <- bs[, which(names(coef(x$gamlss))==nm.end) ]
+ if(type == "univariate") {bs <- rMVN(n.sim, mean = x$gamlss$coefficients, sigma=x$gamlss$Vb)
+                           est.AT  <- est.ATso <- x$gamlss$coefficients[nm.end] 
+                           est.ATb <- bs[, which(names(x$gamlss$coefficients)==nm.end) ]
                            } 
                            
- if(type == "simultaneous")  {bs <- rMVN(n.sim, mean = coef(x), sigma=x$Vb)
+ if(type == "joint")  {bs <- rMVN(n.sim, mean = x$coefficients, sigma=x$Vb)
                            est.AT  <- est.ATso <- x$coefficients[nm.end]
                            est.ATb <- bs[, nm.end]        
                            }

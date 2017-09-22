@@ -17,7 +17,7 @@
 \arguments{ 
 
 
-\item{x}{\code{SemiParTRIV} object produced by \code{SemiParTRIV()}.}
+\item{x}{\code{SemiParTRIV} object.}
 
 \item{...}{Other arguments.}
 
@@ -26,7 +26,7 @@
 
 \details{ 
 
-\code{print.SemiParTRIV} prints out the family, model equations, total number of observations, estimated association 
+It prints out the family, model equations, total number of observations, estimated association 
 coefficient and total effective degrees of freedom for the penalized or unpenalized model. 
 
 }
@@ -40,10 +40,6 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 }
 
 
-
-\seealso{
-\code{\link{SemiParTRIV}}
-}
 
 
 \keyword{generalised joint regression modelling} 

@@ -1,4 +1,4 @@
-overall.svG <- function(formula, data, ngc, margins, M, vo, gam1, gam2, type = "copR", inde = NULL, c.gam2 = NULL, gam3 = NULL){
+overall.svG <- function(formula, data, ngc, margins, M, vo, gam1, gam2, type = "copR", inde = NULL, c.gam2 = NULL, gam3 = NULL, knots = NULL){
   
 X3 = X4 = X5 = X6 = X7 = X8 = X3.d2 = X4.d2 = X5.d2 = X6.d2 = X7.d2 = X8.d2 = NULL
 gp3 = gp4 = gp5 = gp6 = gp7 = gp8 = NULL
@@ -23,7 +23,7 @@ if(type == "triv"){
     theta12 <- rnorm(vo$n, vo$theta12, 0.001)    
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset=inde) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset=inde, knots = knots) 
     
     formula.eq5 <- formula[[5]] 
     nad <- "theta13" 
@@ -33,7 +33,7 @@ if(type == "triv"){
     theta13 <- rnorm(vo$n, vo$theta13, 0.001)    
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc, subset=inde)       
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, subset=inde, knots = knots)       
       
     formula.eq6 <- formula[[6]] 
     nad <- "theta23" 
@@ -43,7 +43,7 @@ if(type == "triv"){
     theta23 <- rnorm(vo$n, vo$theta23, 0.001)    
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam6 <- gam(formula.eq6, data = data, gamma = ngc, subset=inde)    
+    gam6 <- gam(formula.eq6, data = data, gamma = ngc, subset=inde, knots = knots)    
  
     l.sp5 <- length(gam5$sp)    
     l.sp4 <- length(gam4$sp)    
@@ -51,17 +51,17 @@ if(type == "triv"){
     
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }
                    
     if(l.sp6 != 0){
     ngc <- 2
-    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                     
 
                 
@@ -84,7 +84,7 @@ if(type == "triv"){
     environment(gam6$formula) <- environment(gam2$formula)
     gp6 <- gam6$nsdf     
   
-    start.v  <- c(coef(gam1), coef(gam2), coef(gam3), coef(gam4), coef(gam5), coef(gam6) )
+    start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients, gam6$coefficients )
     
     
     
@@ -105,7 +105,7 @@ if(type == "biv"){
     theta <- rnorm(vo$n, vo$i.rho, 0.001)    
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde) 
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde, knots = knots) 
     
     
     
@@ -126,7 +126,7 @@ if(type == "biv"){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     
@@ -139,8 +139,8 @@ if(type == "biv"){
   
   
    
-if(M$Model == "BSS") start.v  <- c( coef(gam1), c.gam2, coef(gam3) )           
-if(M$Model != "BSS") start.v  <- c( coef(gam1), coef(gam2), coef(gam3) )
+if(M$Model == "BSS") start.v  <- c( gam1$coefficients, c.gam2, gam3$coefficients )           
+if(M$Model != "BSS") start.v  <- c( gam1$coefficients, gam2$coefficients, gam3$coefficients )
 
   }
   
@@ -162,19 +162,19 @@ if(M$Model != "BSS") start.v  <- c( coef(gam1), coef(gam2), coef(gam3) )
     
     
    
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc)  
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)  
     l.sp3 <- length(gam3$sp)    
     l.sp4 <- length(gam4$sp)    
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
                
@@ -195,7 +195,7 @@ if(M$Model != "BSS") start.v  <- c( coef(gam1), coef(gam2), coef(gam3) )
     environment(gam4$formula) <- environment(gam2$formula)
     gp4 <- gam4$nsdf     
   
-    start.v  <- c(coef(gam1), coef(gam2), coef(gam3), coef(gam4) )
+    start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients )
     
     
     
@@ -222,26 +222,26 @@ if(M$Model != "BSS") start.v  <- c( coef(gam1), coef(gam2), coef(gam3) )
     rm(list=".Random.seed", envir=globalenv()) 
     
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc)  
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)  
     l.sp3 <- length(gam3$sp)    
     l.sp4 <- length(gam4$sp)    
     l.sp5 <- length(gam5$sp)    
   
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
   
     X3 <- model.matrix(gam3)
@@ -263,7 +263,7 @@ if(M$Model != "BSS") start.v  <- c( coef(gam1), coef(gam2), coef(gam3) )
     environment(gam5$formula) <- environment(gam2$formula)
     gp5 <- gam5$nsdf      
     
-    start.v  <- c(coef(gam1), coef(gam2), coef(gam3), coef(gam4), coef(gam5) )
+    start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients )
     
               }   
   
@@ -330,10 +330,10 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     theta    <- rnorm(vo$n, vo$i.rho, 0.001)      
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc) 
-    gam6 <- gam(formula.eq6, data = data, gamma = ngc)     
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots) 
+    gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots)     
 
     l.sp3 <- length(gam3$sp)   
     l.sp4 <- length(gam4$sp)    
@@ -343,22 +343,22 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
     
     if(l.sp6 != 0){
     ngc <- 2
-    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }       
     
     
@@ -390,7 +390,7 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     environment(gam6$formula) <- environment(gam2$formula)
     gp6 <- gam6$nsdf      
     
-    start.v  <- c(coef(gam1), coef(gam2), coef(gam3), coef(gam4), coef(gam5), coef(gam6) )
+    start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients, gam6$coefficients )
   
     
   }     
@@ -433,12 +433,12 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
       rm(list=".Random.seed", envir=globalenv()) 
       
       
-      gam3 <- gam(formula.eq3, data = data, gamma = ngc) 
-      gam4 <- gam(formula.eq4, data = data, gamma = ngc)   
-      gam5 <- gam(formula.eq5, data = data, gamma = ngc)     
-      gam6 <- gam(formula.eq6, data = data, gamma = ngc)    
-      gam7 <- gam(formula.eq7, data = data, gamma = ngc)
-      gam8 <- gam(formula.eq8, data = data, gamma = ngc)    
+      gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+      gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
+      gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
+      gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots)    
+      gam7 <- gam(formula.eq7, data = data, gamma = ngc, knots = knots)
+      gam8 <- gam(formula.eq8, data = data, gamma = ngc, knots = knots)    
 
       l.sp3 <- length(gam3$sp)   
       l.sp4 <- length(gam4$sp)    
@@ -450,32 +450,32 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
       
       if(l.sp3 != 0){
       ngc <- 2
-      while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                      } 
                      
       if(l.sp4 != 0){
       ngc <- 2
-      while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                      }                    
   
       if(l.sp5 != 0){
       ngc <- 2
-      while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                      }                    
    
       if(l.sp6 != 0){
       ngc <- 2
-      while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                      }   
   
       if(l.sp7 != 0){
       ngc <- 2
-      while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                      }   
                      
       if(l.sp8 != 0){
       ngc <- 2
-      while( any(round(summary(gam8)$edf, 1) > 1) ) {gam8 <- gam(formula.eq8, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam8)$edf, 1) > 1) ) {gam8 <- gam(formula.eq8, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                      }                          
       
       
@@ -523,7 +523,7 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
       environment(gam8$formula) <- environment(gam2$formula)
       gp8 <- gam8$nsdf         
       
-      start.v  <- c(coef(gam1), coef(gam2), coef(gam3), coef(gam4), coef(gam5), coef(gam6), coef(gam7), coef(gam8) )
+      start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients, gam6$coefficients, gam7$coefficients, gam8$coefficients )
     
       
   }    
@@ -562,11 +562,11 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
         rm(list=".Random.seed", envir=globalenv()) 
         
         
-        gam3 <- gam(formula.eq3, data = data, gamma = ngc) 
-        gam4 <- gam(formula.eq4, data = data, gamma = ngc)   
-        gam5 <- gam(formula.eq5, data = data, gamma = ngc)     
-        gam6 <- gam(formula.eq6, data = data, gamma = ngc)    
-        gam7 <- gam(formula.eq7, data = data, gamma = ngc)
+        gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+        gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
+        gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
+        gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots)    
+        gam7 <- gam(formula.eq7, data = data, gamma = ngc, knots = knots)
    
   
         l.sp3 <- length(gam3$sp)   
@@ -579,27 +579,27 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
         
         if(l.sp3 != 0){
         ngc <- 2
-        while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+        while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                        } 
                        
         if(l.sp4 != 0){
         ngc <- 2
-        while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+        while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                        }                    
     
         if(l.sp5 != 0){
         ngc <- 2
-        while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+        while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                        }                    
      
         if(l.sp6 != 0){
         ngc <- 2
-        while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+        while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                        }   
     
         if(l.sp7 != 0){
         ngc <- 2
-        while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+        while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                        }   
                          
         
@@ -645,7 +645,7 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
         
         
         
-        start.v  <- c(coef(gam1), coef(gam2), coef(gam3), coef(gam4), coef(gam5), coef(gam6), coef(gam7))
+        start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients, gam6$coefficients, gam7$coefficients)
       
         
   }    
@@ -692,11 +692,11 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
       rm(list=".Random.seed", envir=globalenv()) 
       
       
-      gam3 <- gam(formula.eq3, data = data, gamma = ngc) 
-      gam4 <- gam(formula.eq4, data = data, gamma = ngc)   
-      gam5 <- gam(formula.eq5, data = data, gamma = ngc)     
-      gam6 <- gam(formula.eq6, data = data, gamma = ngc)    
-      gam7 <- gam(formula.eq7, data = data, gamma = ngc)
+      gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+      gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
+      gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
+      gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots)    
+      gam7 <- gam(formula.eq7, data = data, gamma = ngc, knots = knots)
   
 
       l.sp3 <- length(gam3$sp)   
@@ -709,27 +709,27 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
       
       if(l.sp3 != 0){
       ngc <- 2
-      while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                      } 
                      
       if(l.sp4 != 0){
       ngc <- 2
-      while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                      }                    
   
       if(l.sp5 != 0){
       ngc <- 2
-      while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                      }                    
    
       if(l.sp6 != 0){
       ngc <- 2
-      while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                      }   
   
       if(l.sp7 != 0){
       ngc <- 2
-      while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                      }   
                      
                         
@@ -775,7 +775,7 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
       gp7 <- gam7$nsdf 
       
 
-      start.v  <- c(coef(gam1), coef(gam2), coef(gam3), coef(gam4), coef(gam5), coef(gam6), coef(gam7))
+      start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients, gam6$coefficients, gam7$coefficients)
      
   }    
   
@@ -800,12 +800,12 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     theta    <- rnorm(vo$n, vo$i.rho, 0.001)      
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc) 
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
     l.sp3 <- length(gam3$sp)   
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                              
     X3 <- model.matrix(gam3)
@@ -816,7 +816,7 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     gp3 <- gam3$nsdf 
        
           
-    start.v  <- c(coef(gam1), coef(gam2), coef(gam3) )   
+    start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients )   
     
   }   
   
@@ -841,20 +841,20 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     theta    <- rnorm(vo$n, vo$i.rho, 0.001)      
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc)   
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
     l.sp3 <- length(gam3$sp)   
     l.sp4 <- length(gam4$sp)    
     
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
                   
@@ -871,7 +871,7 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     environment(gam4$formula) <- environment(gam2$formula)
     gp4 <- gam4$nsdf     
           
-    start.v  <- c(coef(gam1), coef(gam2), coef(gam3), coef(gam4) )
+    start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients )
   
     
   }  
@@ -901,26 +901,26 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
       theta    <- rnorm(vo$n, vo$i.rho, 0.001)         
       rm(list=".Random.seed", envir=globalenv()) 
       
-      gam3 <- gam(formula.eq3, data = data, gamma = ngc) 
-      gam4 <- gam(formula.eq4, data = data, gamma = ngc)   
-      gam5 <- gam(formula.eq5, data = data, gamma = ngc)     
+      gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+      gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
+      gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
       l.sp3 <- length(gam3$sp)    
       l.sp4 <- length(gam4$sp)    
       l.sp5 <- length(gam5$sp)    
       
       if(l.sp3 != 0){
       ngc <- 2
-      while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                      } 
                      
       if(l.sp4 != 0){
       ngc <- 2
-      while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                      }                    
   
       if(l.sp5 != 0){
       ngc <- 2
-      while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                      }                    
    
  
@@ -950,7 +950,7 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
       gp5 <- gam5$nsdf    
       
 
-      start.v  <- c(coef(gam1), coef(gam2), coef(gam3), coef(gam4), coef(gam5) )
+      start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients )
     
       
     }    
@@ -982,9 +982,9 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     theta    <- rnorm(vo$n, vo$i.rho, 0.001)      
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc)     
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
     l.sp3 <- length(gam3$sp)   
     l.sp4 <- length(gam4$sp)    
     l.sp5 <- length(gam5$sp)  
@@ -992,17 +992,17 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
     
     
@@ -1029,10 +1029,166 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     environment(gam5$formula) <- environment(gam2$formula)
     gp5 <- gam5$nsdf      
     
-    start.v  <- c(coef(gam1), coef(gam2), coef(gam3), coef(gam4), coef(gam5) )
+    start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients )
   
     
   }   
+  
+  
+  
+    if(margins[1] %in% c(M$m2,M$m2d) && margins[2] %in% c(M$bl)){
+    
+    formula.eq3 <- formula[[3]] 
+    formula.eq4 <- formula[[4]] 
+    nad2.1 <- "sigma2.1" 
+    nad3   <- "theta"     
+    formula.eq3 <- as.formula( paste(nad2.1,"~",formula.eq3[2],sep="") ) 
+    formula.eq4 <- as.formula( paste(  nad3,"~",formula.eq4[2],sep="") )   
+    
+    set.seed(1)
+    sigma2.1 <- rnorm(vo$n, vo$log.sig2.1, 0.001) 
+    theta    <- rnorm(vo$n, vo$i.rho, 0.001)      
+    rm(list=".Random.seed", envir=globalenv()) 
+    
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
+    l.sp3 <- length(gam3$sp)   
+    l.sp4 <- length(gam4$sp)    
+    
+    
+    if(l.sp3 != 0){
+    ngc <- 2
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+                   } 
+                   
+    if(l.sp4 != 0){
+    ngc <- 2
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+                   }                    
+
+    X3 <- model.matrix(gam3)
+    X3.d2 <- dim(X3)[2]
+    X4 <- model.matrix(gam4)
+    X4.d2 <- dim(X4)[2]  
+ 
+    if(l.sp3 != 0) sp3 <- gam3$sp 
+    environment(gam3$formula) <- environment(gam2$formula)
+    gp3 <- gam3$nsdf 
+    
+
+    if(l.sp4 != 0) sp4 <- gam4$sp 
+    environment(gam4$formula) <- environment(gam2$formula)
+    gp4 <- gam4$nsdf     
+     
+    
+    start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients)
+  
+    
+  }  
+  
+  
+
+    if(margins[1] %in% c(M$m3,M$m3d) && margins[2] %in% c(M$bl) ){
+    
+    formula.eq3 <- formula[[3]] 
+    formula.eq4 <- formula[[4]] 
+    formula.eq5 <- formula[[5]]      
+    nad2.1 <- "sigma2.1" 
+    nad.1  <- "nu.1" 
+    nad3   <- "theta"     
+    
+    formula.eq3 <- as.formula( paste(nad2.1,"~",formula.eq3[2],sep="") ) 
+    formula.eq4 <- as.formula( paste(nad.1,"~", formula.eq4[2],sep="") ) 
+    formula.eq5 <- as.formula( paste(  nad3,"~",formula.eq5[2],sep="") )      
+        
+    set.seed(1)
+    sigma2.1 <- rnorm(vo$n, vo$log.sig2.1, 0.001) 
+    nu.1     <- rnorm(vo$n, vo$log.nu.1, 0.001)   
+    theta    <- rnorm(vo$n, vo$i.rho, 0.001)         
+    rm(list=".Random.seed", envir=globalenv()) 
+    
+    
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
+    l.sp3 <- length(gam3$sp)   
+    l.sp4 <- length(gam4$sp)    
+    l.sp5 <- length(gam5$sp)   
+ 
+    
+    if(l.sp3 != 0){
+    ngc <- 2
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+                   } 
+                   
+    if(l.sp4 != 0){
+    ngc <- 2
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+                   }                    
+
+    if(l.sp5 != 0){
+    ngc <- 2
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+                   }                    
+ 
+                     
+    X3 <- model.matrix(gam3)
+    X3.d2 <- dim(X3)[2]
+    X4 <- model.matrix(gam4)
+    X4.d2 <- dim(X4)[2]  
+    X5 <- model.matrix(gam5)
+    X5.d2 <- dim(X5)[2]  
+      
+
+
+    if(l.sp3 != 0) sp3 <- gam3$sp 
+    environment(gam3$formula) <- environment(gam2$formula)
+    gp3 <- gam3$nsdf 
+    
+
+    if(l.sp4 != 0) sp4 <- gam4$sp 
+    environment(gam4$formula) <- environment(gam2$formula)
+    gp4 <- gam4$nsdf     
+    
+
+    if(l.sp5 != 0) sp5 <- gam5$sp 
+    environment(gam5$formula) <- environment(gam2$formula)
+    gp5 <- gam5$nsdf    
+    
+
+    start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients)
+   
+    
+  }    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   
@@ -1066,11 +1222,11 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     rm(list=".Random.seed", envir=globalenv()) 
     
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc)     
-    gam6 <- gam(formula.eq6, data = data, gamma = ngc)    
-    gam7 <- gam(formula.eq7, data = data, gamma = ngc)    
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
+    gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots)    
+    gam7 <- gam(formula.eq7, data = data, gamma = ngc, knots = knots)    
     l.sp3 <- length(gam3$sp)   
     l.sp4 <- length(gam4$sp)    
     l.sp5 <- length(gam5$sp)   
@@ -1079,27 +1235,27 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
  
     if(l.sp6 != 0){
     ngc <- 2
-    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }   
 
     if(l.sp7 != 0){
     ngc <- 2
-    while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                      
     
     
@@ -1141,7 +1297,7 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     environment(gam7$formula) <- environment(gam2$formula)
     gp7 <- gam7$nsdf       
     
-    start.v  <- c(coef(gam1), coef(gam2), coef(gam3), coef(gam4), coef(gam5), coef(gam6), coef(gam7) )
+    start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients, gam6$coefficients, gam7$coefficients )
    
     
   }    
@@ -1176,10 +1332,10 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     theta    <- rnorm(vo$n, vo$i.rho, 0.001)       
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc)     
-    gam6 <- gam(formula.eq6, data = data, gamma = ngc)   
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
+    gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots)   
     l.sp3 <- length(gam3$sp)    
     l.sp4 <- length(gam4$sp)    
     l.sp5 <- length(gam5$sp)    
@@ -1187,22 +1343,22 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
  
     if(l.sp6 != 0){
     ngc <- 2
-    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }   
 
      
@@ -1235,7 +1391,7 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     environment(gam6$formula) <- environment(gam2$formula)
     gp6 <- gam6$nsdf   
          
-    start.v  <- c(coef(gam1), coef(gam2), coef(gam3), coef(gam4), coef(gam5), coef(gam6) )
+    start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients, gam6$coefficients )
    
     
   }    
@@ -1265,10 +1421,10 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     theta    <- rnorm(vo$n, vo$i.rho, 0.001)       
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc)     
-    gam6 <- gam(formula.eq6, data = data, gamma = ngc)    
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
+    gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots)    
     l.sp3 <- length(gam3$sp)   
     l.sp4 <- length(gam4$sp)   
     l.sp5 <- length(gam5$sp)   
@@ -1277,22 +1433,22 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
 
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
  
     if(l.sp6 != 0){
     ngc <- 2
-    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }   
   
     X3 <- model.matrix(gam3)
@@ -1324,7 +1480,7 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     environment(gam6$formula) <- environment(gam2$formula)
     gp6 <- gam6$nsdf   
          
-    start.v  <- c(coef(gam1), coef(gam2), coef(gam3), coef(gam4), coef(gam5), coef(gam6) )
+    start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients, gam6$coefficients )
     
     
   }   
@@ -1361,12 +1517,12 @@ sp2 <- NULL
     sigma2 <- rnorm(vo$n, vo$log.sig2.1, 0.001) 
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam2  <- gam(formula.eq2, data = data, gamma = ngc)    
+    gam2  <- gam(formula.eq2, data = data, gamma = ngc, knots = knots)    
     l.sp2 <- length(gam2$sp)   
  
     if(l.sp2 != 0){
     ngc <- 2
-    while( any(round(summary(gam2)$edf, 1) > 1) ) {gam2 <- gam(formula.eq2, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam2)$edf, 1) > 1) ) {gam2 <- gam(formula.eq2, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     X2    <- model.matrix(gam2)
@@ -1376,7 +1532,7 @@ sp2 <- NULL
     environment(gam2$formula) <- environment(gam1$formula)
     gp2 <- gam2$nsdf 
     
-    start.v <- c(coef(gam1), coef(gam2) )  
+    start.v <- c(gam1$coefficients, gam2$coefficients )  
     
   }   
   
@@ -1398,8 +1554,8 @@ sp2 <- NULL
     rm(list=".Random.seed", envir=globalenv()) 
     
     
-    gam2 <- gam(formula.eq2, data = data, gamma = ngc) 
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc)   
+    gam2 <- gam(formula.eq2, data = data, gamma = ngc, knots = knots) 
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots)   
    
     l.sp2 <- length(gam2$sp)   
     l.sp3 <- length(gam3$sp)    
@@ -1407,12 +1563,12 @@ sp2 <- NULL
     
     if(l.sp2 != 0){
     ngc <- 2
-    while( any(round(summary(gam2)$edf, 1) > 1) ) {gam2 <- gam(formula.eq2, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam2)$edf, 1) > 1) ) {gam2 <- gam(formula.eq2, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     
@@ -1431,7 +1587,7 @@ sp2 <- NULL
     environment(gam3$formula) <- environment(gam1$formula)
     gp3 <- gam3$nsdf     
     
-    start.v <- c(coef(gam1), coef(gam2), coef(gam3) )  
+    start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients )  
     
   }    
      
@@ -1456,7 +1612,7 @@ if(M$l.flist == 3){
     theta  <- rnorm(vo$n, vo$i.rho, 0.001)           
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde) 
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde, knots = knots) 
     
     ######
     # TEST
@@ -1469,7 +1625,7 @@ if(M$l.flist == 3){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                                 
     X3 <- model.matrix(gam3)
@@ -1479,7 +1635,7 @@ if(M$l.flist == 3){
     environment(gam3$formula) <- environment(gam2$formula)
     gp3 <- gam3$nsdf 
          
-    start.v  <- c(coef(gam1), c.gam2,     coef(gam3) )
+    start.v  <- c(gam1$coefficients, c.gam2, gam3$coefficients )
  
   }      
     
@@ -1498,8 +1654,8 @@ if(M$l.flist == 3){
     theta  <- rnorm(vo$n, vo$i.rho, 0.001)           
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset=inde)  
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde, knots = knots) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset=inde, knots = knots)  
     
     ######
     # TEST
@@ -1517,12 +1673,12 @@ if(M$l.flist == 3){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, subset=inde); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, subset=inde, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     X3 <- model.matrix(gam3)
@@ -1539,7 +1695,7 @@ if(M$l.flist == 3){
     environment(gam4$formula) <- environment(gam2$formula)
     gp4 <- gam4$nsdf     
   
-    start.v  <- c(coef(gam1), c.gam2,     coef(gam3), coef(gam4) )
+    start.v  <- c(gam1$coefficients, c.gam2, gam3$coefficients, gam4$coefficients )
 
 
   }  
@@ -1563,9 +1719,9 @@ if(M$l.flist == 3){
     theta  <- rnorm(vo$n, vo$i.rho, 0.001)       
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset=inde)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc, subset=inde)  
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde, knots = knots) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset=inde, knots = knots)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, subset=inde, knots = knots)  
     
     ######
     # TEST
@@ -1585,17 +1741,17 @@ if(M$l.flist == 3){
   
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, subset=inde); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, subset=inde, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, subset=inde); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, subset=inde, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
   
     X3 <- model.matrix(gam3)
@@ -1617,7 +1773,7 @@ if(M$l.flist == 3){
     environment(gam5$formula) <- environment(gam2$formula)
     gp5 <- gam5$nsdf      
     
-    start.v  <- c(coef(gam1), c.gam2, coef(gam3), coef(gam4), coef(gam5) )
+    start.v  <- c(gam1$coefficients, c.gam2, gam3$coefficients, gam4$coefficients, gam5$coefficients )
      
   }   
   

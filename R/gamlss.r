@@ -3,13 +3,13 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
                    robust = FALSE, rc = 3, lB = NULL, uB = NULL, infl.fac = 1, 
                    rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
                    gc.l = FALSE, parscale, extra.regI = "t", gev.par = -0.25,
-                   chunk.size = 10000){ 
+                   chunk.size = 10000, k.tvc = 0, knots = NULL){ 
   
   ##########################################################################################################################
   # preamble 
   ##########################################################################################################################
     
-  i.rho <- sp <- qu.mag <- qu.mag1 <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- spgamlss1 <- NULL  
+  i.rho <- sp <- qu.mag <- qu.mag1 <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- spgamlss1 <- indexT <- NULL  
   end <- X2.d2 <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- 0
   gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- y1m <- y2m <- NULL
   fp <- FALSE
@@ -17,9 +17,10 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
   sp1 <- sp2 <- gam2 <- X2 <- sp3 <- gam3 <- X3 <- sp4 <- gp4 <- gam4 <- X4 <- sp5 <- gp5 <- gam5 <- X5 <- NULL   
   sp6 <- gp6 <- gam6 <- X6 <- sp7 <- gp7 <- gam7 <- X7 <- sp8 <- gp8 <- gam8 <- X8 <- NULL     
   Xd1 <- Xd <- mono.sm.pos <- NULL
-  tfc <- NA
+  tfc <- no.pb <- NA
   surv.flex <- FALSE
   tempb <- NULL
+  D <- pos.pb <- list()
 
   m2  <- c("N","N2","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK")
   m3  <- c("DAGUM","SM")
@@ -49,7 +50,7 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
   fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
-  mf$chunk.size <- mf$gev.par <- mf$surv <- mf$lB <- mf$uB <- mf$robust <- mf$rc <- mf$margin <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- NULL                           
+  mf$knots <- mf$k.tvc <- mf$chunk.size <- mf$gev.par <- mf$surv <- mf$lB <- mf$uB <- mf$robust <- mf$rc <- mf$margin <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- NULL                           
   mf$drop.unused.levels <- TRUE 
   mf[[1]] <- as.name("model.frame")
   data <- eval(mf, parent.frame())
@@ -87,9 +88,9 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
  y1.test      <- form.eq12R$y1.test  
  y1m          <- form.eq12R$y1m
    
- if(margin != "GEVlink" && surv == FALSE)                     gam1 <- eval(substitute(gam(formula.eq1, gamma=infl.fac, weights=weights, data=data),list(weights=weights)))
- if(margin != "GEVlink" && surv == TRUE && !(margin %in% bl)) gam1 <- eval(substitute(gam(formula.eq1, gamma=infl.fac, weights=weights*cens, data=data),list(weights=weights, cens = cens)))
- if(margin == "GEVlink")                                      gam1 <- eval(substitute(gam(formula.eq1, binomial(link = "cloglog"), gamma=infl.fac, weights=weights, data=data),list(weights=weights)))
+ if(margin != "GEVlink" && surv == FALSE)                     gam1 <- eval(substitute(gam(formula.eq1, gamma=infl.fac, weights=weights, data=data, knots = knots),list(weights=weights)))
+ if(margin != "GEVlink" && surv == TRUE && !(margin %in% bl)) gam1 <- eval(substitute(gam(formula.eq1, gamma=infl.fac, weights=weights*cens, data=data, knots = knots),list(weights=weights, cens = cens)))
+ if(margin == "GEVlink")                                      gam1 <- eval(substitute(gam(formula.eq1, binomial(link = "cloglog"), gamma=infl.fac, weights=weights, data=data, knots = knots),list(weights=weights)))
 
  #############################################################################################
                                      #############################################################
@@ -123,7 +124,7 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
                     }
   
   if( sum(as.numeric(clsm %in% c("mpi.smooth")))==0 ) stop("You must use at least an mpi smooth function of time.")
-  if( sum( as.numeric(clsm %in% c("mpi.smooth")) ) != sum( ggr ) ) stop("You must use mpi smooth function(s) of time.")   
+  #if( sum( as.numeric(clsm %in% c("mpi.smooth")) ) != sum( ggr ) ) stop("You must use mpi smooth function(s) of time.")   
   
   ###########################################################
 
@@ -132,30 +133,82 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
            
   ###########################################################    
   
-  if(dim(data)[1] < 2000) sp.c <- 0.2 else sp.c <- 1/sqrt(dim(data)[1])  
+  #if(dim(data)[1] < 2000) sp.c <- 0.2 else sp.c <- 1/sqrt(dim(data)[1])  
+  #sp1[clsm %in% c("mpi.smooth")] <- sp.c 
 
-  sp1[clsm %in% c("mpi.smooth")] <- sp.c 
-  
+  sp.c <- 1 # this will have to be improved but not sure how at the moment
+            # it may not affect results though, only maybe in peculiar situations
+  sp1[ggr == 1] <- sp.c 
+
   gam.call <- gam1$call
   gam.call$sp <- sp1
   gam1 <- eval(gam.call)
   
   ###########################################################
 
+ 
+  j <- 1
   for(i in 1:lsgam1){ 
   
-    if( max(as.numeric(grepl(v1[1], gam1$smooth[[i]]$vn))) != 0 ) mono.sm.pos <- c(mono.sm.pos, c(gam1$smooth[[i]]$first.para:gam1$smooth[[i]]$last.para) ) 
-                                          
-  }
+    if( max(as.numeric(grepl(v1[1], gam1$smooth[[i]]$vn))) != 0 && clsm[i] == "mpi.smooth" ) mono.sm.pos <- c(mono.sm.pos, c(gam1$smooth[[i]]$first.para:gam1$smooth[[i]]$last.para) ) 
+   
+    if( max(as.numeric(grepl(v1[1], gam1$smooth[[i]]$vn))) != 0 && clsm[i] != "mpi.smooth" ){ 
+    
+    # these checks are not entirely general and the user may
+    # still specify the model in the wrong way
+    
+                                                                if( clsm[i] != "pspline.smooth" && k.tvc !=0) stop("You have to use a ps smooth to allow for doubly penalised tvc terms.")
+                                                                                                                                
+                                                                if( clsm[i] == "pspline.smooth"){
+                                                                
+                                                                pos.pb[[j]] <- c(gam1$smooth[[i]]$first.para:gam1$smooth[[i]]$last.para)
+                                                                indexT      <- c(indexT, pos.pb[[j]] ) # this is fine, do not touch it, good for starting values
+                                                                D[[j]]      <- diff(diag(length(pos.pb[[j]])), differences = 1)
+                                                                j <- j + 1
+                                                                
+                                                                # scaling factor should not matter since lambda is fixed here
+                                                                #D[[j]] <- diff(diag(rep(0,length(pos.pb))), differences = 1)
+                                                                
+                                                                }
+                                                                
+                                                                
+                                                                                            }
+  
+  
+  }  
+  
      
   
   X1 <- predict(gam1, type = "lpmatrix")
   
-  Xd <- Xdpred(gam1, data, v1[1])
+  if( !is.null(indexT) && k.tvc !=0){ if(range(X1[, indexT])[1] < 0) stop("Check design matrix for smooth(s) of tvc terms.")}
+  
+  Xd <- Xdpred(gam1, data, v1[1]) # this part can be analytical given that we only use B-splines
+                                  # but it cn also be a tprs or any other smoother so we may want to leave it generic
 
-  start.v1 <- c( coef(gam1) )
+  start.v1 <- c( gam1$coefficients )
 
   gam1$y <- data[, v1[1]]
+  
+  
+  
+  
+
+  if(!is.null(indexT)){
+  
+     start.v2 <- start.v1
+     start.v2[mono.sm.pos] <- exp(start.v2[mono.sm.pos])
+     while( range(Xd%*%start.v2)[1] < 0 ) start.v2[indexT] <- 0.999*start.v2[indexT]   
+     
+     # this is to make sure that the condition is not violated from the start
+      
+     start.v1[indexT]  <- start.v2[indexT]  
+     gam1$coefficients <- gam1$coefficients.t <- start.v1
+     gam1$coefficients.t[mono.sm.pos] <- exp(gam1$coefficients.t[mono.sm.pos]) 
+  }
+
+  
+  
  
  }
 
@@ -193,9 +246,9 @@ if( margin %in% c(m3) ){ log.nu.1   <- start.snR$log.nu.1;   names(log.nu.1)   <
 
 }
 
-if(margin %in% c(m1d) )    start.v1 <- c( coef(gam1) )
-if(margin %in% c(m2,m2d) ) start.v1 <- c( coef(gam1), log.sig2.1           ) 
-if(margin %in% c(m3,m3d) ) start.v1 <- c( coef(gam1), log.sig2.1, log.nu.1 ) 
+if(margin %in% c(m1d) )    start.v1 <- c( gam1$coefficients )
+if(margin %in% c(m2,m2d) ) start.v1 <- c( gam1$coefficients, log.sig2.1           ) 
+if(margin %in% c(m3,m3d) ) start.v1 <- c( gam1$coefficients, log.sig2.1, log.nu.1 ) 
 
 
 ##############################################################  
@@ -204,7 +257,7 @@ if(margin %in% c(m3,m3d) ) start.v1 <- c( coef(gam1), log.sig2.1, log.nu.1 )
 if(l.flist > 1){ # not used for flexible survival
     
     vo <- list(log.nu.1 = log.nu.1, log.sig2.1 = log.sig2.1, n = n)
-    overall.svGR <- overall.svG(formula, data, ngc = 2, margin, M, vo, gam1, gam2, type = "gaml")
+    overall.svGR <- overall.svG(formula, data, ngc = 2, margin, M, vo, gam1, gam2, type = "gaml", knots = knots)
     
     start.v1 <- overall.svGR$start.v 
     X2 <- overall.svGR$X2
@@ -236,8 +289,8 @@ GAM <- list(gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4,
 if(l.sp1 !=0 || l.sp2 !=0 || l.sp3 !=0) { ##
 
 
-	L.GAM <- list(l.gam1 = length(coef(gam1)), l.gam2 = length(coef(gam2)), 
-	              l.gam3 = length(coef(gam3)), l.gam4 = 0, l.gam5 = 0, 
+	L.GAM <- list(l.gam1 = length(gam1$coefficients), l.gam2 = length(gam2$coefficients), 
+	              l.gam3 = length(gam3$coefficients), l.gam4 = 0, l.gam5 = 0, 
 	              l.gam6 = 0, l.gam7 = 0, l.gam8 = 0)                                 
   
 	L.SP <- list(l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, l.sp4 = 0, 
@@ -282,10 +335,15 @@ ygrid <- ygrid[1:(table(pdf.test)[2] + 2)]
 } else ygrid <- NULL
 
 
+my.env      <- new.env()
+my.env$k    <- k.tvc 
+my.env$indN <- NULL
+my.env$V    <- NULL
+
 
   VC <- list(lsgam1 = lsgam1, ygrid = ygrid, # why lsgam1? maybe useful outside fitting functions, do not remember, check again
-             lsgam2 = lsgam2,
-             lsgam3 = lsgam3,
+             lsgam2 = lsgam2, indexT = indexT, D = D, my.env = my.env, k = k.tvc, pos.pb = pos.pb,
+             lsgam3 = lsgam3, 
              lsgam4 = lsgam4,
              lsgam5 = lsgam5,
              lsgam6 = lsgam6,
@@ -401,7 +459,8 @@ L <- list(fit = SemiParFit$fit, dataset = NULL, n = n, formula = formula,
           edf11 = SemiParFit.p$edf11,   ## this is for RE
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, 
           gam6 = gam6, gam7 = gam7, gam8 = gam8,  
-          coefficients = SemiParFit$fit$argument, iterlimsp = iterlimsp,
+          coefficients = SemiParFit$fit$argument, 
+          iterlimsp = iterlimsp,
           weights = weights, cens = cens, 
           sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, 
           l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, 

@@ -107,18 +107,25 @@ if(type == "copR"){
 
 if(M$surv == TRUE){
 
-  
-  
-  if( (margins[1] %in% scs && margins[2] %in% M$bl) || (margins[1] %in% M$bl && margins[2] %in% scs) ) stop("You can not mix semiparametric and parametric margins.")
 
-  if(!(margins[1] %in% c(scs,M$bl)) || !(margins[2] %in% c(scs,M$bl))  ) stop("The marginal distributions must be WEI, FISK, probit, PO or PH.")
-  
-  if(is.null(M$c1) || is.null(M$c2)  ) stop("You must provide the binary censoring indicators.") # this is obsolete
-  
+  if( !(margins[1] %in% c(M$m2,M$m3,M$bl)) ) stop("The first marginal distribution must be either continuous or probit, PO or PH.")
+  if( !(margins[2] %in% c(M$bl,scs)) )       stop("The second marginal distribution must be probit, PO or PH.")
+
+  #if(!(margins[1] %in% c(scs,M$bl)) || !(margins[2] %in% c(scs,M$bl))  ) stop("The marginal distributions must be WEI, FISK, probit, PO or PH.")
+  #if( (margins[1] %in% scs && margins[2] %in% M$bl) || (margins[1] %in% M$bl && margins[2] %in% scs) ) stop("You can not mix semiparametric and parametric margins.")
+
+
   if(!is.null(M$c1) && length(table( M$c1 %in% c(0,1) ) ) > 1 ) stop("Your first censoring indicator is not binary. Please fix.")
   if(!is.null(M$c2) && length(table( M$c2 %in% c(0,1) ) ) > 1 ) stop("Your second censoring indicator is not binary. Please fix.")
   
   if(length(M$c1) != length(M$c2)) stop("The two censoring indicators must have the same length.")
+
+  if(l.flist > 2 && margins[1] %in% c(M$bl) && margins[2] %in% c(M$bl)){ if(l.flist!=3) stop("You need to specify three equations.") } 
+  if(l.flist > 2 && margins[1] %in% c(M$m2) && margins[2] %in% c(M$bl)){ if(l.flist!=4) stop("You need to specify four equations.") } 
+  if(l.flist > 2 && margins[1] %in% c(M$m3) && margins[2] %in% c(M$bl)){ if(l.flist!=5) stop("You need to specify five equations.") } 
+
+
+
    
 }  
   
@@ -166,6 +173,7 @@ if(M$surv == TRUE){
  ######
  if(margins[1] %in% c(M$m1d,M$m2d) && margins[2] %in% c(M$m1d,M$m2d,M$m2,M$m3) ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
  if( M$surv == TRUE ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
+ if( M$surv == TRUE && margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$bl) ) stop("Survival models with first continuous margin and second survival one not ready yet.\nGet in touch to check progress.")
 
 
 }
@@ -188,7 +196,7 @@ if(type == "copSS"){
  
  
  #####
- if(margins[2] %in% c("GU", "rGU", "LO", "LN", "WEI","iG", "DAGUM", "SM", "BE", "FISK") ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
+ #if(margins[2] %in% c("GU", "rGU", "LO", "LN", "WEI","iG", "DAGUM", "SM", "BE", "FISK") ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
  
 
 }

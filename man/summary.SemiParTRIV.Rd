@@ -5,7 +5,7 @@
 \title{SemiParTRIV summary}
 
 \description{
-It takes a fitted \code{SemiParTRIV} object produced by \code{SemiParTRIV()} and produces some summaries from it.
+It takes a fitted \code{SemiParTRIV} object and produces some summaries from it.
 
 }
 
@@ -21,7 +21,7 @@ It takes a fitted \code{SemiParTRIV} object produced by \code{SemiParTRIV()} and
 
 \arguments{ 
 
-\item{object}{A fitted \code{SemiParTRIV} object as produced by \code{SemiParTRIV()}.}
+\item{object}{A fitted \code{SemiParTRIV} object.}
 
 \item{x}{\code{summary.SemiParTRIV} object produced by \code{summary.SemiParTRIV()}.}
 
@@ -44,21 +44,12 @@ to calculate intervals for the association parameter and other measures. It may 
 
 \details{ 
 
-This function is very similar to \code{summary.SemiParBIV()}.
 
 \code{print.summary.SemiParTRIV} prints model term summaries. 
 
 
 }
 
-
-
-\value{
-
-Very similar to what obtained when using \code{summary.SemiParBIV()}.
-
-
-}
 
 
 
@@ -71,12 +62,8 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 
 
-\seealso{
-\code{\link{plot.SemiParBIV}}, \code{\link{predict.SemiParBIV}}
-}
-
 \examples{
-## see examples for SemiParTRIV
+## see examples for gjrm
 }
 
 

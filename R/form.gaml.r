@@ -35,6 +35,21 @@ formula.gamlss2 <- list(formula[[2]])
 if(l.flist > 2){##
 
 
+if(M$margins[1] %in% c(M$m2) && M$margins[2] %in% c(M$bl)){
+    
+formula.gamlss1 <- list(formula[[1]], formula[[3]])
+formula.gamlss2 <- list(formula[[2]])
+    
+}
+
+if(M$margins[1] %in% c(M$m3) && M$margins[2] %in% c(M$bl)){
+    
+formula.gamlss1 <- list(formula[[1]], formula[[3]], formula[[4]])
+formula.gamlss2 <- list(formula[[2]])
+    
+}
+
+
 if(M$margins[1] %in% c(M$m1d,M$bl) && M$margins[2] %in% c(M$m1d,M$bl)){
     
 formula.gamlss1 <- list(formula[[1]])

@@ -19,7 +19,7 @@ conv.check(x)
 \arguments{ 
 
 
-\item{x}{\code{SemiParBIV}/\code{copulaReg}/\code{copulaSampleSel}/\code{SemiParTRIV}/\code{gamlss} object.}
+\item{x}{\code{gjrm} object.}
 
 
 }
@@ -36,7 +36,7 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 
 \seealso{
-\code{\link{gamlss}}, \code{\link{SemiParBIV}}, \code{\link{copulaReg}}, \code{\link{copulaSampleSel}}, \code{\link{SemiParTRIV}}
+\code{\link{gamlss}}, \code{\link{gjrm}}
 }
 
 

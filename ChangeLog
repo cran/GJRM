@@ -1,3 +1,7 @@
+version 0.1-2
+- all fitting functions merged and included in gjrm().
+- manual updated
+
 version 0.1-1
 - initial release of GJRM which is the continuation of SemiParBIVProbit. 
 

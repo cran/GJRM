@@ -4,7 +4,7 @@ SemiParTRIV <- function(formula, data = list(), weights = NULL, subset = NULL,
                              infl.fac = 1, gamma = 1, w.alasso = NULL, 
                              rinit = 1, rmax = 100, 
                              iterlimsp = 50, tolsp = 1e-07,
-                             gc.l = FALSE, parscale, extra.regI = "t"){
+                             gc.l = FALSE, parscale, extra.regI = "t", knots = NULL){
   
   ##########################################################################################################################
   # model set up and starting values
@@ -72,7 +72,7 @@ SemiParTRIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
-  mf$Chol <- mf$margins <- mf$infl.fac <- mf$rinit <- mf$approx <- mf$gamma <- mf$w.alasso <- mf$rmax <- mf$Model <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$penCor <- mf$sp.penCor <- NULL                           
+  mf$knots <- mf$Chol <- mf$margins <- mf$infl.fac <- mf$rinit <- mf$approx <- mf$gamma <- mf$w.alasso <- mf$rmax <- mf$Model <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$penCor <- mf$sp.penCor <- NULL                           
   mf$drop.unused.levels <- TRUE 
   if(Model=="TSS") mf$na.action <- na.pass
   mf[[1]] <- as.name("model.frame")
@@ -127,7 +127,7 @@ if(Model=="TESS"){
  # Equations 1, 2 and 3
  ##############################################################  
  
-  gam1 <- eval(substitute(gam(formula.eq1, binomial(link = margins[1]), gamma=infl.fac, weights=weights, data=data),list(weights=weights))) 
+  gam1 <- eval(substitute(gam(formula.eq1, binomial(link = margins[1]), gamma=infl.fac, weights=weights, data=data, knots = knots),list(weights=weights))) 
 
   X1 <- model.matrix(gam1)
   X1.d2 <- dim(X1)[2]
@@ -145,7 +145,7 @@ if(Model=="TESS"){
   
   ###########
 
-  gam2 <- eval(substitute(gam(formula.eq2, binomial(link = margins[2]), gamma=infl.fac, weights=weights, data=data, subset=inde1),list(weights=weights,inde1=inde1))) 
+  gam2 <- eval(substitute(gam(formula.eq2, binomial(link = margins[2]), gamma=infl.fac, weights=weights, data=data, subset=inde1, knots = knots),list(weights=weights,inde1=inde1))) 
 
   if(Model %in% c("TSS","TESS")){
   
@@ -166,7 +166,7 @@ if(Model=="TESS"){
   if(Model == "TSS"){ inde2[inde1] <- as.logical(gam2$y); inde2.1 <- inde2[inde1]}
   
 
-  gam3 <- eval(substitute(gam(formula.eq3, binomial(link = margins[3]), gamma=infl.fac, weights=weights, data=data, subset=inde2),list(weights=weights,inde2=inde2))) 
+  gam3 <- eval(substitute(gam(formula.eq3, binomial(link = margins[3]), gamma=infl.fac, weights=weights, data=data, subset=inde2, knots = knots),list(weights=weights,inde2=inde2))) 
 
 
   if(Model %in% c("TSS","TESS")){
@@ -285,7 +285,7 @@ names(theta12) <- "theta12.st"
 names(theta13) <- "theta13.st"
 names(theta23) <- "theta23.st"
   
-start.v <- c(coef(gam1), coef(gam2), coef(gam3), theta12, theta13, theta23)
+start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, theta12, theta13, theta23)
 
 
 ##############################################################  
@@ -296,7 +296,7 @@ start.v <- c(coef(gam1), coef(gam2), coef(gam3), theta12, theta13, theta23)
     
     vo <- list(gam1 = gam1, gam2 = gam2, gam3 = gam3, theta12 = theta12, theta13 = theta13, theta23 = theta23, n = n )
 
-    overall.svGR <- overall.svG(formula = formula, data = data, ngc = 2, margins = margins, M = M, vo = vo, gam1 = gam1, gam2 = gam2, gam3 = gam3, type = "triv")
+    overall.svGR <- overall.svG(formula = formula, data = data, ngc = 2, margins = margins, M = M, vo = vo, gam1 = gam1, gam2 = gam2, gam3 = gam3, type = "triv", knots = knots)
         
     start.v = overall.svGR$start.v 
     X4 = overall.svGR$X4; X5 = overall.svGR$X5
@@ -332,8 +332,8 @@ GAM <- list(gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4,
 
 if( (l.sp1!=0 || l.sp2!=0 || l.sp3!=0 || l.sp4!=0 || l.sp5!=0 || l.sp6!=0 || l.sp7!=0 || l.sp8!=0) && fp==FALSE ){ 
 
-L.GAM <- list(l.gam1 = length(coef(gam1)), l.gam2 = length(coef(gam2)), l.gam3 = length(coef(gam3)), l.gam4 = length(coef(gam4)),
-              l.gam5 = length(coef(gam5)), l.gam6 = length(coef(gam6)), l.gam7 = length(coef(gam7)), l.gam8 = length(coef(gam8)))
+L.GAM <- list(l.gam1 = length(gam1$coefficients), l.gam2 = length(gam2$coefficients), l.gam3 = length(gam3$coefficients), l.gam4 = length(gam4$coefficients),
+              l.gam5 = length(gam5$coefficients), l.gam6 = length(gam6$coefficients), l.gam7 = length(gam7$coefficients), l.gam8 = length(gam8$coefficients))
 
 L.SP <- list(l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, l.sp4 = l.sp4, 
              l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8)
@@ -484,7 +484,7 @@ gam1$call$data <- gam2$call$data <- gam3$call$data <- gam4$call$data <- gam5$cal
 
 L <- list(fit = SemiParFit$fit, formula = formula, Model = Model,
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8,
-          coefficients = SemiParFit$fit$argument,  iterlimsp = iterlimsp,
+          coefficients = SemiParFit$fit$argument, coef.t = NULL, iterlimsp = iterlimsp,
           weights = weights, 
           sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, 
           l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, 

@@ -87,7 +87,7 @@ if(Model=="BSS"){
   SemiParFit$fit$eta2 <- VC$X2s%*%SemiParFit$fit$argument[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)]
   
   p1n <- predict.gam(GAM$gam1, type="response")
-  p2n <- probm(VC$X2s%*%coef(GAM$gam2), VC$margins[2])$pr
+  p2n <- probm(VC$X2s%*%GAM$gam2$coefficients, VC$margins[2])$pr
  
 
 if(!is.null(VC$X3)) {

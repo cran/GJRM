@@ -53,7 +53,7 @@ susu <- function(object, SE, Vb){
                 
 
   for(i in index){
-  estimate <- coef(object)[ind[[i]]]
+  estimate <- object$coefficients[ind[[i]]]
   se       <- SE[ind[[i]]]
   ratio    <- estimate/se
   pv       <- 2*pnorm(abs(ratio), lower.tail = FALSE)
@@ -101,7 +101,7 @@ susu <- function(object, SE, Vb){
 			Rm <- qr.R(qr(LRB, tol = 0, LAPACK = FALSE))[ind1, ind1]
                         B <- mroot(object$Ve[ind, ind, drop = FALSE])
                           
-			b.hat <- coef(object)[ind]
+			b.hat <- object$coefficients[ind]
 			d <- Rm %*% b.hat
 			stat <- sum(d^2)
 			ev <- eigen(crossprod(Rm %*% B), symmetric = TRUE, only.values = TRUE)$values
@@ -114,7 +114,7 @@ susu <- function(object, SE, Vb){
                           
 			if(max(gam$smooth[[k]]$null.space.dim) != 0){
 			
-			if(object$VC$surv.flex == FALSE) b <- coef(object)[ind] else b <- object$coef.t[ind] 
+			if(object$VC$surv.flex == FALSE) b <- object$coefficients[ind] else b <- object$coef.t[ind] 
 			
 			V <- Vb[ind,ind, drop = FALSE]
 			

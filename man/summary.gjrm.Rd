@@ -1,22 +1,22 @@
-\name{summary.copulaReg}
-\alias{summary.copulaReg}
-\alias{print.summary.copulaReg}
+\name{summary.gjrm}
+\alias{summary.gjrm}
+\alias{print.summary.gjrm}
 
-\title{copulaReg summary}
+\title{gjrm summary}
 
 \description{
-It takes a fitted \code{copulaReg} object produced by \code{copulaReg()} and produces some summaries from it.
+It takes a fitted \code{gjrm} object and produces some summaries from it.
 
 }
 
 
 \usage{
 
-\method{summary}{copulaReg}(object, n.sim = 100, prob.lev = 0.05, ...)
+\method{summary}{gjrm}(object, n.sim = 100, prob.lev = 0.05, ...)
    
 
 
-\method{print}{summary.copulaReg}(x, digits = max(3, getOption("digits") - 3), 
+\method{print}{summary.gjrm}(x, digits = max(3, getOption("digits") - 3), 
            signif.stars = getOption("show.signif.stars"), ...)
  
 }
@@ -24,9 +24,9 @@ It takes a fitted \code{copulaReg} object produced by \code{copulaReg()} and pro
 
 \arguments{ 
 
-\item{object}{A fitted \code{copulaReg} object as produced by \code{copulaReg()}.}
+\item{object}{A fitted \code{gjrm} object.}
 
-\item{x}{\code{summary.copulaReg} object produced by \code{summary.copulaReg()}.}
+\item{x}{\code{summary.gjrm} object produced by \code{summary.gjrm()}.}
 
 
 \item{n.sim}{The number of simulated coefficient vectors from the posterior distribution of the estimated model parameters. This is used 
@@ -46,9 +46,7 @@ to calculate intervals for the association parameter, dispersion coefficient etc
 
 \details{ 
 
-This function is very similar to \code{summary.SemiParBIV()}.
-
-\code{print.summary.copulaReg} prints model term summaries. 
+\code{print.summary.gjrm} prints model term summaries. 
 
 
 }
@@ -81,11 +79,6 @@ This function is very similar to \code{summary.SemiParBIV()}.
 
 Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
-}
-
-
-\examples{
-## see examples for copulaReg
 }
 
 

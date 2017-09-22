@@ -1,11 +1,11 @@
 \name{adjCovSD}
 \alias{adjCovSD}
 
-\title{Adjustment for the covariance matrix from a SemiParBIV/copulaReg/copulaSampleSel/SemiParTRIV model fitted to complex survey data.}
+\title{Adjustment for the covariance matrix from a gjrm model fitted to complex survey data.}
 
 \description{ 
 
-\code{adjCovSD} can be used to adjust the covariance matrix of a fitted \code{SemiParBIV}, \code{copulaReg}, \code{copulaSampleSel}, \code{SemiParTRIV} object.}
+\code{adjCovSD} can be used to adjust the covariance matrix of a fitted \code{gjrm} object.}
 
 
 \usage{
@@ -16,7 +16,7 @@ adjCovSD(x, design)
 
 \arguments{ 
 
-\item{x}{A fitted \\code{SemiParBIV}, \code{copulaReg}, \code{copulaSampleSel}, \code{SemiParTRIV} object as produced by the respective fitting function.}
+\item{x}{A fitted \code{gjrm} object as produced by the respective fitting function.}
  
 \item{design}{A \code{svydesign} object as produced by \code{svydesign()} from the \code{survey} package.} 
 
@@ -30,11 +30,6 @@ adjCovSD(x, design)
 
 This function has been extracted from the \code{survey} package and adapted to the class of this package's models. It computes the sandwich 
 variance estimator for a copula model fitted to data from a complex sample survey (Lumley, 2004).
-
-
-
-
-
 
 }
 
@@ -78,10 +73,7 @@ Lumley T. (2004), Analysis of Complex Survey Samples. \emph{Journal of Statistic
 
 
 \seealso{
-\code{\link{GJRM-package}}, \code{\link{SemiParBIV}}, \code{\link{summary.SemiParBIV}},
-\code{\link{SemiParTRIV}}, \code{\link{summary.SemiParTRIV}},
-\code{\link{copulaReg}}, \code{\link{summary.copulaReg}},
-\code{\link{copulaSampleSel}}, \code{\link{summary.copulaSampleSel}}
+\code{\link{GJRM-package}}, \code{\link{gjrm}}
 }
 
 

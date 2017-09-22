@@ -1,14 +1,46 @@
 bcontSurvGuniv <- function(params, respvec, VC, ps, AT = FALSE){
 
+monP <- monP1 <- monP2 <- k <- 0; V <- list()
+
+etad <- etas1 <- etas2 <- l.ln <- NULL 
+
     params1 <- params[1:VC$X1.d2]
     params1[VC$mono.sm.pos] <- exp( params1[VC$mono.sm.pos] )
 
     eta1 <- VC$X1%*%params1
     Xd1P <- VC$Xd1%*%params1  
     
-    Xd1P <- ifelse(Xd1P < 1e-08, 1e-08, Xd1P ) # safety thing, never used as per model definition
+                                   
+indN <- as.numeric(Xd1P < 0) 
 
-    etad <- etas1 <- etas2 <- l.ln <- NULL 
+#if(!is.null(VC$indexT)) print(table(indN))
+
+Xd1P <- ifelse(Xd1P < 1e-06, 1e-06, Xd1P ) 
+
+    if( any(indN == TRUE) && !is.null(VC$indexT) ){
+   
+       monP22 <- matrix(0, length(params),length(params))
+     
+         for(i in 1:length(VC$pos.pb)){
+
+           V[[i]] <- as.numeric(diff(params1[ VC$pos.pb[[i]] ]) < 0)
+           monP22[ VC$pos.pb[[i]], VC$pos.pb[[i]] ] <- t(VC$D[[i]]*V[[i]])%*%VC$D[[i]]
+ 
+                                       } 
+     
+     
+     k <- VC$my.env$k
+     
+     monP2 <- k*monP22
+     monP  <- k/2*crossprod(params, monP22)%*%params 
+     monP1 <- k*(monP22%*%params)   
+      
+     VC$my.env$k <- k*2
+     
+     
+   }
+
+
   
 ##################
     
@@ -72,15 +104,11 @@ H <-  -(
 
 if(VC$extra.regI == "pC") H <- regH(H, type = 1)
    
-  S.h  <- ps$S.h  
-  
-  if( length(S.h) != 1){
-  
-  S.h1 <- 0.5*crossprod(params,S.h)%*%params 
-  S.h2 <- S.h%*%params
-  
-  } else S.h <- S.h1 <- S.h2 <- 0   
-  
+S.h  <- ps$S.h + monP2                                # hess
+S.h1 <- 0.5*crossprod(params, ps$S.h)%*%params + monP # lik
+S.h2 <- S.h%*%params + monP1                          # grad   
+   
+   
   S.res <- res
   res   <- S.res + S.h1
   G     <- G + S.h2
@@ -89,8 +117,8 @@ if(VC$extra.regI == "pC") H <- regH(H, type = 1)
 if(VC$extra.regI == "sED") H <- regH(H, type = 2)   
   
 
-         list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, 
-              l=S.res, l.ln = l.ln, l.par=l.par, ps = ps, 
+         list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, indN = indN, V = V, 
+              l=S.res, l.ln = l.ln, l.par=l.par, ps = ps, k = VC$my.env$k, monP2 = monP2,
               eta1=eta1, 
               p1 = p1,
               dl.dbe1          = NULL,       
@@ -98,6 +126,4 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
               dl.dteta.st      = NULL) 
               
   }
-  
-
   

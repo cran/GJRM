@@ -50,17 +50,6 @@ The data have been obtained from http://www.meps.ahrq.gov/.
 
 
 
-\references{
-
-Radice R., Marra G. and Wojtys M. (2016), Copula Regression Spline Models for Binary Outcomes. \emph{Statistics and Computing}, 26(5), 981-995. 
-
-
-
-}
-
-
-
-
 \examples{
 
 \dontrun{ 
@@ -86,14 +75,15 @@ out.eq <- visits.hosp ~ private + s(bmi) + s(income) + s(age) +
                         hyperlipidemia + diabetes
 
 f.list <- list(treat.eq, out.eq) 
-bpN    <- SemiParBIV(f.list, data = meps)
-bpF    <- SemiParBIV(f.list, data = meps, BivD = "F")
-bpC0   <- SemiParBIV(f.list, data = meps, BivD = "C0")
-bpC180 <- SemiParBIV(f.list, data = meps, BivD = "C180")
-bpJ0   <- SemiParBIV(f.list, data = meps, BivD = "J0")
-bpJ180 <- SemiParBIV(f.list, data = meps, BivD = "J180")
-bpG0   <- SemiParBIV(f.list, data = meps, BivD = "G0")
-bpG180 <- SemiParBIV(f.list, data = meps, BivD = "G180")
+mr     <- c("probit", "probit")
+bpN    <- gjrm(f.list, data = meps, margins = mr, Model = "B")
+bpF    <- gjrm(f.list, data = meps, margins = mr, BivD = "F", Model = "B")
+bpC0   <- gjrm(f.list, data = meps, margins = mr, BivD = "C0", Model = "B")
+bpC180 <- gjrm(f.list, data = meps, margins = mr, BivD = "C180", Model = "B")
+bpJ0   <- gjrm(f.list, data = meps, margins = mr, BivD = "J0", Model = "B")
+bpJ180 <- gjrm(f.list, data = meps, margins = mr, BivD = "J180", Model = "B")
+bpG0   <- gjrm(f.list, data = meps, margins = mr, BivD = "G0", Model = "B")
+bpG180 <- gjrm(f.list, data = meps, margins = mr, BivD = "G180", Model = "B")
 
 conv.check(bpJ0)
 

@@ -8,7 +8,7 @@ dof <- x$dof
 p12s <- NULL
 
 
-if(type == "bivariate"){
+if(type == "joint"){
 
 
 if(!missing(newdata)){
@@ -66,17 +66,14 @@ theta  <- x$theta
 
 
 
-if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*#
+if((cond == 0 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)) || (cond == 1 && x$margins[2] %in% c(x$VC$m2, x$VC$m3))){#*# bin - cont
 
 
-if(y1 == 0 || y1 == 1){              ### joint prob of y1=0 and y2=x ###
 
 p0  <- 1 - p1         
 p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2])$p2
 
-
-
-
+if(!(x$BivD %in% x$BivD2)) p12 <- BiCDF(p0, p2, x$nC, theta, dof)
 
 if(x$BivD %in% x$BivD2){
 
@@ -98,48 +95,69 @@ if(length(theta) == 1) p12[x$teta.ind2] <- BiCDF(p0[x$teta.ind2], p2[x$teta.ind2
 }
 
 
+if(cond == 1 && y1 == 0) p12 <- p12/p0
 
-if(!(x$BivD %in% x$BivD2)) p12 <- BiCDF(p0, p2, x$nC, theta, dof)
-
-
-
-
-
-
-
-
-
-if(cond == 1) p12 <- p12/p0
-if(cond == 2) p12 <- p12/p2
-
-                      }
+                      
 
 if(y1 == 1){                         ### joint prob of y1=1 and y2=x ###
 
 p12  <- p2 - p12
 
 if(cond == 1) p12 <- p12/p1
-if(cond == 2) p12 <- p12/p2
 
            }
-           
-           
+                      
 }#*#
 
 
 
 
 
-if(x$margins[2] %in% c(x$VC$m2d, x$VC$m1d)){#*#
+if(cond == 2 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*# bin - cont
+
+
+p0  <- 1 - p1         
+p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2])$p2
+
+
+if(!(x$BivD %in% x$BivD2)) p12 <- copgHsCond(p0, p2, theta, dof = dof, x$BivD)$c.copula.be2
+
+
+if(x$BivD %in% x$BivD2){
+
+p12 <- NA
+ 
+if( length(x$teta1) != 0){
+if(length(theta) > 1)  p12[x$teta.ind1] <- copgHsCond(p0[x$teta.ind1], p2[x$teta.ind1], theta[x$teta.ind1], dof = dof, x$Cop1)$c.copula.be2
+if(length(theta) == 1) p12[x$teta.ind1] <- copgHsCond(p0[x$teta.ind1], p2[x$teta.ind1], theta, dof = dof, x$Cop1)$c.copula.be2
+                         }  
+                          
+if( length(x$teta2) != 0){
+if(length(theta) > 1)  p12[x$teta.ind2] <- copgHsCond(p0[x$teta.ind2], p2[x$teta.ind2], theta[x$teta.ind2], dof = dof, x$Cop2)$c.copula.be2
+if(length(theta) == 1) p12[x$teta.ind2] <- copgHsCond(p0[x$teta.ind2], p2[x$teta.ind2], theta, dof = dof, x$Cop2)$c.copula.be2
+                         }                            
+                                                                           
+                       }
+
+if(y1 == 1) p12  <- 1 - p12 ### y1=1 | y2=x ###
+
+                   
+}#*#
+
+
+
+
+
+
+
+
+
+if(x$margins[2] %in% c(x$VC$m2d, x$VC$m1d)){#*# bin - discr
 
 p0   <- 1 - p1
 ppdf <- distrHsATDiscr(y2, eta2, sigma2, nu = 1, x$margins[2], x$VC$y2m)
 p2   <- ppdf$p2 
 pdf2 <- ppdf$pdf2
-
-
-
-
 
 
 if(x$BivD %in% x$BivD2){
@@ -167,7 +185,6 @@ C2[x$teta.ind1] <- BiCDF(p0[x$teta.ind1], mm(p2[x$teta.ind1]-pdf2[x$teta.ind1]),
                        
 if( length(x$teta2) != 0){
 
-
 if(length(theta) > 1){
 C1[x$teta.ind2] <- BiCDF(p0[x$teta.ind2], p2[x$teta.ind2],          nC2, theta[x$teta.ind2], dof)
 C2[x$teta.ind2] <- BiCDF(p0[x$teta.ind2], mm(p2[x$teta.ind2]-pdf2[x$teta.ind2]), nC2, theta[x$teta.ind2], dof)
@@ -178,17 +195,9 @@ C1[x$teta.ind2] <- BiCDF(p0[x$teta.ind2], p2[x$teta.ind2],          nC2, theta, 
 C2[x$teta.ind2] <- BiCDF(p0[x$teta.ind2], mm(p2[x$teta.ind2]-pdf2[x$teta.ind2]), nC2, theta, dof)
                        }
 
-
-
-
                           }                       
 
 }
-
-
-
-
-
 
 
 
@@ -201,19 +210,22 @@ C2 <- BiCDF(p0, mm(p2-pdf2), x$nC, theta, dof)
 
 
 
-
 A <- ifelse(C1 - C2 < epsilon, epsilon, C1 - C2)
 
 if(y1 == 0){
+
 p12 <- A
 if(cond == 1) p12 <- p12/p0
-if(cond == 2) p12 <- p12/p2
+if(cond == 2) p12 <- p12/pdf2
+
           }
 
 if(y1 == 1){
+
 p12 <- ifelse( pdf2 - A < epsilon, epsilon, pdf2 - A)
 if(cond == 1) p12 <- p12/p1
-if(cond == 2) p12 <- p12/p2
+if(cond == 2) p12 <- p12/pdf2
+
            }
        
 }#*#
@@ -355,9 +367,8 @@ nu       <- matrix(rep(nu, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
 
 
 
-if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*#
+if((cond == 0 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)) || (cond == 1 && x$margins[2] %in% c(x$VC$m2, x$VC$m3))){#*#
 
-if(y1 == 0 || y1 == 1){             
 p0s  <- 1 - p1s         
 p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2])$p2
 
@@ -376,6 +387,43 @@ if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- BiCDF(p0s[x$teta.ind2,], p2s[x$t
 if(!(x$BivD %in% x$BivD2)) p12s <- BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE)
 
 
+}
+
+if(cond == 1 && y1 == 0) p12s <- p12s/p0s
+
+
+if(y1 == 1){                         
+  
+p12s  <- p2s - p12s
+
+if(cond == 1) p12s <- p12s/p1s
+
+           }
+ 
+}#*# 
+ 
+ 
+ 
+if(cond == 2 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*# bin - cont
+
+p0s  <- 1 - p1s         
+p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2])$p2
+
+
+if(!(x$BivD %in% x$BivD2)) p12s <- copgHsCond(p0s, p2s, est.RHOb, dof = dof, x$BivD)$c.copula.be2
+         if(x$BivD == "T") p12s <- matrix(p12s, dim(p1s)[1], n.sim)
+
+
+if(x$BivD %in% x$BivD2){
+
+p12s <- matrix(NA, ncol = n.sim, nrow = dim(p1s)[1])
+ 
+if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- copgHsCond(p0s[x$teta.ind1,], p2s[x$teta.ind1,],  est.RHOb[x$teta.ind1,], dof = dof, x$Cop1)$c.copula.be2                                               
+if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p0s[x$teta.ind2,], p2s[x$teta.ind2,], -est.RHOb[x$teta.ind2,], dof = dof, x$Cop2)$c.copula.be2
+                                                                                                     
+                       }
+
+if(y1 == 1) p12s <- 1 - p12s ### y1=1 | y2=x ###
 
 
 }
@@ -383,23 +431,6 @@ if(!(x$BivD %in% x$BivD2)) p12s <- BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = F
 
 
 
-
-
-if(cond == 1) p12s <- p12s/p0s
-if(cond == 2) p12s <- p12s/p2s
-
-                      }
-
-if(y1 == 1){                         
-  
-p12s  <- p2s - p12s
-
-if(cond == 1) p12s <- p12s/p1s
-if(cond == 2) p12s <- p12s/p2s
-
-           }
- 
-}#*# 
  
  
  
@@ -431,16 +462,6 @@ if(!(x$BivD %in% x$BivD2)) C1s <- BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FA
 
 
 
-
-
-
-
-
-
-
-
-
-
 if(x$VC$BivD %in% c("N","T")) C2s <- matrix(BiCDF(p0s, mm(p2s-pdf2s), x$nC, est.RHOb, dof, test = FALSE), dim(p1s)[1], n.sim) else{
 
 
@@ -469,13 +490,13 @@ As <- ifelse(C1s - C2s < epsilon, epsilon, C1s - C2s)
 if(y1 == 0){
 p12s <- As
 if(cond == 1) p12s <- p12s/p0s
-if(cond == 2) p12s <- p12s/p2s
+if(cond == 2) p12s <- p12s/pdf2s
           }
 
 if(y1 == 1){
 p12s <- ifelse( pdf2s - As < epsilon, epsilon, pdf2s - As)
 if(cond == 1) p12s <- p12s/p1s
-if(cond == 2) p12s <- p12s/p2s
+if(cond == 2) p12s <- p12s/pdf2s
            }
        
 }#*# 
@@ -581,18 +602,18 @@ if(cond == 2) p12 <- p1
 if(x$margins[2] %in% c(x$VC$m2d, x$VC$m1d)){#*#
 
 p0   <- 1 - p1
-p2 <- distrHsATDiscr(y2, eta2, sigma2, nu = 1, x$margins[2], x$VC$y2m)$pdf2 # note pdf2 here! 
+pdf2 <- distrHsATDiscr(y2, eta2, sigma2, nu = 1, x$margins[2], x$VC$y2m)$pdf2  
 
 if(y1 == 0){
-p12 <- p0*p2
-if(cond == 1) p12 <- p12/p0
-if(cond == 2) p12 <- p12/p2
+p12 <- p0*pdf2
+if(cond == 1) p12 <- pdf2
+if(cond == 2) p12 <- p0
           }
 
 if(y1 == 1){
-p12 <- p1*p2
-if(cond == 1) p12 <- p12/p1
-if(cond == 2) p12 <- p12/p2
+p12 <- p1*pdf2
+if(cond == 1) p12 <- pdf2
+if(cond == 2) p12 <- p1
            }
        
 }#*#  
@@ -714,14 +735,14 @@ pdf2s <- distrHsATDiscr(y2, eta2s, sigma2, nu = 1, x$margins[2], x$VC$y2m)$pdf2 
 
 if(y1 == 0){
 p12s <- p0s*pdf2s
-if(cond == 1) p12s <- p12s/p0s
-if(cond == 2) p12s <- p12s/p2s
+if(cond == 1) p12s <- pdf2s
+if(cond == 2) p12s <- p0s
           }
 
 if(y1 == 1){
 p12s <- p1s*pdf2s
-if(cond == 1) p12s <- p12s/p1s
-if(cond == 2) p12s <- p12s/p2s
+if(cond == 1) p12s <- pdf2s
+if(cond == 2) p12s <- p1s
            }
        
 }#*#  
@@ -734,7 +755,7 @@ if(cond == 2) p12s <- p12s/p2s
 } # indep
 
 
-list(p12 = p12, p12s = p12s, p1 = p1, p2 = p2)
+list(p12 = p12, p12s = p12s, p1 = p1, p2 = p2, p3 = NULL)
 
 
 }

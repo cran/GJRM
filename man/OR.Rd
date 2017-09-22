@@ -11,7 +11,7 @@ corresponding interval obtained using posterior simulation.}
 
 \usage{
 
-OR(x, nm.end, E = TRUE, treat = TRUE, type = "bivariate", ind = NULL, 
+OR(x, nm.end, E = TRUE, treat = TRUE, type = "joint", ind = NULL, 
    n.sim = 100, prob.lev = 0.05, length.out = NULL, hd.plot = FALSE,
    or.plot = FALSE, 
    main = "Histogram and Kernel Density of Simulated Odds Ratios", 
@@ -21,7 +21,7 @@ OR(x, nm.end, E = TRUE, treat = TRUE, type = "bivariate", ind = NULL,
 
 \arguments{ 
 
-\item{x}{A fitted \code{SemiParBIV}/\code{copulaReg} object.}
+\item{x}{A fitted \code{gjrm} object.}
  
 \item{nm.end}{Name of the endogenous variable.} 
 
@@ -33,7 +33,7 @@ the control group. This only makes sense if \code{E = FALSE}.}
 
 \item{type}{This argument can take three values: \code{"naive"} (the effect is calculated ignoring the presence of observed and 
 unobserved confounders), \code{"univariate"} (the effect is obtained from the univariate model which neglects 
-the presence of unobserved confounders) and \code{"bivariate"} (the effect is obtained from the bivariate model which accounts for observed and unobserved confounders).}
+the presence of unobserved confounders) and \code{"joint"} (the effect is obtained from the bivariate model which accounts for observed and unobserved confounders).}
 
 \item{ind}{Binary logical variable. It can be used to calculate the OR for a subset of the data. Note that it does not make sense to use \code{ind} 
            when some observations are excluded from the OR calculation (e.g., when using \code{E = FALSE}).}  
@@ -95,12 +95,10 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 
 \seealso{
-\code{\link{GJRM-package}}, \code{\link{SemiParBIV}}, \code{\link{copulaReg}}  
+\code{\link{GJRM-package}}, \code{\link{gjrm}}  
 }
 
-\examples{
-## see examples for SemiParBIV and copulaReg
-}
+
 
 
 \keyword{generalised joint regression modelling} 

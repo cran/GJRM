@@ -11,7 +11,7 @@ qr <- qr1 <- qr2 <- NULL
 if(x$univar.gamlss == FALSE){###
 
 
-if(x$surv.flex == TRUE){ ###
+if(x$surv.flex == TRUE && x$margins[1] %in% x$bl && x$margins[2] %in% x$bl){ ###
 
 par(mfrow = c(2, 2))
 
@@ -23,6 +23,35 @@ lines(density(qr1, adjust = 2), lwd = 2)
 
 qqplot(qr1, H1, xlab = "Cox-Snell residuals", ylab = "Cumulative Hazards of residuals")
 abline(0, 1, col = "red")
+
+qr2 <- -log(x$fit$p2)
+H2  <- -log(survfit(Surv(qr2, x$cens2) ~ 1,  type = "kaplan-meier", conf.type = "none")$surv)
+
+hist(qr2, freq = FALSE, main = main, xlab = "Cox-Snell residuals", ylab = "Density", ...)
+lines(density(qr2, adjust = 2), lwd = 2)
+
+qqplot(qr2, H2, xlab = "Cox-Snell residuals", ylab = "Cumulative Hazards of residuals")
+abline(0, 1, col = "red")
+
+# we could build intervals here as well
+
+
+
+}###
+
+
+if(x$surv.flex == TRUE && x$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$margins[2] %in% x$bl){ ###
+
+par(mfrow = c(2, 2))
+
+p1  <- distrHsAT(x$y1, x$eta1, x$sigma21, x$nu1, x$margins[1])$p2
+qr1 <- qnorm(p1)
+hist(qr1, freq = FALSE, main = main, xlab = xlab, ylab = "Density", ...)
+lines(density(qr1, adjust = 2),lwd=2)
+
+if(intervals == FALSE){qqnorm(qr1); abline(0, 1, col = "red")}
+if(intervals == TRUE) int.postcheck(x, x$VC$margins[1], n.rep = n.sim, prob.lev = prob.lev, y2m = NULL, eq = 1)
+
 
 qr2 <- -log(x$fit$p2)
 H2  <- -log(survfit(Surv(qr2, x$cens2) ~ 1,  type = "kaplan-meier", conf.type = "none")$surv)

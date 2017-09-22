@@ -1,6 +1,6 @@
 copulaReg.fit.post <- function(SemiParFit, VC, GAM){
 
-Ve <- R <- theta <- edf <- edf1 <- NULL
+Ve <- R <- theta <- edf <- edf1 <- coef.t <- NULL
 theta.a <- sigma21 <- sigma22 <- sigma2.1.a <- sigma2.2.a <- nu1 <- nu2 <- nu1.a <- nu2.a <- dof <- dof.a <- nCa1 <- nCa2 <- NULL
 													     
 cont1par  <- c(VC$m1d,VC$bl) 

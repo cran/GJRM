@@ -1,4 +1,4 @@
-RR <- function(x, nm.end, E = TRUE, treat = TRUE, type = "bivariate", ind = NULL,
+RR <- function(x, nm.end, E = TRUE, treat = TRUE, type = "joint", ind = NULL,
    n.sim = 100, prob.lev = 0.05, length.out = NULL, hd.plot = FALSE, rr.plot = FALSE, 
    main = "Histogram and Kernel Density of Simulated Risk Ratios", 
    xlab = "Simulated Risk Ratios", ...){
@@ -28,7 +28,7 @@ if(x$v1[1] %in% x$v2[-1]) {end <- 1; eq <- 2}
 if(x$v2[1] %in% x$v1[-1]) {end <- 2; eq <- 1}
 
 
-if( !( type %in% c("naive","univariate","bivariate") ) ) stop("Error in parameter type value. It should be one of: naive, univariate or bivariate.")
+if( !( type %in% c("naive","univariate","joint") ) ) stop("Error in parameter type value. It should be one of: naive, univariate or bivariate.")
 if( !(x$margins[2] %in% bin.link) && eq == 2) stop("It does not make sense to calculate RR when the outcome is continuous.")
 if(missing(nm.end)) stop("You must provide the name of the endogenous variable.")
 
@@ -116,7 +116,7 @@ if(type != "naive" && x$margins[2] %in% bin.link) {
 ########################################################
 
 
-if(type == "bivariate"){
+if(type == "joint"){
 
 	indD[[1]] <- 1:x$X1.d2 
 	indD[[2]] <- x$X1.d2+(1:x$X2.d2)
@@ -126,16 +126,16 @@ if(type == "bivariate"){
 
 if(eq==1){ 
            X.int <- as.matrix(x$X1[ind,])
-           if(type == "bivariate") ind.int <- indD[[1]]  
+           if(type == "joint") ind.int <- indD[[1]]  
 }
 
 if(eq==2){ 
            X.int <- as.matrix(x$X2[ind,])
-           if(type == "bivariate") ind.int <- indD[[2]]
+           if(type == "joint") ind.int <- indD[[2]]
 }
 
 
-if(type == "bivariate") coef.int <- as.numeric(coef(x)[ind.int])
+if(type == "joint") coef.int <- as.numeric(x$coefficients[ind.int])
 	   
 
 
@@ -146,7 +146,7 @@ d1[,nm.end] <- 1
 
 
 
-if(type == "bivariate"){
+if(type == "joint"){
 
 	eti1 <- d1%*%coef.int 
 	eti0 <- d0%*%coef.int 
@@ -158,8 +158,8 @@ if(type == "univariate"){
 if(eq==1) ngam <- x$gam1
 if(eq==2) ngam <- x$gam2
 
-        eti1 <- d1%*%coef(ngam) 
-        eti0 <- d0%*%coef(ngam) 
+        eti1 <- d1%*%ngam$coefficients 
+        eti0 <- d0%*%ngam$coefficients 
 
 }
 
@@ -180,11 +180,11 @@ est.AT <- mean(p.int1, na.rm = TRUE) / mean(p.int0, na.rm = TRUE)
 #############################################################################
 
 
- if(type == "univariate") {bs <- rMVN(n.sim, mean = coef(ngam), sigma=ngam$Vp)
+ if(type == "univariate") {bs <- rMVN(n.sim, mean = ngam$coefficients, sigma=ngam$Vp)
                            eti1s <- d1%*%t(bs)
                            eti0s <- d0%*%t(bs) 
                            }
- if(type == "bivariate")  {bs <- rMVN(n.sim, mean = coef(x), sigma=x$Vb)
+ if(type == "joint")  {bs <- rMVN(n.sim, mean = x$coefficients, sigma=x$Vb)
                            eti1s <- d1%*%t(bs[,ind.int])
                            eti0s <- d0%*%t(bs[,ind.int]) 
                            } 
@@ -242,16 +242,16 @@ y2   <- round( seq( min(ceiling(x$y2)) , max(floor(x$y2)), length.out = length.o
  ly2  <- length(y2)
  data <- x$dataset[ind,]
  
- if(type == "bivariate")  {
+ if(type == "joint")  {
                            ind.int <- 1:x$X1.d2
-                           bs <- rMVN(n.sim, mean = coef(x), sigma = x$Vb) 
-                           coefe  <- x$coef[ind.int] 
+                           bs <- rMVN(n.sim, mean = x$coefficients, sigma = x$Vb) 
+                           coefe  <- x$coefficients[ind.int] 
                            coefes <- t(bs[, ind.int]) 
  
                           }
  
- if(type == "univariate") {bs <- rMVN(n.sim, mean = coef(x$gam1), sigma = x$gam1$Vp) 
-                           coefe  <- x$gam1$coefficient 
+ if(type == "univariate") {bs <- rMVN(n.sim, mean = x$gam1$coefficients, sigma = x$gam1$Vp) 
+                           coefe  <- x$gam1$coefficients 
                            coefes <- t(bs) 
                           }
  

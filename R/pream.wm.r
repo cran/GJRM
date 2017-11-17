@@ -196,7 +196,7 @@ if(type == "copSS"){
  
  
  #####
- #if(margins[2] %in% c("GU", "rGU", "LO", "LN", "WEI","iG", "DAGUM", "SM", "BE", "FISK") ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
+ if(margins[2] %in% c("GU", "rGU", "LO", "LN", "WEI","iG", "DAGUM", "SM", "BE", "FISK") ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
  
 
 }

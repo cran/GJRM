@@ -105,7 +105,7 @@ if(intervals == TRUE){
 
 CIp12 <- rowQuantiles(p12s, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
 
-if(x$triv == TRUE){ 
+if(x$triv == TRUE){ # triv
 
    if(type == "joint"){
      CItheta12 <- rowQuantiles(theta12s, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
@@ -114,12 +114,15 @@ if(x$triv == TRUE){
                       }else{
              CItheta12 <- CItheta13 <- CItheta23 <- cbind(0, 0)
                             }
-                  }
+                  } # triv
 
-if(x$triv == FALSE){
+
+if(x$triv == FALSE){ # biv
+
   if(length(p12) > 1)  {res <- data.frame(p12, CIp12, p1, p2);       names(res)[2:3] <- names(quantile(c(1,1), probs = c(prob.lev/2,1-prob.lev/2)))}
   if(length(p12) == 1) {res <- data.frame(t(c(p12, CIp12, p1, p2))); names(res) <- c("p12",names(quantile(c(1,1), probs = c(prob.lev/2,1-prob.lev/2))),"p1","p2")}
-                   }
+                  
+                   } # biv
 
 
 
@@ -146,6 +149,22 @@ if(x$triv == FALSE) res <- data.frame(p12, p1, p2)
 if(x$triv == TRUE)  {p123 <- p12; res <- data.frame(p123, p1, p2, p3, theta12, theta13, theta23)}
 
 }
+
+
+
+
+if(x$triv == FALSE && !is.null(rr$tau) && !is.null(rr$CIkt)){ 
+
+if(is.null(dim(rr$CIkt)))  {CItauLB <- rr$CIkt[1]; CItauUB <- rr$CIkt[2]}
+if(!is.null(dim(rr$CIkt))) {CItauLB <- rr$CIkt[,1]; CItauUB <- rr$CIkt[,2]}
+
+
+res <- data.frame(res, tau = rr$tau, CItauLB = CItauLB, CItauUB = CItauUB )     
+
+
+}
+
+if(x$triv == FALSE && !is.null(rr$tau) &&  is.null(rr$CIkt)) res <- data.frame(res, tau = rr$tau )     
 
 
 return(res)

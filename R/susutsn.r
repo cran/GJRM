@@ -536,7 +536,19 @@ BivDt <- object$VC$BivD
   
 ass.msR <- ass.ms(BivDt, nCa, est.RHOb)
 tau     <- ass.msR$tau
-if(!is.null(object$X3) && BivDt %in% c("AMH", "FGM")) tau <- matrix(tau, nrow(object$X3), nrow(bs))
+
+
+if(!is.null(object$X3) && BivDt %in% c("AMH", "FGM")){
+
+if(is.null(object$X3s)) x3ob <- object$X3 else x3ob <- object$X3s 
+
+tau <- matrix(tau, nrow(x3ob), nrow(bs))
+
+
+}
+
+
+
 CIkt <- rowQuantiles(tau, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
 if( is.null(object$X3) ) CIkt <- t(CIkt) 
 

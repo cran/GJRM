@@ -708,16 +708,8 @@ if(gamlssfit == TRUE){
   ##########################################################################################################################
 
 
-e.v <- round(min(eigen(SemiParFit$fit$hessian, symmetric=TRUE, only.values = TRUE)$values), 6)
-gradi <- round(max(abs(SemiParFit$fit$gradient)),1)
+cov.c(SemiParFit)
 
-me1 <- "Largest absolute gradient value is not close to 0."
-me2 <- "Information matrix is not positive definite."
-me3 <- "Read the WARNINGS section in ?gjrm."
-
-if(gradi > 10 && e.v < 0){ warning(me1, call. = FALSE); warning(paste(me2,"\n",me3), call. = FALSE)} 
-if(gradi > 10 && e.v > 0)  warning(paste(me1,"\n",me3), call. = FALSE)
-if(gradi < 10 && e.v < 0)  warning(paste(me2,"\n",me3), call. = FALSE)
 
   ##########################################################################################################################
 gam1$call$data <- gam2$call$data <- gam3$call$data <- gam4$call$data <- gam5$call$data <- gam6$call$data <- gam7$call$data <- gam8$call$data <- cl$data 

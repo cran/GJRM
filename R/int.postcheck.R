@@ -34,7 +34,7 @@ if(mo$univar.gamlss == TRUE){
 
 y2     <- mo$y1
 eta2   <- mo$eta1
-sigma2 <- mo$sigma21 
+sigma2 <- mo$sigma21 <- mo$sigma2 
 nu     <- mo$nu1
 
 }

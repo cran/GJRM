@@ -7,6 +7,8 @@ print.summary.SemiParBIV <- function(x, digits = max(3, getOption("digits") - 3)
  cont2par <- ppR$cont2par
  cont3par <- ppR$cont3par
  
+ cont1par <- cont1par[1:2] # test this
+ 
  cop      <- ppR$cop
  lind     <- ppR$lind
  

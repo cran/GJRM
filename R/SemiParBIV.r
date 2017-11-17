@@ -491,17 +491,8 @@ if(gc.l == TRUE) gc()
 
   ##########################################################################################################################
 
+cov.c(SemiParFit)
 
-e.v <- round(min(eigen(SemiParFit$fit$hessian, symmetric=TRUE, only.values = TRUE)$values), 6)
-gradi <- round(max(abs(SemiParFit$fit$gradient)),1)
-
-me1 <- "Largest absolute gradient value is not close to 0."
-me2 <- "Information matrix is not positive definite."
-me3 <- "Read the WARNINGS section in ?SemiParBIV."
-
-if(gradi > 10 && e.v < 0){ warning(me1, call. = FALSE); warning(paste(me2,"\n",me3), call. = FALSE)} 
-if(gradi > 10 && e.v > 0)   warning(paste(me1,"\n",me3), call. = FALSE)
-if(gradi < 10 && e.v < 0)  warning(paste(me2,"\n",me3), call. = FALSE)
 
   ##########################################################################################################################
 
@@ -514,7 +505,7 @@ gam1$call$data <- gam2$call$data <- gam3$call$data <- gam4$call$data <- gam5$cal
 
 if( !(Model=="B" && !(margins[2] %in% bl) && end == 2) ) {dataset <- NULL; rm(data) } else { attr(data, "terms") <- NULL; dataset <- data; rm(data) } 
 
-L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula,
+L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, SemiParFit = SemiParFit,
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, 
           gam7 = gam7, gam8 = gam8,  
           coefficients = SemiParFit$fit$argument, coef.t = NULL, iterlimsp = iterlimsp,
@@ -579,7 +570,7 @@ L$Cop2      <- SemiParFit$fit$Cop2
 }
 
 
-class(L) <- "SemiParBIV"
+class(L) <- c("SemiParBIV","gjrm")
 
 L
 

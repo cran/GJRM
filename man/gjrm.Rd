@@ -29,7 +29,8 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
 \arguments{ 
 
 \item{formula}{In the basic setup this will be a list of two (or three) formulas, one for equation 1, the other for equation 2 and another one
-               for equation 3 if a trivariate model is fitted to the data. \code{s} terms 
+               for equation 3 if a trivariate model is fitted to the data. Otherwise, more equations can be used depending on the 
+               number of distributional parameters. \code{s} terms 
                are used to specify smooth functions of 
                   predictors; see the documentation of \code{mgcv} for further 
                   details on formula specifications. Note that if a selection model is employed (that is, \code{Model = "BSS"}
@@ -601,13 +602,13 @@ plot(out, eq = 1, scale = 0); lines(x2, f1.x2, col = "red")
 
 \dontrun{
 
-###################################################
-###################################################
-###################################################
-# JOINT MODELS WITH BINARY AND CONTINUOUS MARGINS #
-###################################################
-###################################################
-###################################################
+######################################################
+######################################################
+######################################################
+# JOINT MODELS WITH BINARY AND/OR CONTINUOUS MARGINS #
+######################################################
+######################################################
+######################################################
 
 library(GJRM)
 

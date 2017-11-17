@@ -17,7 +17,7 @@ l.splist <- list( l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3,
                   l.sp7 = l.sp7, l.sp8 = l.sp8 )
 
 
-if( ( l.sp1==0 && l.sp2==0 && l.sp3==0 && l.sp4==0 && l.sp5==0 && l.sp6==0 && l.sp7==0 && l.sp8==0 ) || VC$fp==TRUE) ps <- list(S.h = 0, S.h1 = 0, S.h2 = 0, qu.mag = NULL) else ps <- pen(qu.mag, sp, VC, univ = respvec$univ, l.splist)
+if( ( l.sp1==0 && l.sp2==0 && l.sp3==0 && l.sp4==0 && l.sp5==0 && l.sp6==0 && l.sp7==0 && l.sp8==0 ) || VC$fp==TRUE) ps <- ps1 <- list(S.h = 0, S.h1 = 0, S.h2 = 0, qu.mag = NULL) else ps <- ps1 <- pen(qu.mag, sp, VC, univ = respvec$univ, l.splist)
 
 
 
@@ -41,19 +41,19 @@ if( VC$penCor %in% c("lasso", "alasso") ) VC$sp <- sp
 
   parsc <- rep(VC$parscale, length(start.v) ); sc <- TRUE
 
-  fit  <- try( trust(func.opt, start.v, rinit = rinit, rmax = rmax, parscale = parsc,
+  fit  <- fit1 <- try( trust(func.opt, start.v, rinit = rinit, rmax = rmax, parscale = parsc,
                      respvec = respvec, VC = VC, ps = ps, blather = TRUE, 
                      iterlim = iterlim), silent = sc)   
 
   if(class(fit) == "try-error" || is.null(fit$l)){
   
-    fit  <- try( trust(func.opt, start.v, rinit = rinit, rmax = rmax, parscale = parsc,
+    fit  <- fit1 <- try( trust(func.opt, start.v, rinit = rinit, rmax = rmax, parscale = parsc,
                        respvec = respvec, VC = VC, ps = ps, blather = TRUE, 
                        iterlim = iterlim/4), silent = sc)  
                      
         if(class(fit) == "try-error"|| is.null(fit$l)){
         
-            fit  <- try( trust(func.opt, start.v, rinit = rinit, rmax = rmax, parscale = parsc,
+            fit  <- fit1 <- try( trust(func.opt, start.v, rinit = rinit, rmax = rmax, parscale = parsc,
                                respvec = respvec, VC = VC, ps = ps, blather = TRUE, 
                                iterlim = iterlim/10), silent = sc)   
 
@@ -70,7 +70,7 @@ if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop
   iter.if <- fit$iterations  
 
   conv.sp <- iter.sp <- iter.inner <- bs.mgfit <- wor.c <- magpp <- NULL
-  
+  conv.sp <- TRUE
   #####################################################################
 
   #VC$fp <- TRUE
@@ -111,9 +111,9 @@ if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop
                           
                           if(class(fit) == "try-error" || is.null(fit$l)){conv.sp <- FALSE
 
-                                                         ps <- pen(qu.mag, spo, VC, univ = respvec$univ, l.splist)
+                                                         ps <- ps1 # pen(qu.mag, spo, VC, univ = respvec$univ, l.splist)
 
-                                                         fit <- try( trust(func.opt, o.ests, rinit=rinit, rmax = rmax,  parscale = parsc,  
+                                                         fit <- try( trust(func.opt, c(fit1$argument), rinit=rinit, rmax = rmax,  parscale = parsc,  
 			                                              respvec = respvec, VC = VC, 
 			                                              ps = ps, 
                                                                       blather = TRUE, iterlim = iterlim), silent = sc)  
@@ -151,6 +151,7 @@ if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop
         
     }
 
+rm(fit1, ps1)
 
                   list(fit = fit, 
                        iter.if = iter.if, 

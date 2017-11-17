@@ -1,5 +1,5 @@
-\name{vis.SemiParBIV}
-\alias{vis.SemiParBIV}
+\name{vis.gjrm}
+\alias{vis.gjrm}
 
 \title{Visualization function}
 
@@ -15,7 +15,7 @@ the documentation of \code{vis.gam()} for full details.
 }
 
 \usage{
-vis.SemiParBIV(x, eq, ...)
+vis.gjrm(x, eq, fun = NULL, ...)
 }
 
 
@@ -23,7 +23,9 @@ vis.SemiParBIV(x, eq, ...)
   
 \item{x}{A fitted \code{gjrm} object.}
 
-\item{eq}{The equation from which smooth terms should be considered for printing.}
+\item{eq}{The equation number.}
+
+\item{fun}{Either mean or variance. If left as equal to NULL then predictions on the scale of the predictor will be produced.}
 
 \item{...}{Other graphics parameters to pass on to plotting commands, as described for \code{vis.gam()} in \code{mgcv}.}
 
@@ -34,6 +36,11 @@ vis.SemiParBIV(x, eq, ...)
 \value{
 The function generates plots.
 }
+
+
+
+
+
 
 
 

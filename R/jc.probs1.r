@@ -5,12 +5,12 @@ jc.probs1 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev
 epsilon <- 0.0000001 
 nu1 <- nu2 <- nu <- sigma2 <- 1
 CIp12 <- dof <- p12s <- dofs <- C1s <- C2s <- C11s <- C01s <- C10s <- C00s <- NULL
+CIkt <- tau <- NULL
 
 ######################################################################################################
 
 
 if(type == "joint"){ 
-
 
 
 ######################################################################
@@ -443,6 +443,12 @@ p12 <- ifelse(diffh1.h2 < epsilon, epsilon, diffh1.h2)
                          } ########## !BivD2 ##########
 
 
+
+
+
+
+
+
 }################### ok
 
 
@@ -454,7 +460,10 @@ p12 <- ifelse(diffh1.h2 < epsilon, epsilon, diffh1.h2)
 
 
 
+# kendalls' tau
 
+if(x$BivD %in% x$BivD2)    tau <- Reg2Copost(x$SemiParFit, x$VC, theta)$tau 
+if(!(x$BivD %in% x$BivD2)) tau <- ass.ms(x$VC$BivD, x$VC$nCa, theta)$tau
 
 
 
@@ -1073,6 +1082,45 @@ p12s <- ifelse( p12s < epsilon, epsilon, p12s )
 
 
 
+nCa   <- x$VC$nCa
+BivDt <- x$VC$BivD
+
+  if(x$BivD %in% x$BivD2){
+  
+  if(x$BivD %in% x$BivD2[1:4]) { BivDt <- "C0"; nCa <- 3} 
+  if(x$BivD %in% x$BivD2[5:8]) { BivDt <- "J0"; nCa <- 6}
+  if(x$BivD %in% x$BivD2[9:12]){ BivDt <- "G0"; nCa <- 4}
+  
+                         }
+  
+ass.msR <- ass.ms(BivDt, nCa, est.RHOb)
+taus    <- ass.msR$tau
+if(!is.null(x$X3) && BivDt %in% c("AMH", "FGM")) taus <- matrix(taus, nrow(x$X3), nrow(bs))
+CIkt <- rowQuantiles(taus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+#if( is.null(x$X3) ) CIkt <- t(CIkt) 
+
+
+
+ if(x$BivD %in% x$BivD2){ 
+ 
+   if(length(x$theta) > 1){
+ 
+     if( length(x$teta2) != 0) CIkt[x$teta.ind2, ] <- -CIkt[x$teta.ind2, ]; CIkt[x$teta.ind2, c(1,2)] <- CIkt[x$teta.ind2, c(2,1)] 
+                                 
+                          }else{
+ 
+     if( length(x$teta2) != 0) CIkt <- -CIkt; CIkt[, c(1,2)] <- CIkt[, c(2,1)]
+                                 
+                                }
+ }
+
+
+
+
+
+
+
+
 
 
 } # interv
@@ -1372,7 +1420,7 @@ if(cond == 2) p12s <- p1s
 
 
 
-list(p12 = p12, p12s = p12s, p1 = p1, p2 = p2, p3 = NULL)
+list(p12 = p12, p12s = p12s, p1 = p1, p2 = p2, p3 = NULL, CIkt = CIkt, tau = tau)
 
 
 }

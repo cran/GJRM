@@ -462,20 +462,11 @@ if(missing(parscale)) parscale <- 1
   SemiParFit <- SemiParFit.p$SemiParFit # useful for SS models, eta2 calculatons etc.    
     
   ##########################################################################################################################
-                                            
-                                            
-if(gc.l == TRUE) gc()
+                                                                                      
+  if(gc.l == TRUE) gc()
 
-e.v <- round(min(eigen(SemiParFit$fit$hessian, symmetric=TRUE, only.values = TRUE)$values), 6)
-gradi <- round(max(abs(SemiParFit$fit$gradient)),1)
+  cov.c(SemiParFit)
 
-me1 <- "Largest absolute gradient value is not close to 0."
-me2 <- "Information matrix is not positive definite."
-me3 <- "Read the WARNINGS section in ?SemiParTRIProbit."
-
-if(gradi > 10 && e.v < 0){ warning(me1, call. = FALSE); warning(paste(me2,"\n",me3), call. = FALSE)} 
-if(gradi > 10 && e.v > 0)   warning(paste(me1,"\n",me3), call. = FALSE)
-if(gradi < 10 && e.v < 0)  warning(paste(me2,"\n",me3), call. = FALSE)
   ##########################################################################################################################
 
 gam1$call$data <- gam2$call$data <- gam3$call$data <- gam4$call$data <- gam5$call$data <- gam6$call$data <- gam7$call$data <- gam8$call$data <- cl$data 
@@ -538,7 +529,7 @@ L <- list(fit = SemiParFit$fit, formula = formula, Model = Model,
           p1n = SemiParFit.p$p1n, p2n = SemiParFit.p$p2n, p3n = SemiParFit.p$p3n, v1 = v1, v2 = v2, v3 = v3, univar.gamlss = FALSE, call = cl,
           surv = FALSE, surv.flex = surv.flex)
 
-class(L) <- c("SemiParTRIV","SemiParBIV")
+class(L) <- c("SemiParTRIV","SemiParBIV","gjrm")
 
 L
 

@@ -1,5 +1,5 @@
 Package: GJRM
-Version: 0.1-2
+Version: 0.1-3
 Author: Giampiero Marra <giampiero.marra@ucl.ac.uk> and Rosalba Radice <r.radice@bbk.ac.uk>
 Maintainer: Giampiero Marra <giampiero.marra@ucl.ac.uk>
 Title: Generalised Joint Regression Modelling
@@ -13,6 +13,6 @@ LazyLoad: yes
 License: GPL (>= 2)
 URL: http://www.ucl.ac.uk/statistics/people/giampieromarra
 Repository: CRAN
-Date/Publication: 2017-09-22 13:31:07 UTC
+Date/Publication: 2017-11-17 10:01:53 UTC
 NeedsCompilation: no
-Packaged: 2017-09-22 13:12:09 UTC; GM
+Packaged: 2017-11-17 09:49:24 UTC; GM

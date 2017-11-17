@@ -27,6 +27,8 @@
 \alias{bcorrecFuncs}
 \alias{Xdpred}
 \alias{mmf}
+\alias{vis.gam2}
+\alias{cov.c}
 
 
 \title{Internal Function}

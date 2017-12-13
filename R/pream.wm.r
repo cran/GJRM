@@ -1,6 +1,9 @@
 pream.wm <- function(formula, margins, M, l.flist, type = "copR"){
   
+  
+  #if(margins[2] %in% c("GU", "rGU", "LO", "LN", "WEI","iG", "DAGUM", "SM", "BE", "FISK") ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
   #scs <- c("WEI", "FISK", "LN", "LO", "N", "N2") # for survival models
+  
   scs <- c("WEI", "FISK") # for survival models
 
   
@@ -196,7 +199,6 @@ if(type == "copSS"){
  
  
  #####
- if(margins[2] %in% c("GU", "rGU", "LO", "LN", "WEI","iG", "DAGUM", "SM", "BE", "FISK") ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
  
 
 }

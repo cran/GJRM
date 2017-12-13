@@ -1,5 +1,5 @@
-f166abdbdeb376d6845856ec8c46e26d *ChangeLog
-57a01ce647e1357ccc561bb294b1f301 *DESCRIPTION
+a2c937d72a3270ac38012024043d5670 *ChangeLog
+df6051eebb6c7eb5780db06960599d6d *DESCRIPTION
 5263b7a23923e9232561909326cc2488 *NAMESPACE
 4ec4b856d545647550c19f8a4cb8d101 *R/AT.r
 c6b4d675aa9d6e5e60c9be116a7741ee *R/AT2.r
@@ -129,8 +129,8 @@ e674b8e0c56c407888267ff19d27a5a2 *R/polys.setup.r
 acf5bfa3f17c4db1b2413ecfce0434b1 *R/post.check.R
 3757adc42a48a866dc998261e580531b *R/postVb.r
 4c2b1c4d45c2c1658b09be78b6c9265d *R/pp.r
-8be6e8327cab23bfb48b77030db08d50 *R/pream.wm.r
-0b38c6e32601e8bd74255ff21424ef6d *R/pred.mvt.r
+4a4a437b35e1ddd25806f00e97df8eeb *R/pream.wm.r
+193372161cd0be89b69efdd7c7920585 *R/pred.mvt.r
 bb4413a90d5ecc6abf1670901ca63d89 *R/pred.var.r
 433ca486b97cd6b9fdc047c87991c1c6 *R/predict.SemiParBIV.r
 362070541edc3fe17501904c61561f3a *R/prev.r
@@ -232,7 +232,7 @@ cd11cbadf1f9c365ab83ba4e048361b8 *man/plot.SemiParBIV.Rd
 2faef87e1a9f49f011ac261a7edab9c2 *man/polys.map.Rd
 f4258bce1c498a06eaca8ff9e2a900d5 *man/polys.setup.Rd
 b1319d928ff55771ad00150cde313c7f *man/post.check.Rd
-6d1fdc42bd27336030de6777dc3c6554 *man/pred.mvt.Rd
+b908e0f150f807cc2ccb365c4987768a *man/pred.mvt.Rd
 aad95b0578dc9be76920a377bd69a534 *man/predict.SemiParBIV.Rd
 1654dd2d73ce29ff33bce88601769548 *man/prev.Rd
 114f1c72124fdf7949b50bdbc2ce83aa *man/print.AT.Rd

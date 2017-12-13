@@ -13,7 +13,7 @@ produces predictions and respective intervals.
 }
 
 \usage{
-pred.mvt(x, eq, fun = "mean", n.sim = 100, prob.lev = 0.05, ...)
+pred.mvt(x, eq, fun = "mean", n.sim = 100, prob.lev = 0.05, smooth.no = NULL, ...)
 }
 
 
@@ -30,6 +30,9 @@ to calculate intervals. It may be increased if
             more precision is required.} 
 
 \item{prob.lev}{Probability of the left and right tails of the posterior distribution used for interval calculations.} 
+
+\item{smooth.no}{Smooth number if the interest is in a particular smooth and not the additive predictor(s).} 
+
 
 \item{...}{Other parameters.}
 

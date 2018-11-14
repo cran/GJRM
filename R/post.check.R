@@ -71,6 +71,11 @@ abline(0, 1, col = "red")
 
 if(x$surv.flex == FALSE){##
 
+mbin <- c("probit", "logit", "cloglog")
+
+
+if(x$VC$margins[1] %in% mbin &&  x$VC$margins[2] %in% mbin ) stop("It does not make much sense to check the residuals for a binary response model.")
+
 
 if(x$Cont == "NO"){
 

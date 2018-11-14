@@ -29,6 +29,10 @@ if(margin == "PIG")   y <- rPIG(  rsim,    mu = exp(eta),    sigma = sqrt(sigma2
 if(margin == "PO")    y <- rPO(   rsim,    mu = exp(eta)) 
 if(margin == "ZTP")   y <- rZTP(  rsim,    mu = exp(eta)) 
 
+
+if(margin %in% c("probit", "logit", "cloglog"))  y <- rbinom(rsim, 1, prob = probm(eta, margin)$pr )
+                                                
+
 if(setseed == TRUE) rm(list = ".Random.seed", envir = globalenv()) 
 
 y

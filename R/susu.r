@@ -1,4 +1,4 @@
-susu <- function(object, SE, Vb){
+susu <- function(object, SE, Vb, informative = "no", K1 = NULL){
 
   tableN <- table <- list(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
 
@@ -6,37 +6,54 @@ susu <- function(object, SE, Vb){
   liu2   <- getFromNamespace("liu2", "mgcv") 
 
   index <- 1:2
+  
+  if(informative == "yes") index <- 1
+  
+  
+if (!is.null(K1)) {
+  
+	CLM.shift  <- K1 - 2
+	CLM.shift2 <- CLM.shift + 1 # This is needed because in CopulaCLM the intercept has been already removed from X1.d2
+} else {
+	CLM.shift <- 0 ; CLM.shift2 <- 0
+}  
+  
+  
   ind1 <- 1:object$gp1
-  ind2 <- object$X1.d2 + (1:object$gp2)
+  ind2 <- object$X1.d2 + (1:object$gp2) + CLM.shift2
   ind3 <- ind4 <- ind5 <- ind6 <- ind7 <- ind8 <- NULL 
+  
+  if(informative == "yes"){ index <- 1; ind2 <- NULL }
+  
+  
   
   if(!is.null(object$X3) ) {
   
-       ind3 <- object$X1.d2 + object$X2.d2 + (1:object$gp3)
+       ind3 <- object$X1.d2 + object$X2.d2 + (1:object$gp3) + CLM.shift2
        index <- 1:3
        
        if(!is.null(object$X4) ) {
-       ind4 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + (1:object$gp4)
+       ind4 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + (1:object$gp4) + CLM.shift2
        index <- 1:4
        }
                                 
        if(!is.null(object$X5) ) {
-       ind5 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + (1:object$gp5)
+       ind5 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + (1:object$gp5) + CLM.shift2
        index <- 1:5  
        }     
                                 
        if(!is.null(object$X6) ) {
-       ind6 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + (1:object$gp6)
+       ind6 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + (1:object$gp6) + CLM.shift2
        index <- 1:6  
        }  
        
        if(!is.null(object$X7) ) {
-       ind7 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + (1:object$gp7)
+       ind7 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + (1:object$gp7) + CLM.shift2
        index <- 1:7  
        }
        
        if(!is.null(object$X8) ) {
-       ind8 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + (1:object$gp8)
+       ind8 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + (1:object$gp8) + CLM.shift2
        index <- 1:8  
        }         
                             
@@ -60,6 +77,7 @@ susu <- function(object, SE, Vb){
   table[[i]] <- cbind(estimate,se,ratio,pv)
   dimnames(table[[i]])[[2]] <- c("Estimate", "Std. Error", "z value", "Pr(>|z|)")
   }
+  
 
   
   if( object$l.sp1!=0 || object$l.sp2!=0 || object$l.sp3!=0 || object$l.sp4!=0 || object$l.sp5!=0 || object$l.sp6!=0 || object$l.sp7!=0 || object$l.sp8!=0){
@@ -80,14 +98,14 @@ susu <- function(object, SE, Vb){
   
 		for(k in 1:mm){
 
-                        if(i==1){ gam <- object$gam1; ind <-  gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para                                } 
-                        if(i==2){ gam <- object$gam2; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + object$X1.d2                } 
-                        if(i==3){ gam <- object$gam3; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + object$X1.d2 + object$X2.d2 }
-                        if(i==4){ gam <- object$gam4; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + object$X1.d2 + object$X2.d2 + object$X3.d2 }
-                        if(i==5){ gam <- object$gam5; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 }
-                        if(i==6){ gam <- object$gam6; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 }
-                        if(i==7){ gam <- object$gam7; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 }
-                        if(i==8){ gam <- object$gam8; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 }
+                        if(i==1){ gam <- object$gam1; ind <-  gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para  + CLM.shift                               } 
+                        if(i==2){ gam <- object$gam2; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2                } 
+                        if(i==3){ gam <- object$gam3; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 }
+                        if(i==4){ gam <- object$gam4; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 }
+                        if(i==5){ gam <- object$gam5; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 }
+                        if(i==6){ gam <- object$gam6; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 }
+                        if(i==7){ gam <- object$gam7; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 }
+                        if(i==8){ gam <- object$gam8; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 }
                           
                           
                         gam$sig2            <- 1

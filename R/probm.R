@@ -1,4 +1,4 @@
-probm <- function(eta, margin, only.pr = TRUE, bc = FALSE, tau = NULL){ # bc stands for binary continuous case
+probm <- function(eta, margin, only.pr = TRUE, bc = FALSE, tau = NULL, CLM = FALSE){ # bc stands for binary continuous case
  
   epsilon <- 0.0000001 
   
@@ -58,6 +58,10 @@ if( margin == "probit" ){
 
 if( margin == "logit" ){
  
+ 
+
+if(CLM == FALSE){
+ 
   pr  <- plogis(eta)
   
   if(only.pr == FALSE){
@@ -75,6 +79,43 @@ if( margin == "logit" ){
                            exp(-eta)/(1 + exp(-eta))
 
   }
+
+
+}
+
+if(CLM == TRUE){
+
+
+
+  ex_eta <- exp(-eta) ; ex_eta[ex_eta == Inf] <- 1e+25 # FD: CLM addition
+
+
+  pr  <- plogis(eta)
+  
+  if(only.pr == FALSE){
+  
+  d.n <- dlogis(eta)
+  d.n <- ifelse(d.n < epsilon, epsilon, d.n )
+  der2p.dereta <- -((1 - 2 * (ex_eta/(1 + ex_eta))) * ex_eta/(1 + ex_eta)^2)
+  
+  }
+  
+  if(bc == TRUE){
+  derp1.dereta1    <- -((1 - ex_eta/(1 + ex_eta)) * ex_eta/(1 + ex_eta)) # First derivative of 1-prob(eta1) respect to eta1.
+      
+  der2p1.dereta1eta1 <- (1 - (3 - 2 * (ex_eta/(1 + ex_eta))) * ex_eta/(1 + ex_eta)) * 
+                           ex_eta/(1 + ex_eta)
+
+  }
+  
+
+
+
+
+
+}
+
+
   
 }
 
@@ -170,7 +211,7 @@ if( margin == "log" ){
 }
 
 
-  pr <- mm(pr) 
+ if(CLM == FALSE) pr <- mm(pr) 
   
     
     

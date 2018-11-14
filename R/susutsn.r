@@ -1,7 +1,26 @@
-susutsn <- function(object, bs, lf, cont1par, cont2par, cont3par, prob.lev, type = "copR", bin.link = NULL, n.sim = NULL ){
+susutsn <- function(object, bs, lf, cont1par, cont2par, cont3par, prob.lev, type = "copR", bin.link = NULL, n.sim = NULL, K1 = NULL ){
 
 
 CIrs <- CIkt <- CIsig21 <- CIsig22 <- CInu1 <- CInu2 <- CIdof <- CInu <- CIsig2 <- est.RHOb <- NULL
+
+
+
+if (!is.null(K1)) {
+  
+	CLM.shift  <- K1 - 2
+	CLM.shift2 <- CLM.shift + 1 # This is needed because in CopulaCLM the intercept has been already removed from X1.d2
+} else {
+	CLM.shift <- 0 ; CLM.shift2 <- 0
+}  
+
+
+
+
+
+
+
+
+
 
 
 
@@ -23,18 +42,16 @@ if( is.null(object$VC$theta.fx) ){############
   if(object$VC$Model == "BSS")  X3x <- object$X3s else X3x <- object$X3 
   
   if( !is.null(object$X3) ) epds <- X3x%*%t(bs[,(object$X1.d2+object$X2.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2)])
-  if(  is.null(object$X3) ) epds <- bs[,lf]
+  if(  is.null(object$X3) ) epds <- bs[,lf] 
   
                                                                                   }
   
   
   
-  
-  
   if(object$VC$margins[2] %in% cont2par ){
   
-  if( !is.null(object$X3) ) sigma2.st <- object$X3%*%t(bs[,(object$X1.d2+object$X2.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2)]) 
-  if(  is.null(object$X3) ) sigma2.st <- bs[, lf-1]
+  if( !is.null(object$X3) ) sigma2.st <- object$X3%*%t(bs[,(object$X1.d2+object$X2.d2+1 + CLM.shift2):(object$X1.d2+object$X2.d2+object$X3.d2+ CLM.shift2)]) 
+  if(  is.null(object$X3) ) sigma2.st <- bs[, lf-1] # correct also in ordinal
   
 
    sigma2 <- esp.tr(sigma2.st, object$VC$margins[2])$vrb  
@@ -44,12 +61,12 @@ if( is.null(object$VC$theta.fx) ){############
    CIsig2 <- rowQuantiles(sigma2, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
    if( is.null(object$X3) ) CIsig2 <- t(CIsig2) 
 
-  if( !is.null(object$X4) ) epds <- object$X4%*%t(bs[,(object$X1.d2+object$X2.d2+object$X3.d2 + 1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2)])
-  if(  is.null(object$X4) ) epds <- bs[, lf]  
+  if( !is.null(object$X4) ) epds <- object$X4%*%t(bs[,(object$X1.d2+object$X2.d2+object$X3.d2 + 1+ CLM.shift2):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+ CLM.shift2)])
+  if(  is.null(object$X4) ) epds <- bs[, lf]  # correct also in ordinal
    
   } 
   
-  
+  # to do the ones below it is enough to add the shift as done above (in the ordinal case)
   
   
     if(object$VC$margins[2] %in% cont3par ){
@@ -92,6 +109,8 @@ if( is.null(object$VC$theta.fx) ){############
 }#############
 
 }# biv
+
+
 
 
 

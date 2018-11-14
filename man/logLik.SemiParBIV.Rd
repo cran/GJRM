@@ -1,5 +1,6 @@
 \name{logLik.SemiParBIV}
 \alias{logLik.SemiParBIV}
+\alias{logLik.ggmtrust}
 
 \title{Extract the log likelihood for a fitted copula model}
 

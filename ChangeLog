@@ -1,15 +1,18 @@
+version 0.1-5
+- various bug fixed and more models introduced.
+
 version 0.1-4
 - sample selection models with all types of marginal distributions allowed for.
-- pred.mvt function to calculate covariate effects on the real scale.
+- pred.mvt function to calculate covariate effects on the real scale
 
 version 0.1-3
 - summary function for bivariate binary models fixed.
 - jc.probs() extended to include calculation of tau and intervals.
-- vis.gjrm function extended.
+- vis.gjrm funcion extended.
 
 version 0.1-2
 - all fitting functions merged and included in gjrm().
-- manual updated.
+- manual updated
 
 version 0.1-1
 - initial release of GJRM which is the continuation of SemiParBIVProbit. 

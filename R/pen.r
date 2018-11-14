@@ -20,8 +20,10 @@ pen <- function(qu.mag, sp, VC, univ, l.splist){
                    
 ##############################################################
     
-##############################################################    
-    ma2 <- matrix(0,VC$gp2,VC$gp2) 
+##############################################################   
+
+    if( is.null(VC$gp2.inf) ) ma2 <- matrix(0,VC$gp2,VC$gp2) else ma2 <- matrix(0,VC$gp2.inf,VC$gp2.inf) 
+    
     if(l.splist$l.sp2 == 0) EQ2P <- adiag(ma2)    
     
     if(l.splist$l.sp2 != 0){
@@ -204,7 +206,10 @@ if(VC$triv == FALSE){    ### TRIV
     
     if(univ == 2){
     
-       if(VC$margins[1] %in% c(VC$m1d,VC$bl))        S.h <- adiag(EQ1P)         
+       if(VC$margins[1] %in% c(VC$m1d,VC$bl))        S.h <- adiag(EQ1P)   
+       
+       if(VC$margins[1] %in% c(VC$bl) && !is.null(VC$gp2.inf)) S.h <- adiag(EQ1P, EQ2P)   # this is for informative censoring
+       
        if(VC$margins[1] %in% c(VC$m2,VC$m2d) ) S.h <- adiag(EQ1P, EQ2P)         
        if(VC$margins[1] %in% VC$m3           ) S.h <- adiag(EQ1P, EQ2P, EQ3P)   
    

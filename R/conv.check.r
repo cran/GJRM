@@ -1,12 +1,12 @@
 conv.check <- function(x){
 
-e.v <- eigen(x$fit$hessian, symmetric=TRUE, only.values = TRUE)$values
+e.v <- eigen(x$fit$hessian, symmetric = TRUE, only.values = TRUE)$values
 
 cat("\nLargest absolute gradient value:",max(abs(x$fit$gradient)))
 
 if(x$hess==TRUE) mv <- "Observed" else mv <- "Expected" 
 
-if (min(e.v) > 0) cat("\n",mv," information matrix is positive definite\n",sep="") else cat("\n",mv," information matrix is NOT positive definite\n",sep="")
+if (min(e.v) > 0) cat("\n",mv," information matrix is positive definite\n",sep="") else cat("\n",mv," information matrix is not positive definite\n",sep="")
 
 cat("Eigenvalue range: [",min(e.v),",",max(e.v),"]\n", sep = "")
 

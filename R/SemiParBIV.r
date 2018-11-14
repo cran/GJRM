@@ -3,7 +3,8 @@ SemiParBIV <- function(formula, data = list(), weights = NULL, subset = NULL,
                              dof = 3, gamlssfit = FALSE,
                              fp = FALSE, hess = TRUE, infl.fac = 1, theta.fx = NULL, 
                              rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
-                             gc.l = FALSE, parscale, extra.regI = "t", intf = FALSE, knots = NULL){
+                             gc.l = FALSE, parscale, extra.regI = "t", intf = FALSE, knots = NULL,
+                             drop.unused.levels = TRUE){
   
   ##########################################################################################################################
   # model set up and starting values
@@ -38,8 +39,9 @@ SemiParBIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   M    <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, BivD = BivD, 
                opc = opc, extra.regI = extra.regI, margins = margins, bl = bl, intf = intf,
                theta.fx = theta.fx, Model = Model, mb = mb, BivD2 = BivD2, dof = dof)  
-    surv.flex <- FALSE
+  surv.flex <- FALSE
 
+  M$K1 <- NULL
   ct  <- data.frame( c(opc),
                     c(1:14,55,56,57,60,61) 
                      )
@@ -86,8 +88,8 @@ if(BivD %in% BivD2){
   fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
-  mf$knots <- mf$dof <- mf$intf <- mf$theta.fx <- mf$Model <- mf$BivD <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
-  mf$drop.unused.levels <- TRUE 
+  mf$ordinal <- mf$knots <- mf$dof <- mf$intf <- mf$theta.fx <- mf$Model <- mf$BivD <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
+  mf$drop.unused.levels <- drop.unused.levels
   
   if(Model=="BSS") mf$na.action <- na.pass
   
@@ -127,7 +129,7 @@ if(BivD %in% BivD2){
  ##############################################################  
    
   gam1 <- eval(substitute(gam(formula.eq1, binomial(link = margins[1]), gamma=infl.fac, weights=weights, 
-                              data=data, knots = knots),list(weights=weights))) 
+                              data=data, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights))) 
 
   X1 <- model.matrix(gam1)
   X1.d2 <- dim(X1)[2]
@@ -146,7 +148,7 @@ if(BivD %in% BivD2){
   if((Model=="B" || Model=="BPO" || Model=="BPO0") && margins[2] %in% bl){
   
   gam2  <- eval(substitute(gam(formula.eq2, binomial(link=margins[2]), gamma=infl.fac, weights=weights, 
-                           data=data, knots = knots),list(weights=weights))) # check at later stage the need of eval and substitute
+                           data=data, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights))) # check at later stage the need of eval and substitute
 
   X2 <- model.matrix(gam2)
   X2.d2 <- dim(X2)[2]
@@ -178,7 +180,7 @@ if(BivD %in% BivD2){
     y2.test      <- form.eq12R$y1.test 
     y2m          <- form.eq12R$y1m  
   
-    gam2         <- eval(substitute(gam(formula.eq2, gamma=infl.fac, weights=weights, data=data, knots = knots),list(weights=weights)))
+    gam2         <- eval(substitute(gam(formula.eq2, gamma=infl.fac, weights=weights, data=data, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights)))
     gam2$formula <- formula.eq2r  
     names(gam2$model)[1] <- as.character(formula.eq2r[2])
 
@@ -203,7 +205,7 @@ if(BivD %in% BivD2){
   inde <- as.logical(y1)
 
   gam2 <- eval(substitute(gam(formula.eq2, binomial(link = margins[2]), gamma=infl.fac, weights=weights, 
-                              data=data, subset=inde, knots = knots),list(weights=weights,inde=inde)))  
+                              data=data, subset=inde, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights,inde=inde)))  
   
 ######
 # TEST
@@ -231,7 +233,7 @@ if(class(X2s)=="try-error") stop("Check that the numbers of factor variables' le
   p.g1 <- predict.gam(gam1)
   imrGUANN <- data$imrGUANN <- dnorm(p.g1)/pnorm(p.g1)
     
-  gam2.1 <- eval(substitute(gam(form.eq2imr, gamma=infl.fac, binomial(link = margins[2]), weights=weights, data=data, subset=inde, knots = knots),list(weights = weights, inde = inde)))
+  gam2.1 <- eval(substitute(gam(form.eq2imr, gamma=infl.fac, binomial(link = margins[2]), weights=weights, data=data, subset=inde, knots = knots, drop.unused.levels = drop.unused.levels),list(weights = weights, inde = inde)))
   pimr   <- which(names(gam2.1$coefficients)=="imrGUANN")
   
   c.gam2 <- gam2.1$coefficients[-pimr]
@@ -311,7 +313,7 @@ if(margins[1] %in% bl && margins[2] %in% c(m2,m3,m2d) ){
   
 if(l.flist > 2){  
  
-vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2 = log.sig2, log.nu = log.nu, n = n)  
+vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2 = log.sig2, log.nu = log.nu, n = n, drop.unused.levels = drop.unused.levels)  
   
     overall.svGR <- overall.svG(formula, data, ngc = 2, margins, M, vo, gam1, gam2, type = "biv", inde = inde, c.gam2 = c.gam2, knots = knots)
     
@@ -381,7 +383,7 @@ if(missing(parscale)) parscale <- 1
   lsgam7 <- length(gam7$smooth)
   lsgam8 <- length(gam8$smooth)
 
-  VC <- list(lsgam1 = lsgam1,
+  VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL,K1 = NULL,
              lsgam2 = lsgam2,
              lsgam3 = lsgam3,
              lsgam4 = lsgam4,
@@ -433,7 +435,8 @@ if(missing(parscale)) parscale <- 1
              Cont = "NO", ccss = "no", m2 = m2, m3 = m3, m2d = m2d, m1d = m1d, m3d = NULL, bl = bl,
              X2s = X2s, X3s = X3s, triv = FALSE, y2m = y2m,
              theta.fx = theta.fx, i.rho = i.rho, 
-             BivD2 = BivD2, cta = cta, ct = ct, zerov = -10, surv.flex = surv.flex) # original n only needed in SemiParBIV.fit
+             BivD2 = BivD2, cta = cta, ct = ct, zerov = -10, surv.flex = surv.flex, gp2.inf = NULL,
+             informative = "no") # original n only needed in SemiParBIV.fit
              
   if(gc.l == TRUE) gc()           
              
@@ -448,7 +451,7 @@ if(gamlssfit == TRUE && !(margins[2] %in% bl)){
   gamlss2 <- eval(substitute(gamlss(form.gamlR$formula.gamlss2, data = data, weights = weights, subset = subset,  
                    margin = margins[2], infl.fac = infl.fac, 
                    rinit = rinit, rmax = rmax, iterlimsp = iterlimsp, tolsp = tolsp,
-                   gc.l = gc.l, parscale = 1, extra.regI = extra.regI), list(weights=weights)))   
+                   gc.l = gc.l, parscale = 1, extra.regI = extra.regI, drop.unused.levels = drop.unused.levels), list(weights=weights)))   
                       
   # updated starting values                   
   
@@ -505,7 +508,35 @@ gam1$call$data <- gam2$call$data <- gam3$call$data <- gam4$call$data <- gam5$cal
 
 if( !(Model=="B" && !(margins[2] %in% bl) && end == 2) ) {dataset <- NULL; rm(data) } else { attr(data, "terms") <- NULL; dataset <- data; rm(data) } 
 
-L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, SemiParFit = SemiParFit,
+
+formula.aux <- NULL
+
+
+if(Model == "BSS"){
+
+
+# this is for mice # 
+
+formula.aux <- formula
+
+formula.aux[[1]] <- reformulate( attr(terms(formula.aux[[1]]), "term.labels"), response = "ry" )
+environment(formula.aux[[1]]) <- environment(formula[[1]])
+
+
+formula.aux[[2]] <- reformulate( attr(terms(formula.aux[[2]]), "term.labels"), response = "y" )
+environment(formula.aux[[2]]) <- environment(formula[[2]])
+
+###
+
+
+
+}
+
+
+
+
+
+L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, SemiParFit = SemiParFit, mice.formula = formula.aux,
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, 
           gam7 = gam7, gam8 = gam8,  
           coefficients = SemiParFit$fit$argument, coef.t = NULL, iterlimsp = iterlimsp,

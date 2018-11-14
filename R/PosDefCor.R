@@ -4,7 +4,7 @@ PosDefCor <- function(Sigma, Chol = FALSE, theta12.st, theta13.st, theta23.st){
 if(Chol == FALSE){
   
   eS <- eigen(Sigma)                 
-  check.eigen <- any(eS$values < 0)
+  check.eigen <- any(eS$values <= 0)
   
   if(check.eigen == TRUE){
     

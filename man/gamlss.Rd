@@ -20,7 +20,10 @@ gamlss(formula, data = list(), weights = NULL, subset = NULL,
        robust = FALSE, rc = 3, lB = NULL, uB = NULL, infl.fac = 1, 
        rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
        gc.l = FALSE, parscale, extra.regI = "t", gev.par = -0.25,
-       chunk.size = 10000, k.tvc = 0, knots = NULL)
+       chunk.size = 10000, k.tvc = 0, knots = NULL,
+       informative = "no", inform.cov = NULL, margin2 = "PH", 
+       fp = FALSE, sp = NULL,
+       drop.unused.levels = TRUE)
 }
 
 
@@ -56,8 +59,8 @@ gamlss(formula, data = list(), weights = NULL, subset = NULL,
              
 \item{rc}{Robust constant.}       
 
-\item{lB, uB}{Lower and upper bounds for integrals, when robust estimation is employed. If not provided then standard bounds are used.}  
- 
+\item{lB, uB}{Bounds for integral in robust case.}  
+
 \item{infl.fac}{Inflation factor for the model degrees of freedom in the approximate AIC. Smoother models can be obtained setting 
              this parameter to a value greater than 1.}
 
@@ -90,12 +93,25 @@ documentation of \code{trust} for more details.}
 
 \item{knots}{Optional list containing user specified knot values to be used for basis construction.}
   
+\item{informative}{If "yes" then informative censoring is assumed when using a survival model.}
+  
+\item{inform.cov}{If above is "yes" then a set of informative covariates must be provided.}
+  
+\item{margin2}{In the informative survival case, the margin for the censored equation can be different from that of the survival equation.}
+  
+\item{fp}{If \code{TRUE} then a fully parametric model with unpenalised regression splines if fitted.}              
+  
+\item{sp}{A vector of smoothing parameters can be provided here. Smoothing parameters must be supplied in the order that the smooth 
+          terms appear in the model equation(s).}  
+ 
+\item{drop.unused.levels}{By default unused levels are dropped from factors before fitting. For some smooths involving factor variables 
+                          this may have to be turned off (only use if you know what you are doing).}  
 }
 
 
 \details{
 
-The underlying algorithm is described in ?SemiParBIV. 
+The underlying algorithm is described in ?gjrm. 
 
 There are many continuous/discrete distributions to choose from and we plan to include more 
 options. Get in touch if you are interested in a particular distribution.
@@ -125,6 +141,9 @@ Marra G. and Radice R. (2017), Bivariate Copula Additive Models for Location, Sc
 Rigby R.A. and Stasinopoulos D.M. (2005). Generalized additive models for location, scale and shape (with discussion). \emph{Journal of the Royal Statistical Society, Series C}, 54(3), 507-554.
 
 Calabrese R., Marra G. and Osmetti SA (2016), Bankruptcy Prediction of Small and Medium Enterprises Using a Flexible Binary Generalized Extreme Value Model. \emph{Journal of the Operational Research Society}, 67(4), 604-615.
+
+Marincioni V., Marra G., Altamirano-Medina H. (2018), Development of Predictive Models for the Probabilistic Moisture Risk Assessment of Internal Wall Insulation. \emph{Building and Environment}, 137, 5257-267. 
+
 
 }
 
@@ -200,6 +219,7 @@ out <- gamlss(fl, data = dataSim, margin = "N", robust = TRUE,
 
 conv.check(out)
 summary(out)
+rob.const(out, 100)
 
 ##
 
@@ -323,7 +343,7 @@ u       <- apply(cbind(t, c), 1, min)
 dataSim <- data.frame(u, delta, z1, z2)
 1-mean(delta) # average censoring rate
 
-out <- gamlss(list(u ~ z1 + s(z2) + s(u, bs = "mpi") ), data = dataSim, 
+out <- gamlss(list(u ~ s(u, bs = "mpi") + z1 + s(z2) ), data = dataSim, 
               surv = TRUE, margin = "PH", cens = delta)
 post.check(out)
 summary(out)
@@ -377,7 +397,7 @@ u       <- apply(cbind(t, c), 1, min)
 dataSim <- data.frame(u, delta, z)
 1-mean(delta) # average censoring rate
 
-out <- gamlss(list(u ~ z + s(u, bs = "mpi") ), data = dataSim, surv = TRUE, 
+out <- gamlss(list(u ~ s(u, bs = "mpi") + z ), data = dataSim, surv = TRUE, 
               margin = "PO", cens = delta)
 post.check(out)
 summary(out)
@@ -402,5 +422,6 @@ out1 <- gamlss(list(u ~ z), data = dataSim, surv = TRUE,
 \keyword{smooth} 
 \keyword{regression spline}
 \keyword{distribution}
+\keyword{survival data}
 
 

@@ -1,4 +1,4 @@
-copgHs <- function(p1, p2, eta1 = NULL, eta2 = NULL, teta, teta.st, BivD, nu = NULL, nu.st = NULL){
+copgHs <- function(p1, p2, eta1 = NULL, eta2 = NULL, teta, teta.st, BivD, nu = NULL, nu.st = NULL, CLM = FALSE){
 
 ########################################################################################
 
@@ -882,9 +882,15 @@ max.p   <- 0.9999999
 
 # the bits below are probs
   
+  
+if(CLM == FALSE){  
+  
 c.copula.be2 <- mm(c.copula.be2)
 c.copula.be1 <- mm(c.copula.be1)
 c.copula2.be1be2 <- ifelse(c.copula2.be1be2 < epsilon, epsilon, c.copula2.be1be2)
+
+}
+
 
 
 # this below is a safety check really

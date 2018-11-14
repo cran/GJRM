@@ -113,7 +113,10 @@ if(type == "gamlss"){
 
 if(type == "copSS"){
 
-if(x$margins[1] %in% x$bl) cat("\nMARGIN 1: Bernoulli") 
+if(x$margins[1] %in% x$bl && is.null(x$K1)) cat("\nMARGIN 1: Bernoulli") 
+if(x$margins[1] %in% x$bl && !is.null(x$K1)) cat("\nMARGIN 1: categorical") 
+
+
 if(x$margins[2] %in% x$bl) cat("\nMARGIN 2: Bernoulli") 
 
 if(x$margins[2]%in%c("N","N2"))        cat("\nMARGIN 2: Gaussian")  

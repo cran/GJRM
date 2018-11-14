@@ -1,4 +1,4 @@
-bcorrecDiscr <- function(VC){
+bcorrecDiscr <- function(VC, params){
 
 m1d  <- c("PO", "ZTP")
 m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG")
@@ -29,11 +29,11 @@ if(no.splits > 1) num.ind <- cut(1:n, no.splits, labels = FALSE)
 
 if(is.null(VC$X2)){VC$X2 <- VC$X3 <- matrix(1, n, 1); VC$X2.d2 <- VC$X3.d2 <- 1} 
 
-eta <- eta.tr(VC$X1%*%VC$params[1:VC$X1.d2], margin)
+eta <- eta.tr(VC$X1%*%params[1:VC$X1.d2], margin)
 
 if( !(margin %in% c(m1d)) ){
 
-  ss <- esp.tr(VC$X2%*%VC$params[(1+VC$X1.d2):(VC$X1.d2+VC$X2.d2)], margin)
+  ss <- esp.tr(VC$X2%*%params[(1+VC$X1.d2):(VC$X1.d2+VC$X2.d2)], margin)
   sigma2    <- ss$vrb
   sigma2.st <- ss$vrb.st
 

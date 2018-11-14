@@ -4,7 +4,8 @@ SemiParTRIV <- function(formula, data = list(), weights = NULL, subset = NULL,
                              infl.fac = 1, gamma = 1, w.alasso = NULL, 
                              rinit = 1, rmax = 100, 
                              iterlimsp = 50, tolsp = 1e-07,
-                             gc.l = FALSE, parscale, extra.regI = "t", knots = NULL){
+                             gc.l = FALSE, parscale, extra.regI = "t", knots = NULL,
+                             drop.unused.levels = TRUE){
   
   ##########################################################################################################################
   # model set up and starting values
@@ -52,7 +53,7 @@ SemiParTRIV <- function(formula, data = list(), weights = NULL, subset = NULL,
  
   M <- list(mb = c("T", "TSS", "TESS"), margins = margins, penCor = penCor, w.alasso = w.alasso, 
             extra.regI = extra.regI, Model = Model, Chol = Chol)
-  
+  M$K1 <- NULL
   if(!is.list(formula)) stop("You must specify a list of equations.")
   l.flist <- length(formula)
   if(l.flist > 3 && l.flist != 6) stop("You have to specify six equations.")
@@ -72,8 +73,8 @@ SemiParTRIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
-  mf$knots <- mf$Chol <- mf$margins <- mf$infl.fac <- mf$rinit <- mf$approx <- mf$gamma <- mf$w.alasso <- mf$rmax <- mf$Model <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$penCor <- mf$sp.penCor <- NULL                           
-  mf$drop.unused.levels <- TRUE 
+  mf$ordinal <- mf$knots <- mf$Chol <- mf$margins <- mf$infl.fac <- mf$rinit <- mf$approx <- mf$gamma <- mf$w.alasso <- mf$rmax <- mf$Model <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$penCor <- mf$sp.penCor <- NULL                           
+  mf$drop.unused.levels <- drop.unused.levels 
   if(Model=="TSS") mf$na.action <- na.pass
   mf[[1]] <- as.name("model.frame")
   data <- eval(mf, parent.frame())
@@ -127,7 +128,7 @@ if(Model=="TESS"){
  # Equations 1, 2 and 3
  ##############################################################  
  
-  gam1 <- eval(substitute(gam(formula.eq1, binomial(link = margins[1]), gamma=infl.fac, weights=weights, data=data, knots = knots),list(weights=weights))) 
+  gam1 <- eval(substitute(gam(formula.eq1, binomial(link = margins[1]), gamma=infl.fac, weights=weights, data=data, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights))) 
 
   X1 <- model.matrix(gam1)
   X1.d2 <- dim(X1)[2]
@@ -145,7 +146,7 @@ if(Model=="TESS"){
   
   ###########
 
-  gam2 <- eval(substitute(gam(formula.eq2, binomial(link = margins[2]), gamma=infl.fac, weights=weights, data=data, subset=inde1, knots = knots),list(weights=weights,inde1=inde1))) 
+  gam2 <- eval(substitute(gam(formula.eq2, binomial(link = margins[2]), gamma=infl.fac, weights=weights, data=data, subset=inde1, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights,inde1=inde1))) 
 
   if(Model %in% c("TSS","TESS")){
   
@@ -166,7 +167,7 @@ if(Model=="TESS"){
   if(Model == "TSS"){ inde2[inde1] <- as.logical(gam2$y); inde2.1 <- inde2[inde1]}
   
 
-  gam3 <- eval(substitute(gam(formula.eq3, binomial(link = margins[3]), gamma=infl.fac, weights=weights, data=data, subset=inde2, knots = knots),list(weights=weights,inde2=inde2))) 
+  gam3 <- eval(substitute(gam(formula.eq3, binomial(link = margins[3]), gamma=infl.fac, weights=weights, data=data, subset=inde2, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights,inde2=inde2))) 
 
 
   if(Model %in% c("TSS","TESS")){
@@ -294,7 +295,7 @@ start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, theta12, t
   
     if(l.flist > 3){
     
-    vo <- list(gam1 = gam1, gam2 = gam2, gam3 = gam3, theta12 = theta12, theta13 = theta13, theta23 = theta23, n = n )
+    vo <- list(gam1 = gam1, gam2 = gam2, gam3 = gam3, theta12 = theta12, theta13 = theta13, theta23 = theta23, n = n, drop.unused.levels = drop.unused.levels )
 
     overall.svGR <- overall.svG(formula = formula, data = data, ngc = 2, margins = margins, M = M, vo = vo, gam1 = gam1, gam2 = gam2, gam3 = gam3, type = "triv", knots = knots)
         
@@ -391,13 +392,13 @@ if(missing(parscale)) parscale <- 1
   lsgam7 <- length(gam7$smooth)
   lsgam8 <- length(gam8$smooth)
    
-  VC <- list(lsgam1 = lsgam1,
+  VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL,
              lsgam2 = lsgam2,
              lsgam3 = lsgam3,
              lsgam4 = lsgam4,
              lsgam5 = lsgam5,
              lsgam6 = lsgam6,
-             lsgam7 = lsgam7,
+             lsgam7 = lsgam7, K1 = NULL,
              lsgam8 = lsgam8, 
              X1 = X1, inde = inde, inde1 = inde1, inde2 = inde2, inde2.1 = inde2.1,
              X2 = X2, 
@@ -443,7 +444,8 @@ if(missing(parscale)) parscale <- 1
              Cont = "NO", ccss = "no", m2 = m2, m3 = m3, m2d = m2d, m3d = m3d, bl = bl, triv = TRUE,
              X2s = X2s, X3s = X3s,
              approx = approx, gamma = gamma, wc = w.alasso, qu.mag = qu.mag,
-             zerov = -10, Chol = Chol, surv.flex = surv.flex, l.flist = l.flist)
+             zerov = -10, Chol = Chol, surv.flex = surv.flex, l.flist = l.flist, gp2.inf = NULL,
+             informative = "no")
              
   if(gc.l == TRUE) gc()           
              

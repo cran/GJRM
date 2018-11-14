@@ -104,7 +104,7 @@ rm(bs, SE, Vb)
               l.sp1 = object$l.sp1, l.sp2 = object$l.sp2, l.sp3 = object$l.sp3, 
               l.sp4 = object$l.sp4, l.sp5 = object$l.sp5, l.sp6 = object$l.sp6,
               l.sp7 = object$l.sp7, l.sp8 = object$l.sp8,
-              univar.gamlss = FALSE, margins = object$margins
+              univar.gamlss = FALSE, margins = object$margins, K1 = NULL
               )
   class(res) <- "summary.SemiParTRIV"
       

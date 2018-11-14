@@ -396,7 +396,9 @@ der2p2.derdermu2sigma2 <- rowSums( der2pdf2.mu2dersigma2FUNC( y2m, mu2, sigma2) 
 
 
 
-if(margin2 == "NBIan"){ # all Numerical - does not need y2m
+# 11 oct 2018, decided to use all numerical for now...
+
+if(margin2 == "NBI"){ # all Numerical - does not need y2m
 
 sigma2    <- ifelse(sigma2 < 4.151334e-06, 4.151334e-06, sigma2) # related to gamma function
 sigma2.st <- log(sigma2) 
@@ -442,7 +444,7 @@ der2p2.derdermu2sigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma2) pNBI
 
 
 
-if(margin2 == "NBI"){ # half analy half numerical - we need y2m, was deemed best choice up until 03/05/2017
+if(margin2 == "NBIhh"){ # half analy half numerical - we need y2m, was deemed best choice up until 03/05/2017
                       # in pahse of robust testing the presence of the gamma function created problems
                       # so using all numerical maybe is better but there is no general rule, we will leave the default for now 
 

@@ -23,7 +23,7 @@ if(type == "triv"){
     theta12 <- rnorm(vo$n, vo$theta12, 0.001)    
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset=inde, knots = knots) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
     
     formula.eq5 <- formula[[5]] 
     nad <- "theta13" 
@@ -33,7 +33,7 @@ if(type == "triv"){
     theta13 <- rnorm(vo$n, vo$theta13, 0.001)    
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc, subset=inde, knots = knots)       
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels)       
       
     formula.eq6 <- formula[[6]] 
     nad <- "theta23" 
@@ -43,7 +43,7 @@ if(type == "triv"){
     theta23 <- rnorm(vo$n, vo$theta23, 0.001)    
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam6 <- gam(formula.eq6, data = data, gamma = ngc, subset=inde, knots = knots)    
+    gam6 <- gam(formula.eq6, data = data, gamma = ngc, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels)    
  
     l.sp5 <- length(gam5$sp)    
     l.sp4 <- length(gam4$sp)    
@@ -51,17 +51,17 @@ if(type == "triv"){
     
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }
                    
     if(l.sp6 != 0){
     ngc <- 2
-    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                     
 
                 
@@ -105,7 +105,7 @@ if(type == "biv"){
     theta <- rnorm(vo$n, vo$i.rho, 0.001)    
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde, knots = knots) 
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
     
     
     
@@ -126,7 +126,7 @@ if(type == "biv"){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     
@@ -162,19 +162,19 @@ if(M$Model != "BSS") start.v  <- c( gam1$coefficients, gam2$coefficients, gam3$c
     
     
    
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)  
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)  
     l.sp3 <- length(gam3$sp)    
     l.sp4 <- length(gam4$sp)    
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
                
@@ -222,26 +222,26 @@ if(M$Model != "BSS") start.v  <- c( gam1$coefficients, gam2$coefficients, gam3$c
     rm(list=".Random.seed", envir=globalenv()) 
     
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)  
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)  
     l.sp3 <- length(gam3$sp)    
     l.sp4 <- length(gam4$sp)    
     l.sp5 <- length(gam5$sp)    
   
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
   
     X3 <- model.matrix(gam3)
@@ -330,10 +330,10 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     theta    <- rnorm(vo$n, vo$i.rho, 0.001)      
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots) 
-    gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots)     
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)     
 
     l.sp3 <- length(gam3$sp)   
     l.sp4 <- length(gam4$sp)    
@@ -343,22 +343,22 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
     
     if(l.sp6 != 0){
     ngc <- 2
-    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }       
     
     
@@ -433,12 +433,12 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
       rm(list=".Random.seed", envir=globalenv()) 
       
       
-      gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
-      gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
-      gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
-      gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots)    
-      gam7 <- gam(formula.eq7, data = data, gamma = ngc, knots = knots)
-      gam8 <- gam(formula.eq8, data = data, gamma = ngc, knots = knots)    
+      gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+      gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
+      gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)     
+      gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)    
+      gam7 <- gam(formula.eq7, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)
+      gam8 <- gam(formula.eq8, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)    
 
       l.sp3 <- length(gam3$sp)   
       l.sp4 <- length(gam4$sp)    
@@ -450,32 +450,32 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
       
       if(l.sp3 != 0){
       ngc <- 2
-      while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                      } 
                      
       if(l.sp4 != 0){
       ngc <- 2
-      while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                      }                    
   
       if(l.sp5 != 0){
       ngc <- 2
-      while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                      }                    
    
       if(l.sp6 != 0){
       ngc <- 2
-      while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                      }   
   
       if(l.sp7 != 0){
       ngc <- 2
-      while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                      }   
                      
       if(l.sp8 != 0){
       ngc <- 2
-      while( any(round(summary(gam8)$edf, 1) > 1) ) {gam8 <- gam(formula.eq8, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam8)$edf, 1) > 1) ) {gam8 <- gam(formula.eq8, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                      }                          
       
       
@@ -562,11 +562,11 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
         rm(list=".Random.seed", envir=globalenv()) 
         
         
-        gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
-        gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
-        gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
-        gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots)    
-        gam7 <- gam(formula.eq7, data = data, gamma = ngc, knots = knots)
+        gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+        gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
+        gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)     
+        gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)    
+        gam7 <- gam(formula.eq7, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)
    
   
         l.sp3 <- length(gam3$sp)   
@@ -579,27 +579,27 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
         
         if(l.sp3 != 0){
         ngc <- 2
-        while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+        while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                        } 
                        
         if(l.sp4 != 0){
         ngc <- 2
-        while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+        while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                        }                    
     
         if(l.sp5 != 0){
         ngc <- 2
-        while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+        while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                        }                    
      
         if(l.sp6 != 0){
         ngc <- 2
-        while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+        while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                        }   
     
         if(l.sp7 != 0){
         ngc <- 2
-        while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+        while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                        }   
                          
         
@@ -692,11 +692,11 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
       rm(list=".Random.seed", envir=globalenv()) 
       
       
-      gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
-      gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
-      gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
-      gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots)    
-      gam7 <- gam(formula.eq7, data = data, gamma = ngc, knots = knots)
+      gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+      gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
+      gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)     
+      gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)    
+      gam7 <- gam(formula.eq7, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)
   
 
       l.sp3 <- length(gam3$sp)   
@@ -709,27 +709,27 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
       
       if(l.sp3 != 0){
       ngc <- 2
-      while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                      } 
                      
       if(l.sp4 != 0){
       ngc <- 2
-      while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                      }                    
   
       if(l.sp5 != 0){
       ngc <- 2
-      while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                      }                    
    
       if(l.sp6 != 0){
       ngc <- 2
-      while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                      }   
   
       if(l.sp7 != 0){
       ngc <- 2
-      while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                      }   
                      
                         
@@ -800,12 +800,12 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     theta    <- rnorm(vo$n, vo$i.rho, 0.001)      
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
     l.sp3 <- length(gam3$sp)   
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                              
     X3 <- model.matrix(gam3)
@@ -841,20 +841,20 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     theta    <- rnorm(vo$n, vo$i.rho, 0.001)      
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
     l.sp3 <- length(gam3$sp)   
     l.sp4 <- length(gam4$sp)    
     
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
                   
@@ -901,26 +901,26 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
       theta    <- rnorm(vo$n, vo$i.rho, 0.001)         
       rm(list=".Random.seed", envir=globalenv()) 
       
-      gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
-      gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
-      gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
+      gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+      gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
+      gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)     
       l.sp3 <- length(gam3$sp)    
       l.sp4 <- length(gam4$sp)    
       l.sp5 <- length(gam5$sp)    
       
       if(l.sp3 != 0){
       ngc <- 2
-      while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                      } 
                      
       if(l.sp4 != 0){
       ngc <- 2
-      while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                      }                    
   
       if(l.sp5 != 0){
       ngc <- 2
-      while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+      while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                      }                    
    
  
@@ -982,9 +982,9 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     theta    <- rnorm(vo$n, vo$i.rho, 0.001)      
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)     
     l.sp3 <- length(gam3$sp)   
     l.sp4 <- length(gam4$sp)    
     l.sp5 <- length(gam5$sp)  
@@ -992,17 +992,17 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
     
     
@@ -1050,20 +1050,20 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     theta    <- rnorm(vo$n, vo$i.rho, 0.001)      
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
     l.sp3 <- length(gam3$sp)   
     l.sp4 <- length(gam4$sp)    
     
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     X3 <- model.matrix(gam3)
@@ -1108,9 +1108,9 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     rm(list=".Random.seed", envir=globalenv()) 
     
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)     
     l.sp3 <- length(gam3$sp)   
     l.sp4 <- length(gam4$sp)    
     l.sp5 <- length(gam5$sp)   
@@ -1118,17 +1118,17 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
  
                      
@@ -1222,11 +1222,11 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     rm(list=".Random.seed", envir=globalenv()) 
     
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
-    gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots)    
-    gam7 <- gam(formula.eq7, data = data, gamma = ngc, knots = knots)    
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)     
+    gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)    
+    gam7 <- gam(formula.eq7, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)    
     l.sp3 <- length(gam3$sp)   
     l.sp4 <- length(gam4$sp)    
     l.sp5 <- length(gam5$sp)   
@@ -1235,27 +1235,27 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
  
     if(l.sp6 != 0){
     ngc <- 2
-    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }   
 
     if(l.sp7 != 0){
     ngc <- 2
-    while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                      
     
     
@@ -1332,10 +1332,10 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     theta    <- rnorm(vo$n, vo$i.rho, 0.001)       
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
-    gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots)   
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)     
+    gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
     l.sp3 <- length(gam3$sp)    
     l.sp4 <- length(gam4$sp)    
     l.sp5 <- length(gam5$sp)    
@@ -1343,22 +1343,22 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
  
     if(l.sp6 != 0){
     ngc <- 2
-    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }   
 
      
@@ -1421,10 +1421,10 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
     theta    <- rnorm(vo$n, vo$i.rho, 0.001)       
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots)     
-    gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots)    
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)     
+    gam6 <- gam(formula.eq6, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)    
     l.sp3 <- length(gam3$sp)   
     l.sp4 <- length(gam4$sp)   
     l.sp5 <- length(gam5$sp)   
@@ -1433,22 +1433,22 @@ if(margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m2,M$m3) && BivD == "T"){
 
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
  
     if(l.sp6 != 0){
     ngc <- 2
-    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }   
   
     X3 <- model.matrix(gam3)
@@ -1517,12 +1517,12 @@ sp2 <- NULL
     sigma2 <- rnorm(vo$n, vo$log.sig2.1, 0.001) 
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam2  <- gam(formula.eq2, data = data, gamma = ngc, knots = knots)    
+    gam2  <- gam(formula.eq2, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)    
     l.sp2 <- length(gam2$sp)   
  
     if(l.sp2 != 0){
     ngc <- 2
-    while( any(round(summary(gam2)$edf, 1) > 1) ) {gam2 <- gam(formula.eq2, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam2)$edf, 1) > 1) ) {gam2 <- gam(formula.eq2, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     X2    <- model.matrix(gam2)
@@ -1554,8 +1554,8 @@ sp2 <- NULL
     rm(list=".Random.seed", envir=globalenv()) 
     
     
-    gam2 <- gam(formula.eq2, data = data, gamma = ngc, knots = knots) 
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots)   
+    gam2 <- gam(formula.eq2, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
    
     l.sp2 <- length(gam2$sp)   
     l.sp3 <- length(gam3$sp)    
@@ -1563,12 +1563,12 @@ sp2 <- NULL
     
     if(l.sp2 != 0){
     ngc <- 2
-    while( any(round(summary(gam2)$edf, 1) > 1) ) {gam2 <- gam(formula.eq2, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam2)$edf, 1) > 1) ) {gam2 <- gam(formula.eq2, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     
@@ -1612,7 +1612,7 @@ if(M$l.flist == 3){
     theta  <- rnorm(vo$n, vo$i.rho, 0.001)           
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde, knots = knots) 
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
     
     ######
     # TEST
@@ -1625,7 +1625,7 @@ if(M$l.flist == 3){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                                 
     X3 <- model.matrix(gam3)
@@ -1654,8 +1654,8 @@ if(M$l.flist == 3){
     theta  <- rnorm(vo$n, vo$i.rho, 0.001)           
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde, knots = knots) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset=inde, knots = knots)  
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels)  
     
     ######
     # TEST
@@ -1673,12 +1673,12 @@ if(M$l.flist == 3){
     
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, subset=inde, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     X3 <- model.matrix(gam3)
@@ -1719,9 +1719,9 @@ if(M$l.flist == 3){
     theta  <- rnorm(vo$n, vo$i.rho, 0.001)       
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde, knots = knots) 
-    gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset=inde, knots = knots)   
-    gam5 <- gam(formula.eq5, data = data, gamma = ngc, subset=inde, knots = knots)  
+    gam3 <- gam(formula.eq3, data = data, gamma = ngc, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
+    gam5 <- gam(formula.eq5, data = data, gamma = ngc, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels)  
     
     ######
     # TEST
@@ -1741,17 +1741,17 @@ if(M$l.flist == 3){
   
     if(l.sp3 != 0){
     ngc <- 2
-    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam3)$edf, 1) > 1) ) {gam3 <- gam(formula.eq3, data = data, gamma = ngc + 1, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    } 
                    
     if(l.sp4 != 0){
     ngc <- 2
-    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, subset=inde, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
 
     if(l.sp5 != 0){
     ngc <- 2
-    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, subset=inde, knots = knots); ngc <- ngc + 1; if(ngc > 5) break}  
+    while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, subset=inde, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
                    }                    
   
     X3 <- model.matrix(gam3)

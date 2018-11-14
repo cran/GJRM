@@ -13,8 +13,10 @@ if(type == "biv"){
   if(M$Model=="BPO0")                       func.opt <- bprobgHsPO0   
   if(M$Model=="BSS")                        func.opt <- bprobgHsSS   
   
-  if(M$Model=="B" && margins[2] %in% M$m2  ) {func.opt <- bprobgHsCont  ; func.optUniv <- bprobgHsContUniv}   
-  if(M$Model=="B" && margins[2] %in% M$m3  ) {func.opt <- bprobgHsCont3 ; func.optUniv <- bprobgHsContUniv3}  
+  if(M$Model=="B" && margins[2] %in% M$m2 &&  is.null(M$K1) ) {func.opt <- bprobgHsCont  ; func.optUniv <- bprobgHsContUniv }   
+  if(M$Model=="B" && margins[2] %in% M$m3 &&  is.null(M$K1) ) {func.opt <- bprobgHsCont3 ; func.optUniv <- bprobgHsContUniv3}  
+  
+  if(M$Model=="B" && margins[2] %in% M$m2 && !is.null(M$K1) ) {func.opt <- bCopulaCLMgHsCont}
   
 }
   

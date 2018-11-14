@@ -12,7 +12,7 @@
 
 \usage{
 
-imputeSS(x, m)
+imputeSS(x, m = 10)
 
 }
 
@@ -35,7 +35,6 @@ bound for acceptance/rejection is obtained via a trust region optimisation.
 The imputed values are used to create m complete imputed datasets and perform complete data 
 analysis and inference about the parameters of interest using function \code{gamlss()} within this package.
 
-This function is currently suitable for continuous responses only.
  
 }
 

@@ -1,7 +1,8 @@
 vis.gam2 <- function (x, view = NULL, cond = list(), n.grid = 30, too.far = 0, 
     col = NA, color = "heat", contour.col = NULL, se = -1, 
-    plot.type = "persp", zlim = NULL, nCol = 50, eq = eq, fun = fun, mar = mar, xx1 = xx1, ...) 
-{
+    plot.type = "persp", zlim = NULL, nCol = 50, eq = eq, fun = fun, mar = mar, xx1 = NULL, 
+    xxx1 = NULL, ...){
+    
 type <- "response"
     fac.seq <- function(fac, n.grid) {
         fn <- length(levels(fac))
@@ -103,21 +104,180 @@ type <- "response"
 
 ###################
 #####################
-
-           fv  <- predict.gam(x,   newdata = newd, se.fit = TRUE, type = "link")
-           fv2 <- predict.gam(xx1, newdata = newd, se.fit = TRUE, type = "link")
+# standar errors not correct at the moment
 
 
-      if(mar %in% c("LO")){
-              if(fun == "mean")     fv$fit <- fv$fit
-              if(fun == "variance") fv$fit <- pi^2*exp(fv2$fit)/3
-      } 
+
+           fv  <- predict.gam(x,    newdata = newd, se.fit = TRUE, type = "link")
+           
+           if(!is.null(xx1))  fv2 <- predict.gam(xx1,  newdata = newd, se.fit = TRUE, type = "link")
+           if(!is.null(xxx1)) fv3 <- predict.gam(xxx1, newdata = newd, se.fit = TRUE, type = "link")
+           
+
+    #  if(mar %in% c("LO")){
+    #          if(fun == "mean")     fv$fit <- fv$fit
+    #          if(fun == "variance") fv$fit <- pi^2*exp(fv2$fit)/3
+    #  } 
+    #
+    #
+    #  if(mar %in% c("LN")){
+    #       if(fun == "mean")     fv$fit <- exp(fv$fit)*sqrt(exp(exp(fv2$fit)))
+    #       if(fun == "variance") fv$fit <- exp(exp(fv2$fit))*( exp(exp(fv2$fit)) - 1 )*exp(2*fv$fit)
+    #                      }      
 
 
-      if(mar %in% c("LN")){
-           if(fun == "mean")     fv$fit <- exp(fv$fit)*sqrt(exp(exp(fv2$fit)))
-           if(fun == "variance") fv$fit <- exp(exp(fv2$fit))*( exp(exp(fv2$fit)) - 1 )*exp(2*fv$fit)
-                          }      
+
+
+ if(mar %in% c("SM")){
+  
+     if(fun == "mean")     fv$fit <- exp(fv$fit)/gamma(exp(fv3$fit))*gamma( 1+1/sqrt(exp(fv2$fit)) )*gamma( -1/sqrt(exp(fv2$fit))+exp(fv3$fit) )             
+     if(fun == "variance") fv$fit <- exp(fv$fit)^2*( gamma(1+2/sqrt(exp(fv2$fit)))*gamma(exp(fv3$fit))*gamma(-2/sqrt(exp(fv2$fit))+exp(fv3$fit))-gamma(1+1/sqrt(exp(fv2$fit)))^2*gamma(-1/sqrt(exp(fv2$fit))+exp(fv3$fit))^2 )
+                          
+                                                  
+ } 
+
+
+
+ if(mar %in% c("BE")){
+ 
+    if(fun == "mean")     fv$fit <- exp(fv$fit)                 
+    if(fun == "variance") fv$fit <- exp(fv$fit)*(1-exp(fv$fit))*exp(fv2$fit)
+                                     
+ } 
+ 
+ 
+ if(mar %in% c("FISK")){
+ 
+    if(fun == "mean")     fv$fit <- exp(fv$fit)*pi/sqrt(exp(fv2$fit))/sin(pi/sqrt(exp(fv2$fit))) 
+    if(fun == "variance") fv$fit <- exp(fv$fit)^2*( 2*pi/sqrt(exp(fv2$fit))/sin(2*pi/sqrt(exp(fv2$fit)))-(pi/sqrt(exp(fv2$fit)))^2/sin(pi/sqrt(exp(fv2$fit)))^2 )
+                                     
+ }  
+ 
+
+
+
+
+ if(mar %in% c("GU")){
+ 
+    if(fun == "mean")     fv$fit <- fv$fit - 0.57722*sqrt(exp(fv2$fit)) 
+    if(fun == "variance") fv$fit <- pi^2*exp(fv2$fit)/6
+                                     
+ } 
+ 
+ 
+ 
+ if(mar %in% c("rGU")){
+ 
+    if(fun == "mean")     fv$fit <- fv$fit + 0.57722*sqrt(exp(fv2$fit)) 
+    if(fun == "variance") fv$fit <- pi^2*exp(fv2$fit)/6
+                                     
+ }  
+
+
+
+
+ if(mar %in% c("LO")){
+ 
+    if(fun == "mean")     fv$fit <- fv$fit 
+    if(fun == "variance") fv$fit <- pi^2*exp(fv2$fit)/3
+                                     
+ } 
+ 
+ 
+ if(mar %in% c("N")){
+ 
+    if(fun == "mean")     fv$fit <- fv$fit 
+    if(fun == "variance") fv$fit <- exp(fv2$fit)
+                                     
+ } 
+ 
+ if(mar %in% c("N2")){
+ 
+    if(fun == "mean")     fv$fit <- fv$fit 
+    if(fun == "variance") fv$fit <- sqrt(exp(fv2$fit))
+                                     
+ }  
+ 
+ 
+ 
+
+ if(mar %in% c("LN")){
+ 
+    if(fun == "mean")     fv$fit <- exp(fv$fit)*sqrt(exp(exp(fv2$fit))) 
+    if(fun == "variance") fv$fit <- exp(exp(fv2$fit))*( exp(exp(fv2$fit)) - 1 )*exp(2*fv$fit)
+                                    
+ } 
+ 
+
+ if(mar %in% c("iG")){
+ 
+    if(fun == "mean")     fv$fit <- exp(fv$fit) 
+    if(fun == "variance") fv$fit <- exp(fv$fit)^3*exp(fv2$fit)
+                                    
+ }  
+ 
+ 
+ 
+  if(mar %in% c("GA")){
+  
+     if(fun == "mean")     fv$fit <- exp(fv$fit) 
+     if(fun == "variance") fv$fit <- exp(fv$fit)^2*exp(fv2$fit)
+                                     
+ } 
+ 
+ 
+  if(mar %in% c("WEI")){
+  
+     if(fun == "mean")     fv$fit <- exp(fv$fit)*gamma(1+1/sqrt(exp(fv2$fit))) 
+     if(fun == "variance") fv$fit <- exp(fv$fit)^2*( gamma(1+2/sqrt(exp(fv2$fit))) - gamma( 1+1/sqrt(exp(fv2$fit)) )^2  )
+                                     
+ }  
+ 
+
+  if(mar %in% c("DAGUM")){
+  
+     if(fun == "mean")      fv$fit <- -(exp(fv$fit)/sqrt(exp(fv2$fit)))*gamma(-1/sqrt(exp(fv2$fit)))*gamma(1/sqrt(exp(fv2$fit))+exp(fv3$fit))/gamma(exp(fv3$fit))             
+     if(fun == "variance")  fv$fit <- -(exp(fv$fit)/sqrt(exp(fv2$fit)))^2*( 2*sqrt(exp(fv2$fit))*gamma(-2/sqrt(exp(fv2$fit)))*gamma(2/sqrt(exp(fv2$fit)) + exp(fv3$fit))/gamma(exp(fv3$fit)) + ( gamma(-1/sqrt(exp(fv2$fit)))*gamma(1/sqrt(exp(fv2$fit)) + exp(fv3$fit))/gamma(exp(fv3$fit))  )^2   )
+                                                                           
+ } 
+ 
+ 
+ 
+ if(mar %in% c("PO")){ 
+ 
+    if(fun == "mean" || fun == "variance")  fv$fit <- exp(fv$fit) 
+                                     
+ } 
+ 
+ 
+ 
+ if(mar %in% c("NBI", "PIG")){ 
+ 
+    if(fun == "mean")     fv$fit <- exp(fv$fit) 
+    if(fun == "variance") fv$fit <- exp(fv$fit) + sqrt(exp(fv2$fit))*exp(fv$fit)^2
+                                     
+ } 
+ 
+ 
+ if(mar %in% c("NBII")){ 
+ 
+    if(fun == "mean")     fv$fit <- exp(fv$fit) 
+    if(fun == "variance") fv$fit <- ( 1 + sqrt(exp(fv2$fit)) )*exp(fv$fit)
+                                     
+ }  
+ 
+ if(mar %in% c("ZTP")){ 
+ 
+    if(fun == "mean")     fv$fit <- exp(fv$fit)/( 1 - exp(-exp(fv$fit)) ) 
+    if(fun == "variance") fv$fit <- ( exp(fv$fit)*( 1 - exp(-exp(fv$fit))*(exp(fv$fit) + 1)) )/( 1 - exp(-exp(fv$fit)) )^2 
+                                     
+ }   
+  
+ 
+
+
+
+
 
 #####################
 #####################

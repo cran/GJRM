@@ -13,7 +13,7 @@ effects, copula and marginal distributions.
 
 \usage{
 gjrm(formula, data = list(), weights = NULL, subset = NULL,  
-     BivD = "N", margins, Model, dof = 3,  
+     BivD = "N", margins, Model, dof = 3, ordinal = FALSE,  
      surv = FALSE, cens1 = NULL, cens2 = NULL,
      gamlssfit = FALSE, fp = FALSE, infl.fac = 1, 
      rinit = 1, rmax = 100, 
@@ -21,7 +21,8 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
      gc.l = FALSE, parscale, extra.regI = "t",
      k1.tvc = 0, k2.tvc = 0, knots = NULL,
      penCor = "unpen", sp.penCor = 3, 
-     Chol = FALSE, gamma = 1, w.alasso = NULL)
+     Chol = FALSE, gamma = 1, w.alasso = NULL,
+     drop.unused.levels = TRUE)
 }
 
 
@@ -55,7 +56,7 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
                logistic ("LO"), Weibull ("WEI"), inverse Gaussian ("iG"), gamma ("GA"), Dagum ("DAGUM"), 
                Singh-Maddala ("SM"), beta ("BE"), Fisk ("FISK", also known as log-logistic distribution), Poisson ("PO"), zero truncated 
                Poisson ("ZTP"), negative binomial - type I ("NBI"), negative 
-               binomial - type II ("NBII"), Poisson inverse Gaussian ("PIG").If the responses are binary then
+               binomial - type II ("NBII"), Poisson inverse Gaussian ("PIG"). If the responses are binary then
                possible link functions are "probit", "logit", "cloglog". For survival models, the margins can be proportional hazars ("PH"), odds ("PO")
                or "probit".}
 
@@ -70,6 +71,9 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
   
 \item{dof}{If \code{BivD = "T"} then the degrees of freedom can be set to a value greater than 2 and smaller than 249. Only for continuous margins,
            this will be taken as a starting value and the dof estimated from the data.}   
+ 
+\item{ordinal}{If \code{TRUE} then the ordinal model is employed.}    
+ 
  
 \item{surv}{If \code{TRUE} then a bivariate survival model is fitted.}    
 
@@ -131,6 +135,9 @@ documentation of \code{trust} for more details.}
 \item{gamma}{Inflation factor used only for the alasso penalty.}
 
 \item{w.alasso}{When using the alasso penalty a weight vector made up of three values must be provided.} 
+ 
+\item{drop.unused.levels}{By default unused levels are dropped from factors before fitting. For some smooths involving factor variables 
+                          this may have to be turned off (only use if you know what you are doing).} 
  
  
 }
@@ -376,7 +383,6 @@ conv.check(out)
 summary(out)
 AIC(out); BIC(out)
 
-
 ## FLEXIBLE RECURSIVE BIVARIATE PROBIT
 
 out <- gjrm(list(y1 ~ x1 + s(x2), 
@@ -401,6 +407,8 @@ AT(out, nm.end = "y1", hd.plot = TRUE)
 RR(out, nm.end = "y1") 
 OR(out, nm.end = "y1") 
 AT(out, nm.end = "y1", type = "univariate") 
+re.imp <- imputeCounter(out, m = 10, "y1")
+re.imp$AT
 
 ## try a Clayton copula model... 
 
@@ -412,6 +420,8 @@ outC <- gjrm(list(y1 ~ x1 + s(x2),
 conv.check(outC)                         
 summary(outC)
 AT(outC, nm.end = "y1") 
+re.imp <- imputeCounter(outC, m = 10, "y1")
+re.imp$AT
 
 ## try a Joe copula model... 
 
@@ -423,6 +433,8 @@ outJ <- gjrm(list(y1 ~ x1 + s(x2),
 conv.check(outJ)
 summary(outJ)
 AT(outJ, "y1") 
+re.imp <- imputeCounter(outJ, m = 10, "y1")
+re.imp$AT
 
 VuongClarke(out, outJ)
 
@@ -528,6 +540,26 @@ outC <- gjrm(list(ys ~ bi + s(x1) + s(x2),
 conv.check(outC)
 summary(outC)
 prev(outC)
+
+
+#######################
+# Impute using Mice
+#######################
+
+library(mice)
+
+ys <- dataSim$ys
+
+dataSim$yo[dataSim$ys == FALSE] <- NA  
+dataSim <- dataSim[, -c(1:2)]
+
+imp <- mice(dataSim, m = 1, method = c("copulaSS", "", "", ""),  
+            mice.formula = outC$mice.formula, margins = outC$margins, 
+            BivD = outC$BivD, maxit = 1)
+
+comp.yo <- dataSim$yo
+comp.yo[ys == 0] <- imp$imp$yo[[1]]
+mean(comp.yo)
 
 #
 ################
@@ -829,8 +861,8 @@ dataSim$z      <- z
 
 
 
-eq1 <- u1 ~ z1 + s(z2) + s(u1, bs = "mpi")
-eq2 <- u2 ~ z + s(u2, bs = "mpi") 
+eq1 <- u1 ~ s(u1, bs = "mpi") + z1 + s(z2)
+eq2 <- u2 ~ s(u2, bs = "mpi") + z 
 eq3 <-    ~ s(z2)
 
 out <- gjrm(list(eq1, eq2), data = dataSim, surv = TRUE,
@@ -907,7 +939,7 @@ out2 <- gjrm(list(eq1, eq2, ~ 1, ~ 1, eq3), data = dataSim, surv = TRUE,
 # work in progress
 #
 # eq1 <- z2 ~ z1
-# eq2 <- u2 ~ z + s(u2, bs = "mpi") 
+# eq2 <- u2 ~ s(u2, bs = "mpi") + z  
 # eq3 <-    ~ s(z2)                  
 # eq4 <-    ~ s(z2)                  
 #                   
@@ -1244,6 +1276,26 @@ BIC(out, outC0)
 n.m <- 10
 res <- imputeSS(outC0, n.m)
 
+###############
+# or using MICE
+###############
+
+library(mice)
+
+ys <- dataSim$ys
+
+dataSim$yo[dataSim$ys == FALSE] <- NA  
+dataSim <- dataSim[, -1]
+
+imp <- mice(dataSim, m = 1, method = c("copulaSS", "", "", ""),  
+            mice.formula = outC0$mice.formula, margins = outC0$margins, 
+            BivD = outC0$BivD, maxit = 1)
+
+comp.yo <- dataSim$yo
+comp.yo[ys == 0] <- imp$imp$yo[[1]]
+mean(comp.yo)
+
+
 #
 #
 #######################################################
@@ -1302,6 +1354,8 @@ mean(ATE)
 \keyword{flexible copula regression modelling} 
 \keyword{partial observability} 
 \keyword{endogeneity} 
+\keyword{survival data}
+
 
 
 

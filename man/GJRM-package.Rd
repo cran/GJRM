@@ -57,7 +57,7 @@ selection is also possible via the use of shrinakge smoothers and/or information
 
 Giampiero Marra (University College London, Department of Statistical Science) and Rosalba Radice (Birkbeck, University of London, Department of Economics, Mathematics and Statistics)
 
-with contributions from Panagiota Filippou (specifically on the trivariate binary models).
+with contributions from Panagiota Filippou (specifically on the trivariate binary models) and Francesco Donat (on the bivariate models with ordinal and continuous margins).
 
 Thanks to Bear Braumoeller (Department of Political Science, The Ohio State University) for suggesting the implementation of bivariate models with partial observability.
 
@@ -71,9 +71,15 @@ Part funded by EPSRC: EP/J006742/1
 
 \references{
 
-Key references:
+Key methodological references:
+
+Filippou P., Kneib T., Marra G., Radice R. (in press), A Trivariate Additive Regression Model with Arbitrary Link Functions and Varying Correlation Matrix. \emph{Journal of Statistical Planning and Inference}.
 
 Filippou P., Marra G. and Radice R. (2017), Penalized Likelihood Estimation of a Trivariate Additive Probit Model. \emph{Biostatistics}, 18(3), 569-585.
+
+Gomes M., Radice R., Camarena-Brenes J., Marra G. (in press), Copula Selection Models for Non-Gaussian Outcomes that Are Missing Not at Random. \emph{Statistics in Medicine}.
+
+Klein N., Kneib T., Marra G., Radice R., Rokicki S., McGovern M.E. (in press), Mixed Binary-Continuous Copula Regression Models with Application to Adverse Birth Outcomes. \emph{Statistics in Medicine}.
 
 Marra G. and Radice R. (2011), Estimation of a Semiparametric Recursive Bivariate Probit in the Presence of Endogeneity. \emph{Canadian Journal of Statistics}, 39(2), 259-279.
 
@@ -91,7 +97,11 @@ Marra G. and Wyszynski K. (2016), Semi-Parametric Copula Sample Selection Models
 
 Radice R., Marra G. and Wojtys M. (2016), Copula Regression Spline Models for Binary Outcomes. \emph{Statistics and Computing}, 26(5), 981-995. 
 
-Wojtys M. and Marra G. (submitted). Copula-Based Generalized Additive Models with Non-Random Sample Selection.
+Wojtys M., Marra G., Radice R. (2018), Copula Based Generalized Additive Models for Location, Scale and Shape with Non-Random Sample Selection. \emph{Computational Statistics and Data Analysis}, 127, 1-14.
+
+
+For applied case studies see \url{http://www.homepages.ucl.ac.uk/~ucakgm0/pubs.htm}.  
+
 
 }
 

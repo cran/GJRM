@@ -2,6 +2,8 @@ bprobgHsContUniv3 <- function(params, respvec, VC, ps, AT = FALSE){
 
 epsilon <- 0.0000001 # 0.9999999 0.0001 # sqrt(.Machine$double.eps)
 
+bcorR <- NULL
+
 weights <- VC$weights
 
 eta2 <- VC$X1%*%params[1:VC$X1.d2] # this is eta1
@@ -75,8 +77,14 @@ bcorR <- list(b = 0, bp = 0, bs = 0)
 
 }else{
 
-VC$params <- params; bcorR <- bcorrec(VC)
-#VC$params <- params; bcorR2 <- bcorrec2(VC)
+     #if(is.null(VC$my.env$lB)){ bb <- bounds(VC, params, lo = 1000, tol = VC$tol.rc)
+     #                           VC$my.env$lB <- bb$lB
+     #                           VC$my.env$uB <- bb$uB
+     #                      }
+ 
+     #if(VC$r.type == "a") 
+     bcorR <- bcorrec(VC, params)
+     #if(VC$r.type == "n") bcorR <- bcorrec2(VC, params)
 
 
 l.par1    <- log(pdf2)
@@ -259,8 +267,9 @@ if(VC$extra.regI == "pC") H <- regH(H, type = 1)
 if(VC$extra.regI == "sED") H <- regH(H, type = 2) 
   
 
-list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l.par=l.par, 
+list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l.par=l.par, bcorR = bcorR,  
      ps = ps, sigma2.st = sigma2.st, nu.st = nu.st, etas1 = sigma2.st, etan1 = nu.st, 
-     BivD=VC$BivD, eta1 = eta2, eta2 = eta2, sigma2 = sigma2, nu = nu, d.psi = d.psi)      
+     BivD=VC$BivD, eta1 = eta2, eta2 = eta2, sigma2 = sigma2, nu = nu, d.psi = d.psi,
+     dl.dbe = dl.dbe, dl.dsigma.st = dl.dsigma.st, dl.dnu.st = dl.dnu.st)      
 
 }

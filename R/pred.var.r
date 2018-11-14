@@ -1,5 +1,4 @@
-pred.var <- function(formula, l.flist, gaml = FALSE, triv = FALSE){
-
+pred.var <- function(formula, l.flist, gaml = FALSE, triv = FALSE, informative = "no"){
 
 
 ig <- interpret.gam(formula)
@@ -146,7 +145,7 @@ if(gaml == TRUE && triv == FALSE){
     pred.n <- union(v1,c(v2, v3, or1))
                     } 
 
-
+    if(informative == "yes") v2 <- all.vars(as.formula(formula[[2]]))[1]
 
 
 }

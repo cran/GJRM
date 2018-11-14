@@ -16,7 +16,6 @@
 \alias{pscr0}
 \alias{startsn}
 \alias{bcorrec}
-\alias{bcorrec2}
 \alias{bcorrecDiscr}
 \alias{Cop1Cop2}
 \alias{Reg2Copost}
@@ -24,11 +23,20 @@
 \alias{sim.resp}
 \alias{probmS}
 \alias{PosDefCor}
+\alias{PDef}
 \alias{bcorrecFuncs}
 \alias{Xdpred}
 \alias{mmf}
 \alias{vis.gam2}
 \alias{cov.c}
+\alias{inform.setup}
+\alias{intB}
+\alias{mice.impute.copulaSS}
+\alias{rIC}
+\alias{resp.CLM}
+\alias{approx.CLM}
+\alias{ggmtrust.path}
+\alias{penAprL}
 
 
 \title{Internal Function}

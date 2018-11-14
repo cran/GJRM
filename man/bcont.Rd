@@ -4,6 +4,7 @@
 \alias{bcont23}
 \alias{bcont32}
 \alias{bcontROB}
+\alias{ggm.Deriv}
 
 \title{Internal Function}
 

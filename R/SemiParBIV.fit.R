@@ -17,6 +17,9 @@ l.splist <- list( l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3,
                   l.sp7 = l.sp7, l.sp8 = l.sp8 )
 
 
+if(!is.null(VC$sp.fixed)) sp <- VC$sp.fixed  
+
+
 if( ( l.sp1==0 && l.sp2==0 && l.sp3==0 && l.sp4==0 && l.sp5==0 && l.sp6==0 && l.sp7==0 && l.sp8==0 ) || VC$fp==TRUE) ps <- ps1 <- list(S.h = 0, S.h1 = 0, S.h2 = 0, qu.mag = NULL) else ps <- ps1 <- pen(qu.mag, sp, VC, univ = respvec$univ, l.splist)
 
 
@@ -96,7 +99,12 @@ if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop
                                 	      gamma = VC$infl.fac), silent = sc)
                 		if(class(bs.mgfit)=="try-error") {conv.sp <- FALSE; break} 
                 		
-                	sp <- bs.mgfit$sp; iter.sp <- iter.sp + 1; names(sp) <- names(spo)
+                	sp <- bs.mgfit$sp; if(!is.null(VC$sp.fixed)) sp <- VC$sp.fixed
+                	
+                	iter.sp <- iter.sp + 1; names(sp) <- names(spo)
+                	
+                	
+                	
                 	
              if( VC$triv == TRUE && VC$penCor %in% c("lasso", "alasso") ) VC$sp <- sp	
 
@@ -139,6 +147,9 @@ if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop
 
        if(VC$gc.l == TRUE) gc()   
 
+       
+       #if(!is.null(VC$sp.fixed)) bs.mgfit$sp <- bs.mgfit$sp.full <- VC$sp.fixed  
+
        magpp <- magic.post.proc(wor.c$X, bs.mgfit) 
        
 
@@ -150,6 +161,10 @@ if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop
     magpp    <- magic.post.proc(wor.c$X, bs.mgfit)
         
     }
+
+
+#if(VC$robust == TRUE) fit$bcorPost <- bcorrecPost(VC, c(fit$argument), fit)   
+
 
 rm(fit1, ps1)
 

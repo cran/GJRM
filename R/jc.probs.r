@@ -37,7 +37,7 @@ if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d) && (!is.wholenumber(y1) || y1 < 0)) s
 if(x$margins[2] %in% c(x$VC$m1d, x$VC$m2d) && (!is.wholenumber(y2) || y2 < 0)) stop("The value for y2 must be discrete and positive.")
 
 
-if( x$VC$Cont == "NO" && !(x$margins[2] %in% bin.link) && !(y1 %in% c(0,1)) ) stop("The value for y1 must be either 0 or 1.")
+if( x$VC$Cont == "NO" && !(x$margins[2] %in% bin.link) && !(y1 %in% c(0,1)) && is.null(x$VC$K1) ) stop("The value for y1 must be either 0 or 1.")
 
 if( x$VC$Cont == "NO" && x$margins[2] %in% bin.link){ if( !(y1 %in% c(0,1)) || !(y2 %in% c(0,1))   ) stop("The value for y1 and/or y2 must be either 0 or 1.") }
 
@@ -61,12 +61,25 @@ if( !(y3 %in% c(0,1)) ) stop("The value for y3 must be either 0 or 1.")
 ######################################################################################################
 ######################################################################################################
 if(x$triv == FALSE){
+
 if(x$VC$Cont == "YES" && x$surv == FALSE )              rr <- jc.probs1(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link)
-if(x$VC$Cont == "NO" && !(x$margins[2] %in% bin.link) ) rr <- jc.probs2(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link) 
+
+
+if(x$VC$Cont == "NO" && !(x$margins[2] %in% bin.link) ){ 
+
+
+ if(!is.null(x$VC$K1)) x$p1 <- seq(0.001, 0.999, length.out = x$n)
+
+  rr <- jc.probs2(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link) 
+
+
+}
+
 if(x$VC$Cont == "NO" &&   x$margins[2] %in% bin.link)   rr <- jc.probs3(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link)    
+
 if(x$VC$Cont == "YES" && x$surv == TRUE && x$margins[1] %in% bin.link && x$margins[2] %in% bin.link )             rr <- jc.probs4(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link)
 if(x$VC$Cont == "YES" && x$surv == TRUE && x$margins[1] %in% c(cont2par,cont3par) && x$margins[2] %in% bin.link ) rr <- jc.probs5(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link)
-if(x$VC$Cont == "YES" && x$surv == TRUE && x$margins[1] %in% c(cont2par,cont3par) && x$margins[2] %in% bin.link ) rr <- jc.probs5(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link)
+#if(x$VC$Cont == "YES" && x$surv == TRUE && x$margins[1] %in% c(cont2par,cont3par) && x$margins[2] %in% bin.link ) rr <- jc.probs5(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link)
 }
 
 if(x$triv == TRUE)  rr <- jc.probs6(x, y1, y2, y3, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link)

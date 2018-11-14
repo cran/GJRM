@@ -2,7 +2,8 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
                              BivD = "N", margins = c("probit","N"), dof = 3,
                              fp = FALSE, infl.fac = 1, 
                              rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
-                             gc.l = FALSE, parscale, extra.regI = "t", knots = NULL){
+                             gc.l = FALSE, parscale, extra.regI = "t", knots = NULL,
+                             drop.unused.levels = TRUE){
   
   ##########################################################################################################################
   # model set up and starting values
@@ -46,6 +47,8 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
 
   M    <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, m3d = m3d, BivD = BivD, 
                opc = opc, extra.regI = extra.regI, margins = margins, bl = bl, dof = dof)
+
+  M$K1 <- NULL
 
   ct  <- data.frame( c(opc), c(1:14,55,56,57,60,61) )
   cta <- data.frame( c(opc), c(1,3,23,13,33,6,26,16,36,4,24,14,34,5,55,56,2,60,61) )                   
@@ -97,8 +100,8 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
-  mf$knots <- mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- NULL                           
-  mf$drop.unused.levels <- TRUE 
+  mf$ordinal <- mf$knots <- mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- NULL                           
+  mf$drop.unused.levels <- drop.unused.levels 
   mf$na.action <- na.pass
   mf[[1]] <- as.name("model.frame")
   data <- eval(mf, parent.frame())
@@ -124,7 +127,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
  ##############################################################  
    
   gam1 <- eval(substitute(gam(formula.eq1, binomial(link = margins[1]), gamma=infl.fac, weights=weights, 
-                              data=data, knots = knots),list(weights=weights))) 
+                              data=data, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights))) 
 
   X1 <- model.matrix(gam1) ## this may have to be changed to make it more generic using predict maybe
                            ## also in other functions in the package but not really needed maybe
@@ -151,7 +154,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
  y2.test      <- form.eq12R$y1.test 
  y2m          <- form.eq12R$y1m
  
- gam2 <- eval(substitute(gam(formula.eq2, gamma=infl.fac, weights=weights, data=data, subset=inde, knots = knots),list(weights = weights, inde = inde)))
+ gam2 <- eval(substitute(gam(formula.eq2, gamma=infl.fac, weights=weights, data=data, subset=inde, knots = knots, drop.unused.levels = drop.unused.levels),list(weights = weights, inde = inde)))
     
     # gam2 not entirely efficient given that we will do gam2.1 but we keep for now
     ######
@@ -183,7 +186,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   p.g1 <- predict.gam(gam1)
   imrGUANN <- data$imrGUANN <- dnorm(p.g1)/pnorm(p.g1)
     
-  gam2.1 <- eval(substitute(gam(form.eq2imr, gamma=infl.fac, weights=weights, data=data, subset=inde, knots = knots),list(weights = weights, inde = inde)))
+  gam2.1 <- eval(substitute(gam(form.eq2imr, gamma=infl.fac, weights=weights, data=data, subset=inde, knots = knots, drop.unused.levels = drop.unused.levels),list(weights = weights, inde = inde)))
   pimr   <- which(names(gam2.1$coefficients)=="imrGUANN")
   c.gam2 <- gam2.1$coefficients[-pimr]
   
@@ -212,7 +215,7 @@ if( margins[2] %in% c(m3) ){ log.nu.2 <- start.snR$log.nu.1; names(log.nu.2)   <
 }
 
 vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2.2 = log.sig2.2, 
-           log.nu.2 = log.nu.2, log.nu.1 = NULL, log.sig2.1 = NULL, dof.st = NULL, n = n)
+           log.nu.2 = log.nu.2, log.nu.1 = NULL, log.sig2.1 = NULL, dof.st = NULL, n = n, drop.unused.levels = drop.unused.levels)
 start.v <- overall.sv(margins, M, vo, type = "copSS", c.gam2 = c.gam2)
  
  
@@ -244,7 +247,7 @@ start.v <- overall.sv(margins, M, vo, type = "copSS", c.gam2 = c.gam2)
 ##########################################################
   
 GAM <- list(gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, 
-            gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8)   
+            gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8, K1 = NULL)   
 
 
 if( (l.sp1!=0 || l.sp2!=0 || l.sp3!=0 || l.sp4!=0 || l.sp5!=0 || l.sp6!=0 || l.sp7!=0 || l.sp8!=0) && fp==FALSE ){ 
@@ -285,7 +288,7 @@ if(missing(parscale)) parscale <- 1
   lsgam7 <- length(gam7$smooth)
   lsgam8 <- length(gam8$smooth)
 
-  VC <- list(lsgam1 = lsgam1,
+  VC <- list(lsgam1 = lsgam1, robust = FALSE, K1 = NULL,
              lsgam2 = lsgam2,
              lsgam3 = lsgam3,
              lsgam4 = lsgam4,
@@ -338,7 +341,8 @@ if(missing(parscale)) parscale <- 1
              Cont = "NO", ccss = "yes", m2 = m2, m3 = m3, 
              m1d = m1d, m2d = m2d, m3d = m3d, bl = bl, inde = inde,
              X2s = X2s, X3s = X3s, X4s = X4s, X5s = X5s, triv = FALSE, y2m = y2m, zerov = -10,
-             BivD2 = BivD2, cta = cta, ct = ct, surv.flex = surv.flex) 
+             BivD2 = BivD2, cta = cta, ct = ct, surv.flex = surv.flex, gp2.inf = NULL,
+             informative = "no", sp.fixed = NULL) 
              
   if(gc.l == TRUE) gc()           
              
@@ -378,7 +382,21 @@ gam1$call$data <- gam2$call$data <- gam3$call$data <- gam4$call$data <- gam5$cal
   ##########################################################################################################################
 
 
-L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula,
+# this is for mice # 
+
+formula.aux <- formula
+
+formula.aux[[1]] <- reformulate( attr(terms(formula.aux[[1]]), "term.labels"), response = "ry" )
+environment(formula.aux[[1]]) <- environment(formula[[1]])
+
+
+formula.aux[[2]] <- reformulate( attr(terms(formula.aux[[2]]), "term.labels"), response = "y" )
+environment(formula.aux[[2]]) <- environment(formula[[2]])
+
+###
+
+
+L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, mice.formula = formula.aux,
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, 
           gam6 = gam6, gam7 = gam7, gam8 = gam8,  
           coefficients = SemiParFit$fit$argument, coef.t = NULL, iterlimsp = iterlimsp,

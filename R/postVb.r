@@ -4,8 +4,11 @@ epsilon <- 0.0000001
 Vb.t    <- coef.t <- NULL
 
 He <- SemiParFit$fit$hessian
-                                                                                                        
-    He.eig <- eigen(He, symmetric=TRUE)
+                                   
+                                   
+    # replace with new function PDef?                                  
+                                   
+    He.eig <- eigen(He, symmetric = TRUE)
     if(min(He.eig$values) < sqrt(.Machine$double.eps) && sign( min( sign(He.eig$values) ) ) == -1) He.eig$values <- abs(He.eig$values)  
     if(min(He.eig$values) < sqrt(.Machine$double.eps) ) { pep <- which(He.eig$values < sqrt(.Machine$double.eps)); He.eig$values[pep] <- epsilon }
     Vb <- He.eig$vectors%*%tcrossprod(diag(1/He.eig$values, nrow = length(He.eig$values), ncol =  length(He.eig$values)),He.eig$vectors)  # this could be taken from magic as well but we don't 
@@ -22,7 +25,17 @@ if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || 
     est.c <- SemiParFit$fit$argument
     cm <- rep(1, length(est.c))
     
-    if(!is.null(VC$mono.sm.pos)) mono.sm.pos <- VC$mono.sm.pos else mono.sm.pos <- c(VC$mono.sm.pos1, VC$mono.sm.pos2 + VC$X1.d2)  
+    
+    
+    
+    if(VC$informative == "no"){
+    
+        if(!is.null(VC$mono.sm.pos)) mono.sm.pos <- VC$mono.sm.pos else mono.sm.pos <- c(VC$mono.sm.pos1, VC$mono.sm.pos2 + VC$X1.d2)  
+    
+    }
+    
+    if(VC$informative == "yes") mono.sm.pos <- which(names(est.c) %in% names(est.c[VC$mono.sm.pos])) 
+    
     
     cm[mono.sm.pos] <- exp( est.c[mono.sm.pos] )    
     
@@ -51,16 +64,57 @@ if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || 
     
     
     
-    F  <- diag(SemiParFit$magpp$edf )             # Vb%*%HeSh #    
+    F  <- diag(SemiParFit$magpp$edf )             # Vb%*%HeSh #  this is not correct when fixing sp  
     F1 <- diag(SemiParFit$magpp$edf1)             # needed for testing
     R  <- SemiParFit$bs.mgfit$R                   # needed for testing especially for RE smoothers, it should not be affected by mono smooth
     Ve <- Vb%*%HeSh%*%Vb                          # diag(SemiParFit$magpp$Ve) and diag(SemiParFit$magpp$Vb) but need to be careful with dispersion parameters
     Ve <- (Ve + t(Ve) ) / 2
     
+    
+    if(VC$robust == TRUE){
+    
+    SemiParFitT <- SemiParFit 
+    
+    SemiParFitT$VC <- VC
+    SemiParFitT$coefficients <- SemiParFitT$fit$argument 
+    SemiParFitT$Vb <- diag(1, length(SemiParFitT$coefficients)) 
+    
+    Q <- rIC(SemiParFitT)$hbs
+    
+    Vb <- Vb%*%Q%*%Vb         # this is just freq and not Bayesian but it is ok for now. So Vb and Ve are the same 
+    Vb <- (Vb + t(Vb) ) / 2
+    
+    Ve <- Vb
+    
+    }
+    
+    
+    
+    
+    
+    
 }else{ 
 
 HeSh <- He
 Ve <- Vb
+
+    if(VC$robust == TRUE){
+    
+    SemiParFitT <- SemiParFit 
+    
+    SemiParFitT$VC <- VC
+    SemiParFitT$coefficients <- SemiParFitT$fit$argument 
+    SemiParFitT$Vb <- diag(1, length(SemiParFitT$coefficients)) 
+    
+    Q <- rIC(SemiParFitT)$hbs
+    
+    Vb <- Ve%*%Q%*%Ve       
+    Vb <- (Vb + t(Vb) ) / 2
+    
+    Ve <- Vb
+    
+    }
+
 F <- F1 <- diag(rep(1,dim(Vb)[1]))
 R <- SemiParFit$bs.mgfit$R
 

@@ -4,6 +4,7 @@
 \alias{distrHsAT1}
 \alias{distrHsATDiscr}
 \alias{distrHsDiscr}
+\alias{distrHsATDiscr2}
 
 \title{Internal Function}
 

@@ -2,6 +2,7 @@
 \alias{bprobgHsContUniv}
 \alias{bprobgHsContUniv3}
 \alias{bprobgHsContUnivBIN}
+\alias{bcontSurvGunivInform}
 
 \title{Internal Function}
 

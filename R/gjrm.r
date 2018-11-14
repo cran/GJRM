@@ -1,11 +1,12 @@
 gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,  
-                             BivD = "N", margins, Model, dof = 3, 
+                             BivD = "N", margins, Model, dof = 3, ordinal = FALSE,
                              surv = FALSE, cens1 = NULL, cens2 = NULL,  
                              gamlssfit = FALSE, fp = FALSE, infl.fac = 1, 
                              rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
                              gc.l = FALSE, parscale, extra.regI = "t", k1.tvc = 0, k2.tvc = 0, 
                              knots = NULL, penCor = "unpen",
-                             sp.penCor = 3, Chol = FALSE, gamma = 1, w.alasso = NULL){
+                             sp.penCor = 3, Chol = FALSE, gamma = 1, w.alasso = NULL,
+                             drop.unused.levels = TRUE){
   
   if(missing(margins)) stop("You must choose the margins' values.")
   if(missing(Model)) stop("You must choose a Model type.")
@@ -21,7 +22,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
   bl <- c("probit", "logit", "cloglog")  
   
   
-  if(surv == FALSE){
+  if(surv == FALSE && ordinal == FALSE){
   
   if( (margins[1] %in% bl && margins[2] %in% bl && is.na(margins[3])) || (margins[1] %in% bl && !(margins[2] %in% bl) && Model == "B" && is.na(margins[3]))  ){
             
@@ -30,7 +31,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                                fp, hess = TRUE, infl.fac, 
                                rinit, rmax, iterlimsp, tolsp,
                                gc.l, parscale, extra.regI, intf = TRUE, 
-                               theta.fx = NULL, knots = knots),list(weights=weights)))                               
+                               theta.fx = NULL, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights)))                               
   
                                                                         }
   
@@ -39,7 +40,34 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
   
   
   
-  if( margins[1] %in% bl && !(margins[2] %in% bl) && surv == FALSE && is.na(margins[3]) && Model == "BSS" ){
+  
+
+  
+  if(surv == FALSE && ordinal == TRUE){
+  
+  if( (margins[1] %in% bl && margins[2] %in% bl && is.na(margins[3])) || (margins[1] %in% bl && !(margins[2] %in% bl) && is.na(margins[3]))  ){
+  
+         
+      L <- eval(substitute(CopulaCLM(formula, data, weights, subset,
+                               Model, BivD, margins, dof, gamlssfit, 
+                               fp, hess = TRUE, infl.fac, 
+                               rinit, rmax, iterlimsp, tolsp,
+                               gc.l, parscale, extra.regI, intf = TRUE, 
+                               theta.fx = NULL, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights)))                               
+  
+                                                                        }
+  
+  }  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  if( margins[1] %in% bl && !(margins[2] %in% bl) && surv == FALSE && is.na(margins[3]) && Model == "BSS" && ordinal == FALSE){
  
 
  
@@ -47,7 +75,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                               BivD, margins, dof,
                               fp, infl.fac, 
                               rinit, rmax, iterlimsp, tolsp,
-                             gc.l, parscale, extra.regI, knots),list(weights=weights)))  
+                             gc.l, parscale, extra.regI, knots, drop.unused.levels = drop.unused.levels),list(weights=weights)))  
  
                                                                          }
 
@@ -57,7 +85,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
 
   if(!is.na(margins[3])){
   
-  if( margins[1] %in% bl && margins[2] %in% bl && margins[3] %in% bl && surv == FALSE){
+  if( margins[1] %in% bl && margins[2] %in% bl && margins[3] %in% bl && surv == FALSE && ordinal == FALSE){
 
       L <- eval(substitute( SemiParTRIV(formula, data, weights, subset,
                              Model, margins,  
@@ -65,7 +93,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                              infl.fac, gamma, w.alasso, 
                              rinit, rmax, 
                              iterlimsp, tolsp,
-                             gc.l, parscale, extra.regI, knots),list(weights=weights))) 
+                             gc.l, parscale, extra.regI, knots, drop.unused.levels = drop.unused.levels),list(weights=weights))) 
 
                                                                       }
 
@@ -73,14 +101,14 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
     
 
  
-  if(!(margins[1] %in% bl) || surv == TRUE){
+  if(  ( !(margins[1] %in% bl) || surv == TRUE ) && ordinal == FALSE ){
     
   ##########################################################################################################################
   # preamble
   ##########################################################################################################################  
   
   robust <- FALSE; t.c = 3
-  sp <- qu.mag <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- gamlss1 <- gamlss2 <-  gam1 <- gam2 <- y1m <- y2m <- indexTeq1 <- indexTeq2 <- NULL  
+  sp <- qu.mag <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- gamlss1 <- gamlss2 <- gam1 <- gam2 <- y1m <- y2m <- indexTeq1 <- indexTeq2 <- NULL  
   i.rho <- log.sig2.2 <- log.nu.2 <- log.nu.1 <- log.sig2.1 <- dof.st <- NULL
   end <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- 0
   sp1 <- sp2 <- NULL
@@ -150,8 +178,8 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
   
-  mf$Model <- mf$knots <- mf$k1.tvc <- mf$k2.tvc <- mf$surv <- mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
-  mf$drop.unused.levels <- TRUE 
+  mf$ordinal <- mf$Model <- mf$knots <- mf$k1.tvc <- mf$k2.tvc <- mf$surv <- mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
+  mf$drop.unused.levels <- drop.unused.levels 
   mf[[1]] <- as.name("model.frame")
   data <- eval(mf, parent.frame())
   
@@ -179,6 +207,8 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
             robust = robust, opc = opc, extra.regI = extra.regI, margins = margins, BivD2 = BivD2, dof = dof,
             surv = surv, c1 = cens1, c2 = cens2) 
  
+  M$K1 <- NULL
+ 
   pream.wm(formula, margins, M, l.flist)
 
   formula.eq1 <- formula[[1]]
@@ -196,10 +226,10 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
  y1.test      <- form.eq12R$y1.test 
  y1m          <- form.eq12R$y1m
 
- if(surv == FALSE)                                                   gam1 <- eval(substitute(gam(formula.eq1, gamma=infl.fac, weights=weights, data=data, knots = knots),list(weights=weights)))
- if(surv == TRUE && margins[1] %in% c(m2,m3) && margins[2] %in% bl ) gam1 <- eval(substitute(gam(formula.eq1, gamma=infl.fac, weights=weights, data=data, knots = knots),list(weights=weights))) else{
+ if(surv == FALSE)                                                   gam1 <- eval(substitute(gam(formula.eq1, gamma=infl.fac, weights=weights, data=data, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights)))
+ if(surv == TRUE && margins[1] %in% c(m2,m3) && margins[2] %in% bl ) gam1 <- eval(substitute(gam(formula.eq1, gamma=infl.fac, weights=weights, data=data, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights))) else{
   
-         if(surv == TRUE && !(margins[1] %in% bl)) gam1 <- eval(substitute(gam(formula.eq1, gamma=infl.fac, weights=weights*cens1, data=data, knots = knots),list(weights=weights, cens1 = cens1)))
+         if(surv == TRUE && !(margins[1] %in% bl)) gam1 <- eval(substitute(gam(formula.eq1, gamma=infl.fac, weights=weights*cens1, data=data, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights, cens1 = cens1)))
          }
 
 
@@ -209,7 +239,7 @@ if(surv == TRUE && margins[1] %in% bl){
 
   f.eq1 <- form.eq12R$f.eq1
   data$urcfcphmwicu <- seq(-10, 10, length.out = dim(data)[1])
-  tempb <- eval(substitute(gam(f.eq1, family = cox.ph(), data = data, weights = cens1),list(cens1=cens1)))
+  tempb <- eval(substitute(gam(f.eq1, family = cox.ph(), data = data, weights = cens1, drop.unused.levels = drop.unused.levels),list(cens1=cens1)))
   data$Sh <- as.vector(mm(predict(tempb, type = "response")))
   
   cens11 <- ifelse(cens1 == 0, 1e-07, cens1)
@@ -220,10 +250,13 @@ if(surv == TRUE && margins[1] %in% bl){
   
   clsm <- ggr <- NA 
   for(i in 1:lsgam1){ clsm[i] <- class(gam1$smooth[[i]])[1] 
-                      ggr[i]  <- max(as.numeric(grepl(v1[1], gam1$smooth[[i]]$vn)))
+                      #ggr[i]  <- max(as.numeric(grepl(v1[1], gam1$smooth[[i]]$vn)))
                     }
   
-  if( sum(as.numeric(clsm %in% c("mpi.smooth")))==0 ) stop("You must use at least an mpi smooth function of time in the first equation.")
+  if( sum(as.numeric(clsm[1] %in% c("mpi.smooth")))==0 ) stop("You must have a monotonic smooth of time and it has to be the first to be included.")
+
+  
+  #if( sum(as.numeric(clsm %in% c("mpi.smooth")))==0 ) stop("You must use at least an mpi smooth function of time in the first equation.")
   #if( sum( as.numeric(clsm %in% c("mpi.smooth")) ) != sum( ggr ) ) stop("You must use mpi smooth function(s) of time in the first equation.")   
   
   l.sp1 <- length(gam1$sp)
@@ -235,8 +268,8 @@ if(surv == TRUE && margins[1] %in% bl){
   #sp1[clsm %in% c("mpi.smooth")] <- sp.c 
 
   
-  sp.c <- 1 # there is really no way for making this step better at the moment
-  sp1[ggr == 1] <- sp.c 
+  #sp.c <- 1 # there is really no way for making this step better at the moment
+  sp1[1] <- 1 #sp.c 
 
   gam.call <- gam1$call
   gam.call$sp <- sp1
@@ -330,15 +363,15 @@ if(surv == TRUE && margins[1] %in% bl){
  y2.test      <- form.eq12R$y1.test 
  y2m          <- form.eq12R$y1m
 
- if(surv == FALSE)                         gam2 <- eval(substitute(gam(formula.eq2, gamma=infl.fac, weights=weights, data=data, knots = knots),list(weights=weights)))
- if(surv == TRUE && !(margins[2] %in% bl)) gam2 <- eval(substitute(gam(formula.eq2, gamma=infl.fac, weights=weights*cens2, data=data, knots = knots),list(weights=weights, cens2 = cens2)))
+ if(surv == FALSE)                         gam2 <- eval(substitute(gam(formula.eq2, gamma=infl.fac, weights=weights, data=data, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights)))
+ if(surv == TRUE && !(margins[2] %in% bl)) gam2 <- eval(substitute(gam(formula.eq2, gamma=infl.fac, weights=weights*cens2, data=data, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights, cens2 = cens2)))
 
 if(surv == TRUE && margins[2] %in% bl){ 
   surv.flex <- TRUE                  
 
   f.eq2 <- form.eq12R$f.eq1
   data$urcfcphmwicu <- seq(-10, 10, length.out = dim(data)[1])
-  tempb <- eval(substitute(gam(f.eq2, family = cox.ph(), data = data, weights = cens2),list(cens2=cens2)))
+  tempb <- eval(substitute(gam(f.eq2, family = cox.ph(), data = data, weights = cens2, drop.unused.levels = drop.unused.levels),list(cens2=cens2)))
   data$Sh <- as.vector(mm(predict(tempb, type = "response")))
   
   cens22 <- ifelse(cens2 == 0, 1e-07, cens2)
@@ -349,10 +382,14 @@ if(surv == TRUE && margins[2] %in% bl){
   
   clsm <- ggr <- NA 
   for(i in 1:lsgam2){ clsm[i] <- class(gam2$smooth[[i]])[1] 
-                      ggr[i]  <- max(as.numeric(grepl(v2[1], gam2$smooth[[i]]$vn)))
+                      #ggr[i]  <- max(as.numeric(grepl(v2[1], gam2$smooth[[i]]$vn)))
                     }
   
-  if( sum(as.numeric(clsm %in% c("mpi.smooth")))==0 ) stop("You must use at least an mpi smooth function of time in the second equation.")
+  
+  if( sum(as.numeric(clsm[1] %in% c("mpi.smooth")))==0 ) stop("You must have a monotonic smooth of time and it has to be the first to be included.")
+
+  
+  #if( sum(as.numeric(clsm %in% c("mpi.smooth")))==0 ) stop("You must use at least an mpi smooth function of time in the second equation.")
   #if( sum( as.numeric(clsm %in% c("mpi.smooth")) ) != sum( ggr ) ) stop("You must use mpi smooth function(s) of time in the second equation.")   
   
   l.sp2 <- length(gam2$sp)
@@ -363,8 +400,8 @@ if(surv == TRUE && margins[2] %in% bl){
   #if(dim(data)[1] < 2000) sp.c <- 0.2 else sp.c <- 1/sqrt(dim(data)[1])  
   #sp2[clsm %in% c("mpi.smooth")] <- sp.c 
 
-  sp.c <- 1
-  sp2[ggr == 1] <- sp.c 
+  #sp.c <- 1
+  sp2[1] <- 1 #sp.c 
   
   
   gam.call <- gam2$call
@@ -482,7 +519,7 @@ if( margins[2] %in% c(m3) ){ log.nu.2   <- start.snR$log.nu.1;   names(log.nu.2)
 
 }
 
-vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2.2 = log.sig2.2, log.nu.2 = log.nu.2, log.nu.1 = log.nu.1, log.sig2.1 = log.sig2.1, dof.st = dof.st, n = n )
+vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2.2 = log.sig2.2, log.nu.2 = log.nu.2, log.nu.1 = log.nu.1, log.sig2.1 = log.sig2.1, dof.st = dof.st, n = n, drop.unused.levels = drop.unused.levels )
 
 start.v <- overall.sv(margins, M, vo)
    			
@@ -582,9 +619,9 @@ my.env$k2   <- k2.tvc
 
   VC <- list(lsgam1 = lsgam1, indexTeq1 = indexTeq1, indexTeq2 = indexTeq2, 
              lsgam2 = lsgam2, Deq1 = Deq1, pos.pbeq1 = pos.pbeq1, Deq2 = Deq2, pos.pbeq2 = pos.pbeq2,
-             lsgam3 = lsgam3,
+             lsgam3 = lsgam3, robust = FALSE, sp.fixed = NULL,
              lsgam4 = lsgam4,
-             lsgam5 = lsgam5,
+             lsgam5 = lsgam5, K1 = NULL,
              lsgam6 = lsgam6,
              lsgam7 = lsgam7,
              lsgam8 = lsgam8,
@@ -646,7 +683,8 @@ my.env$k2   <- k2.tvc
              Xd1 = Xd1, Xd2 = Xd2,
              mono.sm.pos1 = mono.sm.pos1, mono.sm.pos2 = mono.sm.pos2, 
              surv.flex = surv.flex,
-             mono.sm.pos = mono.sm.pos) # original n only needed in SemiParBIV.fit
+             mono.sm.pos = mono.sm.pos, gp2.inf = NULL,
+             informative = "no") # original n only needed in SemiParBIV.fit
   
   if(gc.l == TRUE) gc()           
              
@@ -667,12 +705,12 @@ if(gamlssfit == TRUE){
   gamlss1 <- eval(substitute(gamlss(form.gamlR$formula.gamlss1, data = data, weights = weights, subset = subset,  
                    margin = margins[1], surv = surv1, cens = cens1, infl.fac = infl.fac, 
                    rinit = rinit, rmax = rmax, iterlimsp = iterlimsp, tolsp = tolsp,
-                   gc.l = gc.l, parscale = 1, extra.regI = extra.regI, k.tvc = k1.tvc), list(weights=weights,cens1=cens1)))
+                   gc.l = gc.l, parscale = 1, extra.regI = extra.regI, k.tvc = k1.tvc, drop.unused.levels = drop.unused.levels), list(weights=weights,cens1=cens1)))
 
   gamlss2 <- eval(substitute(gamlss(form.gamlR$formula.gamlss2, data = data, weights = weights, subset = subset,  
                    margin = margins[2], surv = surv2, cens = cens2, infl.fac = infl.fac, 
                    rinit = rinit, rmax = rmax, iterlimsp = iterlimsp, tolsp = tolsp,
-                   gc.l = gc.l, parscale = 1, extra.regI = extra.regI, k.tvc = k2.tvc), list(weights=weights,cens2=cens2)))   
+                   gc.l = gc.l, parscale = 1, extra.regI = extra.regI, k.tvc = k2.tvc, drop.unused.levels = drop.unused.levels), list(weights=weights,cens2=cens2)))   
                       
   # updated starting values   
 

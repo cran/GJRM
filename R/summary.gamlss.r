@@ -29,7 +29,7 @@ cont3par  <- c(object$VC$m3,object$VC$m3d)
 
   if(object$VC$gc.l == TRUE) gc()
 
-  susuR <- susu(object, SE, Vb)
+  susuR <- susu(object, SE, Vb, informative = object$VC$informative)
   
   tableN <- susuR$tableN
   table  <- susuR$table
@@ -57,7 +57,7 @@ rm(bs, SE, Vb, XX, Xt, V)
               l.sp1 = object$l.sp1, l.sp2 = object$l.sp2, l.sp3 = object$l.sp3, 
               l.sp4 = object$l.sp4, l.sp5 = object$l.sp5, l.sp6 = object$l.sp6, 
               l.sp7 = object$l.sp7, l.sp8 = object$l.sp8,
-              X2.null = is.null(object$X2), univar.gamlss = TRUE, surv.flex = object$surv.flex
+              X2.null = is.null(object$X2), univar.gamlss = TRUE, surv.flex = object$surv.flex, K1 = NULL
               )
               
               

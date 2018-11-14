@@ -9,7 +9,12 @@ if(eq > object$l.flist) stop("The fitted model has a smaller number of equations
             ind <- 1:object$X1.d2 
             } 
  if(eq==2){ ss.pred <- object$gam2
+            
+            #if(object$VC$informative == "yes") ind <- object$X1.d2 + (1:dim(object$VC$fgam$X)[2])
+            #else 
+            
             ind <- (object$X1.d2+1):(object$X1.d2+object$X2.d2) 
+            
             }
  if(eq==3){ ss.pred <- object$gam3
             ind <- (object$X1.d2+object$X2.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2) }   

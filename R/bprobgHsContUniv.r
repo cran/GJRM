@@ -4,7 +4,7 @@ epsilon <- 0.0000001 # 0.9999999 0.0001 # sqrt(.Machine$double.eps)
 
 weights <- VC$weights
 
-l.lnun <- NULL
+l.lnun <- bcorR <- NULL
 
 eta2 <- VC$X1%*%params[1:VC$X1.d2] # this is eta1 but changed to eta2 for convenience
 eta2 <- eta.tr(eta2, VC$margins[1])
@@ -69,15 +69,30 @@ bcorR <- list(b = 0, bp = 0, bs = 0)
 }else{
 
 
-VC$params <- params; VC$y <- respvec$y1  
+VC$y <- respvec$y1  # do I need this?
 
-if(VC$margins[1] %in% c("NBI", "NBII","NBIa", "NBIIa","PIG","PO","ZTP") ) bcorR <- bcorrecDiscr(VC) else bcorR <- bcorrec(VC)
+if(VC$margins[1] %in% c("NBI", "NBII","NBIa", "NBIIa","PIG","PO","ZTP") ) bcorR <- bcorrecDiscr(VC, params) else{
 
-  #bcorR2 <- bcorrec2(VC)
-  #bcorR$b; bcorR2$b
-  #round(as.numeric(bcorR$bp),3); round(as.numeric(bcorR2$bp),3)
-  #round(bcorR$bs,3)
-  #round(bcorR2$bs,3)
+
+
+
+     #if(is.null(VC$my.env$lB)){ bb <- bounds(VC, params, lo = 1000, tol = VC$tol.rc)
+     #                           VC$my.env$lB <- bb$lB
+     #                           VC$my.env$uB <- bb$uB
+     #                      }
+ 
+     #bcorR <- bcorrec(VC, params, VC$my.env$lB, VC$my.env$uB)
+     
+     
+     #if(VC$r.type == "a") 
+     bcorR <- bcorrec(VC, params)
+     #if(VC$r.type == "n") bcorR <- bcorrec2(VC, params)
+ 
+
+}
+
+
+
 
 l.par1    <- log(pdf2)
 Robj.lpar <- llpsi(l.par1, VC$rc)
@@ -254,8 +269,9 @@ if( VC$margins[1] == "LN"){
 
 list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l.lnun = l.lnun, 
      l.par=l.par, ps = ps, sigma2.st = sigma2.st,
-     etas1 = sigma2.st, eta1 = eta2, 
-     BivD=VC$BivD, eta2 = eta2, sigma2 = sigma2, nu = NULL, d.psi = d.psi)      
+     etas1 = sigma2.st, eta1 = eta2, bcorR = bcorR,  
+     BivD=VC$BivD, eta2 = eta2, sigma2 = sigma2, nu = NULL, d.psi = d.psi,
+     dl.dbe = dl.dbe, dl.dsigma.st = dl.dsigma.st)      
 
 
 }

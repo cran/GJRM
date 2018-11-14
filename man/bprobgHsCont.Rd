@@ -1,6 +1,7 @@
 \name{bprobgHsCont}
 \alias{bprobgHsCont}
 \alias{bprobgHsCont3}
+\alias{bCopulaCLMgHsCont}
 
 \title{Internal Function}
 

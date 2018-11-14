@@ -9,6 +9,12 @@ dof <- x$dof
 p12s <- NULL
 
 
+
+
+
+
+
+
 if(type == "joint"){
 
 
@@ -19,6 +25,15 @@ nu <- sigma2 <- NA
 p1   <- predict.SemiParBIV(x, eq = 1, newdata = newdata, type = "response")
 eta2 <- predict.SemiParBIV(x, eq = 2, newdata = newdata)
 
+
+
+###############
+if(!is.null(x$VC$K1)){
+ 
+ p1 <- seq(0.001, 0.999, length.out = dim(newdata)[1])  # this is a trick/cheat and will have to be fixed properly
+
+}
+###############
 
 if( !is.null(x$X3) && x$margins[2] %in% c(cont2par,cont3par) ){
 
@@ -264,6 +279,19 @@ bs <- rMVN(n.sim, mean = x$coefficients, sigma = x$Vb)
 ############# 
 
 if(!missing(newdata)){ X1  <- predict.SemiParBIV(x, eq = 1, newdata = newdata, type = "lpmatrix") 
+
+
+###############
+if(!is.null(x$VC$K1)){
+ 
+ X1 <- matrix(1, dim(newdata)[1], x$X1.d2) # this is a trick/cheat and will have to be fixed properly
+
+}
+###############
+
+
+
+
                        X2s <- predict.SemiParBIV(x, eq = 2, newdata = newdata, type = "lpmatrix") }
                        
 if( missing(newdata)){ X1 <- x$X1 
@@ -298,11 +326,23 @@ if( missing(newdata)){ if(x$VC$ccss == "yes") X3s <- x$X3s else X3s <- x$X3}
   if(x$VC$margins[2] %in% cont2par){   
   
   
+  
+
+if (!is.null(x$VC$K1)) {
+    
+        K1  <- x$VC$K1
+	CLM.shift  <- K1 - 2
+	CLM.shift2 <- CLM.shift + 1 # This is needed because in CopulaCLM the intercept has been already removed from X1.d2
+} else {
+	CLM.shift <- CLM.shift2 <- 0
+}    
+  
+  
 if(!missing(newdata)){ X4s <- predict.SemiParBIV(x, eq = 4, newdata = newdata, type = "lpmatrix")}
                        
 if( missing(newdata)){ if(x$VC$ccss == "yes") X4s <- x$X4s else X4s <- x$X4}    
   
-                epds <- X4s%*%t(bs[,(x$X1.d2+x$X2.d2+x$X3.d2+1):(x$X1.d2+x$X2.d2+x$X3.d2+x$X4.d2)])
+                epds <- X4s%*%t(bs[,(x$X1.d2+x$X2.d2+x$X3.d2+1+ CLM.shift2):(x$X1.d2+x$X2.d2+x$X3.d2+x$X4.d2+ CLM.shift2)])
   
                                    }
          
@@ -336,7 +376,7 @@ if(!missing(newdata)){ X3s <- predict.SemiParBIV(x, eq = 3, newdata = newdata, t
                        
 if( missing(newdata)){ if(x$VC$ccss == "yes") X3s <- x$X3s else X3s <- x$X3}        
                 
-            sigma2.star <- X3s%*%t(bs[,(x$X1.d2+x$X2.d2+1):(x$X1.d2+x$X2.d2+x$X3.d2)]) 
+            sigma2.star <- X3s%*%t(bs[,(x$X1.d2+x$X2.d2+1+ CLM.shift2):(x$X1.d2+x$X2.d2+x$X3.d2+ CLM.shift2)]) 
   
                            }
   
@@ -578,7 +618,7 @@ CIkt <- rowQuantiles(taus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
 ###########################################
 
 
-if(type == "independence"){
+if(type == "independence"){ # this will not work for ordinal
 
 
 
@@ -694,7 +734,7 @@ bs2 <- rMVN(n.sim, mean = x$gamlss$coefficients, sigma=x$gamlss$Vb)
 # etas
 #############  
 
-if(!missing(newdata)){ X1  <- predict.SemiParBIV(x, eq = 1, newdata = newdata, type = "lpmatrix") 
+if(!missing(newdata)){ X1  <- predict.SemiParBIV(x, eq = 1, newdata = newdata, type = "lpmatrix") # this will not work for ordinal
                        X2s <- predict.SemiParBIV(x, eq = 2, newdata = newdata, type = "lpmatrix") }
                        
 if( missing(newdata)){ X1 <- x$X1 

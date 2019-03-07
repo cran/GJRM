@@ -31,10 +31,10 @@ SemiParBIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   scc  <- c("C0", "C180", "J0", "J180", "G0", "G180", BivD2)
   sccn <- c("C90", "C270", "J90", "J270", "G90", "G270")
   mb   <- c("B", "BSS", "BPO", "BPO0")
-  m2   <- c("N","N2","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK")
+  m2   <- c("N","N2","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP")
   m3   <- c("DAGUM","SM")
   m1d  <- c("PO", "ZTP") 
-  m2d  <- c("NBI", "NBII","NBIa", "NBIIa", "PIG") 
+  m2d  <- c("NBI", "NBII","NBIa", "NBIIa", "PIG","DGP") 
   bl   <- c("probit", "logit", "cloglog") # , "cauchit")   
   M    <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, BivD = BivD, 
                opc = opc, extra.regI = extra.regI, margins = margins, bl = bl, intf = intf,

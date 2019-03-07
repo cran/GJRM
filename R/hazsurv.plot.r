@@ -10,7 +10,7 @@ if(x$univar.gamlss == TRUE) eq <- 1
 if(missing(newdata))        stop("You have to provide a new data frame.")   
 if(!is.data.frame(newdata)) stop("You have to provide a new data frame.")   
 if( dim(newdata)[1] != 1 )  stop("Your data frame has to contain one row only.")
-if(!(type %in% c("surv", "hazard"))) stop("The type argument can either be surv or hazard")
+if(!(type %in% c("surv", "hazard", "cumhaz"))) stop("The type argument can either be surv, hazard or cumhaz")
 if(x$surv.flex == FALSE) stop("This function is only suitable for flexible survival models.")
 if(missing(ylim)) ylim <- NULL   
 
@@ -141,6 +141,44 @@ if(intervals == TRUE){
                          }
                      }
 }
+
+
+
+
+
+if(type == "cumhaz"){
+
+
+prs <- -log(prs)
+
+for(i in 1:ls){ poe <- which(prs[i,] %in% boxplot.stats(prs[i,])$out)
+                prs[, poe] <- NA 
+                poe  <- union(poe, poet)
+                poet <- poe 
+                
+                
+              }  
+
+if(intervals == TRUE) CIpr <- rowQuantiles(prs, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+
+if(is.null(ylim) && intervals == TRUE) ylim <- c(min(CIpr[,1]),max(CIpr[,2]) )  
+if(missing(ylab))                      ylab <- "Cumulative Hazard"  
+if(missing(xlab))                      xlab <- "Time"  
+
+plot(tv, -log(pr), type = "l", ylab = ylab, xlab = xlab, ylim = ylim, ...)
+
+if(intervals == TRUE){
+  if(shade == FALSE){
+    lines(tv, CIpr[,1], lty = 2)
+    lines(tv, CIpr[,2], lty = 2)
+                    }else{
+    polygon(c(tv,rev(tv)), c(CIpr[,1],rev(CIpr[,2])), col= "gray80", border = NA)
+    lines(tv, -log(pr), type = "l")
+                          }
+                      }
+}
+
+
 
 #################################################################################################
 

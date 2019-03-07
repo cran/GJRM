@@ -15,7 +15,7 @@ if(BivD %in% c("C0","C180","G0","G180","C90","C270","G90","G270")) theta <- ifel
 if(BivD %in% c("C90","C270","G90","G270"))                         theta <- -theta
 
 
-if(BivD %in% c("HO")){ theta <- ifelse(theta == 0, 0.0000001 , theta)
+if(BivD %in% c("HO")){ theta <- ifelse(theta == 0, 1e-07 , theta)
                        theta <- ifelse(theta == 1, 0.9999999 , theta)
                       }
 

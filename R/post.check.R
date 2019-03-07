@@ -91,9 +91,20 @@ if(x$VC$margins[2] %in% c("ZTP")){
     ly2 <- length(y2)
     y2m <- list()
     my2 <- max(y2)
-    for(i in 1:ly2){ y2m[[i]] <- seq(0, y2[i]); length(y2m[[i]]) <- my2+1} 
+    for(i in 1:ly2){ y2m[[i]] <- seq(1, y2[i]); length(y2m[[i]]) <- my2} 
     y2m <- do.call(rbind, y2m)     
                                  }
+                                 
+                                 
+                                 
+if(x$VC$margins[2] %in% c("DGP")){
+    ly2 <- length(y2)
+    y2m <- list()
+    my2 <- max(y2)
+    for(i in 1:ly2){ y2m[[i]] <- seq(0, y2[i]); length(y2m[[i]]) <- my2+1} 
+    y2m <- do.call(rbind, y2m)     
+                                 }                                 
+
 
 
 
@@ -157,7 +168,7 @@ if(x$VC$margins[1] %in% c("ZTP")){
     ly1 <- length(y1)
     y1m <- list()
     my1 <- max(y1)
-    for(i in 1:ly1){ y1m[[i]] <- seq(0, y1[i]); length(y1m[[i]]) <- my1+1} 
+    for(i in 1:ly1){ y1m[[i]] <- seq(1, y1[i]); length(y1m[[i]]) <- my1} 
     y1m <- do.call(rbind, y1m)     
      
 }
@@ -168,10 +179,42 @@ if(x$VC$margins[2] %in% c("ZTP")){
     ly2 <- length(y2)
     y2m <- list()
     my2 <- max(y2)
+    for(i in 1:ly2){ y2m[[i]] <- seq(1, y2[i]); length(y2m[[i]]) <- my2} 
+    y2m <- do.call(rbind, y2m)     
+     
+}
+
+
+
+
+if(x$VC$margins[1] %in% c("DGP")){
+     
+    ly1 <- length(y1)
+    y1m <- list()
+    my1 <- max(y1)
+    for(i in 1:ly1){ y1m[[i]] <- seq(0, y1[i]); length(y1m[[i]]) <- my1+1} 
+    y1m <- do.call(rbind, y1m)     
+     
+}
+
+
+if(x$VC$margins[2] %in% c("DGP")){
+     
+    ly2 <- length(y2)
+    y2m <- list()
+    my2 <- max(y2)
     for(i in 1:ly2){ y2m[[i]] <- seq(0, y2[i]); length(y2m[[i]]) <- my2+1} 
     y2m <- do.call(rbind, y2m)     
      
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -244,13 +287,23 @@ if(x$VC$margins[1] %in% c("GEVlink") ) stop("It does not make much sense to chec
 
 y1 <- x$y1
 
-if(x$VC$margins[1] %in% c("ZTP")){    
+if(x$VC$margins[1] %in% c("DGP")){    
     ly1 <- length(y1)
     y1m <- list()
     my1 <- max(y1)
     for(i in 1:ly1){ y1m[[i]] <- seq(0, y1[i]); length(y1m[[i]]) <- my1+1} 
     y1m <- do.call(rbind, y1m)         
                                  }
+                                 
+if(x$VC$margins[1] %in% c("ZTP")){    
+    ly1 <- length(y1)
+    y1m <- list()
+    my1 <- max(y1)
+    for(i in 1:ly1){ y1m[[i]] <- seq(1, y1[i]); length(y1m[[i]]) <- my1} 
+    y1m <- do.call(rbind, y1m)         
+                                 }                                 
+                                 
+                                 
 
 
 if(x$VC$margins[1] %in% c(x$VC$m2,x$VC$m3)) p1 <- distrHsAT(x$y1, x$eta1, x$sigma2, x$nu, x$margins[1])$p2 

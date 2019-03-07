@@ -7,7 +7,7 @@ weights <- VC$weights
 l.lnun <- bcorR <- NULL
 
 eta2 <- VC$X1%*%params[1:VC$X1.d2] # this is eta1 but changed to eta2 for convenience
-eta2 <- eta.tr(eta2, VC$margins[1])
+eta2 <- eta.tr(eta2, VC$margins[1]) # eta2 is xi for GP and there is no restriction
 
 
 if( !(VC$margins[1] %in% c(VC$m1d)) ){ 
@@ -20,7 +20,7 @@ if(!is.null(VC$X2)) sigma2.st <- VC$X2%*%params[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)
 if(VC$margins[1] %in% VC$m1d) sigma2.st <- 0
 
 
-    sstr1 <- esp.tr(sigma2.st, VC$margins[1])  
+    sstr1 <- esp.tr(sigma2.st, VC$margins[1])  # is sigma for GP
     sigma2.st <- sstr1$vrb.st 
     sigma2    <- sstr1$vrb 
 
@@ -95,7 +95,7 @@ if(VC$margins[1] %in% c("NBI", "NBII","NBIa", "NBIIa","PIG","PO","ZTP") ) bcorR 
 
 
 l.par1    <- log(pdf2)
-Robj.lpar <- llpsi(l.par1, VC$rc)
+Robj.lpar <- llpsi(l.par1, VC$rc) # check what happens here with 0 log lik
 psi       <- Robj.lpar$psi
 d.psi     <- Robj.lpar$d.psi
 d2.psi    <- Robj.lpar$d2.psi 
@@ -267,11 +267,16 @@ if( VC$margins[1] == "LN"){
   
 
 
+
+if(VC$margins[1] %in% c("GP","DGP")) indx <- dHs$indx else indx <- 1 
+
+
+
 list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l.lnun = l.lnun, 
      l.par=l.par, ps = ps, sigma2.st = sigma2.st,
      etas1 = sigma2.st, eta1 = eta2, bcorR = bcorR,  
      BivD=VC$BivD, eta2 = eta2, sigma2 = sigma2, nu = NULL, d.psi = d.psi,
-     dl.dbe = dl.dbe, dl.dsigma.st = dl.dsigma.st)      
+     dl.dbe = dl.dbe, dl.dsigma.st = dl.dsigma.st, indx = indx)      
 
 
 }

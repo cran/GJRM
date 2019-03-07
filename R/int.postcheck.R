@@ -1,14 +1,9 @@
 int.postcheck <- function(mo, margin, n.rep = 50, prob.lev = 0.05, y2m, eq = 1){
 
-cont <- c("N", "N2", "GU", "rGU", "LO", "LN", "WEI","iG", "GA", "DAGUM", "SM", "BE", "FISK")
-disc <- c("NBI", "NBII", "PIG", "PO", "ZTP") 
-
-
+cont <- c("N", "N2", "GU", "rGU", "LO", "LN", "WEI","iG", "GA", "DAGUM", "SM", "BE", "FISK","GP")
+disc <- c("NBI", "NBII", "PIG", "PO", "ZTP","DGP") 
 
 n   <- mo$n
-
-if(margin == "ZTP") rZTP <- function(n, mu) qpois(runif(n, dpois(0, mu), 1), mu)
-
 
 if(mo$Cont == "NO"){
 
@@ -75,42 +70,29 @@ qrs <- matrix(0, n, n.rep)
 
 for(i in 1:n.rep){
 
-if(margin == "N")     y2s <- rNO(   n,    mu = eta2,         sigma = sqrt(sigma2)) 
-if(margin == "N2")    y2s <- rNO(   n,    mu = eta2,         sigma = sigma2) 
-if(margin == "GU")    y2s <- rGU(   n,    mu = eta2,         sigma = sqrt(sigma2)) 
-if(margin == "rGU")   y2s <- rRG(   n,    mu = eta2,         sigma = sqrt(sigma2)) 
-if(margin == "LO")    y2s <- rLO(   n,    mu = eta2,         sigma = sqrt(sigma2)) 
-if(margin == "LN")    y2s <- rLOGNO(n,    mu = eta2,         sigma = sqrt(sigma2)) 
-if(margin == "WEI")   y2s <- rWEI(  n,    mu = exp(eta2),    sigma = sqrt(sigma2)) 
-#if(margin == "GO")    y2s <- rgompertz(n, shape = exp(eta2), rate = sqrt(sigma2))
-if(margin == "iG")    y2s <- rIG(   n,    mu = exp(eta2),    sigma = sqrt(sigma2)) 
-if(margin == "GA")    y2s <- rGA(   n,    mu = exp(eta2),    sigma = sqrt(sigma2)) 
-if(margin == "GAi")   y2s <- rGA(   n,    mu = eta2,         sigma = sqrt(sigma2)) 
 
-#if(margin == "GA2")   y2s <- rgamma(n, shape = sqrt(sigma2), rate = exp(eta2) ) 
-#if(margin == "GGA")   y2s <- exp( log(rgamma(n, shape = nu))/sqrt(sigma2) + log(exp(eta2)) )
- 
-if(margin == "DAGUM") y2s <- rGB2(  n,    mu = exp(eta2),    sigma = sqrt(sigma2), nu = nu, tau = 1) 
-if(margin == "SM")    y2s <- rGB2(  n,    mu = exp(eta2),    sigma = sqrt(sigma2), nu = 1,  tau = nu) 
-if(margin == "BE")    y2s <- rBE(   n,    mu = plogis(eta2), sigma = sqrt(sigma2))
-if(margin == "FISK")  y2s <- rGB2(  n,    mu = exp(eta2),    sigma = sqrt(sigma2), nu = 1,  tau = 1)
-if(margin == "NBI")   y2s <- rNBI(  n,    mu = exp(eta2),    sigma = sqrt(sigma2)) 
-if(margin == "NBII")  y2s <- rNBII( n,    mu = exp(eta2),    sigma = sqrt(sigma2)) 
-if(margin == "PIG")   y2s <- rPIG(  n,    mu = exp(eta2),    sigma = sqrt(sigma2)) 
-if(margin == "PO")    y2s <- rPO(   n,    mu = exp(eta2)) 
-if(margin == "ZTP")   y2s <- rZTP(  n,    mu = exp(eta2))   
+y2s <- sim.resp(margin, n, eta2, sigma2, nu, setseed = FALSE)
 
 if(margin %in% cont) qrs[,i] <- sort(  qnorm(  distrHsAT(y2s, eta2, sigma2, nu, margin)$p2 )  )
 
 
 if(margin %in% disc){
 
-if(margin %in% c("ZTP")){
+if(margin %in% c("ZTP","DGP")){
     ly2 <- length(y2s)
     y2ms <- list()
     my2s <- max(y2s)
-    for(j in 1:ly2){ y2ms[[j]] <- seq(0, y2s[j]); length(y2ms[[j]]) <- my2s+1} 
-    y2ms <- do.call(rbind, y2ms)          
+    
+    
+    
+    if(margin %in% c("DGP")) for(j in 1:ly2){ y2ms[[j]] <- seq(0, y2s[j]); length(y2ms[[j]]) <- my2s+1} 
+    if(margin %in% c("ZTP"))  for(j in 1:ly2){ y2ms[[j]] <- seq(1, y2s[j]); length(y2ms[[j]]) <- my2s} 
+    
+    y2ms <- do.call(rbind, y2ms) 
+    
+    #if(margins != "ZTP") for(i in 1:ly1){ y1m[[i]] <- seq(0, y1[i]); length(y1m[[i]]) <- my1+1} 
+    #if(margins == "ZTP") for(i in 1:ly1){ y1m[[i]] <- seq(1, y1[i]); length(y1m[[i]]) <- my1}     
+    
                          }
 
 tmp  <- distrHsATDiscr(y2s, eta2, sigma2, nu, margin, y2m = y2ms)

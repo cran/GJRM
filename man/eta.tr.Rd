@@ -36,8 +36,11 @@
 \alias{resp.CLM}
 \alias{approx.CLM}
 \alias{ggmtrust.path}
-\alias{penAprL}
-
+\alias{ggm.DerivOPT1}
+\alias{ggm.DerivOPT2}
+\alias{Dpens2}
+\alias{prediction.CLM}
+\alias{predict2.CLM}
 
 \title{Internal Function}
 

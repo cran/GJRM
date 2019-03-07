@@ -1,7 +1,7 @@
 pp <- function(x){
 
    cont1par <- c("PO","ZTP","probit","logit","cloglog","GEVlink")  
-   cont2par <- c("N","N2","GU","rGU","LO","LN","WEI","GO","iG","GA","GA2","GAi","BE","FISK","NBI", "NBII","NBIa", "NBIIa","PIG")  
+   cont2par <- c("N","N2","GU","rGU","LO","LN","WEI","GO","iG","GA","GA2","GAi","BE","FISK","NBI", "NBII","NBIa", "NBIIa","PIG","GP","DGP")  
    cont3par <- c("DAGUM","SM","DEL","SICHEL","GGA")   
 
 if(x$univar.gamlss == TRUE) x$BivD <- "N" 
@@ -47,13 +47,16 @@ if(x$univar.gamlss == TRUE) x$BivD <- "N"
   
   # if(x$BivD=="N" && x$Model=="BPO0") cop <- "Independent"   
     
-  mml <- c("LN","WEI","GO","iG","GA","GA2","GGA","DAGUM","SM","FISK","NBI","NBII","NBIa","NBIIa","PIG","PO","ZTP")  
+  mml <- c("LN","WEI","GO","iG","GA","GA2","GGA","DAGUM","SM","FISK","NBI","NBII","NBIa","NBIIa","PIG","PO","ZTP","GP","DGP")  
     
   if(x$margins[1] %in% c("N","N2","GU","rGU","LO","GAi") )  m1l <- "identity"
   if(x$margins[2] %in% c("N","N2","GU","rGU","LO","GAi") )  m2l <- "identity"
   
   if(x$margins[1] %in% mml )                                m1l <- "log" 
   if(x$margins[2] %in% mml )                                m2l <- "log" 
+  
+  if(x$margins[1] %in% c("GP","DGP") )                    m1l <- "identity"
+  if(x$margins[2] %in% c("GP","DGP") )                    m2l <- "identity"  
   
   if(x$margins[1] %in% c("BE") )                            m1l <- "qlogis" 
   if(x$margins[2] %in% c("BE") )                            m2l <- "qlogis"   

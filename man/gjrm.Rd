@@ -22,7 +22,7 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
      k1.tvc = 0, k2.tvc = 0, knots = NULL,
      penCor = "unpen", sp.penCor = 3, 
      Chol = FALSE, gamma = 1, w.alasso = NULL,
-     drop.unused.levels = TRUE)
+     drop.unused.levels = TRUE, ind.ord = FALSE)
 }
 
 
@@ -139,6 +139,7 @@ documentation of \code{trust} for more details.}
 \item{drop.unused.levels}{By default unused levels are dropped from factors before fitting. For some smooths involving factor variables 
                           this may have to be turned off (only use if you know what you are doing).} 
  
+\item{ind.ord}{Joint ordinal model under independence.} 
  
 }
 
@@ -923,15 +924,15 @@ out1 <- gjrm(list(eq1, eq2, eq3), data = dataSim, surv = TRUE,
                   cens1 = delta1, cens2 = delta2, gamlssfit = TRUE,
                   Model = "B") 
 
-eq1 <- u1 ~ z1 + s(z2)
-eq2 <- u2 ~ z  
-eq3 <-    ~ s(z2)    
 
-# note that Weibull is implemented as AFT model
-out2 <- gjrm(list(eq1, eq2, ~ 1, ~ 1, eq3), data = dataSim, surv = TRUE,
-                  margins = c("WEI", "WEI"), 
-                  cens1 = delta1, cens2 = delta2,
-                  Model = "B")    
+# eq1 <- u1 ~ z1 + s(z2)
+# eq2 <- u2 ~ z  
+# eq3 <-    ~ s(z2)    
+# note that Weibull is implemented as AFT model (test case)
+# out2 <- gjrm(list(eq1, eq2, ~ 1, ~ 1, eq3), data = dataSim, surv = TRUE,
+#                   margins = c("WEI", "WEI"), 
+#                   cens1 = delta1, cens2 = delta2,
+#                   Model = "B")    
                   
 #########################################
 ## Joint continuous and survival outcomes

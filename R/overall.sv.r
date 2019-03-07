@@ -19,9 +19,9 @@ if( margins[1] %in% c(M$m3) && margins[2] %in% c(M$m2) ) start.v <- c(vo$gam1$co
 }else{
 
 
-if( margins[1] %in% c(M$m2) && margins[2] %in% c(M$m2) ) start.v <- c(vo$gam1$coefficients,vo$gam2$coefficients, vo$log.sig2.1, vo$log.sig2.2,                            vo$i.rho)                         
+if( margins[1] %in% c(M$m2,M$m2d) && margins[2] %in% c(M$m2,M$m2d) ) start.v <- c(vo$gam1$coefficients,vo$gam2$coefficients, vo$log.sig2.1, vo$log.sig2.2,                            vo$i.rho)                         
 if( margins[1] %in% c(M$m3) && margins[2] %in% c(M$m3) ) start.v <- c(vo$gam1$coefficients,vo$gam2$coefficients, vo$log.sig2.1, vo$log.sig2.2, vo$log.nu.1, vo$log.nu.2,  vo$i.rho)                           
-if( margins[1] %in% c(M$m2) && margins[2] %in% c(M$m3) ) start.v <- c(vo$gam1$coefficients,vo$gam2$coefficients, vo$log.sig2.1, vo$log.sig2.2,              vo$log.nu.2,  vo$i.rho) 
+if( margins[1] %in% c(M$m2,M$m2d) && margins[2] %in% c(M$m3) ) start.v <- c(vo$gam1$coefficients,vo$gam2$coefficients, vo$log.sig2.1, vo$log.sig2.2,              vo$log.nu.2,  vo$i.rho) 
 if( margins[1] %in% c(M$m3) && margins[2] %in% c(M$m2) ) start.v <- c(vo$gam1$coefficients,vo$gam2$coefficients, vo$log.sig2.1, vo$log.sig2.2, vo$log.nu.1,               vo$i.rho) 
 
 
@@ -35,6 +35,8 @@ if(margins[1] %in% c(M$m1d) && margins[2] %in% c(M$m2,M$m2d))        start.v <- 
 if(margins[1] %in% c(M$m1d) && margins[2] %in% c(M$m3))              start.v <- c(vo$gam1$coefficients, vo$gam2$coefficients,                vo$log.sig2.2,              vo$log.nu.2,            vo$i.rho)                        
 if(margins[1] %in% c(M$m2d) && margins[2] %in% c(M$m2d) )            start.v <- c(vo$gam1$coefficients, vo$gam2$coefficients, vo$log.sig2.1, vo$log.sig2.2,                                      vo$i.rho)                         
 
+
+# some of the above stuff is redundant but kept for clarity
 
 }
 

@@ -5,19 +5,19 @@ resp.check <- function(y, margin = "N",
                            intervals = FALSE, n.sim = 100, prob.lev = 0.05, 
                            i.f = FALSE, ...){
 
-m2 <- c("N","N2","GU","rGU","LO","LN","WEI","iG","GA","GAi","BE","FISK")
+m2 <- c("N","N2","GU","rGU","LO","LN","WEI","iG","GA","GAi","BE","FISK","GP")
 m3 <- c("DAGUM","SM")
 nu <- NULL
 m1d  <- c("PO","ZTP")
-m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG")
+m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG","DGP")
 m3d  <- c("DEL","SICHEL")
 
 y1m <- NA
 y <- as.numeric( na.omit(y) )
 
-if(!(margin %in% c(m2,m3,m1d,m2d)) ) stop("Error in margin value. It should be one of:\nN, N2, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, SM, BE, FISK, NBI, NBII, PIG, PO, ZTP.") 
+if(!(margin %in% c(m2,m3,m1d,m2d)) ) stop("Error in margin value. It should be one of:\nN, N2, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, SM, BE, FISK, NBI, NBII, PIG, PO, ZTP, GP, DGP.") 
 
-if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK") && min(y, na.rm = TRUE) <= 0) stop("The response must be positive.")
+if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP") && min(y, na.rm = TRUE) <= 0) stop("The response must be positive.")
 if(margin %in% c("BE") && (min(y, na.rm = TRUE) <= 0 || max(y, na.rm = TRUE) >= 1) ) stop("The response must be in the interval (0,1).")
    
     if(margin %in% c(m1d,m2d,m3d) && min(y, na.rm = TRUE) < 0) stop("The response must be positive.")
@@ -65,6 +65,14 @@ if( margin %in% c("GA") )               st.v <- c( log(mean((y + mean(y))/2)), l
 if( margin %in% c("GAi") )              st.v <- c( mean((y + mean(y))/2), log(var(y)/mean(y)^2)  ) # log( 1^2 )
 
 
+#if( margin %in% c("GP","DGP") )       st.v <- c( log(10) ,   0.0025 )  
+# or
+#if( margin %in% c("GP","DGP") )       st.v <- c( 0.05, log(100)  )  
+
+
+if( margin %in% c("GP","DGP") )       st.v <- c( 0.05, log( mean((y + mean(y))/2)^2  )  )             
+
+
 #if( margin %in% c("GA2") )              st.v <- c( mean(y)^2/var(y), log(mean(y)/var(y))  ) # log( 1^2 )
 #if( margin %in% c("GGA") )              st.v <- c( log(mean(y)), log(1), log(1) )
 
@@ -104,7 +112,7 @@ if(plots == TRUE){ ##
 if(margin == "LN") y <- exp(y)
 
 
-    if(margin %in% c("ZTP")){
+    if(margin %in% c("ZTP","DGP")){
      
     ly1 <- length(y)
     y1m <- list()
@@ -209,8 +217,10 @@ lk <- sum(log(d))
 
 if(margin != "LN") lk <- -univfit$l
 
-attr(lk, "nobs") <- length(y)
-attr(lk, "df") <- length(st.v)
+attr(lk, "nobs")     <- length(y)
+attr(lk, "df")       <- length(st.v)
+#attr(lk, "est.pars") <- univfit$argument
+
 class(lk) <- "logLik"
 lk
 

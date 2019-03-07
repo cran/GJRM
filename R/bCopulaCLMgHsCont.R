@@ -25,7 +25,15 @@ sigma2.st <- etas <- VC$X3%*%params[(VC$K1 + VC$X1.d2 + VC$X2.d2):(VC$K1 + VC$X1
 teta.st   <- etad <- VC$X4%*%params[(VC$K1 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2):(VC$K1 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 - 1)]
 }
 
+
 ##############################
+
+# Independence model
+
+if (VC$ind.ord == "TRUE") teta.st <- etad <- log(epsilon) # This ensures that teta = 1 (i.e. independence for J0 copula)
+
+##############################
+
 
 # Cut points are transformed and the linear predictors created 
 
@@ -607,6 +615,21 @@ if(VC$extra.regI == "pC") H <- regH(H, type = 1)
   
 S.h  <- ps$S.h  
 
+
+##############################
+
+# Independence model
+
+if (VC$ind.ord == "TRUE") {
+	G <- G[-VC$drop.ind]
+	H <- H[-VC$drop.ind, -VC$drop.ind]
+
+	S.h <- S.h[-VC$drop.ind, -VC$drop.ind]
+}
+
+##############################
+
+
 if(length(S.h) != 1){
   
 S.h1 <- 0.5 * crossprod(params, S.h) %*% params
@@ -660,7 +683,7 @@ l.ln <- - sum( VC$weights*(log(h.pm) + log(pdf2)) )
 
 
 list(value = res, gradient = G, hessian = H, S.h = S.h, S.h1 = S.h1, S.h2 = S.h2, l = S.res, l.ln = l.ln, l.par = l.par, ps = ps, etas = etas,
-     eta1 = eta1, eta2 = eta2, etad = etad,
+     eta1 = eta1, eta2 = eta2, etad = etad, lp1 = lp1,
      dl.dbe1 = dl.dbe1, dl.dbe2 = dl.dbe2, dl.dsigma.st = dl.dsigma.st, dl.dteta.st = dl.dteta.st,
      BivD = VC$BivD, p1.p = p1.p, p1.m = p1.m, p2 = p2, theta.star = teta.st, # why 1-p1? Then p1 has been substituted with p1.p and p1.m
      teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,

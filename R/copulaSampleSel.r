@@ -38,10 +38,10 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   opc  <- c("N","C0","C90","C180","C270","J0","J90","J180","J270","G0","G90","G180","G270","F","AMH","FGM","T","PL","HO")
   scc  <- c("C0", "C180", "J0", "J180", "G0", "G180", BivD2)
   sccn <- c("C90", "C270", "J90", "J270", "G90", "G270")
-  m2   <- c("N","N2","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK")
+  m2   <- c("N","N2","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP")
   m3   <- c("DAGUM","SM")
   m1d  <- c("PO", "ZTP")
-  m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG")
+  m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG","DGP")
   m3d  <- NULL
   bl   <- c("probit", "logit", "cloglog")
 

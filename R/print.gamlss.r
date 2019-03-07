@@ -28,7 +28,17 @@ print.gamlss <- function(x, ...){
   if( x$margins[1] %in% cont2par){
   
   cat("\nEQUATION 2")
-  if(x$margins[1] !="BE") cat("\nLink function for sigma2:","log","\n") else cat("\nLink function for sigma2:","qlogis","\n") 
+  
+  #if(x$margins[1] !="BE" && !(x$margins[1] %in% c("GP","DGP"))) cat("\nLink function for sigma2:","log","\n")
+  
+  
+  if(x$margins[1] !="BE") cat("\nLink function for sigma2:","log","\n")
+  
+  
+  if(x$margins[1] =="BE") cat("\nLink function for sigma2:","qlogis","\n") 
+  
+  #if(x$margins[1] %in% c("GP","DGP")) cat("\nLink function for sigma2:","identity","\n") 
+
   cat("Formula: "); print(x$formula[[2]])  
   
      }

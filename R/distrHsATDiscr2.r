@@ -80,6 +80,27 @@ pdf2     <- as.numeric( pdf2FUNC(y2, mu2) )
 
 
 
+
+if(margin2 %in% c("DGP")){
+
+mu2    <- c(eta2)
+sigma2 <- c(sigma2)
+
+     
+pdf2FUNC2 <- function(y2, mu2, sigma2) suppressWarnings(    (1 + mu2*y2/sqrt(sigma2))^(-1/mu2) - (1 + mu2*(1+y2)/sqrt(sigma2))^(-1/mu2)     )
+pdf2     <-     as.numeric( pdf2FUNC2(y2, mu2, sigma2) )     
+
+
+# done but exclusions not implemented/checked
+
+
+}
+
+
+
+
+
+
 epsilon <- 0.0000001 
 pdf2 <- ifelse(pdf2 < epsilon, epsilon, pdf2 )
 

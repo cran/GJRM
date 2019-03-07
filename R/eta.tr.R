@@ -1,12 +1,15 @@
 eta.tr <- function(vrb.st, margin){
 
-mupos <- c("LN","WEI","GO","iG","GA","GA2","GGA","DAGUM","SM","FISK","NBI","NBII","PO","ZTP","PIG")
-mub   <- c("BE","logit")
+mupos  <- c("LN","WEI","GO","iG","GA","GA2","GGA","DAGUM","SM","FISK","NBI","NBII","PO","ZTP","PIG")
+mub    <- c("BE","logit")
+muNpos <- c("GP","DGP")
+
 
 if(margin %in% mupos){
    vrb.st <- ifelse( vrb.st > 20,   20, vrb.st )  # it was 28
    vrb.st <- ifelse( vrb.st < -14.5, -14.5, vrb.st ) # it was -17 then -9
 }
+
 
 if(margin %in% mub){
    vrb.st <- ifelse( vrb.st >  16,  16, vrb.st )  

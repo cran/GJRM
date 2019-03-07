@@ -1,3 +1,7 @@
+version 0.2
+- copula survival models.
+- copula models with binary and discrete margins.
+
 version 0.1-5
 - various bug fixed and more models introduced.
 

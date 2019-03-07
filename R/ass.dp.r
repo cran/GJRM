@@ -11,7 +11,7 @@ if(  BivD %in% c("PL") )                  i.rho <- as.numeric(iTau(plackettCopul
 if(  BivD %in% c("HO") )                  i.rho <- ass.s - 1
 
 if(BivD %in% c("N","AMH","FGM","T"))         i.rho <- atanh( i.rho ) 
-if(BivD == "F")                              i.rho <- ifelse( abs(i.rho) < 0.0000001, 0.0000001, i.rho ) 
+if(BivD == "F")                              i.rho <- ifelse( abs(i.rho) < 1e-07, 1e-07, i.rho ) 
 if(!(BivD %in% c("N","AMH","FGM","F","T")))  i.rho <- abs(i.rho)
 
 if(BivD %in% c("C0","C180","C90","C270",

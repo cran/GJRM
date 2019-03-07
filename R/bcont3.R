@@ -1,5 +1,7 @@
 bcont3 <- function(params, respvec, VC, ps, AT = FALSE){
 
+
+l.ln <- NULL
     eta1 <- VC$X1%*%params[1:VC$X1.d2]
     eta2 <- VC$X2%*%params[(VC$X1.d2 + 1):(VC$X1.d2 + VC$X2.d2)]
     etad <- etas1 <- etas2 <- etan1 <- etan2 <- NULL 

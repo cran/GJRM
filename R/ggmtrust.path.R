@@ -1,4 +1,10 @@
-ggmtrust.path <- function(s, n, nlambda = 10, lambda.min.ratio = 0.1, pen = "lasso"){
+ggmtrust.path <- function(s, n, data = NULL, nlambda = 10, lambda.min.ratio = 0.1, pen = "lasso", method = "BHHH", w.alasso = NULL, gamma = 1, a = 3.7){
+
+
+if( !(pen %in% c("ridge", "lasso", "alasso", "scad")) ) stop("pen should be one of: ridge, lasso, alasso, scad")
+
+if( !(method %in% c("H", "BHHH", "TB")) ) stop("method should be one of: H, BHHH, TB")
+
 
   lambda.max <- 2*max(abs(s[upper.tri(s, diag = FALSE)]))  # max(abs(s[upper.tri(s, diag = FALSE)]))
   lambda.min <- lambda.min.ratio*lambda.max
@@ -15,8 +21,8 @@ iterations <- countPD <- loglik <- aic <- bic <- t.edf <- NA
 
 for(i in 1:length(lambda.seq)){
 
+ggmtrustOB <- ggmtrust(s, n, data = data, lambda = lambda.seq[i], pen = pen, params = paramsO, method = method, w.alasso = w.alasso, gamma = gamma, a = a)
 
-ggmtrustOB <- ggmtrust(s, n, lambda = lambda.seq[i], pen = pen, params = paramsO)
 
 paramsO <- params[[i]] <- ggmtrustOB$coefficients
 paramsO[ggmtrustOB$idx] <- exp(paramsO[ggmtrustOB$idx])
@@ -46,7 +52,7 @@ print(i)
 
 
 L <- list(modO = modO, lambda.seq = lambda.seq, params = params, omega = omega, edf = edf, t.edf = t.edf, 
-          aic = aic, bic = bic, loglik = loglik, countPD = countPD, iterations = iterations, Vb = Vb)   
+          aic = aic, bic = bic, loglik = loglik, countPD = countPD, iterations = iterations, Vb = Vb, idx = ggmtrustOB$idx)   
 
 
 L

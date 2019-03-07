@@ -17,7 +17,7 @@ if(type == "biv"){
 
 if(M$BivD != "T"){
   
-  if( l.flist == 2 ) start.v <- c(GAM$gam1$coefficients, gamlss2$coefficients, VC$i.rho)       # PO, N, DAGUM etc
+  if( l.flist == 2 ) start.v <- c(GAM$gam1$coefficients, gamlss2$coefficients, VC$i.rho)              # PO, N, DAGUM etc
   if( l.flist == 3 ) start.v <- c(GAM$gam1$coefficients, gamlss2$coefficients, GAM$gam3$coefficients) # PO only
   if( l.flist == 4 ) start.v <- c(GAM$gam1$coefficients, gamlss2$coefficients, GAM$gam4$coefficients) # N
   if( l.flist == 5 ) start.v <- c(GAM$gam1$coefficients, gamlss2$coefficients, GAM$gam5$coefficients) # DAGUM
@@ -26,7 +26,7 @@ if(M$BivD != "T"){
 
 if(M$BivD == "T"){
   
-  if( l.flist == 2 ) start.v <- c(GAM$gam1$coefficients, gamlss2$coefficients, VC$dof.st, VC$i.rho) # PO, N, DAGUM etc
+  if( l.flist == 2 ) start.v <- c(GAM$gam1$coefficients, gamlss2$coefficients, VC$dof.st, VC$i.rho)                          # PO, N, DAGUM etc
   if( l.flist == 4 ) start.v <- c(GAM$gam1$coefficients, gamlss2$coefficients, GAM$gam3$coefficients, GAM$gam4$coefficients) # PO only
   if( l.flist == 5 ) start.v <- c(GAM$gam1$coefficients, gamlss2$coefficients, GAM$gam4$coefficients, GAM$gam5$coefficients) # N
   if( l.flist == 6 ) start.v <- c(GAM$gam1$coefficients, gamlss2$coefficients, GAM$gam5$coefficients, GAM$gam6$coefficients) # DAGUM

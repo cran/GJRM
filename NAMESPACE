@@ -1,12 +1,12 @@
-export(AT, AT2, RR, OR, rMVN, post.check,mm,enu.tr,llpsi,imputeSS, imputeCounter,
+export(AT, PE, RR, OR, rMVN, post.check,mm,enu.tr,llpsi,imputeSS, imputeCounter,
 prev, distrHs, numch, numgh,distrHsAT,distrHsAT1,distrHsDiscr,distrHsATDiscr,distrHsATDiscr2, rob.const,
 adjCov, copgHsCont, BCDF, BiCDF, jc.probs,probm,probmS,postVb,ass.ms,edf.loop,pred.var,form.check,
 adjCovSD,int.postcheck, overall.svG, susutsn, susu,pscr, pscr0, mice.impute.copulaSS,
 gt.bpm, esp.tr, eta.tr, teta.tr,copgHsAT,dof.tr,ass.dp,form.eq12,startsn, overall.sv,
 bprobgHs,bprobgHstwoParC, mb, H.tri, g.tri, triprobgHs, H.triSS, g.triSS, triprobgHsSS, 
 H.triESS, g.triESS, triprobgHsESS, pp, SS, bcontSurvGunivInform, rIC, bCopulaCLMgHsCont,
-bprobgHsPO, bcorrec, bcorrecDiscr,  Xdpred, pred.mvt, inform.setup, cv.inform, PDef, ggm.Deriv, ggmtrust,
-bprobgHsSS, intB, rob.int, resp.CLM, ggmtrust.path, penAprL,
+bprobgHsPO, bcorrec, bcorrecDiscr,  Xdpred, pred.mvt, inform.setup, cv.inform, PDef, ggm.Deriv, ggmtrust, ggm.DerivOPT1, ggm.DerivOPT2,
+bprobgHsSS, intB, rob.int, resp.CLM, ggmtrust.path, Dpens, Dpens2, prediction.CLM, predict2.CLM,
 bprobgHsContUniv,
 copgHs, copgHs2, copgHs3, PosDefCor,
 logLik.SemiParBIV, logLik.ggmtrust,
@@ -14,7 +14,7 @@ LM.bpm, hazsurv.plot, approx.CLM,
 VuongClarke,
 plot.SemiParBIV, vis.gjrm,
 predict.SemiParBIV,
-print.AT, print.AT2, print.RR, print.OR, 
+print.AT, print.PE, print.RR, print.OR, 
 print.prev, 
 print.mb,
 print.SemiParBIV,
@@ -50,6 +50,8 @@ resp.check,
 polys.map, polys.setup)
 
 importFrom(magic, adiag)
+importFrom(evd, rgpd)
+importFrom(trustOptim, trust.optim)
 importFrom(survey, svyrecvar, twophasevar, twophase2var, svyCprod)
 importFrom(trust,trust)
 importFrom(scam, scam)
@@ -86,7 +88,7 @@ S3method(summary, gjrm)
 S3method(summary, copulaSampleSel)
 S3method(summary, gamlss)
 S3method(print, AT)
-S3method(print, AT2)
+S3method(print, PE)
 S3method(print, RR)
 S3method(print, OR)
 S3method(print, SemiParBIV)

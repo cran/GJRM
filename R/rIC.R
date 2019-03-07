@@ -2,7 +2,7 @@ rIC <- function(obj){
 
 fit <- obj
 m1d  <- c("PO", "ZTP")
-m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG")
+m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG","DGP")
 
 n      <- fit$VC$n
 rc     <- fit$VC$rc
@@ -184,7 +184,7 @@ if(margin %in% m2d) g <- cbind(  c(fit$fit$dl.dbe)*fit$VC$X1, c(fit$fit$dl.dsigm
 if(!(margin %in% c(m1d, m2d)) ){
 
 
-m2sel <- c("WEI","iG","GA","BE","FISK","DAGUM","SM")
+m2sel <- c("WEI","iG","GA","BE","FISK","DAGUM","SM","GP")
 
 ###############################
 # fixed quantities
@@ -198,7 +198,7 @@ if(is.null(fit$VC$X2)){fit$VC$X2 <- fit$VC$X3 <- matrix(1, n, 1); fit$VC$X2.d2 <
 if(is.null(fit$VC$lB) && is.null(fit$VC$uB)){
 
 if( margin %in% c("N","N2","GU","rGU","LO","LN") )             { lB <- -Inf;      uB <- Inf}
-if( margin %in% c("WEI","iG","GA","DAGUM","SM","FISK")  )      { lB <- 0.0000001; uB <- Inf}
+if( margin %in% c("WEI","iG","GA","DAGUM","SM","FISK","GP")  )      { lB <- 0.0000001; uB <- Inf}
 if( margin %in% c("BE")  )                                     { lB <- 0.0000001; uB <- 0.9999999}
 
 }else{lB <- fit$VC$lB; uB <- fit$VC$uB}

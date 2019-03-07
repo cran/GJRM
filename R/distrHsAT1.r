@@ -17,7 +17,10 @@ der2y.dery.st2 <- 0
 
 if(margin2 %in% c("LN")){
 
-y2 <- dery.dery.st <- der2y.dery.st2 <- exp(y2.st)
+y2 <- exp(y2.st)
+dery.dery.st <- exp(y2.st)
+der2y.dery.st2 <- exp(y2.st)
+
 mu2 <- exp(eta2)
 
 der2p2.dery22  <- -(1/(y2 * sqrt(sigma2) * sqrt(2 * pi)) * (exp(-0.5 * (log(y2) - mu2)^2/sigma2) * (0.5 * (2 * (1/y2 * (log(y2) - mu2)))/sigma2)) + 
@@ -30,7 +33,10 @@ der2p2.dery22  <- -(1/(y2 * sqrt(sigma2) * sqrt(2 * pi)) * (exp(-0.5 * (log(y2) 
 
 if(margin2 == "DAGUM"){
 
-y2 <- dery.dery.st <- der2y.dery.st2 <- exp(y2.st)
+y2 <- exp(y2.st)
+dery.dery.st <- exp(y2.st)
+der2y.dery.st2 <- exp(y2.st)
+
 mu2 <- exp(eta2)
 
 der2p2.dery22  <- sqrt(sigma2) * nu/y2 * ((y2/mu2)^((sqrt(sigma2) * nu) - 1) * 
@@ -56,7 +62,10 @@ der2p2.dery22  <- sqrt(sigma2) * nu/y2 * ((y2/mu2)^((sqrt(sigma2) * nu) - 1) *
 if(margin2 == "SM"){
 
 
-y2 <- dery.dery.st <- der2y.dery.st2 <- exp(y2.st)
+y2 <- exp(y2.st)
+dery.dery.st <- exp(y2.st)
+der2y.dery.st2 <- exp(y2.st)
+
 mu2 <- exp(eta2)
 
 der2p2.dery22  <- sqrt(sigma2) * nu * (y2^((sqrt(sigma2) - 1) - 1) * (sqrt(sigma2) - 
@@ -82,7 +91,10 @@ der2p2.dery22  <- sqrt(sigma2) * nu * (y2^((sqrt(sigma2) - 1) - 1) * (sqrt(sigma
 if(margin2 == "FISK"){
 
 
-y2 <- dery.dery.st <- der2y.dery.st2 <- exp(y2.st)
+y2 <- exp(y2.st)
+dery.dery.st <- exp(y2.st)
+der2y.dery.st2 <- exp(y2.st)
+
 mu2 <- exp(eta2)
 
 der2p2.dery22  <- sqrt(sigma2) * (y2^((sqrt(sigma2) - 1) - 1) * (sqrt(sigma2) - 
@@ -98,6 +110,26 @@ der2p2.dery22  <- sqrt(sigma2) * (y2^((sqrt(sigma2) - 1) - 1) * (sqrt(sigma2) -
 
 
 
+if(margin2 == "GP"){
+
+
+y2 <- exp(y2.st)
+dery.dery.st <- exp(y2.st)
+der2y.dery.st2 <- exp(y2.st)
+
+mu2 <- eta2
+
+der2p2.dery22  <- suppressWarnings(   -(mu2 * (1 + 1/mu2)/((1 + mu2 * y2/sqrt(sigma2))^(1/mu2 + 2) * sigma2^1))    )
+
+# done but exclusions not implemented
+
+}
+
+
+
+
+
+
 
 ####
 
@@ -105,7 +137,10 @@ der2p2.dery22  <- sqrt(sigma2) * (y2^((sqrt(sigma2) - 1) - 1) * (sqrt(sigma2) -
 
 if(margin2 == "WEI"){
 
-y2 <- dery.dery.st <- der2y.dery.st2 <- exp(y2.st)
+y2 <- exp(y2.st)
+dery.dery.st <- exp(y2.st)
+der2y.dery.st2 <- exp(y2.st)
+
 mu2 <- exp(eta2)
 
 der2p2.dery22  <- sqrt(sigma2)/mu2 * ((y2/mu2)^((sqrt(sigma2) - 1) - 1) * ((sqrt(sigma2) - 
@@ -119,7 +154,10 @@ der2p2.dery22  <- sqrt(sigma2)/mu2 * ((y2/mu2)^((sqrt(sigma2) - 1) - 1) * ((sqrt
 
 if(margin2 == "GO"){
 
-y2 <- dery.dery.st <- der2y.dery.st2 <- exp(y2.st)
+y2 <- exp(y2.st)
+dery.dery.st <- exp(y2.st)
+der2y.dery.st2 <- exp(y2.st)
+
 mu2 <- exp(eta2)
 
 der2p2.dery22 <- mu2 * exp(mu2 * (1 - exp(y2 * sqrt(sigma2)))/sqrt(sigma2)) * 
@@ -157,7 +195,10 @@ der2y.dery.st2 <- (1 - (3 - 2 * (exp(y2.st)/(1 + exp(y2.st)))) * exp(y2.st)/(1 +
 
 if(margin2 == "iG"){
 
-y2 <- dery.dery.st <- der2y.dery.st2 <- exp(y2.st)
+y2 <- exp(y2.st)
+dery.dery.st <- exp(y2.st)
+der2y.dery.st2 <- exp(y2.st)
+
 mu2 <- exp(eta2)
 
 
@@ -239,7 +280,10 @@ if(margin2 == "GA"){
 
 sigma2    <- ifelse(sigma2 < 0.006, 0.006, sigma2) 
 
-y2 <- dery.dery.st <- der2y.dery.st2 <- exp(y2.st)
+y2 <- exp(y2.st)
+dery.dery.st <- exp(y2.st)
+der2y.dery.st2 <- exp(y2.st)
+
 mu2 <- exp(eta2)
 
   der2p2.dery22 <- (y2^((1/sigma2 - 1) - 1) * (1/sigma2 - 1) * exp(-y2/(mu2 * 
@@ -254,7 +298,10 @@ if(margin2 == "GA2"){
 
 sigma2    <- ifelse(sigma2 < 0.006, 0.006, sigma2) 
 
-y2 <- dery.dery.st <- der2y.dery.st2 <- exp(y2.st)
+y2 <- exp(y2.st)
+dery.dery.st <- exp(y2.st)
+der2y.dery.st2 <- exp(y2.st)
+
 mu2 <- exp(eta2)
 
   der2p2.dery22 <- exp(-(mu2 * y2)) * (mu2^sqrt(sigma2) * y2^(sqrt(sigma2) - 2) * 
@@ -267,7 +314,10 @@ mu2 <- exp(eta2)
     
 if(margin2 == "GGA"){
 
-y2 <- dery.dery.st <- der2y.dery.st2 <- exp(y2.st)
+y2 <- exp(y2.st)
+dery.dery.st <- exp(y2.st)
+der2y.dery.st2 <- exp(y2.st)
+
 mu2 <- exp(eta2)
 
 der2p2.dery22 <- exp(-(y2/mu2)^sqrt(sigma2)) * (y2^(nu * sqrt(sigma2) - 2) * (nu * 
@@ -288,7 +338,10 @@ if(margin2 %in% c("GAi")){
 sigma2 <- ifelse(sigma2 < 0.006, 0.006, sigma2) # related to gamma function
 eta2   <- ifelse(eta2 < 0.0000001, 0.0000001, eta2)
 
-y2 <- dery.dery.st <- der2y.dery.st2 <- exp(y2.st)
+y2 <- exp(y2.st)
+dery.dery.st <- exp(y2.st)
+der2y.dery.st2 <- exp(y2.st)
+
 mu2 <- eta2
       
 

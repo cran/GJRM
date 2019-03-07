@@ -7,6 +7,7 @@ pred.mvt <- function(x, eq, fun = "mean", n.sim = 100, prob.lev = 0.05, smooth.n
  
  
  
+ 
  if(fun != "tau"){
  
  
@@ -21,6 +22,9 @@ pred.mvt <- function(x, eq, fun = "mean", n.sim = 100, prob.lev = 0.05, smooth.n
 
  if(eq == 1) mar <- x$margins[1]
  if(eq == 2) mar <- x$margins[2] 
+ 
+  if( mar %in% c("DGP") ) stop("Function not ready yet for this case.")
+
  
  
  bs <- rMVN(n.sim, mean = x$coefficients, sigma = x$Vb)
@@ -191,6 +195,9 @@ if(x$VC$univ.gamls == TRUE){###############
 
 
 mar <- x$margins[1]
+
+if( mar %in% c("DGP") ) stop("Function not ready yet for this case.")
+
  
 bs <- rMVN(n.sim, mean = x$coefficients, sigma = x$Vb)
 
@@ -296,6 +303,29 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
                           }
                                                   
  } 
+
+
+
+
+ if(mar %in% c("GP")){
+ 
+    if(fun == "mean")     {fit <- exp(fit1) / (  1 - sqrt(fit2) )                          ; fitSim <- exp(fit1Sim) / (1 - sqrt(fit2Sim))                } 
+    if(fun == "variance") {fit <- exp(fit1)^2/ (1 + sqrt(fit2))^2 * (1 - 2*sqrt(fit2)); fitSim <- exp(fit1Sim)^2/ (1 + sqrt(fit2Sim))^2 * (1 - 2*sqrt(fit2Sim)) }
+                                     
+ } # no index included here
+
+
+
+
+ if(mar %in% c("DGP")){
+ 
+    if(fun == "mean")     {fit <- 1;             fitSim <- 1                } 
+    if(fun == "variance") {fit <- 1 ; fitSim <- 1 }
+                                     
+ } # to do, we need truncation here
+
+
+
 
 
 

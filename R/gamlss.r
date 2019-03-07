@@ -28,10 +28,10 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
   D <- pos.pb <- list()
   Gmat12 <- Hmat12 <- NULL
 
-  m2  <- c("N","N2","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK")
+  m2  <- c("N","N2","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP")
   m3  <- c("DAGUM","SM")
   m1d <- c("PO", "ZTP", "GEVlink")
-  m2d <- c("NBI", "NBII","NBIa", "NBIIa","PIG")
+  m2d <- c("NBI", "NBII","NBIa", "NBIIa","PIG","DGP")
   m3d <- c("DEL","SICHEL")
   
   if(margin == "PH" && surv == TRUE) margin <- "cloglog"
@@ -109,7 +109,7 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
  ##############################################################  
  ##############################################################  
    
- form.eq12R <- form.eq12(formula.eq1, data, v1, margin, m1d, m2d)   
+ form.eq12R <- form.eq12(formula.eq1, data, v1, margin, m1d, m2d)   # this will protect ZTP from having zeros in the response
  
  formula.eq1  <- form.eq12R$formula.eq1
  formula.eq1r <- form.eq12R$formula.eq1r
@@ -140,7 +140,7 @@ if(surv == TRUE && margin2 %in% bl && informative == "yes"){
  #############################################################################################
                                      #############################################################
  if(surv == TRUE && margin %in% bl){ ######### think about this for parametric models ############
-  surv.flex <- TRUE                  ########set.seed(1)rm(list=".Random.seed", envir=globalenv())rnorm(dim(data)[1])
+  surv.flex <- TRUE                  ######### set.seed(1)rm(list=".Random.seed", envir=globalenv())rnorm(dim(data)[1])
 
   ###################################################################
   ####  cox.ph pre-fit to create response for starting value fit ####

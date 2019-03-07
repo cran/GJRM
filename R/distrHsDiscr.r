@@ -1,7 +1,6 @@
 distrHsDiscr <- function(y2, eta2, sigma2, sigma2.st, nu, nu.st, margin2, naive = FALSE, y2m){
 
-
-p2 <- derp2.dersigma.st <- derp2.dereta2 <- der2p2.dereta2eta2 <- der2p2.dersigma2.st2 <- der2p2.dereta2dersigma2.st <- 1
+p2 <- derp2.dersigma.st <- derp2.dereta2 <- der2p2.dereta2eta2 <- der2p2.dersigma2.st2 <- der2p2.dereta2dersigma2.st <- indx <- 1
 
 der2pdf2.dereta2dernu.st    = 1
 der2pdf2.sigma2.st2dernu.st = 1
@@ -13,7 +12,7 @@ der2p2.dereta2dernu.st      = 1
 der2p2.dersigma2.stdernu.st = 1
 
 cont1par <- c("PO","ZTP")
-cont2par <- c("NBI","NBII","NBIa","NBIIa","PIG","PO","ZTP")
+cont2par <- c("NBI","NBII","NBIa","NBIIa","PIG","PO","ZTP","DGP")
 cont3par <- c("DEL","SICHEL")
 
 # library(Deriv); library(numDeriv)
@@ -50,8 +49,13 @@ der2pdf2.mu2dersigma2FUNC2p <- function(func, y2, mu2, sigma2) numch(func, mu2, 
 
 if(margin2 == "PO"){
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- 0  
+mu2 <- exp(eta2)
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2)
+
+dersigma2.dersigma2.st  <- 0  
+dersigma2.dersigma2.st2 <- 0
+
 
 if(max(y2) > 170){
 
@@ -105,8 +109,12 @@ der2p2.derdermu2sigma2 <- 0
 
 if(margin2 == "ZTP"){
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- 0  
+mu2 <- exp(eta2)
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- 0
+dersigma2.dersigma2.st2 <- 0
 
 if(max(y2) > 170){
 
@@ -175,8 +183,13 @@ if(margin2 == "NBIa"){ # all analytical
 sigma2    <- ifelse(sigma2 < 4.151334e-05, 4.151334e-05, sigma2) # related to gamma function
 sigma2.st <- log(sigma2) 
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- exp(sigma2.st)  
+mu2 <- exp(eta2)
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)  
+dersigma2.dersigma2.st2 <- exp(sigma2.st)
+
 
 pdf2 <- dNBI(y2, mu = mu2, sigma = sqrt(sigma2))
 
@@ -403,8 +416,13 @@ if(margin2 == "NBI"){ # all Numerical - does not need y2m
 sigma2    <- ifelse(sigma2 < 4.151334e-06, 4.151334e-06, sigma2) # related to gamma function
 sigma2.st <- log(sigma2) 
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- exp(sigma2.st)  
+mu2 <- exp(eta2)
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)  
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
 
 pdf2 <- dNBI(y2, mu = mu2, sigma = sqrt(sigma2))  
 
@@ -451,8 +469,14 @@ if(margin2 == "NBIhh"){ # half analy half numerical - we need y2m, was deemed be
 sigma2    <- ifelse(sigma2 < 4.151334e-05, 4.151334e-05, sigma2) # related to gamma function
 sigma2.st <- log(sigma2) 
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- exp(sigma2.st)  
+mu2 <- exp(eta2)
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
+
 
 pdf2 <- dNBI(y2, mu = mu2, sigma = sqrt(sigma2))
 
@@ -508,8 +532,13 @@ if(margin2 == "NBII"){ # all Numerical - does not need y2m
 sigma2    <- ifelse(sigma2 < 4.151334e-06, 4.151334e-06, sigma2) # related to gamma function
 sigma2.st <- log(sigma2) 
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- exp(sigma2.st)  
+mu2 <- exp(eta2)
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)  
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
 
 pdf2 <- dNBII(y2, mu = mu2, sigma = sqrt(sigma2))  
 
@@ -568,8 +597,13 @@ if(margin2 == "NBIIhahn"){ # half analy half numer - needs y2m
 sigma2    <- ifelse(sigma2 < 4.151334e-05, 4.151334e-05, sigma2) # related to gamma function
 sigma2.st <- log(sigma2) 
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- exp(sigma2.st)  
+mu2 <- exp(eta2)
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st) 
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
 
 pdf2 <- dNBII(y2, mu = mu2, sigma = sqrt(sigma2))
 
@@ -644,8 +678,13 @@ if(margin2 == "NBIIa"){ # all analytical - needs y2m
 sigma2    <- ifelse(sigma2 < 4.151334e-05, 4.151334e-05, sigma2) # related to gamma function
 sigma2.st <- log(sigma2) 
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- exp(sigma2.st)  
+mu2 <- exp(eta2) 
+dermu2.dereta2 <- exp(eta2)  
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)
+dersigma2.dersigma2.st2 <- exp(sigma2.st)
+
 
 pdf2 <- (gamma(y2 + mu2/sqrt(sigma2))*sqrt(sigma2)^y2)/(gamma(mu2/sqrt(sigma2))*gamma(y2+1)*(1+sqrt(sigma2))^(y2+mu2/sqrt(sigma2)))    
 
@@ -907,8 +946,13 @@ if(margin2 == "PIG"){ # K all numerical as well
     
     
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- exp(sigma2.st)  
+mu2 <- exp(eta2)
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)  
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
 
 pdf2 <- dPIG(y2, mu = mu2, sigma = sqrt(sigma2))    
 
@@ -944,6 +988,131 @@ der2p2.derdermu2sigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma2) pPIG
 }
 
 
+
+if(margin2 == "DGP"){
+    
+
+                   mu2  <- eta2 # exi
+dermu2.dereta2          <- 1
+der2mu2.dereta2eta2     <- 0 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)  # mu
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
+
+indx1 <- as.numeric( ((1 + mu2*y2/sqrt(sigma2))     > 0) == FALSE ) 
+indx2 <- as.numeric( ((1 + mu2*(y2+1)/sqrt(sigma2)) > 0) == FALSE )
+indx  <- rowSums(cbind(indx1, indx2))
+
+
+
+pdf2FUNC <- function(y2, mu2, sigma2) suppressWarnings(   (1 + mu2*y2/sqrt(sigma2))^(-1/mu2) - (1 + mu2*(1+y2)/sqrt(sigma2))^(-1/mu2)    )  
+
+
+
+derpdf2.dermu2FUNC        <- function(y2, mu2, sigma2) suppressWarnings(   (((1 + y2)/(1 + mu2 * (1 + y2)/sqrt(sigma2))^(1 + 1/mu2) - y2/(1 + 
+    mu2 * y2/sqrt(sigma2))^(1 + 1/mu2))/sqrt(sigma2) + (log1p(mu2 * 
+    y2/sqrt(sigma2))/(1 + mu2 * y2/sqrt(sigma2))^(1/mu2) - log1p(mu2 * 
+    (1 + y2)/sqrt(sigma2))/(1 + mu2 * (1 + y2)/sqrt(sigma2))^(1/mu2))/mu2)/mu2   )
+
+
+derpdf2.sigma2FUNC        <- function(y2, mu2, sigma2)  suppressWarnings(    -((0.5 * ((1 + y2)/(1 + mu2 * (1 + y2)/sqrt(sigma2))^(1 + 1/mu2)) - 
+    0.5 * (y2/(1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2)))/(sigma2 * 
+    sqrt(sigma2)))     )
+
+       
+der2pdf2.dermu2FUNC       <- function(y2, mu2, sigma2) suppressWarnings(   (((log1p(mu2 * y2/sqrt(sigma2)) * (log1p(mu2 * y2/sqrt(sigma2))/(mu2 * 
+    (1 + mu2 * y2/sqrt(sigma2))^(1/mu2)) - y2/((1 + mu2 * y2/sqrt(sigma2))^(1 + 
+    1/mu2) * sqrt(sigma2))) - log1p(mu2 * (1 + y2)/sqrt(sigma2)) * 
+    (log1p(mu2 * (1 + y2)/sqrt(sigma2))/(mu2 * (1 + mu2 * (1 + 
+        y2)/sqrt(sigma2))^(1/mu2)) - (1 + y2)/((1 + mu2 * (1 + 
+        y2)/sqrt(sigma2))^(1 + 1/mu2) * sqrt(sigma2))))/mu2 + 
+    (y2/((1 + mu2 * y2/sqrt(sigma2)) * sqrt(sigma2)) - 2 * (log1p(mu2 * 
+        y2/sqrt(sigma2))/mu2))/(1 + mu2 * y2/sqrt(sigma2))^(1/mu2) - 
+    ((1 + y2)/((1 + mu2 * (1 + y2)/sqrt(sigma2)) * sqrt(sigma2)) - 
+        2 * (log1p(mu2 * (1 + y2)/sqrt(sigma2))/mu2))/(1 + mu2 * 
+        (1 + y2)/sqrt(sigma2))^(1/mu2))/mu2 + (y2 * ((1/(1 + 
+    mu2 * y2/sqrt(sigma2))^(1 + 1/mu2) - log1p(mu2 * y2/sqrt(sigma2))/(mu2 * 
+    (1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2)))/mu2 + y2 * (1 + 
+    1/mu2)/((1 + mu2 * y2/sqrt(sigma2))^(1/mu2 + 2) * sqrt(sigma2))) - 
+    ((1 + 1/mu2) * (1 + y2)/((1 + mu2 * (1 + y2)/sqrt(sigma2))^(1/mu2 + 
+        2) * sqrt(sigma2)) + (1/(1 + mu2 * (1 + y2)/sqrt(sigma2))^(1 + 
+        1/mu2) - log1p(mu2 * (1 + y2)/sqrt(sigma2))/(mu2 * (1 + 
+        mu2 * (1 + y2)/sqrt(sigma2))^(1 + 1/mu2)))/mu2) * (1 + 
+        y2))/sqrt(sigma2))/mu2    )
+
+    
+der2pdf2.dersigma22FUNC   <- function(y2, mu2, sigma2) suppressWarnings(    -((0.5 * ((1 + y2) * ((1 + mu2 * (1 + y2)/sqrt(sigma2))^((1 + 
+    1/mu2) - 1) * ((1 + 1/mu2) * (mu2 * (1 + y2) * (0.5 * sigma2^-0.5)/sqrt(sigma2)^2)))/((1 + 
+    mu2 * (1 + y2)/sqrt(sigma2))^(1 + 1/mu2))^2) - 0.5 * (y2 * 
+    ((1 + mu2 * y2/sqrt(sigma2))^((1 + 1/mu2) - 1) * ((1 + 1/mu2) * 
+        (mu2 * y2 * (0.5 * sigma2^-0.5)/sqrt(sigma2)^2)))/((1 + 
+    mu2 * y2/sqrt(sigma2))^(1 + 1/mu2))^2))/(sigma2 * sqrt(sigma2)) - 
+    (0.5 * ((1 + y2)/(1 + mu2 * (1 + y2)/sqrt(sigma2))^(1 + 1/mu2)) - 
+        0.5 * (y2/(1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2))) * 
+        (sqrt(sigma2) + sigma2 * (0.5 * sigma2^-0.5))/(sigma2 * 
+        sqrt(sigma2))^2)     )
+
+    
+der2pdf2.mu2dersigma2FUNC <- function(y2, mu2, sigma2) suppressWarnings(    -((0.5 * (((1 + 1/mu2) * (1 + mu2 * (1 + y2)/sqrt(sigma2))^(1/mu2) * 
+    (1 + y2)/sqrt(sigma2) - (1 + mu2 * (1 + y2)/sqrt(sigma2))^(1 + 
+    1/mu2) * log1p(mu2 * (1 + y2)/sqrt(sigma2))/mu2^2) * (1 + 
+    y2)/(1 + mu2 * (1 + y2)/sqrt(sigma2))^(2 * (1 + 1/mu2))) - 
+    0.5 * (y2 * (y2 * (1 + 1/mu2) * (1 + mu2 * y2/sqrt(sigma2))^(1/mu2)/sqrt(sigma2) - 
+        (1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2) * log1p(mu2 * 
+            y2/sqrt(sigma2))/mu2^2)/(1 + mu2 * y2/sqrt(sigma2))^(2 * 
+        (1 + 1/mu2))))/(sigma2 * sqrt(sigma2)))      )
+
+
+
+
+pdf2                  <- as.numeric( pdf2FUNC(y2, mu2, sigma2) )  
+derpdf2.dermu2        <- derpdf2.dermu2FUNC(y2, mu2, sigma2) 
+derpdf2.sigma2        <- derpdf2.sigma2FUNC(y2, mu2, sigma2) 
+der2pdf2.dermu2       <- der2pdf2.dermu2FUNC(y2, mu2, sigma2) 
+der2pdf2.dersigma22   <- der2pdf2.dersigma22FUNC(y2, mu2, sigma2) 
+der2pdf2.mu2dersigma2 <- der2pdf2.mu2dersigma2FUNC(y2, mu2, sigma2)
+
+
+
+pdf2                  <- ifelse( indx == 0, pdf2, 1) # 'cause in output log(1) = 0 hence it will not add anything to the lik
+derpdf2.dermu2        <- ifelse( indx == 0, derpdf2.dermu2, 0) 
+derpdf2.sigma2        <- ifelse( indx == 0, derpdf2.sigma2, 0) 
+der2pdf2.dermu2       <- ifelse( indx == 0, der2pdf2.dermu2, 0) 
+der2pdf2.dersigma22   <- ifelse( indx == 0, der2pdf2.dersigma22, 0) 
+der2pdf2.mu2dersigma2 <- ifelse( indx == 0, der2pdf2.mu2dersigma2, 0) 
+
+
+
+
+
+
+
+
+if(naive == FALSE){   # needs y2m
+ 
+ly2 <- length(y2)
+if(length(sigma2) == 1) sigma2 <- c(rep(sigma2, ly2))
+
+mu2    <- c(mu2)
+sigma2 <- c(sigma2)
+
+derp2.dermu2           <- rowSums( derpdf2.dermu2FUNC(        y2m, mu2, sigma2 ) , na.rm = TRUE )
+derp2.dersigma2        <- rowSums( derpdf2.sigma2FUNC(        y2m, mu2, sigma2 ) , na.rm = TRUE )
+der2p2.dermu22         <- rowSums( der2pdf2.dermu2FUNC(       y2m, mu2, sigma2 ) , na.rm = TRUE )
+der2p2.dersigma22      <- rowSums( der2pdf2.dersigma22FUNC(   y2m, mu2, sigma2 ) , na.rm = TRUE )
+der2p2.derdermu2sigma2 <- rowSums( der2pdf2.mu2dersigma2FUNC( y2m, mu2, sigma2 ) , na.rm = TRUE )
+
+
+                   }
+
+}
+
+
+
+
+
+
 ##########################################################
 
 
@@ -953,19 +1122,16 @@ if(margin2 %in% c(cont2par,cont3par)){
 
 derpdf2.dereta2              <- derpdf2.dermu2*dermu2.dereta2       
 der2pdf2.dereta2             <- der2pdf2.dermu2* dermu2.dereta2^2 + derpdf2.dermu2*der2mu2.dereta2eta2        
+
+
 der2pdf2.dereta2dersigma2    <- der2pdf2.mu2dersigma2* dermu2.dereta2
-  
-derpdf2.dersigma2.st         <- derpdf2.sigma2 * dersigma2.dersigma2.st   
-der2pdf2.dersigma2.st2       <- der2pdf2.dersigma22 * dersigma2.dersigma2.st^2 + derpdf2.sigma2  * dersigma2.dersigma2.st     
 der2pdf2.dereta2dersigma2.st <- der2pdf2.dereta2dersigma2 *  dersigma2.dersigma2.st
 
+  
+derpdf2.dersigma2.st         <- derpdf2.sigma2 * dersigma2.dersigma2.st   
+der2pdf2.dersigma2.st2       <- der2pdf2.dersigma22 * dersigma2.dersigma2.st^2 + derpdf2.sigma2  * dersigma2.dersigma2.st2     
 
-
-                     
-                         
-                         
-                         
-                        
+                  
 
 if(naive == FALSE){  
 
@@ -973,11 +1139,15 @@ if(naive == FALSE){
 
 derp2.dereta2                <- derp2.dermu2*dermu2.dereta2
 der2p2.dereta2eta2           <- der2p2.dermu22*dermu2.dereta2^2+derp2.dermu2*der2mu2.dereta2eta2      
+
+
 der2p2.dereta2dersigma2      <- der2p2.derdermu2sigma2* dermu2.dereta2    
+der2p2.dereta2dersigma2.st   <- der2p2.dereta2dersigma2 *  dersigma2.dersigma2.st  
 
 derp2.dersigma.st            <- derp2.dersigma2 *  dersigma2.dersigma2.st 
-der2p2.dersigma2.st2         <- der2p2.dersigma22 * dersigma2.dersigma2.st^2 + derp2.dersigma2 * dersigma2.dersigma2.st
-der2p2.dereta2dersigma2.st   <- der2p2.dereta2dersigma2 *  dersigma2.dersigma2.st  
+der2p2.dersigma2.st2         <- der2p2.dersigma22 * dersigma2.dersigma2.st^2 + derp2.dersigma2 * dersigma2.dersigma2.st2
+
+
 
 
 
@@ -1055,7 +1225,8 @@ list(pdf2                         = pdf2,
      derp2.nu.st                  = derp2.nu.st,                
      der2p2.dernu.st2             = der2p2.dernu.st2,           
      der2p2.dereta2dernu.st       = der2p2.dereta2dernu.st,     
-     der2p2.dersigma2.stdernu.st  = der2p2.dersigma2.stdernu.st )     
+     der2p2.dersigma2.stdernu.st  = der2p2.dersigma2.stdernu.st, 
+     indx = indx == 0)     
 
 
 }

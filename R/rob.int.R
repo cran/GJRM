@@ -13,9 +13,9 @@ rlo <- (max(x$VC$y1) - min(x$VC$y1))/lo
 if(rlo > 1) lo <- round(lo*rlo) 
 
 
-if( margin %in% c("N","N2","GU","rGU","LO","LN") )          seq.y <- seq(min(x$VC$y1) - ((max(x$VC$y1) - min(x$VC$y1))/2), max(x$VC$y1) + ((max(x$VC$y1) - min(x$VC$y1))/2), length.out = lo)
-if( margin %in% c("WEI","iG","GA","DAGUM","SM","FISK")  )   seq.y <- seq(1e-12, max(x$VC$y1) + ((max(x$VC$y1) - min(x$VC$y1))/2), length.out = lo)
-if( margin %in% c("BE")  )                                  seq.y <- seq(1e-12, 0.9999999,  length.out = lo)      
+if( margin %in% c("N","N2","GU","rGU","LO","LN") )                seq.y <- seq(min(x$VC$y1) - ((max(x$VC$y1) - min(x$VC$y1))/2), max(x$VC$y1) + ((max(x$VC$y1) - min(x$VC$y1))/2), length.out = lo)
+if( margin %in% c("WEI","iG","GA","DAGUM","SM","FISK","GP")  )   seq.y <- seq(1e-12, max(x$VC$y1) + ((max(x$VC$y1) - min(x$VC$y1))/2), length.out = lo)
+if( margin %in% c("BE")  )                                        seq.y <- seq(1e-12, 0.9999999,  length.out = lo)      
 
 }else{
 
@@ -72,7 +72,7 @@ if((is.null(posi) || length(posi) < 2) && margin %in% c("N","N2","GU","rGU","LO"
 
 
 
-if((is.null(posi) || length(posi) < 2) && margin %in% c("WEI","iG","GA","DAGUM","SM","FISK") ){
+if((is.null(posi) || length(posi) < 2) && margin %in% c("WEI","iG","GA","DAGUM","SM","FISK","GP") ){
 
 
 posi <- NULL; j <- 1

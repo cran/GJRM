@@ -4,6 +4,9 @@ if(type == "copR"){
 
   if(x$margins[1]%in%c("N","N2"))         cat("\nMARGIN 1: Gaussian")  
   if(x$margins[1]=="GU")                  cat("\nMARGIN 1: Gumbel")    
+  if(x$margins[1]=="GP")                  cat("\nMARGIN 1: generalised Pareto")    
+  if(x$margins[1]=="DGP")                 cat("\nMARGIN 1: discrete generalised Pareto")    
+  
   if(x$margins[1]=="rGU")                 cat("\nMARGIN 1: reverse Gumbel")  
   if(x$margins[1]=="LO")                  cat("\nMARGIN 1: logistic")   
   if(x$margins[1]=="LN")                  cat("\nMARGIN 1: log-normal") 
@@ -33,6 +36,8 @@ if(x$surv.flex == FALSE){
   
   
   if(x$margins[2]%in%c("N","N2"))         cat("\nMARGIN 2: Gaussian")  
+  if(x$margins[2]=="GP")                  cat("\nMARGIN 2: generalised Pareto")    
+  if(x$margins[2]=="DGP")                 cat("\nMARGIN 3: discrete generalised Pareto")    
   if(x$margins[2]=="GU")     		  cat("\nMARGIN 2: Gumbel")    
   if(x$margins[2]=="rGU")    		  cat("\nMARGIN 2: reverse Gumbel")  
   if(x$margins[2]=="LO")     		  cat("\nMARGIN 2: logistic")   
@@ -79,7 +84,8 @@ if(x$surv.flex == TRUE){
 
 if(type == "gamlss"){
 
-
+  if(x$margins[1]=="GP")               cat("\nDistribution: generalised Pareto")    
+  if(x$margins[1]=="DGP")              cat("\nDistribution: discrete generalised Pareto")  
   if(x$margins[1]%in%c("N","N2"))      cat("\nDistribution: Gaussian")  
   if(x$margins[1]=="GU")               cat("\nDistribution: Gumbel")    
   if(x$margins[1]=="rGU")              cat("\nDistribution: reverse Gumbel")  
@@ -119,6 +125,9 @@ if(x$margins[1] %in% x$bl && !is.null(x$K1)) cat("\nMARGIN 1: categorical")
 
 if(x$margins[2] %in% x$bl) cat("\nMARGIN 2: Bernoulli") 
 
+
+if(x$margins[2]%in%c("N","N2"))        cat("\nMARGIN 2: Gaussian")  
+if(x$margins[2]=="GP")                 cat("\nMARGIN 2: generalised Pareto")    
 if(x$margins[2]%in%c("N","N2"))        cat("\nMARGIN 2: Gaussian")  
 if(x$margins[2]=="GU")                 cat("\nMARGIN 2: Gumbel")    
 if(x$margins[2]=="rGU")                cat("\nMARGIN 2: reverse Gumbel")  

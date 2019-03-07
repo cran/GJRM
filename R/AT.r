@@ -121,8 +121,16 @@ est.ATb <- NA
 indD <- list()
 
 
+
+if( is.null(eq) ){
+
 if(x$v1[1] %in% x$v2[-1]) {end <- 1; eq <- 2} 
 if(x$v2[1] %in% x$v1[-1]) {end <- 2; eq <- 1}
+
+                 }
+
+if( !is.null(eq) ) { eq <- eq; if(eq == 1) end <- 2; if(eq == 2) end <- 1 }
+
 
 
 if(x$margins[2] == "DAGUM" && eq == 2) { if( min(sqrt(x$sigma2)) <= 1) stop("sigma parameter has value(s) smaller than 1, hence the mean is indeterminate.")}

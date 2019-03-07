@@ -4,7 +4,7 @@ CopulaCLM <- function(formula, data = list(), weights = NULL, subset = NULL,
                       fp = FALSE, hess = TRUE, infl.fac = 1, theta.fx = NULL, 
                       rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
                       gc.l = FALSE, parscale, extra.regI = "t", intf = FALSE, knots = NULL,
-                      drop.unused.levels = TRUE){
+                      drop.unused.levels = TRUE, ind.ord = FALSE){
   
 
 ##########################################################################################
@@ -37,10 +37,10 @@ opc  <- c("N", "C0", "C90", "C180", "C270",
 scc  <- c("C0" , "C180", "J0" , "J180", "G0" , "G180", BivD2)
 sccn <- c("C90", "C270", "J90", "J270", "G90", "G270")
 mb   <- c("B", "BSS", "BPO", "BPO0")
-m2   <- c("N", "N2", "GU", "rGU", "LO", "LN", "WEI", "iG", "GA", "BE", "FISK")
+m2   <- c("N", "N2", "GU", "rGU", "LO", "LN", "WEI", "iG", "GA", "BE", "FISK","GP")
 m3   <- c("DAGUM", "SM")
 m1d  <- c("PO", "ZTP") 
-m2d  <- c("NBI", "NBII", "NBIa", "NBIIa", "PIG") 
+m2d  <- c("NBI", "NBII", "NBIa", "NBIIa", "PIG","DGP") 
 bl   <- c("probit", "logit", "cloglog") # , "cauchit")   
 M    <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, BivD = BivD, 
              opc = opc, extra.regI = extra.regI, margins = margins, bl = bl, intf = intf,
@@ -94,6 +94,7 @@ environment(fake.formula) <- environment(formula[[1]])
 mf$formula <- fake.formula 
 mf$ordinal <- mf$knots <- mf$dof <- mf$intf <- mf$theta.fx <- mf$Model <- mf$BivD <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
 mf$drop.unused.levels <- drop.unused.levels
+mf$ind.ord <- NULL
   
 #if(Model=="BSS") mf$na.action <- na.pass
   
@@ -450,39 +451,50 @@ start.v <- c(c1.ti, gamls.upsvR$start.v) # cut points added
 func.opt <- func.OPT(margins, M, type = "biv")
 
 
-##########################################################################################
+##############################
+
+# Independence model
+
+if (ind.ord == "TRUE") {
+	VC$ind.ord <- TRUE
+	VC$BivD <- "J0" # This is just used to fool the fitting procedure: no matter which copula is used in the independence model
+	VC$nCa <- cta[which(cta[, 1] == VC$BivD), 2] 
+
+	if (is.null(VC$X3)) {
+		drop.ind <- VC$K1 + VC$X1.d2 + VC$X2.d2 + 1
+	} else {
+		drop.ind <- (VC$K1 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2):(VC$K1 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 - 1)
+	}
+	
+	VC$drop.ind <- drop.ind
+	start.v <- start.v[-drop.ind]
+
+	w.off <- which(qu.mag$off > length(start.v))
+
+	if (length(w.off) > 0) {
+		qu.mag$rank <- qu.mag$rank[-w.off]
+		qu.mag$off  <- qu.mag$off [-w.off]
+		qu.mag$Ss   <- qu.mag$Ss  [-w.off]
+		
+		sp <- sp[-w.off]
+
+		l.spvec <- c(VC$l.sp1, VC$l.sp2, VC$l.sp3, VC$l.sp4, VC$l.sp5, VC$l.sp6, VC$l.sp7, VC$l.sp8)
+			l.spvec[length(formula) : length(l.spvec)] <- rep(0) #l.spvec[w.off : length(l.spvec)] <- rep(0) # The equation for theta is the last input in formula.
+		VC$l.sp1 <- l.spvec[1]
+		VC$l.sp2 <- l.spvec[2]
+		VC$l.sp3 <- l.spvec[3]
+		VC$l.sp4 <- l.spvec[4]
+		VC$l.sp5 <- l.spvec[5]
+		VC$l.sp6 <- l.spvec[6]
+		VC$l.sp7 <- l.spvec[7]
+		VC$l.sp8 <- l.spvec[8]
+	}
+} else {
+	VC$ind.ord <- FALSE
+}
+
 ##########################################################################################
 
-# TESTING func.opt (i.e. bCopulaCLMgHsCont). TO BE DROPPED WHEN THE CODE IS READY!
-#
-#VC$weights <- rep(1, n)
-#
-#l.sp1 <- VC$l.sp1 
-#l.sp2 <- VC$l.sp2 
-#l.sp3 <- VC$l.sp3 
-#l.sp4 <- VC$l.sp4 
-#l.sp5 <- VC$l.sp5 
-#l.sp6 <- VC$l.sp6 
-#l.sp7 <- VC$l.sp7 
-#l.sp8 <- VC$l.sp8 
-#
-#l.splist <- list(l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, 
-#                 l.sp4 = l.sp4, l.sp5 = l.sp5, l.sp6 = l.sp6, 
-#                 l.sp7 = l.sp7, l.sp8 = l.sp8)
-#
-#
-#if((l.sp1 == 0 && l.sp2 == 0 && l.sp3 == 0 && l.sp4 == 0 && l.sp5 == 0 && l.sp6 == 0 && l.sp7 == 0 && l.sp8 == 0) || VC$fp == TRUE){
-#
-#ps <- ps1 <- list(S.h = 0, S.h1 = 0, S.h2 = 0, qu.mag = NULL)
-#
-#} else ps <- ps1 <- pen(qu.mag, sp, VC, univ = respvec$univ, l.splist)
-#
-#
-#test <- func.opt(params = start.v, respvec = respvec, VC = VC, ps = ps, AT = FALSE)
-
-
-##########################################################################################
-##########################################################################################
 
 CopulaCLMFit <- SemiParBIV.fit(func.opt = func.opt, start.v = start.v,
                                rinit = rinit, rmax = rmax, iterlim = 100, iterlimsp = iterlimsp, tolsp = tolsp,
@@ -585,7 +597,7 @@ L <- list(fit = CopulaCLMFit$fit, dataset = dataset, formula = formula, CopulaCL
           gamlssfit = gamlssfit, Cont = "NO", tau = CopulaCLMFit.p$tau, 
           tau.a = CopulaCLMFit.p$tau.a, l.flist = l.flist, v1 = v1, v2 = v2, triv = FALSE, univar.gamlss = FALSE,
           gamlss = gamlss2, BivD2 = BivD2, dof = dof, dof.a = dof, call = cl,
-          surv = FALSE, surv.flex = surv.flex, ordinal = TRUE)
+          surv = FALSE, surv.flex = surv.flex, ordinal = TRUE, drop.unused.levels = drop.unused.levels)
 
 
 if(BivD %in% BivD2){

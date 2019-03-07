@@ -22,7 +22,7 @@ hazsurv.plot(x, eq, newdata, type = "surv", intervals = TRUE,
   \item{newdata}{A data frame or list containing the values of the model covariates at which predictions are required. 
                  This must have one row and must be provided.}
 
-  \item{type}{The plot to produce, either \code{"surv"} or \code{"hazard"}.}
+  \item{type}{The plot to produce, either \code{"surv"}, \code{"hazard"} or \code{"cumhaz"}.}
 
   \item{intervals}{If \code{TRUE} then intervals are also produced.}
 

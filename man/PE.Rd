@@ -1,20 +1,20 @@
-\name{AT2}
-\alias{AT2}
+\name{PE}
+\alias{PE}
 
-\title{Average treatment effect from a two-part model}
+\title{Partial effect from a binary bivariate model}
 
 \description{ 
-\code{AT2} can be used to calculate the sample average treatment effect from a two-part model, with 
+\code{PE} can be used to calculate the sample treatment effect from a a binary bivariate model, with 
 corresponding interval obtained using posterior simulation.}
 
 
 
 \usage{
 
-AT2(x1, x2, index1, index2, n.sim = 100, prob.lev = 0.05, 
-    hd.plot = FALSE, 
-    main = "Histogram and Kernel Density of Simulated Average Effects", 
-    xlab = "Simulated Average Effects", ...)
+PE(x1, idx, n.sim = 100, prob.lev = 0.05, 
+   hd.plot = FALSE, 
+   main = "Histogram and Kernel Density of Simulated Average Effects", 
+   xlab = "Simulated Average Effects", ...)
 
 }
 
@@ -23,11 +23,7 @@ AT2(x1, x2, index1, index2, n.sim = 100, prob.lev = 0.05,
 
 \item{x1}{A fitted \code{gjrm} object.}
 
-\item{x2}{A fitted \code{gjrm} object.}
-
-\item{index1}{This is useful to pick a particular individual.}
-
-\item{index2}{As above.}
+\item{idx}{This is useful to pick a particular individual and must be provided.}
 
 \item{n.sim}{Number of simulated coefficient vectors from the posterior distribution of the estimated model parameters. This is used 
              when \code{delta = FALSE}. It may be increased if more precision is required.} 
@@ -49,19 +45,11 @@ AT2(x1, x2, index1, index2, n.sim = 100, prob.lev = 0.05,
 
 \details{
 
-AT measures the sample average effect from a two-part model when a binary response (associated 
+PE measures the sample average effect from a binary bivariate model when a binary response (associated 
 with a continuous outcome) takes values 0 and 1. Posterior simulation is used to obtain a confidence/credible interval. 
 
 }
 
-
-
-
-\section{WARNINGS}{
-
-This function is only suitable for binary models.
-
-} 
 
 
 
@@ -87,9 +75,9 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 
 \keyword{copulae} 
-\keyword{bivariate binary model} 
-\keyword{ATE} 
-\keyword{average treatment effect} 
+\keyword{binary bivariate model} 
+\keyword{PE} 
+\keyword{average partial effect} 
 \keyword{bayesian posterior simulation}
 
 

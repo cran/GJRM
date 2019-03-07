@@ -4,7 +4,7 @@ esp.tr <- function(vrb.st, margin){
 mub <- c("BE") 
  
 
-if( !(margin %in% mub) ){
+if(   !(margin %in% mub)    ){
  
    vrb.st <- ifelse( vrb.st > 20,   20, vrb.st )  # it was 28
    vrb.st <- ifelse( vrb.st < -14.5, -14.5, vrb.st ) 
@@ -23,7 +23,6 @@ if( margin %in% mub ){
 }
 
 
-    
     
  list(vrb = vrb, vrb.st = vrb.st )  
  

@@ -226,6 +226,27 @@ pdf2 <- dbeta(y2, shape1 = plogis(eta2) * (1 - sigma2)/(sigma2), shape2 = (1-plo
 
 
 
+
+if(margin2 == "GP"){
+
+indx <- (1 + eta2*y2/sqrt(sigma2)) > 0 
+pdf2 <- suppressWarnings(  1/sqrt(sigma2)*(1 +  eta2*y2/sqrt(sigma2))^(-1/eta2-1)   )
+ p2  <- suppressWarnings(  1 - (1 +  eta2*y2/sqrt(sigma2))^(-1/eta2)   )
+
+
+pdf2 <- ifelse( indx == TRUE, pdf2, 0)
+p2   <- ifelse( indx == TRUE, p2, 0)
+
+
+}
+
+
+
+
+
+
+
+
 p2 <- mm(p2) 
 
 epsilon <- 0.0000001 

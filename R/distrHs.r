@@ -1,7 +1,7 @@
 distrHs <- function(y2, eta2, sigma2, sigma2.st, nu, nu.st, margin2, naive = FALSE){
 
 
-p2 <- derp2.dersigma.st <- derp2.dereta2 <- der2p2.dereta2eta2 <- der2p2.dersigma2.st2 <- der2p2.dereta2dersigma2.st <- 1
+p2 <- derp2.dersigma.st <- derp2.dereta2 <- der2p2.dereta2eta2 <- der2p2.dersigma2.st2 <- der2p2.dereta2dersigma2.st <- indx <- 1
 
 der2pdf2.dereta2dernu.st    = 1
 der2pdf2.sigma2.st2dernu.st = 1
@@ -13,7 +13,7 @@ der2p2.dereta2dernu.st      = 1
 der2p2.dersigma2.stdernu.st = 1
 
 
-cont2par <- c("WEI","iG","LO","rGU","GU","GA","GA2","GAi","BE","FISK", "N","N2","LN","GO") 
+cont2par <- c("WEI","iG","LO","rGU","GU","GA","GA2","GAi","BE","FISK", "N","N2","LN","GO","GP") 
 cont3par <- c("DAGUM", "SM","GGA")
 
 # library(Deriv); library(numDeriv)
@@ -31,10 +31,13 @@ cont3par <- c("DAGUM", "SM","GGA")
 
 if(margin2 %in% c("N","LN")){
 
-                   mu2 <- eta2
-dermu2.dereta2         <- 1
-der2mu2.dereta2eta2    <- 0 
-dersigma2.dersigma2.st <- exp(sigma2.st)  
+                   mu2  <- eta2
+dermu2.dereta2          <- 1
+der2mu2.dereta2eta2     <- 0 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)  
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
 
   pdf2                <- dnorm(y2, mean=eta2, sd = sqrt(sigma2))  # 1/(sqrt(2*sigma2*pi))*exp(-(y2-eta2)^2/(2*sigma2))  
 derpdf2.dermu2        <- (1/(sqrt(2 * pi * sigma2))) * (exp(-0.5 * (y2 - eta2)^2/sigma2) * (0.5 * (2 * (y2 - eta2))/sigma2))  
@@ -114,9 +117,16 @@ der2p2.derdermu2sigma2 <- (1 - (y2 - eta2)^2/sqrt.sig2^2) * dnorm((y2 - eta2)/sq
 
 if(margin2 == "DAGUM"){
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- exp(sigma2.st)   
-dernu.dernu.st <- exp(nu.st)
+mu2 <- exp(eta2)
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)   
+dersigma2.dersigma2.st2 <- exp(sigma2.st)   
+
+dernu.dernu.st  <- exp(nu.st)
+dernu.dernu.st2 <- exp(nu.st)
+
  
 pdf2 <- sqrt(sigma2)*nu/y2*( ((y2/mu2)^(sqrt(sigma2)*nu))/( (y2/mu2)^sqrt(sigma2) + 1 )^(nu+1) )            
   
@@ -331,9 +341,18 @@ der2p2.derdermu2sigma2 <-  -(nu * y2 * ((0.5/(sqrt(sigma2) * (y2/mu2)^(1 + sqrt(
 
 if(margin2 == "GGA"){
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- exp(sigma2.st)   
-dernu.dernu.st <- exp(nu.st)
+
+mu2 <- exp(eta2) 
+
+dermu2.dereta2      <- exp(eta2) 
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st) 
+dersigma2.dersigma2.st2 <- exp(sigma2.st)   
+
+dernu.dernu.st  <- exp(nu.st)
+dernu.dernu.st2 <- exp(nu.st)
+
  
  
 pdf2 <- (sqrt(sigma2) / gamma(nu))*(y2^(sqrt(sigma2)*nu -1) / mu2^(sqrt(sigma2)*nu))* exp(-(y2/mu2)^sqrt(sigma2))           
@@ -569,9 +588,17 @@ der2p2.dernu2 <- nde$se
 if(margin2 == "SM"){
 
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- exp(sigma2.st)   
-dernu.dernu.st <- exp(nu.st)
+mu2 <- exp(eta2) 
+dermu2.dereta2 <- exp(eta2) 
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st) 
+dersigma2.dersigma2.st2 <- exp(sigma2.st)   
+
+
+dernu.dernu.st  <- exp(nu.st)
+dernu.dernu.st2 <- exp(nu.st)
+
  
 
 pdf2 <- sqrt(sigma2)*nu*y2^(sqrt(sigma2)-1)*(mu2^sqrt(sigma2)*(1+(y2/mu2)^sqrt(sigma2))^(nu+1) )^-1
@@ -770,14 +797,186 @@ der2p2.derdermu2sigma2 <- -(nu * y2 * ((0.5 * ((log(y2) - log(mu2)) * (y2/mu2)^(
 
 
 
-###
+
+
+if(margin2 == "GP"){
+
+
+                   mu2  <- eta2 # exi
+dermu2.dereta2          <- 1
+der2mu2.dereta2eta2     <- 0 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)  # mu
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
+
+
+indx <- (1 + mu2*y2/sqrt(sigma2)) > 0 
+
+
+
+pdf2 <- suppressWarnings(   1/sqrt(sigma2)*(1 + mu2*y2/sqrt(sigma2))^(-1/mu2-1)    )
+
+
+derpdf2.dermu2 <- suppressWarnings(  (log1p(mu2 * y2/sqrt(sigma2))/(mu2^2 * (1 + mu2 * y2/sqrt(sigma2))^(1 + 
+    1/mu2)) - y2 * (1 + 1/mu2)/((1 + mu2 * y2/sqrt(sigma2))^(1/mu2 + 
+    2) * sqrt(sigma2)))/sqrt(sigma2)   ) 
+    
+               
+derpdf2.sigma2 <- suppressWarnings(  -(1/sqrt(sigma2) * ((1 + mu2 * y2/sqrt(sigma2))^((-1/mu2 - 1) - 
+    1) * ((-1/mu2 - 1) * (mu2 * y2 * (0.5 * sigma2^-0.5)/sqrt(sigma2)^2))) + 
+    0.5 * sigma2^-0.5/sqrt(sigma2)^2 * (1 + mu2 * y2/sqrt(sigma2))^(-1/mu2 - 
+        1))    )
+    
+
+der2pdf2.dermu2 <-   suppressWarnings(   (((y2/((1 + mu2 * y2/sqrt(sigma2)) * sqrt(sigma2)) - 2 * (log1p(mu2 * 
+    y2/sqrt(sigma2))/mu2))/(1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2) + 
+    log1p(mu2 * y2/sqrt(sigma2)) * (log1p(mu2 * y2/sqrt(sigma2))/(mu2^2 * 
+        (1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2)) - y2 * (1 + 
+        1/mu2)/((1 + mu2 * y2/sqrt(sigma2))^(1/mu2 + 2) * sqrt(sigma2))))/mu2^2 + 
+    y2 * (1/(mu2^2 * (1 + mu2 * y2/sqrt(sigma2))^(1/mu2 + 2)) - 
+        (1 + 1/mu2) * (log1p(mu2 * y2/sqrt(sigma2))/(mu2^2 * 
+            (1 + mu2 * y2/sqrt(sigma2))^(1/mu2 + 2)) - y2 * (1/mu2 + 
+            2)/((1 + mu2 * y2/sqrt(sigma2))^(1/mu2 + 3) * sqrt(sigma2))))/sqrt(sigma2))/sqrt(sigma2)   )
+    
+    
+      
+der2pdf2.dersigma22 <- suppressWarnings(    -(1/sqrt(sigma2) * ((1 + mu2 * y2/sqrt(sigma2))^((-1/mu2 - 1) - 
+    1) * ((-1/mu2 - 1) * (mu2 * y2 * (0.5 * (-0.5 * sigma2^-1.5))/sqrt(sigma2)^2 - 
+    mu2 * y2 * (0.5 * sigma2^-0.5) * (2 * (0.5 * sigma2^-0.5 * 
+        sqrt(sigma2)))/(sqrt(sigma2)^2)^2)) - (1 + mu2 * y2/sqrt(sigma2))^(((-1/mu2 - 
+    1) - 1) - 1) * (((-1/mu2 - 1) - 1) * (mu2 * y2 * (0.5 * sigma2^-0.5)/sqrt(sigma2)^2)) * 
+    ((-1/mu2 - 1) * (mu2 * y2 * (0.5 * sigma2^-0.5)/sqrt(sigma2)^2))) - 
+    0.5 * sigma2^-0.5/sqrt(sigma2)^2 * ((1 + mu2 * y2/sqrt(sigma2))^((-1/mu2 - 
+        1) - 1) * ((-1/mu2 - 1) * (mu2 * y2 * (0.5 * sigma2^-0.5)/sqrt(sigma2)^2))) + 
+    ((0.5 * (-0.5 * sigma2^-1.5)/sqrt(sigma2)^2 - 0.5 * sigma2^-0.5 * 
+        (2 * (0.5 * sigma2^-0.5 * sqrt(sigma2)))/(sqrt(sigma2)^2)^2) * 
+        (1 + mu2 * y2/sqrt(sigma2))^(-1/mu2 - 1) - 0.5 * sigma2^-0.5/sqrt(sigma2)^2 * 
+        ((1 + mu2 * y2/sqrt(sigma2))^((-1/mu2 - 1) - 1) * ((-1/mu2 - 
+            1) * (mu2 * y2 * (0.5 * sigma2^-0.5)/sqrt(sigma2)^2)))))     )
+        
+     
+der2pdf2.mu2dersigma2 <- suppressWarnings(   -((mu2 * y2 * (0.5 * sigma2^-0.5)/sqrt(sigma2)^2/(1 + mu2 * y2/sqrt(sigma2))/(mu2^2 * 
+    (1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2)) - log1p(mu2 * y2/sqrt(sigma2)) * 
+    (mu2^2 * ((1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2 - 1) * ((1 + 
+        1/mu2) * (mu2 * y2 * (0.5 * sigma2^-0.5)/sqrt(sigma2)^2))))/(mu2^2 * 
+    (1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2))^2 - y2 * (1 + 1/mu2) * 
+    ((1 + mu2 * y2/sqrt(sigma2))^(1/mu2 + 2) * (0.5 * sigma2^-0.5) - 
+        (1 + mu2 * y2/sqrt(sigma2))^(1/mu2 + 2 - 1) * ((1/mu2 + 
+            2) * (mu2 * y2 * (0.5 * sigma2^-0.5)/sqrt(sigma2)^2)) * 
+            sqrt(sigma2))/((1 + mu2 * y2/sqrt(sigma2))^(1/mu2 + 
+    2) * sqrt(sigma2))^2)/sqrt(sigma2) + (log1p(mu2 * y2/sqrt(sigma2))/(mu2^2 * 
+    (1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2)) - y2 * (1 + 1/mu2)/((1 + 
+    mu2 * y2/sqrt(sigma2))^(1/mu2 + 2) * sqrt(sigma2))) * (0.5 * 
+    sigma2^-0.5)/sqrt(sigma2)^2)     ) 
+        
+        
+
+
+pdf2                  <- ifelse( indx == TRUE, pdf2, 1)                 # 'cause in output log(1) = 0 hence it will not add anything to the lik   
+derpdf2.dermu2        <- ifelse( indx == TRUE, derpdf2.dermu2, 0)  
+derpdf2.sigma2        <- ifelse( indx == TRUE, derpdf2.sigma2, 0)  
+der2pdf2.dermu2       <- ifelse( indx == TRUE, der2pdf2.dermu2, 0)  
+der2pdf2.dersigma22   <- ifelse( indx == TRUE, der2pdf2.dersigma22, 0)          
+der2pdf2.mu2dersigma2 <- ifelse( indx == TRUE, der2pdf2.mu2dersigma2, 0)  
+
+
+
+
+
+
+# not done for cdf for the time being
+
+ 
+if(naive == FALSE){   
+ 
+ 
+ 
+    p2  <- suppressWarnings(    1 - (1 + mu2*y2/sqrt(sigma2))^(-1/mu2)    )
+  
+  
+  
+  
+    derp2.dermu2 <- suppressWarnings(   -((log1p(mu2 * y2/sqrt(sigma2))/(mu2 * (1 + mu2 * y2/sqrt(sigma2))^(1/mu2)) - 
+    y2/((1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2) * sqrt(sigma2)))/mu2)     )
+
+
+                 
+derp2.dersigma2 <- suppressWarnings(   -(0.5 * (y2/(sigma2 * (1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2) * 
+    sqrt(sigma2))))    )   
+    
+
+der2p2.dermu22 <- suppressWarnings(   -((((y2/((1 + mu2 * y2/sqrt(sigma2)) * sqrt(sigma2)) - 2 * (log1p(mu2 * 
+    y2/sqrt(sigma2))/mu2))/(1 + mu2 * y2/sqrt(sigma2))^(1/mu2) + 
+    log1p(mu2 * y2/sqrt(sigma2)) * (log1p(mu2 * y2/sqrt(sigma2))/(mu2 * 
+        (1 + mu2 * y2/sqrt(sigma2))^(1/mu2)) - y2/((1 + mu2 * 
+        y2/sqrt(sigma2))^(1 + 1/mu2) * sqrt(sigma2)))/mu2)/mu2 + 
+    y2 * ((1/(1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2) - log1p(mu2 * 
+        y2/sqrt(sigma2))/(mu2 * (1 + mu2 * y2/sqrt(sigma2))^(1 + 
+        1/mu2)))/mu2 + y2 * (1 + 1/mu2)/((1 + mu2 * y2/sqrt(sigma2))^(1/mu2 + 
+        2) * sqrt(sigma2)))/sqrt(sigma2))/mu2)   )
+
+
+der2p2.dersigma22 <- suppressWarnings(   0.5 * (y2 * (((1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2) - sigma2 * 
+    ((1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2 - 1) * ((1 + 1/mu2) * 
+        (mu2 * y2 * (0.5 * sigma2^-0.5)/sqrt(sigma2)^2)))) * 
+    sqrt(sigma2) + sigma2 * (1 + mu2 * y2/sqrt(sigma2))^(1 + 
+    1/mu2) * (0.5 * sigma2^-0.5))/(sigma2 * (1 + mu2 * y2/sqrt(sigma2))^(1 + 
+    1/mu2) * sqrt(sigma2))^2)     )
+
+
+der2p2.derdermu2sigma2 <- suppressWarnings(   0.5 * (sigma2 * y2 * sqrt(sigma2) * (y2 * (1 + 1/mu2) * (1 + 
+    mu2 * y2/sqrt(sigma2))^(1/mu2)/sqrt(sigma2) - (1 + mu2 * 
+    y2/sqrt(sigma2))^(1 + 1/mu2) * log1p(mu2 * y2/sqrt(sigma2))/mu2^2)/(sigma2 * 
+    (1 + mu2 * y2/sqrt(sigma2))^(1 + 1/mu2) * sqrt(sigma2))^2)    )
+
+
+
+
+                                             
+                                             
+                   }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 if(margin2 == "FISK"){
 
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- exp(sigma2.st)  
+mu2 <- exp(eta2)
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st) 
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
+
+
+
 
 pdf2 <- sqrt(sigma2)*y2^(sqrt(sigma2)-1) / (mu2^sqrt(sigma2)*(1+(y2/mu2)^sqrt(sigma2))^2)
   
@@ -913,8 +1112,15 @@ der2p2.derdermu2sigma2 <- -(y2 * ((1/((1 + 1/(y2/mu2)^sqrt(sigma2)) * (y2/mu2)^(
 if(margin2 == "WEI"){
 
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- exp(sigma2.st)  
+mu2 <- exp(eta2) 
+dermu2.dereta2 <- exp(eta2) 
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)  
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
+
+
 
 pdf2 <- sqrt(sigma2)/mu2*(y2/mu2)^(sqrt(sigma2)-1) * exp(-(y2/mu2)^sqrt(sigma2))  
   
@@ -1015,8 +1221,12 @@ der2p2.derdermu2sigma2 <-   -(y2 * ((0.5 * (y2/mu2)^(sqrt(sigma2) - 1) - 0.5 *
 if(margin2 == "GO"){
 
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- exp(sigma2.st)  
+mu2 <- exp(eta2) 
+dermu2.dereta2 <- exp(eta2) 
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)  
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
 
 
 pdf2 <- mu2*exp(sqrt(sigma2)*y2)*exp( ( 1 - exp(sqrt(sigma2)*y2) )*mu2/sqrt(sigma2) )  
@@ -1108,10 +1318,16 @@ dermu2.dereta2 <- (1 - exp(eta2)/(1 + exp(eta2))) * exp(eta2)/(1 + exp(eta2))
 
 der2mu2.dereta2eta2 <-  (1 - (3 - 2 * (exp(eta2)/(1 + exp(eta2)))) * exp(eta2)/(1 + exp(eta2))) * 
                         exp(eta2)/(1 + exp(eta2))
-                        
+         
+         
 sigma2 <- plogis(sigma2.st)  
 
-dersigma2.dersigma2.st <- (1 - exp(sigma2.st)/(1 + exp(sigma2.st))) * exp(sigma2.st)/(1 + exp(sigma2.st))
+dersigma2.dersigma2.st  <- (1 - exp(sigma2.st)/(1 + exp(sigma2.st))) * exp(sigma2.st)/(1 + exp(sigma2.st))
+
+dersigma2.dersigma2.st2 <- (1 - 2 * (exp(sigma2.st)/(1 + exp(sigma2.st)))) * (1 - exp(sigma2.st)/(1 + exp(sigma2.st))) * exp(sigma2.st)/(1 + exp(sigma2.st))
+
+
+
 
 #########################
 
@@ -1295,8 +1511,13 @@ if(margin2 == "iG"){
 
 
 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) 
-dersigma2.dersigma2.st <- exp(sigma2.st)                
+mu2 <- exp(eta2)
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2)
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)    
+dersigma2.dersigma2.st2 <- exp(sigma2.st)                
+
 
                 
 pdf2          <- exp(-0.5 * log(2 * pi) - log(sqrt(sigma2)) - (3/2) * log(y2) - 
@@ -1418,7 +1639,10 @@ if(margin2 == "LO"){
 mu2 <- eta2
 dermu2.dereta2 <- 1
 der2mu2.dereta2eta2 <- 0 
-dersigma2.dersigma2.st <- exp(sigma2.st)  
+
+dersigma2.dersigma2.st  <- exp(sigma2.st) 
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
 
 
   pdf2          <- dlogis(y2,eta2,sqrt(sigma2)) 
@@ -1502,7 +1726,10 @@ if(margin2 == "rGU"){
 mu2 <- eta2
 dermu2.dereta2 <- 1
 der2mu2.dereta2eta2 <- 0 
-dersigma2.dersigma2.st <- exp(sigma2.st)    
+
+dersigma2.dersigma2.st  <- exp(sigma2.st) 
+dersigma2.dersigma2.st2 <- exp(sigma2.st)    
+
 
 
   pdf2          <- 1/sqrt(sigma2)*exp(-((y2-eta2)/sqrt(sigma2)+exp(-((y2-eta2)/sqrt(sigma2)))))
@@ -1583,7 +1810,11 @@ if(margin2 == "GU"){
 mu2 <- eta2
 dermu2.dereta2 <- 1
 der2mu2.dereta2eta2 <- 0 
-dersigma2.dersigma2.st <- exp(sigma2.st)  
+
+dersigma2.dersigma2.st  <- exp(sigma2.st) 
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
+
 
   pdf2          <- exp(-exp((y2 - eta2)/sqrt(sigma2))) * (exp((y2 - eta2)/sqrt(sigma2)) * (1/sqrt(sigma2)))
                    
@@ -1666,14 +1897,23 @@ sigma2.st <- log(sigma2)
 
 
 if(margin2 == "GAi"){eta2 <- ifelse(eta2 < 0.0000001, 0.0000001, eta2); mu2 <- eta2; dermu2.dereta2 <- 1; der2mu2.dereta2eta2 <- 0}
-if(margin2 == "GA") { mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2) }
+
+if(margin2 == "GA") { 
+
+   mu2 <- exp(eta2)
+   dermu2.dereta2 <- exp(eta2)
+   der2mu2.dereta2eta2 <- exp(eta2) 
+   
+                    }
 
 
-dersigma2.dersigma2.st <- exp(sigma2.st)   
+dersigma2.dersigma2.st  <- exp(sigma2.st)   
+dersigma2.dersigma2.st2 <- exp(sigma2.st)   
+
+
+
 
 pdf2 <- dgamma(y2, shape = 1/sigma2, scale = mu2 * sigma2)
-
-
 
 
 derpdf2.dermu2 <-  -(sigma2 * exp((log(y2) - (log(mu2) + log(sigma2) + 
@@ -1779,8 +2019,14 @@ if(margin2 %in% c("GA2")){
 
 sigma2    <- ifelse(sigma2 < 0.006, 0.006, sigma2) # related to gamma function
 sigma2.st <- log(sigma2) 
-mu2 <- dermu2.dereta2 <- der2mu2.dereta2eta2 <- exp(eta2)
-dersigma2.dersigma2.st <- exp(sigma2.st)   
+
+mu2 <- exp(eta2)
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2)
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)   
+dersigma2.dersigma2.st2 <- exp(sigma2.st)   
+
 
 
 pdf2 <- mu2^(sqrt(sigma2))  * y2^(sqrt(sigma2) -1) * exp(-(y2*mu2)) / gamma(sqrt(sigma2))          
@@ -1865,11 +2111,13 @@ der2p2.dersigma22 <- nde$se
 if(margin2 %in% c(cont2par,cont3par)){ 
 
 derpdf2.dereta2              <- derpdf2.dermu2*dermu2.dereta2       
-der2pdf2.dereta2             <- der2pdf2.dermu2* dermu2.dereta2^2 + derpdf2.dermu2*der2mu2.dereta2eta2        
+der2pdf2.dereta2             <- der2pdf2.dermu2* dermu2.dereta2^2 + derpdf2.dermu2*der2mu2.dereta2eta2     
+
+derpdf2.dersigma2.st         <- derpdf2.sigma2*dersigma2.dersigma2.st   
+der2pdf2.dersigma2.st2       <- der2pdf2.dersigma22 * dersigma2.dersigma2.st^2 + derpdf2.sigma2  * dersigma2.dersigma2.st2 
+
+
 der2pdf2.dereta2dersigma2    <- der2pdf2.mu2dersigma2* dermu2.dereta2
-  
-derpdf2.dersigma2.st         <- derpdf2.sigma2 * dersigma2.dersigma2.st   
-der2pdf2.dersigma2.st2       <- der2pdf2.dersigma22 * dersigma2.dersigma2.st^2 + derpdf2.sigma2  * dersigma2.dersigma2.st     
 der2pdf2.dereta2dersigma2.st <- der2pdf2.dereta2dersigma2 *  dersigma2.dersigma2.st
 
 
@@ -1877,11 +2125,14 @@ if(margin2 %in% cont3par){
 
 
 der2pdf2.dereta2dernu        <- der2pdf2.mu2dernu* dermu2.dereta2
-
 der2pdf2.dereta2dernu.st     <- der2pdf2.dereta2dernu * dernu.dernu.st
-der2pdf2.sigma2.st2dernu.st  <- der2pdf2.dersigma2dernu * dersigma2.dersigma2.st * dernu.dernu.st                              
+
+der2pdf2.sigma2.st2dernu.st  <- der2pdf2.dersigma2dernu * dersigma2.dersigma2.st * dernu.dernu.st  
+
 derpdf2.dernu.st             <- derpdf2.nu * dernu.dernu.st 
-der2pdf2.dernu.st2           <- der2pdf2.dernu2 * dernu.dernu.st^2 +  derpdf2.nu  * dernu.dernu.st 
+der2pdf2.dernu.st2           <- der2pdf2.dernu2 * dernu.dernu.st^2 +  derpdf2.nu  * dernu.dernu.st2 
+
+
 
                          }
                          
@@ -1892,11 +2143,12 @@ if(naive == FALSE){
 
 
 derp2.dereta2                <- derp2.dermu2*dermu2.dereta2
-der2p2.dereta2eta2           <- der2p2.dermu22*dermu2.dereta2^2+derp2.dermu2*der2mu2.dereta2eta2      
-der2p2.dereta2dersigma2      <- der2p2.derdermu2sigma2* dermu2.dereta2    
+der2p2.dereta2eta2           <- der2p2.dermu22*dermu2.dereta2^2 + derp2.dermu2*der2mu2.dereta2eta2   
 
 derp2.dersigma.st            <- derp2.dersigma2 *  dersigma2.dersigma2.st 
-der2p2.dersigma2.st2         <- der2p2.dersigma22 * dersigma2.dersigma2.st^2 + derp2.dersigma2 * dersigma2.dersigma2.st
+der2p2.dersigma2.st2         <- der2p2.dersigma22 * dersigma2.dersigma2.st^2 + derp2.dersigma2 * dersigma2.dersigma2.st2
+
+der2p2.dereta2dersigma2      <- der2p2.derdermu2sigma2* dermu2.dereta2    
 der2p2.dereta2dersigma2.st   <- der2p2.dereta2dersigma2 *  dersigma2.dersigma2.st  
 
 
@@ -1904,11 +2156,11 @@ der2p2.dereta2dersigma2.st   <- der2p2.dereta2dersigma2 *  dersigma2.dersigma2.s
 if(margin2 %in% cont3par){
 
 der2p2.dereta2dernu          <- der2p2.dermu2dernu* dermu2.dereta2 
-                             
-derp2.nu.st                  <- derp2.dernu *  dernu.dernu.st 
-der2p2.dernu.st2             <- der2p2.dernu2 * dernu.dernu.st^2 + derp2.dernu * dernu.dernu.st
 der2p2.dereta2dernu.st       <- der2p2.dereta2dernu * dernu.dernu.st 
-der2p2.dersigma2.stdernu.st  <- der2p2.dersigma2dernu * dersigma2.dersigma2.st * dernu.dernu.st
+der2p2.dersigma2.stdernu.st  <- der2p2.dersigma2dernu * dersigma2.dersigma2.st * dernu.dernu.st  
+
+derp2.nu.st                  <- derp2.dernu *  dernu.dernu.st 
+der2p2.dernu.st2             <- der2p2.dernu2 * dernu.dernu.st^2 + derp2.dernu * dernu.dernu.st2
 
                          }
 
@@ -1984,7 +2236,8 @@ list(pdf2                         = pdf2,
      derp2.nu.st                  = derp2.nu.st,                
      der2p2.dernu.st2             = der2p2.dernu.st2,           
      der2p2.dereta2dernu.st       = der2p2.dereta2dernu.st,     
-     der2p2.dersigma2.stdernu.st  = der2p2.dersigma2.stdernu.st )     
+     der2p2.dersigma2.stdernu.st  = der2p2.dersigma2.stdernu.st, 
+     indx = indx)     
 
 
 }

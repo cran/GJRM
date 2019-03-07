@@ -6,7 +6,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                              gc.l = FALSE, parscale, extra.regI = "t", k1.tvc = 0, k2.tvc = 0, 
                              knots = NULL, penCor = "unpen",
                              sp.penCor = 3, Chol = FALSE, gamma = 1, w.alasso = NULL,
-                             drop.unused.levels = TRUE){
+                             drop.unused.levels = TRUE, ind.ord = FALSE){
   
   if(missing(margins)) stop("You must choose the margins' values.")
   if(missing(Model)) stop("You must choose a Model type.")
@@ -53,7 +53,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                                fp, hess = TRUE, infl.fac, 
                                rinit, rmax, iterlimsp, tolsp,
                                gc.l, parscale, extra.regI, intf = TRUE, 
-                               theta.fx = NULL, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights)))                               
+                               theta.fx = NULL, knots = knots, drop.unused.levels = drop.unused.levels, ind.ord = ind.ord),list(weights=weights)))                               
   
                                                                         }
   
@@ -130,10 +130,10 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
   opc  <- c("N","C0","C90","C180","C270","J0","J90","J180","J270","G0","G90","G180","G270","F","AMH","FGM","T","PL","HO")
   scc  <- c("C0", "C180", "J0", "J180", "G0", "G180", BivD2)
   sccn <- c("C90", "C270", "J90", "J270", "G90", "G270")
-  m2   <- c("N","N2","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK")
+  m2   <- c("N","N2","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP")
   m3   <- c("DAGUM","SM")
   m1d  <- c("PO", "ZTP")
-  m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG")
+  m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG","DGP")
   m3d  <- c("DEL","SICHEL")
   
   ct  <- data.frame( c(opc), c(1:14,55,56,57,60,61) )

@@ -1,7 +1,7 @@
 int.postcheck <- function(mo, margin, n.rep = 50, prob.lev = 0.05, y2m, eq = 1){
 
-cont <- c("N", "N2", "GU", "rGU", "LO", "LN", "WEI","iG", "GA", "DAGUM", "SM", "BE", "FISK","GP")
-disc <- c("NBI", "NBII", "PIG", "PO", "ZTP","DGP") 
+cont <- c("N", "GU", "rGU", "LO", "LN", "WEI","iG", "GA", "DAGUM", "SM", "BE", "FISK","GP","GPII","GPo","TW")
+disc <- c("NBI", "NBII", "PIG", "PO", "ZTP","DGP","DGPII") 
 
 n   <- mo$n
 
@@ -78,14 +78,14 @@ if(margin %in% cont) qrs[,i] <- sort(  qnorm(  distrHsAT(y2s, eta2, sigma2, nu, 
 
 if(margin %in% disc){
 
-if(margin %in% c("ZTP","DGP")){
+if(margin %in% c("ZTP","DGP","DGPII")){
     ly2 <- length(y2s)
     y2ms <- list()
     my2s <- max(y2s)
     
     
     
-    if(margin %in% c("DGP")) for(j in 1:ly2){ y2ms[[j]] <- seq(0, y2s[j]); length(y2ms[[j]]) <- my2s+1} 
+    if(margin %in% c("DGP","DGPII")) for(j in 1:ly2){ y2ms[[j]] <- seq(0, y2s[j]); length(y2ms[[j]]) <- my2s+1} 
     if(margin %in% c("ZTP"))  for(j in 1:ly2){ y2ms[[j]] <- seq(1, y2s[j]); length(y2ms[[j]]) <- my2s} 
     
     y2ms <- do.call(rbind, y2ms) 

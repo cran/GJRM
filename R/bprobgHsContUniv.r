@@ -1,6 +1,6 @@
 bprobgHsContUniv <- function(params, respvec, VC, ps, AT = FALSE){
 
-epsilon <- 0.0000001 # 0.9999999 0.0001 # sqrt(.Machine$double.eps)
+epsilon <- sqrt(.Machine$double.eps)
 
 weights <- VC$weights
 
@@ -71,7 +71,7 @@ bcorR <- list(b = 0, bp = 0, bs = 0)
 
 VC$y <- respvec$y1  # do I need this?
 
-if(VC$margins[1] %in% c("NBI", "NBII","NBIa", "NBIIa","PIG","PO","ZTP") ) bcorR <- bcorrecDiscr(VC, params) else{
+if(VC$margins[1] %in% c("NBI", "NBII","NBIa", "NBIIa","PIG","PO","ZTP","DGP","DGPII") ) bcorR <- bcorrecDiscr(VC, params) else{
 
 
 
@@ -80,12 +80,17 @@ if(VC$margins[1] %in% c("NBI", "NBII","NBIa", "NBIIa","PIG","PO","ZTP") ) bcorR 
      #                           VC$my.env$lB <- bb$lB
      #                           VC$my.env$uB <- bb$uB
      #                      }
- 
      #bcorR <- bcorrec(VC, params, VC$my.env$lB, VC$my.env$uB)
-     
-     
      #if(VC$r.type == "a") 
+     
+     
+     
      bcorR <- bcorrec(VC, params)
+     
+     
+     
+     
+     
      #if(VC$r.type == "n") bcorR <- bcorrec2(VC, params)
  
 
@@ -268,7 +273,7 @@ if( VC$margins[1] == "LN"){
 
 
 
-if(VC$margins[1] %in% c("GP","DGP")) indx <- dHs$indx else indx <- 1 
+if(VC$margins[1] %in% c("GP","DGP","DGPII","GPII","GPo")) indx <- dHs$indx else indx <- 1 
 
 
 

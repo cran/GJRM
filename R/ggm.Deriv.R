@@ -39,16 +39,37 @@ if(VC$NLM == FALSE){
 
 if(VC$method == "H"){
 
+
+
+
+
 a.gr           <- sigma - s
 a.gr           <- ( a.gr + t(a.gr) - diag(diag(a.gr)) )*sc.f
 a.gr           <- a.gr[lower.tri(a.gr, diag = TRUE)]
 a.gr.star      <- a.gr
 a.gr.star[idx] <- a.gr[idx]*params[idx] 
 
-a.kr  <- -kronecker(sigma, sigma)
-a.dup <- duplication.matrix(p) 
-a.h   <- t(a.dup)%*%a.kr%*%a.dup
-a.h   <- matrix(a.h, p1, p1)*sc.f
+
+
+#a.kr  <- -kronecker(sigma, sigma)
+#a.dup <- duplication.matrix(p) 
+#a.h   <- t(a.dup)%*%a.kr%*%a.dup
+#a.h   <- matrix(a.h, p1, p1)*sc.f
+#a.h <- a.h*sc.f
+
+
+  ro <- row(sigma)[lower.tri(sigma, diag = TRUE)]
+  co <- col(sigma)[lower.tri(sigma, diag = TRUE)]
+  HM <- sigma[ro, ro]*sigma[co, co] + sigma[ro, co]*sigma[co, ro]
+  HM[ro == co, ] <- HM[ro == co, ]/2
+  HM[,ro==co]    <- HM[, ro == co]/2
+  name <- paste(co, "-", ro, sep = "")
+  dimnames(HM) <- list(name, name)
+  a.h <- -n*HM
+
+  
+
+
 
 
 # new a.h allowing for omega*

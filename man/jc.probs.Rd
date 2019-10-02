@@ -21,7 +21,8 @@ using posterior simulation.}
 \usage{
 
 jc.probs(x, y1, y2, y3 = NULL, newdata, type = "joint", cond = 0,
-         intervals = FALSE, n.sim = 100, prob.lev = 0.05)
+         intervals = FALSE, n.sim = 100, prob.lev = 0.05, 
+         epsilon = 1e-07)
 
 }
 
@@ -54,6 +55,8 @@ jc.probs(x, y1, y2, y3 = NULL, newdata, type = "joint", cond = 0,
              for interval calculations.} 
 
 \item{prob.lev}{Overall probability of the left and right tails of the probabilities' distributions used for interval calculations.} 
+  
+\item{epsilon}{Smallest zero allowed.} 
   
   
 }

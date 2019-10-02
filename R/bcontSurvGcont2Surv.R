@@ -2,7 +2,7 @@ bcontSurvGcont2Surv <- function(params, respvec, VC, ps, AT = FALSE){
 
     rotConst <- 1
 
-    epsilon <- 0.0000001 
+    epsilon <- sqrt(.Machine$double.eps)
     etad <- etas1 <- etas2 <- l.ln <- NULL 
 
     params1 <- params[1:VC$X1.d2]
@@ -16,7 +16,7 @@ bcontSurvGcont2Surv <- function(params, respvec, VC, ps, AT = FALSE){
     etad <- etas1 <- etas2 <- l.ln <- NULL 
     
     Xd2P <- VC$Xd2%*%params2
-    Xd2P <- ifelse(Xd2P < 1e-08, 1e-08, Xd2P ) # safety thing, never used as per model definition
+    Xd2P <- ifelse(Xd2P < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), Xd2P ) # safety thing, never used as per model definition
     
 if(is.null(VC$X3)){  
     X3 <- X4 <- matrix(1, VC$n, 1)

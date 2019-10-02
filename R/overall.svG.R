@@ -6,6 +6,7 @@ gam4 = gam5 = gam6 = gam7 = gam8 = NULL
 l.sp3 = l.sp4 = l.sp5 = l.sp6 = l.sp7 = l.sp8 = 0  
 sp3 = sp4 = sp5 = sp6 = sp7 = sp8 = NULL  
 X3s = X4s = X5s = NULL
+Sl.sf2 <- Sl.sf3 <- NULL
   
 if(type != "triv") gam3 <- NULL    
   
@@ -1517,7 +1518,16 @@ sp2 <- NULL
     sigma2 <- rnorm(vo$n, vo$log.sig2.1, 0.001) 
     rm(list=".Random.seed", envir=globalenv()) 
     
-    gam2  <- gam(formula.eq2, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)    
+    gam2  <- gam(formula.eq2, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+    
+    if(M$sp.method != "perf"){ 
+         gam2ff  <- gam(formula.eq2, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels, fit = FALSE)    
+         Sl.sf2 <- Sl.setup(gam2ff)
+         rm(gam2ff)               
+                             }
+    
+    
+    
     l.sp2 <- length(gam2$sp)   
  
     if(l.sp2 != 0){
@@ -1556,7 +1566,15 @@ sp2 <- NULL
     
     gam2 <- gam(formula.eq2, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
     gam3 <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels)   
-   
+    
+    
+    if(M$sp.method != "perf"){ 
+         gam2ff  <- gam(formula.eq2, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels, fit = FALSE) 
+         gam3ff  <- gam(formula.eq3, data = data, gamma = ngc, knots = knots, drop.unused.levels = vo$drop.unused.levels, fit = FALSE)    
+         Sl.sf2 <- Sl.setup(gam2ff); Sl.sf3 <- Sl.setup(gam3ff)
+         rm(gam2ff, gam3ff)               
+                             }    
+    
     l.sp2 <- length(gam2$sp)   
     l.sp3 <- length(gam3$sp)    
 
@@ -1792,7 +1810,7 @@ X3 = X3, X4 = X4, X5 = X5, X6 = X6, X7 = X7, X8 = X8, X3.d2 = X3.d2, X4.d2 = X4.
 X7.d2 =	X7.d2, X8.d2 =	X8.d2, gp3 = gp3, gp4 = gp4, gp5 = gp5, gp6 = gp6, gp7 = gp7, gp8 = gp8,
 gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8,
 l.sp3 = l.sp3, l.sp4 = l.sp4, l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8,
-sp3 = sp3, sp4 = sp4, sp5 = sp5, sp6 = sp6, sp7 = sp7, sp8 = sp8, X3s = X3s, X4s = X4s, X5s = X5s)
+sp3 = sp3, sp4 = sp4, sp5 = sp5, sp6 = sp6, sp7 = sp7, sp8 = sp8, X3s = X3s, X4s = X4s, X5s = X5s,  Sl.sf2 =  Sl.sf2,  Sl.sf3= Sl.sf3)
 
 
 if(type == "gaml") {L$X2 <- X2; L$X2.d2 <- X2.d2; L$gp2 <- gp2; L$gam2 <- gam2; L$l.sp2 <- l.sp2; L$sp2 <- sp2}     

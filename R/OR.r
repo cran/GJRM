@@ -18,7 +18,7 @@ m2  <- x$VC$m2
 m3  <- x$VC$m3 
 bin.link <- x$VC$bl  
 end <- 0
-epsilon <- 0.0000001 # 0.9999999 sqrt(.Machine$double.eps)
+epsilon <- sqrt(.Machine$double.eps)
 max.p   <- 0.9999999
 est.ATb <- NA
 indD <- list()

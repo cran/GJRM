@@ -1,5 +1,7 @@
 ass.dp <- function(ass.s, BivD, scc, sccn, nCa){
 
+eps <- sqrt(.Machine$double.eps)
+
 if(BivD %in% scc)  ass.s <-  abs(ass.s)   
 if(BivD %in% sccn) ass.s <- -abs(ass.s) 
 
@@ -11,7 +13,7 @@ if(  BivD %in% c("PL") )                  i.rho <- as.numeric(iTau(plackettCopul
 if(  BivD %in% c("HO") )                  i.rho <- ass.s - 1
 
 if(BivD %in% c("N","AMH","FGM","T"))         i.rho <- atanh( i.rho ) 
-if(BivD == "F")                              i.rho <- ifelse( abs(i.rho) < 1e-07, 1e-07, i.rho ) 
+if(BivD == "F")                              i.rho <- ifelse( abs(i.rho) < eps, eps, i.rho ) 
 if(!(BivD %in% c("N","AMH","FGM","F","T")))  i.rho <- abs(i.rho)
 
 if(BivD %in% c("C0","C180","C90","C270",

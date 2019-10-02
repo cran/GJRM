@@ -8,11 +8,13 @@ print.gamlss <- function(x, ...){
  cont3par <- ppR$cont3par
  m1l      <- ppR$m1l
 
-  s1 <- "sigma2 = "; s1.p <- x$sigma2.a
+  s1 <- "sigma = "; s1.p <- x$sigma2.a
   n1 <- "  nu = "; n1.p <- x$nu.a
   
 
   pscr0(x, type = "gamlss")  
+  
+  if(x$robust == TRUE) cat("\nROBUST Fit")
 
   cat("\n\nEQUATION 1")
   if(x$surv.flex == FALSE) cat("\nLink function for mu:",m1l,"\n")
@@ -29,15 +31,15 @@ print.gamlss <- function(x, ...){
   
   cat("\nEQUATION 2")
   
-  #if(x$margins[1] !="BE" && !(x$margins[1] %in% c("GP","DGP"))) cat("\nLink function for sigma2:","log","\n")
+  #if(x$margins[1] !="BE" && !(x$margins[1] %in% c("GP","DGP","DGPII"))) cat("\nLink function for sigma:","log","\n")
   
   
-  if(x$margins[1] !="BE") cat("\nLink function for sigma2:","log","\n")
+  if(x$margins[1] !="BE") cat("\nLink function for sigma:","log","\n")
   
   
-  if(x$margins[1] =="BE") cat("\nLink function for sigma2:","qlogis","\n") 
+  if(x$margins[1] =="BE") cat("\nLink function for sigma:","qlogis","\n") 
   
-  #if(x$margins[1] %in% c("GP","DGP")) cat("\nLink function for sigma2:","identity","\n") 
+  #if(x$margins[1] %in% c("GP","DGP","DGPII")) cat("\nLink function for sigma:","identity","\n") 
 
   cat("Formula: "); print(x$formula[[2]])  
   
@@ -47,8 +49,11 @@ print.gamlss <- function(x, ...){
 if( x$margins[1] %in% cont3par){
      
   cat("\nEQUATION 2")
-  cat("\nLink function for sigma2:","log","\n") 
+  
+  if(!(x$margins[1] %in% c("TW"))) cat("\nLink function for sigma:","log","\n") else cat("\nLink function for sigma:","qlogis","\n")  
+  
   cat("Formula: "); print(x$formula[[2]]) 
+  
   
   cat("\nEQUATION 3")
   cat("\nLink function for nu:","log","\n") 

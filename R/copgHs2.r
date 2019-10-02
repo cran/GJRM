@@ -143,7 +143,7 @@ c.copula.be2  <- 1 - c.copula.be2
 
 ifef <- function(dv){
 
-epsilon <- 0.0000001 
+epsilon <- sqrt(.Machine$double.eps)
 dv <- ifelse(is.na(dv), epsilon, dv ) 
 dv <- ifelse(dv == Inf ,  8.218407e+20, dv )
 dv <- ifelse(dv == -Inf ,  -8.218407e+20, dv )
@@ -158,7 +158,7 @@ c.copula.be2 <- ifef(c.copula.be2)
 
 
 
-epsilon <- 0.0000001 
+epsilon <- sqrt(.Machine$double.eps)
 max.p   <- 0.9999999
   
 c.copula.be2 <- ifelse(c.copula.be2 > max.p, max.p, c.copula.be2) 

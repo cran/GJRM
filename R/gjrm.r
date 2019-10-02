@@ -1,6 +1,6 @@
 gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,  
                              BivD = "N", margins, Model, dof = 3, ordinal = FALSE,
-                             surv = FALSE, cens1 = NULL, cens2 = NULL,  
+                             surv = FALSE, cens1 = NULL, cens2 = NULL, dep.cens = FALSE,  
                              gamlssfit = FALSE, fp = FALSE, infl.fac = 1, 
                              rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
                              gc.l = FALSE, parscale, extra.regI = "t", k1.tvc = 0, k2.tvc = 0, 
@@ -116,6 +116,9 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
   sp6 <- gp6 <- gam6 <- X6 <- sp7 <- gp7 <- gam7 <- X7 <- sp8 <- gp8 <- gam8 <- X8 <- NULL   
   c11 <- c10 <- c01 <- c00 <- NA
   
+  Sl.sf <- NULL
+  sp.method <- "perf"
+  
   Xd1 <- Xd2 <- mono.sm.pos1 <- mono.sm.pos2 <- mono.sm.pos <- NULL
   surv.flex <- FALSE
   
@@ -130,10 +133,10 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
   opc  <- c("N","C0","C90","C180","C270","J0","J90","J180","J270","G0","G90","G180","G270","F","AMH","FGM","T","PL","HO")
   scc  <- c("C0", "C180", "J0", "J180", "G0", "G180", BivD2)
   sccn <- c("C90", "C270", "J90", "J270", "G90", "G270")
-  m2   <- c("N","N2","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP")
-  m3   <- c("DAGUM","SM")
+  m2   <- c("N","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP","GPII","GPo")
+  m3   <- c("DAGUM","SM","TW")
   m1d  <- c("PO", "ZTP")
-  m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG","DGP")
+  m2d  <- c("NBI", "NBII","PIG","DGP","DGPII")
   m3d  <- c("DEL","SICHEL")
   
   ct  <- data.frame( c(opc), c(1:14,55,56,57,60,61) )
@@ -178,7 +181,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
   
-  mf$ordinal <- mf$Model <- mf$knots <- mf$k1.tvc <- mf$k2.tvc <- mf$surv <- mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
+  mf$dep.cens <- mf$ordinal <- mf$Model <- mf$knots <- mf$k1.tvc <- mf$k2.tvc <- mf$surv <- mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
   mf$drop.unused.levels <- drop.unused.levels 
   mf[[1]] <- as.name("model.frame")
   data <- eval(mf, parent.frame())
@@ -205,7 +208,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                         
   M <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, m3d = m3d, BivD = BivD, bl = bl, 
             robust = robust, opc = opc, extra.regI = extra.regI, margins = margins, BivD2 = BivD2, dof = dof,
-            surv = surv, c1 = cens1, c2 = cens2) 
+            surv = surv, c1 = cens1, c2 = cens2, dep.cens = dep.cens) 
  
   M$K1 <- NULL
  
@@ -505,7 +508,7 @@ if( !(margins[1] %in% c(m1d,bl)) ){
 
 start.snR <- startsn(margins[1], y1)
     
-log.sig2.1 <- start.snR$log.sig2.1; names(log.sig2.1) <- "sigma2.1.star"
+log.sig2.1 <- start.snR$log.sig2.1; names(log.sig2.1) <- "sigma1.star"
 if( margins[1] %in% c(m3) ){ log.nu.1   <- start.snR$log.nu.1;   names(log.nu.1)   <- "nu.1.star"}     
 
 }
@@ -514,7 +517,7 @@ if( !(margins[2] %in% c(m1d,bl)) ){
 
 start.snR <- startsn(margins[2], y2)
     
-log.sig2.2 <- start.snR$log.sig2.1; names(log.sig2.2) <- "sigma2.2.star"
+log.sig2.2 <- start.snR$log.sig2.1; names(log.sig2.2) <- "sigma2.star"
 if( margins[2] %in% c(m3) ){ log.nu.2   <- start.snR$log.nu.1;   names(log.nu.2)   <- "nu.2.star"}     
 
 }
@@ -593,6 +596,10 @@ if(missing(parscale)) parscale <- 1
   lsgam8 <- length(gam8$smooth)
 
 
+
+
+if(surv == TRUE && dep.cens == FALSE){
+
 if((surv == TRUE && margins[1] %in% bl && margins[2] %in% bl) || (surv == TRUE && margins[1] %in% m2 && margins[2] %in% m2) ){
 
 c11 <- cens1*cens2
@@ -612,7 +619,29 @@ c00 <- NULL
 }
 
 
-my.env      <- new.env()
+}
+
+
+
+
+if(surv == TRUE && dep.cens == TRUE){
+
+
+c11 <- NULL
+c10 <- cens1
+c01 <- cens2 # (1-cens1)
+c00 <- NULL
+
+
+
+}
+
+
+
+
+
+
+#my.env      <- new.env()
 my.env$k1   <- k1.tvc
 my.env$k2   <- k2.tvc
 
@@ -620,7 +649,7 @@ my.env$k2   <- k2.tvc
   VC <- list(lsgam1 = lsgam1, indexTeq1 = indexTeq1, indexTeq2 = indexTeq2, 
              lsgam2 = lsgam2, Deq1 = Deq1, pos.pbeq1 = pos.pbeq1, Deq2 = Deq2, pos.pbeq2 = pos.pbeq2,
              lsgam3 = lsgam3, robust = FALSE, sp.fixed = NULL,
-             lsgam4 = lsgam4,
+             lsgam4 = lsgam4, Sl.sf = Sl.sf, sp.method = sp.method,
              lsgam5 = lsgam5, K1 = NULL,
              lsgam6 = lsgam6,
              lsgam7 = lsgam7,
@@ -756,7 +785,7 @@ gam1$call$data <- gam2$call$data <- gam3$call$data <- gam4$call$data <- gam5$cal
   ##########################################################################################################################
 
 
-L <- list(fit = SemiParFit$fit, dataset = NULL, n = n, gamlss1 = gamlss1, gamlss2 = gamlss2, formula = formula,        
+L <- list(fit = SemiParFit$fit, dataset = NULL, n = n, gamlss1 = gamlss1, gamlss2 = gamlss2, formula = formula, robust = FALSE,     
           edf11 = SemiParFit.p$edf11, surv = surv, 
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8,  
           coefficients = SemiParFit$fit$argument, coef.t = SemiParFit.p$coef.t, 
@@ -771,6 +800,8 @@ L <- list(fit = SemiParFit$fit, dataset = NULL, n = n, gamlss1 = gamlss1, gamlss
           theta.a = SemiParFit.p$theta.a,  
           sigma21 = SemiParFit.p$sigma21, sigma22 = SemiParFit.p$sigma22, 
           sigma21.a = SemiParFit.p$sigma21.a, sigma22.a = SemiParFit.p$sigma22.a,
+          sigma1 = SemiParFit.p$sigma21, sigma2 = SemiParFit.p$sigma22, 
+          sigma1.a = SemiParFit.p$sigma21.a, sigma2.a = SemiParFit.p$sigma22.a,                    
           nu1 = SemiParFit.p$nu1, nu2 = SemiParFit.p$nu2, 
           nu1.a = SemiParFit.p$nu1.a, nu2.a = SemiParFit.p$nu2.a,
           dof.a = SemiParFit.p$dof.a, dof = SemiParFit.p$dof,

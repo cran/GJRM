@@ -4,7 +4,7 @@ AT <- function(x, nm.end, eq = NULL, E = TRUE, treat = TRUE, type = "joint", ind
    xlab = "Simulated Average Effects", ...){
 
 
-if(x$Cont == "YES") stop("This function is not suitable for bivariate models with continuous/discrete margins.")
+#if(x$Cont == "YES") stop("This function is not suitable for bivariate models with continuous/discrete margins.")
 if(x$triv == TRUE && x$Model == "TSS") stop("This function is not suitable for trivariate probit models with double sample selection.")
 if(x$Cont == "NO" && x$VC$ccss == "yes" && !(x$margins[2] %in% c("GA", "GU"))) stop("Check distribution of response or get in touch for details.")
 
@@ -111,11 +111,11 @@ m2d  <- x$VC$m2d
 m2  <- x$VC$m2 
 m3  <- x$VC$m3 
 bin.link <- x$VC$bl  
-mat <- c("SM","DAGUM","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK") # excludes "N"
+mat <- c("TW","SM","DAGUM","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK") # excludes "N"
 
 
 end <- 0
-epsilon <- 0.0000001 # 0.9999999 sqrt(.Machine$double.eps)
+epsilon <- sqrt(.Machine$double.eps)
 max.p   <- 0.9999999
 est.ATb <- NA
 indD <- list()
@@ -133,9 +133,9 @@ if( !is.null(eq) ) { eq <- eq; if(eq == 1) end <- 2; if(eq == 2) end <- 1 }
 
 
 
-if(x$margins[2] == "DAGUM" && eq == 2) { if( min(sqrt(x$sigma2)) <= 1) stop("sigma parameter has value(s) smaller than 1, hence the mean is indeterminate.")}
-if(x$margins[2] == "SM"    && eq == 2) { if( min(sqrt(x$sigma2)*x$nu) <= 1) stop("sigma*nu has value(s) smaller than 1, hence the mean is indeterminate.")}
-if(x$margins[2] == "FISK"  && eq == 2) { if( min(sqrt(x$sigma2)) <= 1) stop("sigma parameter has value(s) smaller than 1, hence the mean is indeterminate.")}
+if(x$margins[2] == "DAGUM" && eq == 2) { if( min(x$sigma2) <= 1) stop("sigma parameter has value(s) smaller than 1, hence the mean is indeterminate.")}
+if(x$margins[2] == "SM"    && eq == 2) { if( min(x$sigma2*x$nu) <= 1) stop("sigma*nu has value(s) smaller than 1, hence the mean is indeterminate.")}
+if(x$margins[2] == "FISK"  && eq == 2) { if( min(x$sigma2) <= 1) stop("sigma parameter has value(s) smaller than 1, hence the mean is indeterminate.")}
 # not sure about FISK2 
 
 if( !( type %in% c("naive","univariate","joint") ) ) stop("Error in parameter type value. It should be one of: naive, univariate or joint.")
@@ -149,7 +149,7 @@ if(x$Model=="BSS" || x$Model=="BPO" || x$Model=="BPO0" || end==0) stop("Calculat
 }
 
 
-if(type == "univariate" && x$margins[2] %in% c("N","N2") && eq == 2 && x$gamlssfit == FALSE) stop("You need to fit the univariate model to obtain the AT. Refit the model and set gamlssfit = TRUE.")
+if(type == "univariate" && x$margins[2] %in% c("N") && eq == 2 && x$gamlssfit == FALSE) stop("You need to fit the univariate model to obtain the AT. Refit the model and set gamlssfit = TRUE.")
 
 
 
@@ -313,7 +313,10 @@ if(delta == FALSE){
 ######################################################################
 ######################################################################
 
-if(type != "naive" && x$margins[2] %in% c("GA","GU") && x$VC$ccss == "yes"){ ## binary binary case with eq = 1 or eq = 2
+#if(type != "naive" && x$margins[2] %in% c("GA","GU") && x$VC$ccss == "yes"){ ## binary binary case with eq = 1 or eq = 2
+
+if(type != "naive" && x$margins[2] %in% c("GA","GU")){ ## binary binary case with eq = 1 or eq = 2
+
 
 #############
 
@@ -521,7 +524,7 @@ for (i in 1:(ly2-1)) lines( y = c(diffEfSquant[i,1], diffEfSquant[i,2]), x = c(y
 
 
 
-if(type != "naive" && x$margins[2] %in% c("N","N2") && eq == 2){
+if(type != "naive" && x$margins[2] %in% c("N") && eq == 2){
 
  if(type == "univariate") {bs <- rMVN(n.sim, mean = x$gamlss$coefficients, sigma=x$gamlss$Vb)
                            est.AT  <- est.ATso <- x$gamlss$coefficients[nm.end] 

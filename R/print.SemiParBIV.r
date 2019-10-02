@@ -45,7 +45,7 @@ print.SemiParBIV <- function(x, ...){
   
 
   cat("\nEQUATION 3")
-  if(x$margins[2] != "BE") cat("\nLink function for sigma2:","log","\n") else cat("\nLink function for sigma2:","qlogis","\n") 
+  if(x$margins[2] != "BE") cat("\nLink function for sigma:","log","\n") else cat("\nLink function for sigma:","qlogis","\n") 
   cat("Formula: ");  print(x$formula[[3]]) 
   
 
@@ -59,12 +59,16 @@ print.SemiParBIV <- function(x, ...){
   if(!is.null(x$X3) && !is.null(x$X4) && !is.null(x$X5)){
   
   cat("\nEQUATION 3")
-  cat("\nLink function for sigma2:","log","\n") 
+  
+  if(!(x$margins[2] %in% c("TW"))) cat("\nLink function for sigma:","log","\n") else cat("\nLink function for sigma:","qlogis","\n")  
+
+  
+  #cat("\nLink function for sigma:","log","\n") 
   cat("Formula: "); print(x$formula[[3]])  
   
   
   cat("\nEQUATION 4")
-  if(x$margins[2] %in% c("DAGUM","SM")) cat("\nLink function for nu:","log","\n")  
+  if(x$margins[2] %in% c("DAGUM","SM","TW")) cat("\nLink function for nu:","log","\n")  
   cat("Formula: "); print(x$formula[[4]]) 
     
 
@@ -88,8 +92,8 @@ print.SemiParBIV <- function(x, ...){
     
   
   if(x$Model=="B" && x$margins[2] %in% cont1par ) cat("n = ",x$n, cp, format(as.p, digits=3),"\ntotal edf = ",format(x$t.edf, digits=3),"\n\n", sep="") 
-  if(x$Model=="B" && x$margins[2] %in% cont2par ) cat("n = ",x$n,"  sigma2 = ",x$sigma2.a, cp, format(as.p, digits=3),"\ntotal edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
-  if(x$Model=="B" && x$margins[2] %in% cont3par ) cat("n = ",x$n,"  sigma2 = ",x$sigma2.a, "  nu = ",x$nu.a, "\ntheta = ", format(as.p, digits=3),"  total edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
+  if(x$Model=="B" && x$margins[2] %in% cont2par ) cat("n = ",x$n,"  sigma = ",x$sigma2.a, cp, format(as.p, digits=3),"\ntotal edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
+  if(x$Model=="B" && x$margins[2] %in% cont3par ) cat("n = ",x$n,"  sigma = ",x$sigma2.a, "  nu = ",x$nu.a, "\ntheta = ", format(as.p, digits=3),"  total edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
 
 
 

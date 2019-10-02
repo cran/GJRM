@@ -6,7 +6,7 @@ bcont23twoParC <- function(params, respvec, VC, ps, AT = FALSE){
     eta2 <- VC$X2%*%params[(VC$X1.d2 + 1):(VC$X1.d2 + VC$X2.d2)]
     nu <- etad <- etas1 <- etas2 <- etan <- etan1 <- etan2 <- NULL 
   
-    epsilon <- 0.0000001 
+    epsilon <- sqrt(.Machine$double.eps) 
     max.p   <- 0.9999999
     
     

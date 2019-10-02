@@ -1,4 +1,4 @@
-jc.probs5 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link){
+jc.probs5 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, epsilon){
 
 ######################################################################################################
 
@@ -169,7 +169,7 @@ if(length(theta) == 1) p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta
 
 # kendalls' tau
 
-if(x$BivD %in% x$BivD2)    tau <- Reg2Copost(x$SemiParFit, x$VC, theta)$tau 
+if(x$BivD %in% x$BivD2)    {x$SemiParFit <- x; tau <- Reg2Copost(x$SemiParFit, x$VC, theta)$tau } 
 if(!(x$BivD %in% x$BivD2)) tau <- ass.ms(x$VC$BivD, x$VC$nCa, theta)$tau
 
 
@@ -207,7 +207,7 @@ if(  is.null(x$X3) ){
                     }                     
    
                        
-p1s <- distrHsAT(y1, eta1s, sigma21s, nu1s, x$margins[1])$p2
+p1s <- matrix( distrHsAT(y1, eta1s, sigma21s, nu1s, x$margins[1])$p2 , dim(eta1s)[1], n.sim)
 p2s <- probmS( X2%*%t(bs[,(x$X1.d2+1):(x$X1.d2+x$X2.d2)]) , x$VC$margins[2])$pr
 
   
@@ -232,12 +232,12 @@ if(x$VC$BivD %in% c("N","T")) p12s <- matrix(BiCDF(p1s, p2s, x$nC, est.RHOb, 3, 
 
 if(!(x$BivD %in% x$BivD2)) p12s <- matrix(BiCDF(p1s, p2s, x$nC, est.RHOb, par2 = 3, test = FALSE), dim(p1s)[1], n.sim)
 
-if(x$BivD %in% x$BivD2){
+if(x$BivD %in% x$BivD2){ 
 
 p12s <- matrix(NA, ncol = n.sim, nrow = dim(p1s)[1])
 
-if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- BiCDF(p1s[x$teta.ind1,], p2s[x$teta.ind1,], nC1,  est.RHOb[x$teta.ind1,])                  
-if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- BiCDF(p1s[x$teta.ind2,], p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,])
+if( length(x$teta1) != 0) p12s[x$teta.ind1,] <-  matrix(BiCDF(p1s[x$teta.ind1,], p2s[x$teta.ind1,], nC1,  est.RHOb[x$teta.ind1,]), dim(p1s)[1], n.sim)         
+if( length(x$teta2) != 0) p12s[x$teta.ind2,] <-  matrix(BiCDF(p1s[x$teta.ind2,], p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,]), dim(p1s)[1], n.sim)
                       
                         }
 
@@ -249,7 +249,7 @@ if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- BiCDF(p1s[x$teta.ind2,], p2s[x$t
 if(cond == 1){
 
 
-if(!(x$BivD %in% x$BivD2)) p12s <- copgHsCond(p1s, p2s, est.RHOb, dof = 3, x$BivD)$c.copula.be1
+if(!(x$BivD %in% x$BivD2)) p12s <-  matrix(copgHsCond(p1s, p2s, est.RHOb, dof = 3, x$BivD)$c.copula.be1, dim(p1s)[1], n.sim)
 
 if(x$BivD == "T") p12s <- matrix(p12s, dim(p1s)[1], n.sim)
 
@@ -271,7 +271,7 @@ if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2
 if(cond == 2){
 
 
-if(!(x$BivD %in% x$BivD2)) p12s <- copgHsCond(p1s, p2s, est.RHOb, dof = 3, x$BivD)$c.copula.be2
+if(!(x$BivD %in% x$BivD2)) p12s <-  matrix(copgHsCond(p1s, p2s, est.RHOb, dof = 3, x$BivD)$c.copula.be2, dim(p1s)[1], n.sim)
 
 if(x$BivD == "T") p12s <- matrix(p12s, dim(p1s)[1], n.sim)
 
@@ -435,7 +435,7 @@ if(  is.null(x$X3) ){
                     }                     
    
                        
-p1s <- distrHsAT(y1, eta1s, sigma2s, nus, x$margins[1])$p2
+p1s <- matrix( distrHsAT(y1, eta1s, sigma2s, nus, x$margins[1])$p2   , dim(eta1s)[1], n.sim)
 p2s <- probmS( X2%*%t(bs2[,1:x$X2.d2]), x$VC$margins[2])$pr 
 
 p12s <- p1s*p2s

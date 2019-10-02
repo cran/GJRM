@@ -1,8 +1,7 @@
-jc.probs6 <- function(x, y1, y2, y3, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link){
+jc.probs6 <- function(x, y1, y2, y3, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, epsilon){
 
 #############################################################################################
 
-epsilon <- 0.0000001 
 nu1 <- nu2 <- nu <- sigma2 <- 1
 CIp12 <- dof <- p12s <- p111 <- NULL
 dof <- x$dof

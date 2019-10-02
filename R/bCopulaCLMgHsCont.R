@@ -12,7 +12,7 @@ eta1 <- VC$X1%*%params[VC$K1:(VC$K1 + VC$X1.d2 - 1)]
 eta2 <- VC$X2%*%params[(VC$K1 + VC$X1.d2):(VC$K1 + VC$X1.d2 + VC$X2.d2 - 1)]
 etad <- etas <- l.ln <- NULL
 
-epsilon <-  0.0000001 # RECALL: results are sensible to the choice of epsilon (try also 0.00001)
+epsilon <-  sqrt(.Machine$double.eps) # RECALL: results are sensible to the choice of epsilon (try also 0.00001)
 #max.p   <- 0.9999999
 
 if ( is.null(VC$X3) ) {

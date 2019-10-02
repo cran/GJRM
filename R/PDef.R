@@ -24,7 +24,9 @@ PDef <- function(omega){
       
   } else {res <- omega; res.inv <- e.vec %*% diag(1/e.val) %*% t(e.vec)} 
   
-
+  
+res.inv <- (res.inv + t(res.inv) ) / 2 
+ 
 list(check.eigen = check.eigen, res = res, res.inv = res.inv)
 
 } 

@@ -1,6 +1,6 @@
 mm <- function(ob){
 
-  epsilon <- 0.0000001 
+  epsilon <- sqrt(.Machine$double.eps)
   max.p   <- 0.9999999
 
   res <- ifelse(ob > max.p, max.p, ob) 

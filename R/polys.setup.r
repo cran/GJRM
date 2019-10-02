@@ -1,7 +1,8 @@
 polys.setup <- function(object){
 
-#require("sp")
 
+#requireNamespace("ggplot2", quietly = TRUE)
+#require("sp")
 #requireNamespace("sp", quietly = TRUE)
 
 

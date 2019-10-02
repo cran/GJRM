@@ -1,7 +1,7 @@
 bcorrecDiscr <- function(VC, params){
 
 m1d  <- c("PO", "ZTP")
-m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG","DGP")
+m2d  <- c("NBI", "NBII","PIG","DGP","DGPII")
 
 # below there are operations that can be 
 # simplified based on whether sigma2 has regressors or not

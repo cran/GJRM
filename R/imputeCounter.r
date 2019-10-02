@@ -7,7 +7,9 @@ if(missing(nm.end)) stop("You must provide the name of the endogenous variable."
 if(!(x$margins[1] %in% x$bl) ) stop("First equation must be for the binary response.")
 
 
-epsilon <- 1e-07
+
+
+epsilon <- sqrt(.Machine$double.eps)
 
 posit0 <- c(which(x$y1 == 0))
 posit1 <- c(which(x$y1 == 1))
@@ -21,7 +23,14 @@ yst.aver <- mean(x$y2)
 margin   <- x$margins[2]
 y1.c <- AT <- NA
 
-if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP") ) {yst.aver <- log(yst.aver); if(yst.aver == "-Inf") yst.aver <- log(1e-14) } 
+# tw not tested, maybe sqrt
+
+
+
+if(margin %in% c("TW") ) stop("Tweedie not tested. Get in touch for details.") 
+
+
+if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP","GPII","GPo","TW") ) {yst.aver <- log(yst.aver); if(yst.aver == "-Inf") yst.aver <- log(1e-14) } 
 if(margin %in% c("BE") )                                                 {yst.aver <- qlogis(mm(yst.aver)) }
 
 
@@ -191,7 +200,9 @@ BivD   <- out.beta$BivD
 y2 <- y2.st 
 
 
-if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP") ) y2 <- esp.tr(y2.st, "LN")$vrb 
+# tw not tested, 0 is admitted so esp.tr not that correct, sqrt would be better
+
+if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP","GPII","GPo","TW") ) y2 <- esp.tr(y2.st, "LN")$vrb 
 if(margin %in% c("BE") )                                           y2 <- esp.tr(y2.st, "BE")$vrb
 
 ppdf <- distrHsAT(y2, eta2, sigma2, nu, margin)
@@ -365,7 +376,7 @@ repeat{ #
    y2.imp[j] <- y2.st <- out.beta$y2 
    
 
-   if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP") ) {y2.st <- log(y2.imp[j]); if(y2.st == "-Inf") y2.st <- log(1e-14)} 
+   if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP","GPII","GPo") ) {y2.st <- log(y2.imp[j]); if(y2.st == "-Inf") y2.st <- log(1e-14)} 
    if(margin %in% c("BE") )                                           {y2.st <- qlogis(mm(y2.imp[j]))}
  
 
@@ -379,7 +390,7 @@ if( margin %in% c("probit","logit","cloglog") ){
  
 
 
-if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP") ){
+if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP","DGPII") ){
    
    
    test.oD <- NA
@@ -396,7 +407,7 @@ if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP") ){
 
 
 
-if(!(margin %in% c("DGP","PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog")) ){
+if(!(margin %in% c("DGP","DGPII","PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog")) ){
    
    f.g      <- obj.grad.hess(y2.st, out.beta, zo = 1)$value
    M.value  <- try(trust(obj.grad.hess, parinit = yst.aver, rinit = 1, rmax = 100, minimize = F, out.beta = out.beta, zo = 1)$value); if ('try-error' %in% class(M.value)) next
@@ -441,7 +452,7 @@ repeat{ #
    y2.imp[j] <- y2.st <- out.beta$y2 
    
 
-   if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP") ) {y2.st <- log(y2.imp[j]); if(y2.st == "-Inf") y2.st <- log(1e-14)} 
+   if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP","GPII","GPo") ) {y2.st <- log(y2.imp[j]); if(y2.st == "-Inf") y2.st <- log(1e-14)} 
    if(margin %in% c("BE") )                                           {y2.st <- qlogis(mm(y2.imp[j]))}
  
 
@@ -455,7 +466,7 @@ if( margin %in% c("probit","logit","cloglog") ){
  
 
 
-if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP") ){
+if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP","DGPII") ){
    
    
    test.oD <- NA
@@ -472,7 +483,7 @@ if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP") ){
 
 
 
-if(!(margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog","DGP")) ){
+if(!(margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog","DGP","DGPII")) ){
    
    f.g      <- obj.grad.hess(y2.st, out.beta, zo = 0)$value
    M.value  <- try(trust(obj.grad.hess, parinit = yst.aver, rinit = 1, rmax = 100, minimize = F, out.beta = out.beta, zo = 0)$value); if ('try-error' %in% class(M.value)) next

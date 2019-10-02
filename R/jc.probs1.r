@@ -1,10 +1,9 @@
-jc.probs1 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link){
+jc.probs1 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, epsilon){
 
 ######################################################################################################
 
-epsilon <- 0.0000001 
 nu1 <- nu2 <- nu <- sigma2 <- 1
-CIp12 <- dof <- p12s <- dofs <- C1s <- C2s <- C11s <- C01s <- C10s <- C00s <- NULL
+CIp12 <- dof <- p12s <- dofs <- C1s <- C2s <- C11s <- C01s <- C10s <- C00s <- p1 <- NULL
 CIkt <- tau <- NULL
 
 ######################################################################################################
@@ -118,10 +117,18 @@ dof   <- as.numeric(dof)
 
 
 if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1 <- as.numeric(distrHsAT(y1, eta1, sigma21, nu1, x$margins[1])$p2) 
-if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p2 <- as.numeric(distrHsAT(y2, eta2, sigma22, nu2, x$margins[2])$p2) 
+if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)) p2 <- as.numeric(distrHsAT(y2, eta2, sigma22, nu2, x$margins[2])$p2) 
 
-if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d)) {p1pdf1 <- distrHsATDiscr(y1, eta1, sigma21, nu = 1, x$margins[1], x$VC$y1m); p1pdf1$p2 <- as.numeric(p1pdf1$p2); p1pdf1$pdf2 <- as.numeric(p1pdf1$pdf2)}
-if(x$margins[2] %in% c(x$VC$m1d, x$VC$m2d)) {p2pdf2 <- distrHsATDiscr(y2, eta2, sigma22, nu = 1, x$margins[2], x$VC$y2m); p2pdf2$p2 <- as.numeric(p2pdf2$p2); p2pdf2$pdf2 <- as.numeric(p2pdf2$pdf2)}
+if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d)) {p1pdf1 <- distrHsATDiscr(y1, eta1, sigma21, nu = 1, x$margins[1], x$VC$y1m)
+                                             p1pdf1$p2 <- as.numeric(p1pdf1$p2)
+                                             p1pdf1$pdf2 <- as.numeric(p1pdf1$pdf2)
+                                             p1 <- p1pdf1$p2 
+                                             }
+if(x$margins[2] %in% c(x$VC$m1d, x$VC$m2d)) {p2pdf2 <- distrHsATDiscr(y2, eta2, sigma22, nu = 1, x$margins[2], x$VC$y2m)
+                                             p2pdf2$p2 <- as.numeric(p2pdf2$p2)
+                                             p2pdf2$pdf2 <- as.numeric(p2pdf2$pdf2)
+                                             p2 <- p2pdf2$p2 
+                                             }
 
 
 
@@ -462,7 +469,7 @@ p12 <- ifelse(diffh1.h2 < epsilon, epsilon, diffh1.h2)
 
 # kendalls' tau
 
-if(x$BivD %in% x$BivD2)    tau <- Reg2Copost(x$SemiParFit, x$VC, theta)$tau 
+if(x$BivD %in% x$BivD2)    {x$SemiParFit <- x; tau <- Reg2Copost(x$SemiParFit, x$VC, theta)$tau} 
 if(!(x$BivD %in% x$BivD2)) tau <- ass.ms(x$VC$BivD, x$VC$nCa, theta)$tau
 
 
@@ -793,8 +800,8 @@ nu2      <- matrix(rep(nu2,      each = dim(eta1s)[1]), ncol = n.sim, byrow=FALS
 
 if(x$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$margins[2] %in% c(x$VC$m2,x$VC$m3)){
 
-p1s  <- distrHsAT(y1, eta1s, sigma21, nu1, x$margins[1])$p2
-p2s  <- distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2])$p2
+p1s  <- matrix( distrHsAT(y1, eta1s, sigma21, nu1, x$margins[1])$p2, dim(eta1s)[1], n.sim)
+p2s  <- matrix( distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2])$p2, dim(eta1s)[1], n.sim)
 
 }
 
@@ -802,10 +809,10 @@ p2s  <- distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2])$p2
 if(x$margins[1] %in% c(x$VC$m1d,x$VC$m2d) && x$margins[2] %in% c(x$VC$m2,x$VC$m3)){
 
 ppdf1 <- distrHsATDiscr(y1, eta1s, sigma21, nu = 1, x$margins[1], x$VC$y1m) 
-p1s   <- ppdf1$p2 
-pdf1s <- ppdf1$pdf2
+p1s   <- matrix( ppdf1$p2,   dim(eta1s)[1], n.sim)
+pdf1s <- matrix( ppdf1$pdf2, dim(eta1s)[1], n.sim)
 
-p2s  <- distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2])$p2
+p2s  <- matrix( distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2])$p2 , dim(eta1s)[1], n.sim)
 
 }
 
@@ -813,12 +820,12 @@ p2s  <- distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2])$p2
 if(x$margins[1] %in% c(x$VC$m1d,x$VC$m2d) && x$margins[2] %in% c(x$VC$m1d,x$VC$m2d)){
 
 ppdf1 <- distrHsATDiscr(y1, eta1s, sigma21, nu = 1, x$margins[1], x$VC$y1m) 
-p1s   <- ppdf1$p2 
-pdf1s <- ppdf1$pdf2
+p1s   <- matrix( ppdf1$p2 , dim(eta1s)[1], n.sim)
+pdf1s <- matrix( ppdf1$pdf2, dim(eta1s)[1], n.sim)
 
 ppdf2 <- distrHsATDiscr(y2, eta2s, sigma22, nu = 1, x$margins[2], x$VC$y2m) 
-p2s   <- ppdf2$p2 
-pdf2s <- ppdf2$pdf2
+p2s   <- matrix( ppdf2$p2 , dim(eta1s)[1], n.sim)
+pdf2s <- matrix( ppdf2$pdf2, dim(eta1s)[1], n.sim)
 
 
 }
@@ -894,8 +901,8 @@ p12s[x$teta.ind2,] <- ifelse(C1s[x$teta.ind2,] - C2s[x$teta.ind2,] < epsilon, ep
 
 
 
-if(!(x$BivD %in% x$BivD2)){ C1s <- BiCDF(p1s,       p2s, x$nC, est.RHOb, dofs, test = FALSE)
-                            C2s <- BiCDF(p1s-pdf1s, p2s, x$nC, est.RHOb, dofs, test = FALSE)
+if(!(x$BivD %in% x$BivD2)){ C1s <- matrix(BiCDF(p1s,       p2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
+                            C2s <- matrix(BiCDF(p1s-pdf1s, p2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
                             p12s <- ifelse(C1s - C2s < epsilon, epsilon, C1s - C2s)
                           }
 
@@ -969,10 +976,10 @@ if( length(x$teta2) != 0){
 if(!(x$BivD %in% x$BivD2)){
 
                            
-  C11s <- BiCDF(p1s, p2s,             x$nC, est.RHOb, dofs, test = FALSE)
-  C01s <- BiCDF(p1s-pdf1s, p2s,       x$nC, est.RHOb, dofs, test = FALSE)
-  C10s <- BiCDF(p1s, p2s-pdf2s,       x$nC, est.RHOb, dofs, test = FALSE)
-  C00s <- BiCDF(p1s-pdf1s, p2s-pdf2s, x$nC, est.RHOb, dofs, test = FALSE)
+  C11s <- matrix(BiCDF(p1s, p2s,             x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
+  C01s <- matrix(BiCDF(p1s-pdf1s, p2s,       x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
+  C10s <- matrix(BiCDF(p1s, p2s-pdf2s,       x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
+  C00s <- matrix(BiCDF(p1s-pdf1s, p2s-pdf2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
 
  p12s <- C11s - C01s - C10s + C00s  
  p12s <- ifelse(p12s < epsilon, epsilon, p12s)  
@@ -1005,7 +1012,7 @@ if(cond == 1){ # only for CONT - CONT
 
 if(x$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$margins[2] %in% c(x$VC$m2,x$VC$m3)){
 
-if(!(x$BivD %in% x$BivD2)) p12s <- copgHsCond(p1s, p2s, est.RHOb, dof = dofs, x$BivD)$c.copula.be1
+if(!(x$BivD %in% x$BivD2)) p12s <- matrix(copgHsCond(p1s, p2s, est.RHOb, dof = dofs, x$BivD)$c.copula.be1, dim(p1s)[1], n.sim)
 
 if(x$BivD == "T") p12s <- matrix(p12s, dim(p1s)[1], n.sim)
 
@@ -1032,7 +1039,7 @@ if(cond == 2){
 
 if(x$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$margins[2] %in% c(x$VC$m2,x$VC$m3)){ # CONT - CONT
 
-if(!(x$BivD %in% x$BivD2)) p12s <- copgHsCond(p1s, p2s, est.RHOb, dof = dofs, x$BivD)$c.copula.be2
+if(!(x$BivD %in% x$BivD2)) p12s <- matrix(copgHsCond(p1s, p2s, est.RHOb, dof = dofs, x$BivD)$c.copula.be2, dim(p1s)[1], n.sim)
 
 if(x$BivD == "T") p12s <- matrix(p12s, dim(p1s)[1], n.sim)
 
@@ -1053,7 +1060,7 @@ if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2
 
 if(x$margins[1] %in% c(x$VC$m1d,x$VC$m2d) && x$margins[2] %in% c(x$VC$m2,x$VC$m3)){ # DISCR - CONT
 
-if(!(x$BivD %in% x$BivD2)) p12s <- copgHsCond(p1s, p2s, est.RHOb, dof = dof, x$BivD)$c.copula.be2 - copgHsCond(p1s - pdf1s, p2s, est.RHOb, dof = dof, x$BivD)$c.copula.be2 
+if(!(x$BivD %in% x$BivD2)) p12s <- matrix(   copgHsCond(p1s, p2s, est.RHOb, dof = dof, x$BivD)$c.copula.be2 - copgHsCond(p1s - pdf1s, p2s, est.RHOb, dof = dof, x$BivD)$c.copula.be2 , dim(p1s)[1], n.sim) 
 
 if(x$BivD == "T") p12s <- matrix(p12s, dim(p1s)[1], n.sim)
 
@@ -1394,16 +1401,16 @@ nu2      <- matrix(rep(nu2, each = dim(eta1s)[1]), ncol = n.sim, byrow=FALSE)
 
 
 
-if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1s <- distrHsAT(y1, eta1s, sigma21, nu1, x$margins[1])$p2 
-if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p2s <- distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2])$p2
+if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1s <- matrix( distrHsAT(y1, eta1s, sigma21, nu1, x$margins[1])$p2, dim(eta1s)[1], n.sim)
+if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p2s <- matrix( distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2])$p2, dim(eta1s)[1], n.sim)
 
 if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d)){ 
                                            p1pdf1s <- distrHsATDiscr(y1, eta1s, sigma21, nu = 1, x$margins[1], x$VC$y1m)
-                                           p1s     <- p1pdf1s$pdf2 # p1pdf1s$p2 - p1pdf1s$pdf2
+                                           p1s     <- matrix( p1pdf1s$pdf2, dim(eta1s)[1], n.sim) # p1pdf1s$p2 - p1pdf1s$pdf2, dim(eta1s)[1], n.sim)
                                            }
 if(x$margins[2] %in% c(x$VC$m1d, x$VC$m2d)){ 
                                            p2pdf2s <- distrHsATDiscr(y2, eta2s, sigma22, nu = 1, x$margins[2], x$VC$y2m)
-                                           p2s     <- p2pdf2s$pdf2 # p2pdf2s$p2 - p2pdf2s$pdf2
+                                           p2s     <- matrix( p2pdf2s$pdf2, dim(eta1s)[1], n.sim) # p2pdf2s$p2 - p2pdf2s$pdf2, dim(eta1s)[1], n.sim)
                                            }  
 
 p12s <- p1s*p2s

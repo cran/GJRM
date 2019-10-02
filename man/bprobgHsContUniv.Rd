@@ -3,6 +3,12 @@
 \alias{bprobgHsContUniv3}
 \alias{bprobgHsContUnivBIN}
 \alias{bcontSurvGunivInform}
+\alias{bcontSurvGunivI}
+\alias{bcontSurvGunivL}
+\alias{bcontSurvGunivMIXED}
+
+
+
 
 \title{Internal Function}
 

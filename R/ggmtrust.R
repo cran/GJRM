@@ -109,7 +109,22 @@ if( method %in% c("TB") ){
 
 gc()  
 
-    Vb <- PDef(He)$res.inv    
+    
+   
+    #Vb <- PDef(He)$res.inv  # this option or the alternative below
+    
+    
+    Vb <- chol2inv(chol(He))
+    
+    
+    #He.eig <- eigen(He, symmetric = TRUE)
+    #if(min(He.eig$values) < sqrt(.Machine$double.eps) && sign( min( sign(He.eig$values) ) ) == -1) He.eig$values <- abs(He.eig$values)  
+    #if(min(He.eig$values) < sqrt(.Machine$double.eps) ) { pep <- which(He.eig$values < sqrt(.Machine$double.eps)); He.eig$values[pep] <- epsilon }
+    #Vb <- He.eig$vectors%*%tcrossprod(diag(1/He.eig$values, nrow = length(He.eig$values), ncol =  length(He.eig$values)),He.eig$vectors)     
+        
+    
+    
+    
     Vb <- (Vb + t(Vb) )/2 
     HeSh <- He - S 
     
@@ -121,7 +136,7 @@ gc()
 
     omega <- matrix(0, p, p)
     
-    est.par[idx] <- esp.tr(est.par[idx], "N")$vrb 
+    est.par[idx] <- esp.tr(est.par[idx], "N")$vrb # exp taken here
     
     omega[lower.tri(omega, diag = TRUE)] <- est.par
     omega <- t(omega) + omega - diag(diag(omega))

@@ -1,7 +1,7 @@
 summary.SemiParTRIV <- function(object, n.sim = 100, prob.lev = 0.05, ...){
 
   n <- object$n
-  epsilon <- 0.0000001; max.p   <- 0.9999999
+  epsilon <- sqrt(.Machine$double.eps); max.p   <- 0.9999999
   
 if(is.null(object$X4)) epd12s <- epd13s <- epd23s <- NA  
 if(!is.null(object$X4)) epd12s <- epd13s <- epd23s <- matrix(NA, n, n.sim)  

@@ -6,7 +6,7 @@ working.comp <- function(fit){
   W.eig <- eigen(H, symmetric=TRUE)
   
   if(min(W.eig$values) < sqrt(.Machine$double.eps) && sign( min( sign(W.eig$values) ) ) == -1) W.eig$values <- abs(W.eig$values)  
-  if(min(W.eig$values) < sqrt(.Machine$double.eps) ) { pep <- which(W.eig$values < sqrt(.Machine$double.eps)); W.eig$values[pep] <- 0.0000001 }  
+  if(min(W.eig$values) < sqrt(.Machine$double.eps) ) { pep <- which(W.eig$values < sqrt(.Machine$double.eps)); W.eig$values[pep] <- sqrt(.Machine$double.eps) }  
 
   srev    <- sqrt(W.eig$val)
   c.W     <- W.eig$vec%*%tcrossprod(diag(srev, nrow = length(srev), ncol = length(srev) )  ,W.eig$vec) 

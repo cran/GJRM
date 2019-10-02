@@ -12,8 +12,8 @@ print.gjrm <- function(x, ...){
  m2l      <- ppR$m2l 
 
   cp <- "theta = "; as.p <- x$theta.a
-  s1 <- "sigma2.1 = "; s1.p <- x$sigma21.a
-  s2 <- "sigma2.2 = "; s2.p <- x$sigma22.a  
+  s1 <- "sigma.1 = "; s1.p <- x$sigma21.a
+  s2 <- "sigma.2 = "; s2.p <- x$sigma22.a  
   n1 <- "nu.1 = "; n1.p <- x$nu1.a
   n2 <- "nu.2 = "; n2.p <- x$nu2.a   
   
@@ -42,6 +42,7 @@ print.gjrm <- function(x, ...){
   
   
   
+  if(x$margins[1] %in% c("TW")  ||  x$margins[2] %in% c("TW")) stop("Amend function to accommodate Tweedie.")  
   
   
   
@@ -59,11 +60,11 @@ if(x$BivD == "T" && x$VC$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$VC$margins[2] %
   
 
   cat("\nEQUATION 3")
-  if(x$margins[1] !="BE") cat("\nLink function for sigma2.1:","log","\n") else cat("\nLink function for sigma2.1:","qlogis","\n") 
+  if(x$margins[1] !="BE") cat("\nLink function for sigma.1:","log","\n") else cat("\nLink function for sigma.1:","qlogis","\n") 
   cat("Formula: "); print(x$formula[[3]])   
   
   cat("\nEQUATION 4")
-  if(x$margins[2] !="BE") cat("\nLink function for sigma2.2:","log","\n") else cat("\nLink function for sigma2.2:","qlogis","\n") 
+  if(x$margins[2] !="BE") cat("\nLink function for sigma.2:","log","\n") else cat("\nLink function for sigma.2:","qlogis","\n") 
   cat("Formula: "); print(x$formula[[4]])   
   
   cat("\nEQUATION 5")
@@ -82,11 +83,11 @@ if(x$BivD == "T" && x$VC$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$VC$margins[2] %
 if( x$margins[1] %in% cont3par && x$margins[2] %in% cont3par){
      
   cat("\nEQUATION 3")
-  cat("\nLink function for sigma2.1:","log","\n") 
+  cat("\nLink function for sigma.1:","log","\n") 
   cat("Formula: "); print(x$formula[[3]]) 
      
   cat("\nEQUATION 4")
-  cat("\nLink function for sigma2.2:","log","\n") 
+  cat("\nLink function for sigma.2:","log","\n") 
   cat("Formula: "); print(x$formula[[4]])  
   
   cat("\nEQUATION 5")
@@ -117,11 +118,11 @@ if( x$margins[1] %in% cont3par && x$margins[2] %in% cont3par){
      if( x$margins[1] %in% cont3par && x$margins[2] %in% cont2par){
      
   cat("\nEQUATION 3")
-  cat("\nLink function for sigma2.1:","log","\n") 
+  cat("\nLink function for sigma.1:","log","\n") 
   cat("Formula: "); print(x$formula[[3]])   
      
   cat("\nEQUATION 4")
-  if(x$margins[2] !="BE") cat("\nLink function for sigma2.2:","log","\n") else cat("\nLink function for sigma2.2:","qlogis","\n")
+  if(x$margins[2] !="BE") cat("\nLink function for sigma.2:","log","\n") else cat("\nLink function for sigma.2:","qlogis","\n")
   cat("Formula: "); print(x$formula[[4]])  
   
   cat("\nEQUATION 5")
@@ -150,11 +151,11 @@ if( x$margins[1] %in% cont3par && x$margins[2] %in% cont3par){
        
        
     cat("\nEQUATION 3")
-    if(x$margins[1] !="BE") cat("\nLink function for sigma2.1:","log","\n") else cat("\nLink function for sigma2.1:","qlogis","\n")
+    if(x$margins[1] !="BE") cat("\nLink function for sigma.1:","log","\n") else cat("\nLink function for sigma.1:","qlogis","\n")
     cat("Formula: "); print(x$formula[[3]])  
        
     cat("\nEQUATION 4")
-    cat("\nLink function for sigma2.2:","log","\n") 
+    cat("\nLink function for sigma.2:","log","\n") 
     cat("Formula: "); print(x$formula[[4]]) 
        
     cat("\nEQUATION 5")
@@ -192,7 +193,7 @@ if( x$margins[1] %in% cont3par && x$margins[2] %in% cont3par){
   
   
   cat("\nEQUATION 3")
-  if(x$margins[2] !="BE") cat("\nLink function for sigma2.2:","log","\n") else cat("\nLink function for sigma2.2:","qlogis","\n") 
+  if(x$margins[2] !="BE") cat("\nLink function for sigma.2:","log","\n") else cat("\nLink function for sigma.2:","qlogis","\n") 
   cat("Formula: "); print(x$formula[[3]])  
   
  
@@ -211,7 +212,7 @@ if( x$margins[1] %in% cont3par && x$margins[2] %in% cont3par){
        
 
     cat("\nEQUATION 3")
-    cat("\nLink function for sigma2.2:","log","\n") 
+    cat("\nLink function for sigma.2:","log","\n") 
     cat("Formula: "); print(x$formula[[3]]) 
        
     cat("\nEQUATION 4")
@@ -233,11 +234,11 @@ if( x$margins[1] %in% cont3par && x$margins[2] %in% cont3par){
   
 
   cat("\nEQUATION 3")
-  if(x$margins[1] !="BE") cat("\nLink function for sigma2.1:","log","\n") else cat("\nLink function for sigma2.1:","qlogis","\n") 
+  if(x$margins[1] !="BE") cat("\nLink function for sigma.1:","log","\n") else cat("\nLink function for sigma.1:","qlogis","\n") 
   cat("Formula: "); print(x$formula[[3]])   
   
   cat("\nEQUATION 4")
-  if(x$margins[2] !="BE") cat("\nLink function for sigma2.2:","log","\n") else cat("\nLink function for sigma2.2:","qlogis","\n") 
+  if(x$margins[2] !="BE") cat("\nLink function for sigma.2:","log","\n") else cat("\nLink function for sigma.2:","qlogis","\n") 
   cat("Formula: "); print(x$formula[[4]])   
   
   cat("\nEQUATION 5")
@@ -251,7 +252,7 @@ if( x$margins[1] %in% cont3par && x$margins[2] %in% cont3par){
   
 
   cat("\nEQUATION 3")
-  if(x$margins[1] !="BE") cat("\nLink function for sigma2.1:","log","\n") else cat("\nLink function for sigma2.1:","qlogis","\n") 
+  if(x$margins[1] !="BE") cat("\nLink function for sigma.1:","log","\n") else cat("\nLink function for sigma.1:","qlogis","\n") 
   cat("Formula: "); print(x$formula[[3]])   
     
   cat("\nEQUATION 4")
@@ -264,7 +265,7 @@ if( x$margins[1] %in% cont3par && x$margins[2] %in% cont3par){
   
 
   cat("\nEQUATION 3")
-  if(x$margins[1] !="BE") cat("\nLink function for sigma2.1:","log","\n") else cat("\nLink function for sigma2.1:","qlogis","\n") 
+  if(x$margins[1] !="BE") cat("\nLink function for sigma.1:","log","\n") else cat("\nLink function for sigma.1:","qlogis","\n") 
   cat("Formula: "); print(x$formula[[3]]) 
   
   cat("\nEQUATION 4")
@@ -284,11 +285,11 @@ if( x$margins[1] %in% cont3par && x$margins[2] %in% cont3par){
 if( x$margins[1] %in% cont3par && x$margins[2] %in% cont3par){
      
   cat("\nEQUATION 3")
-  cat("\nLink function for sigma2.1:","log","\n") 
+  cat("\nLink function for sigma.1:","log","\n") 
   cat("Formula: "); print(x$formula[[3]])  
      
   cat("\nEQUATION 4")
-  cat("\nLink function for sigma2.2:","log","\n") 
+  cat("\nLink function for sigma.2:","log","\n") 
   cat("Formula: "); print(x$formula[[4]]) 
   
   cat("\nEQUATION 5")
@@ -312,11 +313,11 @@ if( x$margins[1] %in% cont3par && x$margins[2] %in% cont3par){
      if( x$margins[1] %in% cont3par && x$margins[2] %in% cont2par){
      
   cat("\nEQUATION 3")
-  cat("\nLink function for sigma2.1:","log","\n") 
+  cat("\nLink function for sigma.1:","log","\n") 
   cat("Formula: "); print(x$formula[[3]])   
      
   cat("\nEQUATION 4")
-  if(x$margins[2] !="BE") cat("\nLink function for sigma2.2:","log","\n") else cat("\nLink function for sigma2.2:","qlogis","\n")
+  if(x$margins[2] !="BE") cat("\nLink function for sigma.2:","log","\n") else cat("\nLink function for sigma.2:","qlogis","\n")
   cat("Formula: "); print(x$formula[[4]])  
   
   cat("\nEQUATION 5")
@@ -340,11 +341,11 @@ if( x$margins[1] %in% cont3par && x$margins[2] %in% cont3par){
        
        
     cat("\nEQUATION 3")
-    if(x$margins[1] !="BE") cat("\nLink function for sigma2.1:","log","\n") else cat("\nLink function for sigma2.1:","qlogis","\n")
+    if(x$margins[1] !="BE") cat("\nLink function for sigma.1:","log","\n") else cat("\nLink function for sigma.1:","qlogis","\n")
     cat("Formula: "); print(x$formula[[3]])  
        
     cat("\nEQUATION 4")
-    cat("\nLink function for sigma2.2:","log","\n") 
+    cat("\nLink function for sigma.2:","log","\n") 
     cat("Formula: "); print(x$formula[[4]]) 
        
     cat("\nEQUATION 5")

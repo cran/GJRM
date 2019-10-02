@@ -42,10 +42,11 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 \section{WARNINGS}{
 
-When \code{type = "response"} (which gives predictions on the scale of the response variable), for 
-the case of continuous responses this function will NOT produce correct predictions for the outcome variable (except for some the Gaussian case). This
-is because for all distributions (except the Gaussian) implemented in this package the distributional parameters determine the mean and variance
-through functions of them.
+When \code{type = "response"} this function will provide prediction assuming that the identity link function is adopted.
+This means that \code{type = "link"} and \code{type = "response"} will produce the same results, which for some distributions is fine.
+This is because, for internal reasons, the model object used always assumes an identity link. There are other functions in the package
+which will produce predictions for the response correctly and we are currently working on extending them to all models in the package.
+For all the other \code{type} values the function will produce the correct results. 
 
 When predicting based on a new data set, this function can not return correct predictions for models based 
 on a BivD value of "C0C90", "C0C270", "C180C90", "C180C270", "G0G90", "G0G270", "G180G90",

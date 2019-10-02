@@ -1,7 +1,7 @@
 susutsn <- function(object, bs, lf, cont1par, cont2par, cont3par, prob.lev, type = "copR", bin.link = NULL, n.sim = NULL, K1 = NULL ){
 
 
-CIrs <- CIkt <- CIsig21 <- CIsig22 <- CInu1 <- CInu2 <- CIdof <- CInu <- CIsig2 <- est.RHOb <- NULL
+CIrs <- CIkt <- CIsig21 <- CIsig22 <- CInu1 <- CInu2 <- CIdof <- CInu <- CIsig2 <- est.RHOb <- mu <- CImu <- NULL
 
 
 
@@ -86,7 +86,7 @@ if( is.null(object$VC$theta.fx) ){############
      if( is.null(object$X3) ) CIsig2 <- t(CIsig2) 
 
      
-     if(object$VC$margins[2] %in% c("DAGUM","SM")){
+     if(object$VC$margins[2] %in% c("DAGUM","SM","TW")){
      
      nu <- esp.tr(nu.st, object$VC$margins[2])$vrb  
 
@@ -393,6 +393,20 @@ nu1 <- esp.tr(nu1.st, object$VC$margins[1])$vrb
 
 if(type == "gamls"){
 
+        if(object$VC$margins[1] %in% c("GP","GPII","GPo","DGP","DGPII")){
+        
+          mu  <- object$X1%*%object$coefficients[1:object$X1.d2] 
+          mus <- object$X1%*%t(bs[,1:object$X1.d2]) 
+          
+          if(object$VC$margins[1] == "DGPII"){mu <- mu^2; mus <- mus^2 }  
+          
+          if(object$VC$margins[1] %in% c("GPII","GPo")){mu <- exp(mu) - 0.5; mus <- exp(mus) - 0.5 }  
+          
+          CImu <- rowQuantiles(mus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+          
+          
+          
+        }
 
 
 if(object$VC$margins[1] %in% c(cont2par,cont3par)){
@@ -491,7 +505,7 @@ if(type == "copSS"){
      if( is.null(object$X3) ) CIsig2 <- t(CIsig2) 
 
      
-     if(object$VC$margins[2] %in% c("DAGUM","SM")){
+     if(object$VC$margins[2] %in% c("DAGUM","SM","TW")){
      
      nu <- esp.tr(nu.st, object$VC$margins[2])$vrb  
 
@@ -602,7 +616,7 @@ if( is.null(object$X3) ) CIkt <- t(CIkt)
 
 
 list(CIrs = CIrs, CIkt = CIkt, CIsig21 = CIsig21, CIsig22 = CIsig22, CInu1 = CInu1, CInu2 = CInu2, CIdof = CIdof, 
-     CInu = CInu, CIsig2 = CIsig2, bs = bs, est.RHOb = est.RHOb)
+     CInu = CInu, CIsig2 = CIsig2, bs = bs, est.RHOb = est.RHOb, mu = mu, CImu = CImu)
 
 
 

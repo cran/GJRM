@@ -7,7 +7,7 @@ summary.SemiParBIV <- function(object, n.sim = 100, prob.lev = 0.05, gm = FALSE,
   cont3par  <- object$VC$m3  
   bin.link  <- object$VC$bl  
   n <- object$n; n.sel <- object$n.sel
-  epsilon <- 0.0000001; max.p   <- 0.9999999
+  epsilon <- sqrt(.Machine$double.eps); max.p   <- 0.9999999
   
   lf <- length(object$coefficients)
   Vb <- object$Vb 
@@ -94,13 +94,13 @@ rm(bs, SE, Vb, et1s, et2s, p1s, p2s, p11s, p10s, p00s, p01s, ORs, GMs)
               tableNP1=tableN[[1]], tableNP2=tableN[[2]], tableNP3=tableN[[3]], 
               tableNP4=tableN[[4]], tableNP5=tableN[[5]], tableNP6=tableN[[6]], 
               tableNP7=tableN[[7]], tableNP8=tableN[[8]],
-              n=n, theta.a=object$theta.a, sigma2.a=object$sigma2.a, nu.a=object$nu.a, 
-              theta=object$theta, sigma2=object$sigma2, nu=object$nu,
+              n=n, theta.a=object$theta.a, sigma2.a=object$sigma2.a, sigma.a=object$sigma2.a, nu.a=object$nu.a, 
+              theta=object$theta, sigma2=object$sigma2, sigma=object$sigma2, nu=object$nu,
               OR = object$OR, GM = object$GM, 
               formula1=object$gam1$formula, formula2=object$gam2$formula, formula3=object$gam3$formula,
               formula4=object$gam4$formula, formula5=object$gam5$formula, formula6=object$gam6$formula,
               formula7=object$gam7$formula, formula8=object$gam8$formula,
-              t.edf=object$t.edf, CItheta=CIrs, CIsig2=CIsig2, CInu=CInu,  
+              t.edf=object$t.edf, CItheta=CIrs, CIsig=CIsig2, CInu=CInu,  
               n.sel=n.sel, CIor = CIor, CIgm = CIgm, CItau = CIkt, tau=object$tau, tau.a=object$tau.a,  
               BivD=object$BivD, margins = object$margins, bin.link = bin.link, 
               Model=object$Model, m2 = object$VC$m2, m3 = object$VC$m3, 

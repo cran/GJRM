@@ -22,6 +22,8 @@ SemiParBIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   sp7 <- gp7 <- gam7 <- X7 <- NULL  
   sp8 <- gp8 <- gam8 <- X8 <- NULL  
   log.sig2 <- log.nu <- NULL
+  Sl.sf <- NULL
+  sp.method <- "perf"
     
   BivD2 <- c("C0C90","C0C270","C180C90","C180C270",
              "J0J90","J0J270","J180J90","J180J270",
@@ -31,10 +33,10 @@ SemiParBIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   scc  <- c("C0", "C180", "J0", "J180", "G0", "G180", BivD2)
   sccn <- c("C90", "C270", "J90", "J270", "G90", "G270")
   mb   <- c("B", "BSS", "BPO", "BPO0")
-  m2   <- c("N","N2","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP")
-  m3   <- c("DAGUM","SM")
+  m2   <- c("N","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP","GPII","GPo")
+  m3   <- c("DAGUM","SM","TW")
   m1d  <- c("PO", "ZTP") 
-  m2d  <- c("NBI", "NBII","NBIa", "NBIIa", "PIG","DGP") 
+  m2d  <- c("NBI", "NBII", "PIG","DGP","DGPII") 
   bl   <- c("probit", "logit", "cloglog") # , "cauchit")   
   M    <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, BivD = BivD, 
                opc = opc, extra.regI = extra.regI, margins = margins, bl = bl, intf = intf,
@@ -299,7 +301,7 @@ if(!is.null(theta.fx) && Model == "B" && margins[2] %in% bl ) start.v <- c(gam1$
 if(margins[1] %in% bl && margins[2] %in% c(m2,m3,m2d) ){
 
    start.snR <- startsn(margins[2], y2)    
-   log.sig2  <- start.snR$log.sig2.1; names(log.sig2) <- "sigma2.star"
+   log.sig2  <- start.snR$log.sig2.1; names(log.sig2) <- "sigma.star"
    if( margins[2] %in% c(m3) ){ log.nu <- start.snR$log.nu.1; names(log.nu) <- "nu.star"}       
      
    if(margins[2] %in% c(m2,m2d)) start.v <- c(gam1$coefficients, gam2$coefficients, log.sig2,         i.rho)        
@@ -384,7 +386,7 @@ if(missing(parscale)) parscale <- 1
   lsgam8 <- length(gam8$smooth)
 
   VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL,K1 = NULL,
-             lsgam2 = lsgam2,
+             lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
              lsgam3 = lsgam3,
              lsgam4 = lsgam4,
              lsgam5 = lsgam5,
@@ -537,7 +539,7 @@ environment(formula.aux[[2]]) <- environment(formula[[2]])
 
 
 L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, SemiParFit = SemiParFit, mice.formula = formula.aux,
-          gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, 
+          gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, robust = FALSE,
           gam7 = gam7, gam8 = gam8,  
           coefficients = SemiParFit$fit$argument, coef.t = NULL, iterlimsp = iterlimsp,
           weights = weights, 
@@ -579,6 +581,7 @@ L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, SemiParFit
           respvec = respvec, inde = inde, 
           qu.mag = qu.mag, 
           sigma2 = SemiParFit.p$sigma2, sigma2.a = SemiParFit.p$sigma2.a,
+          sigma  = SemiParFit.p$sigma2, sigma.a  = SemiParFit.p$sigma2.a,
           nu = SemiParFit.p$nu, nu.a = SemiParFit.p$nu.a, Vb.t = SemiParFit.p$Vb.t,
           gp1 = gp1, gp2 = gp2, gp3 = gp3, gp4 = gp4, gp5 = gp5, gp6 = gp6, gp7 = gp7, gp8 = gp8, 
           X2s = X2s, X3s = X3s, p1n=SemiParFit.p$p1n , p2n = SemiParFit.p$p2n, 

@@ -23,7 +23,7 @@ pred.mvt <- function(x, eq, fun = "mean", n.sim = 100, prob.lev = 0.05, smooth.n
  if(eq == 1) mar <- x$margins[1]
  if(eq == 2) mar <- x$margins[2] 
  
-  if( mar %in% c("DGP") ) stop("Function not ready yet for this case.")
+ if( mar %in% c("GP","GPII","GPo","DGP","DGPII","TW") ) stop("Function not ready yet for the chosen distribution(s).")
 
  
  
@@ -151,7 +151,7 @@ if(eq == 2){
  if(is.null(x$X3)){
  
    Xfit2 <- matrix(1, nrow = length(fit1), ncol = 1) 
-   fit2  <- x$coefficients["sigma2.star"]
+   fit2  <- x$coefficients["sigma.star"]
    
                    } 
                    
@@ -196,7 +196,7 @@ if(x$VC$univ.gamls == TRUE){###############
 
 mar <- x$margins[1]
 
-if( mar %in% c("DGP") ) stop("Function not ready yet for this case.")
+if( mar %in% c("GP","GPII","GPo","DGP","DGPII", "TW") ) stop("Function not ready yet for the chosen distribution(s).")
 
  
 bs <- rMVN(n.sim, mean = x$coefficients, sigma = x$Vb)
@@ -224,7 +224,7 @@ if( !is.null(x$X2) ) ind2 <- (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2) else ind2 <- x$X1
                      }else{
                      
    Xfit2 <- matrix(1, nrow = length(fit1), ncol = 1) 
-   fit2  <- x$coefficients["sigma2.star"] 
+   fit2  <- x$coefficients["sigma.star"] 
    fit2Sim <- bs[, ind2]
    
                      
@@ -258,7 +258,7 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
                       }else{
                       
  Xfit2 <- matrix(1, nrow = length(fit1), ncol = 1) 
- fit2  <- x$coefficients["sigma2.star"]
+ fit2  <- x$coefficients["sigma.star"]
  fit2Sim <- bs[, ind2]
  
  
@@ -293,13 +293,13 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
 
  if(mar %in% c("SM")){
   
-     if(fun == "mean"){fit    <- exp(fit1)/gamma(exp(fit3))*gamma( 1+1/sqrt(exp(fit2)) )*gamma( -1/sqrt(exp(fit2))+exp(fit3) )             
-                       fitSim <- exp(fit1Sim)/gamma(exp(fit3Sim))*gamma( 1+1/sqrt(exp(fit2Sim)) )*gamma( -1/sqrt(exp(fit2Sim))+exp(fit3Sim) )                
+     if(fun == "mean"){fit    <- exp(fit1)/gamma(exp(fit3))*gamma( 1+1/exp(fit2) )*gamma( -1/exp(fit2)+exp(fit3) )             
+                       fitSim <- exp(fit1Sim)/gamma(exp(fit3Sim))*gamma( 1+1/exp(fit2Sim) )*gamma( -1/exp(fit2Sim) + exp(fit3Sim) )                
                       } 
      
      if(fun == "variance"){
-                           fit    <- exp(fit1)^2*( gamma(1+2/sqrt(exp(fit2)))*gamma(exp(fit3))*gamma(-2/sqrt(exp(fit2))+exp(fit3))-gamma(1+1/sqrt(exp(fit2)))^2*gamma(-1/sqrt(exp(fit2))+exp(fit3))^2 )
-                           fitSim <- exp(fit1Sim)^2*( gamma(1+2/sqrt(exp(fit2Sim)))*gamma(exp(fit3Sim))*gamma(-2/sqrt(exp(fit2Sim))+exp(fit3Sim))-gamma(1+1/sqrt(exp(fit2Sim)))^2*gamma(-1/sqrt(exp(fit2Sim))+exp(fit3Sim))^2  )
+                           fit    <- exp(fit1)^2*( gamma(1+2/exp(fit2))*gamma(exp(fit3))*gamma(-2/exp(fit2)+exp(fit3))-gamma(1+1/exp(fit2))^2*gamma(-1/exp(fit2)+exp(fit3))^2 )
+                           fitSim <- exp(fit1Sim)^2*( gamma(1+2/exp(fit2Sim))*gamma(exp(fit3Sim))*gamma(-2/exp(fit2Sim)+exp(fit3Sim))-gamma(1+1/exp(fit2Sim))^2*gamma(-1/exp(fit2Sim)+exp(fit3Sim))^2  )
                           }
                                                   
  } 
@@ -307,23 +307,23 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
 
 
 
- if(mar %in% c("GP")){
- 
-    if(fun == "mean")     {fit <- exp(fit1) / (  1 - sqrt(fit2) )                          ; fitSim <- exp(fit1Sim) / (1 - sqrt(fit2Sim))                } 
-    if(fun == "variance") {fit <- exp(fit1)^2/ (1 + sqrt(fit2))^2 * (1 - 2*sqrt(fit2)); fitSim <- exp(fit1Sim)^2/ (1 + sqrt(fit2Sim))^2 * (1 - 2*sqrt(fit2Sim)) }
-                                     
- } # no index included here
+ #if(mar %in% c("GP")){
+ #
+ #   if(fun == "mean")     {fit <- exp(fit1) / (  1 - sqrt(fit2) )                          ; fitSim <- exp(fit1Sim) / (1 - sqrt(fit2Sim))                } 
+ #   if(fun == "variance") {fit <- exp(fit1)^2/ (1 + sqrt(fit2))^2 * (1 - 2*sqrt(fit2)); fitSim <- exp(fit1Sim)^2/ (1 + sqrt(fit2Sim))^2 * (1 - 2*sqrt(fit2Sim)) }
+ #                                    
+ #} # no index included here
+ # to re-do
 
 
 
-
- if(mar %in% c("DGP")){
- 
-    if(fun == "mean")     {fit <- 1;             fitSim <- 1                } 
-    if(fun == "variance") {fit <- 1 ; fitSim <- 1 }
-                                     
- } # to do, we need truncation here
-
+ #if(mar %in% c("DGP")){
+ #
+ #   if(fun == "mean")     {fit <- 1;             fitSim <- 1                } 
+ #   if(fun == "variance") {fit <- 1 ; fitSim <- 1 }
+ #                                    
+ #} # to do, we need truncation here
+ # TO DO
 
 
 
@@ -332,7 +332,7 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
  if(mar %in% c("BE")){
  
     if(fun == "mean")     {fit <- exp(fit1);             fitSim <- exp(fit1Sim)                } 
-    if(fun == "variance") {fit <- exp(fit1)*(1-exp(fit1))*exp(fit2); fitSim <- exp(fit1Sim)*(1-exp(fit1Sim))*exp(fit2Sim) }
+    if(fun == "variance") {fit <- exp(fit1)*(1-exp(fit1))*exp(fit2)^2; fitSim <- exp(fit1Sim)*(1-exp(fit1Sim))*exp(fit2Sim)^2 }
                                      
  } 
  
@@ -343,10 +343,10 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
  
     if(fun == "mean"){
     
-    sigma <- sqrt(exp(fit2))
+    sigma <- exp(fit2)
     sigma <- ifelse(sigma <= 1, 1.0000001, sigma)    
  
-    sigmaSim <- sqrt(exp(fit2Sim))
+    sigmaSim <- exp(fit2Sim)
     sigmaSim <- ifelse(sigmaSim <= 1, 1.0000001, sigmaSim)   
  
     
@@ -360,10 +360,10 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
     
     if(fun == "variance"){
     
-    sigma <- sqrt(exp(fit2))
+    sigma <- exp(fit2)
     sigma <- ifelse(sigma <= 2, 2.0000001, sigma)    
  
-    sigmaSim <- sqrt(exp(fit2Sim))
+    sigmaSim <- exp(fit2Sim)
     sigmaSim <- ifelse(sigmaSim <= 2, 2.0000001, sigmaSim)       
     
     
@@ -381,8 +381,8 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
 
  if(mar %in% c("GU")){
  
-    if(fun == "mean")     {fit <- fit1 - 0.57722*sqrt(exp(fit2));  fitSim <- fit1Sim - 0.57722*sqrt(exp(fit2Sim))            } 
-    if(fun == "variance") {fit <- pi^2*exp(fit2)/6; fitSim <- pi^2*exp(fit2Sim)/6}
+    if(fun == "mean")     {fit <- fit1 - 0.57722*exp(fit2);  fitSim <- fit1Sim - 0.57722*exp(fit2Sim)            } 
+    if(fun == "variance") {fit <- pi^2*exp(fit2)^2/6; fitSim <- pi^2*exp(fit2Sim)^2/6}
                                      
  } 
  
@@ -390,8 +390,8 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
  
  if(mar %in% c("rGU")){
  
-    if(fun == "mean")     {fit <- fit1 + 0.57722*sqrt(exp(fit2));  fitSim <- fit1Sim + 0.57722*sqrt(exp(fit2Sim))            } 
-    if(fun == "variance") {fit <- pi^2*exp(fit2)/6; fitSim <- pi^2*exp(fit2Sim)/6}
+    if(fun == "mean")     {fit <- fit1 + 0.57722*exp(fit2);  fitSim <- fit1Sim + 0.57722*exp(fit2Sim)            } 
+    if(fun == "variance") {fit <- pi^2*exp(fit2)^2/6; fitSim <- pi^2*exp(fit2Sim)^2/6}
                                      
  }  
 
@@ -401,7 +401,7 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
  if(mar %in% c("LO")){
  
     if(fun == "mean")     {fit <- fit1;             fitSim <- fit1Sim            } 
-    if(fun == "variance") {fit <- pi^2*exp(fit2)/3; fitSim <- pi^2*exp(fit2Sim)/3}
+    if(fun == "variance") {fit <- pi^2*exp(fit2)^2/3; fitSim <- pi^2*exp(fit2Sim)^2/3}
                                      
  } 
  
@@ -413,20 +413,20 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
                                      
  } 
  
- if(mar %in% c("N2")){
- 
-    if(fun == "mean")     {fit <- fit1;      fitSim <- fit1Sim            } 
-    if(fun == "variance") {fit <- sqrt(exp(fit2)); fitSim <- sqrt(exp(fit2Sim))       }
-                                     
- }  
+ #if(mar %in% c("N2")){
+ #
+ #   if(fun == "mean")     {fit <- fit1;      fitSim <- fit1Sim            } 
+ #   if(fun == "variance") {fit <- sqrt(exp(fit2)); fitSim <- sqrt(exp(fit2Sim))       }
+ #                                    
+ #}  
  
  
  
 
- if(mar %in% c("LN")){
+ if(mar %in% c("LN")){ # fit1 is mu taking values in R, table in M&R CSDA contains a mistake
  
-    if(fun == "mean")     {fit <- exp(fit1)*sqrt(exp(exp(fit2)));                    fitSim <- exp(fit1Sim)*sqrt(exp(exp(fit2Sim)))                       } 
-    if(fun == "variance") {fit <- exp(exp(fit2))*( exp(exp(fit2)) - 1 )*exp(2*fit1); fitSim <- exp(exp(fit2Sim))*( exp(exp(fit2Sim)) - 1 )*exp(2*fit1Sim) }
+    if(fun == "mean")     {fit <- exp(fit1)*sqrt(exp(exp(fit2)^2));                      fitSim <- exp(fit1Sim)*sqrt(exp(exp(fit2Sim)^2))                         } 
+    if(fun == "variance") {fit <- exp(exp(fit2)^2)*( exp(exp(fit2)^2) - 1 )*exp(2*fit1); fitSim <- exp(exp(fit2Sim)^2)*( exp(exp(fit2Sim)^2) - 1 )*exp(2*fit1Sim) }
                                     
  } 
  
@@ -434,7 +434,7 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
  if(mar %in% c("iG")){
  
     if(fun == "mean")     {fit <- exp(fit1);             fitSim <- exp(fit1Sim)                } 
-    if(fun == "variance") {fit <- exp(fit1)^3*exp(fit2); fitSim <- exp(fit1Sim)^3*exp(fit2Sim) }
+    if(fun == "variance") {fit <- exp(fit1)^3*exp(fit2)^2; fitSim <- exp(fit1Sim)^3*exp(fit2Sim)^2 }
                                     
  }  
  
@@ -443,15 +443,15 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
   if(mar %in% c("GA")){
   
      if(fun == "mean")     {fit <- exp(fit1);             fitSim <- exp(fit1Sim)                } 
-     if(fun == "variance") {fit <- exp(fit1)^2*exp(fit2); fitSim <- exp(fit1Sim)^2*exp(fit2Sim) }
+     if(fun == "variance") {fit <- exp(fit1)^2*exp(fit2)^2; fitSim <- exp(fit1Sim)^2*exp(fit2Sim)^2 }
                                      
  } 
  
  
   if(mar %in% c("WEI")){
   
-     if(fun == "mean")     {fit <- exp(fit1)*gamma(1+1/sqrt(exp(fit2))); fitSim <- exp(fit1Sim)*gamma(1+1/sqrt(exp(fit2Sim)))                } 
-     if(fun == "variance") {fit <- exp(fit1)^2*( gamma(1+2/sqrt(exp(fit2))) - gamma( 1+1/sqrt(exp(fit2)) )^2  )  ; fitSim <-  exp(fit1Sim)^2*( gamma(1+2/sqrt(exp(fit2Sim))) - gamma( 1+1/sqrt(exp(fit2Sim)) )^2  )   }
+     if(fun == "mean")     {fit <- exp(fit1)*gamma(1+1/exp(fit2)); fitSim <- exp(fit1Sim)*gamma(1+1/exp(fit2Sim))                } 
+     if(fun == "variance") {fit <- exp(fit1)^2*( gamma(1+2/exp(fit2)) - gamma( 1+1/exp(fit2) )^2  )  ; fitSim <-  exp(fit1Sim)^2*( gamma(1+2/exp(fit2Sim)) - gamma( 1+1/exp(fit2Sim) )^2  )   }
                                      
  }  
  
@@ -463,11 +463,11 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
   
      if(fun == "mean"){
      
-         sigma <- sqrt(exp(fit2))
+         sigma <- exp(fit2)
          sigma <- ifelse(sigma <= 1, 1.0000001, sigma)    
       
-         sigmaSim <- sqrt(exp(fit2Sim))
-    sigmaSim <- ifelse(sigmaSim <= 1, 1.0000001, sigmaSim)  
+         sigmaSim <- exp(fit2Sim)
+         sigmaSim <- ifelse(sigmaSim <= 1, 1.0000001, sigmaSim)  
     
      
      
@@ -478,11 +478,11 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
      if(fun == "variance"){
      
      
-         sigma <- sqrt(exp(fit2))
+         sigma <- exp(fit2)
          sigma <- ifelse(sigma <= 2, 2.0000001, sigma)    
       
-         sigmaSim <- sqrt(exp(fit2Sim))
-    sigmaSim <- ifelse(sigmaSim <= 2, 2.0000001, sigmaSim)  
+         sigmaSim <- exp(fit2Sim)
+         sigmaSim <- ifelse(sigmaSim <= 2, 2.0000001, sigmaSim)  
      
      
                            fit    <- -(exp(fit1)/sigma)^2*( 2*sigma*gamma(-2/sigma)*gamma(2/sigma + exp(fit3))/gamma(exp(fit3)) + ( gamma(-1/sigma)*gamma(1/sigma + exp(fit3))/gamma(exp(fit3))  )^2   )
@@ -507,7 +507,7 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
  if(mar %in% c("NBI", "PIG")){ # p. 63, 65
  
     if(fun == "mean")     {fit <- exp(fit1);                               fitSim <- exp(fit1Sim)                } 
-    if(fun == "variance") {fit <- exp(fit1) + sqrt(exp(fit2))*exp(fit1)^2; fitSim <- exp(fit1Sim) + sqrt(exp(fit2Sim))*exp(fit1Sim)^2 }
+    if(fun == "variance") {fit <- exp(fit1) + exp(fit2)*exp(fit1)^2; fitSim <- exp(fit1Sim) + exp(fit2Sim)*exp(fit1Sim)^2 }
                                      
  } 
  
@@ -515,7 +515,7 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
  if(mar %in% c("NBII")){ # p. 63
  
     if(fun == "mean")     {fit <- exp(fit1);                         fitSim <- exp(fit1Sim)                } 
-    if(fun == "variance") {fit <- ( 1 + sqrt(exp(fit2)) )*exp(fit1); fitSim <- ( 1 + sqrt(exp(fit2Sim)) )*exp(fit1Sim) }
+    if(fun == "variance") {fit <- ( 1 + exp(fit2) )*exp(fit1); fitSim <- ( 1 + exp(fit2Sim) )*exp(fit1Sim) }
                                      
  }  
  

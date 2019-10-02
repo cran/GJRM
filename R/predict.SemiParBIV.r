@@ -1,4 +1,4 @@
-predict.SemiParBIV<- function(object, eq, ...){
+predict.SemiParBIV <- function(object, eq, ...){
 
 if(missing(eq)) stop("You must provide the equation number.")
 

@@ -21,6 +21,7 @@
 \alias{Reg2Copost}
 \alias{SS}
 \alias{sim.resp}
+\alias{r.resp}
 \alias{probmS}
 \alias{PosDefCor}
 \alias{PDef}
@@ -39,8 +40,7 @@
 \alias{ggm.DerivOPT1}
 \alias{ggm.DerivOPT2}
 \alias{Dpens2}
-\alias{prediction.CLM}
-\alias{predict2.CLM}
+
 
 \title{Internal Function}
 

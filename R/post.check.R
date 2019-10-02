@@ -97,7 +97,7 @@ if(x$VC$margins[2] %in% c("ZTP")){
                                  
                                  
                                  
-if(x$VC$margins[2] %in% c("DGP")){
+if(x$VC$margins[2] %in% c("DGP","DGPII")){
     ly2 <- length(y2)
     y2m <- list()
     my2 <- max(y2)
@@ -187,7 +187,7 @@ if(x$VC$margins[2] %in% c("ZTP")){
 
 
 
-if(x$VC$margins[1] %in% c("DGP")){
+if(x$VC$margins[1] %in% c("DGP","DGPII")){
      
     ly1 <- length(y1)
     y1m <- list()
@@ -198,7 +198,7 @@ if(x$VC$margins[1] %in% c("DGP")){
 }
 
 
-if(x$VC$margins[2] %in% c("DGP")){
+if(x$VC$margins[2] %in% c("DGP","DGPII")){
      
     ly2 <- length(y2)
     y2m <- list()
@@ -287,7 +287,7 @@ if(x$VC$margins[1] %in% c("GEVlink") ) stop("It does not make much sense to chec
 
 y1 <- x$y1
 
-if(x$VC$margins[1] %in% c("DGP")){    
+if(x$VC$margins[1] %in% c("DGP","DGPII")){    
     ly1 <- length(y1)
     y1m <- list()
     my1 <- max(y1)
@@ -327,6 +327,10 @@ if(intervals == TRUE) int.postcheck(x, x$VC$margins[1], n.rep = n.sim, prob.lev 
 
 
 if(x$surv.flex == TRUE){ ###
+
+
+if(x$type.cens != "R") stop("This function currently supports only the case of right censoring.\n Get in touch to check progress. ")
+
 
 par(mfrow = c(1, 2))
 

@@ -4,7 +4,7 @@ bprobgHsContSS <- function(params, respvec, VC, ps, AT = FALSE){
   eta2 <- VC$X2%*%params[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)]
   etad <- etas <- l.ln <- etan <- NULL 
 
-  epsilon <- 0.0000001 # 0.9999999 0.0001 # sqrt(.Machine$double.eps)
+  epsilon <- sqrt(.Machine$double.eps)
   max.p   <- 0.9999999
   
   

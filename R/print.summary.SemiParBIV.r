@@ -29,8 +29,8 @@ print.summary.SemiParBIV <- function(x, digits = max(3, getOption("digits") - 3)
 
 
   CIrs <- colMeans(x$CItheta, na.rm = TRUE)
-  if(x$margins[2] %in% cont2par)  CIsig2 <- colMeans(x$CIsig2, na.rm = TRUE)
-  if(x$margins[2] %in% cont3par) {CIsig2 <- colMeans(x$CIsig2, na.rm = TRUE) ; CInu <- colMeans(x$CInu, na.rm = TRUE)}
+  if(x$margins[2] %in% cont2par)  CIsig2 <- colMeans(x$CIsig, na.rm = TRUE)
+  if(x$margins[2] %in% cont3par) {CIsig2 <- colMeans(x$CIsig, na.rm = TRUE) ; CInu <- colMeans(x$CInu, na.rm = TRUE)}
   CIkt    <- colMeans(x$CItau, na.rm = TRUE)
 
 
@@ -43,9 +43,9 @@ print.summary.SemiParBIV <- function(x, digits = max(3, getOption("digits") - 3)
 
   if(x$Model=="B" && x$margins[2] %in% cont1par ) cat("\nn = ",x$n,"\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")","\ntotal edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
      
-  if(x$Model=="B" && x$margins[2] %in% cont2par ) cat("\nn = ",x$n,"  sigma2 = ",format(x$sigma2.a,digits=nodi),"(",format(CIsig2[1],digits=nodi),",",format(CIsig2[2],digits=nodi),")","\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")","\ntotal edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
+  if(x$Model=="B" && x$margins[2] %in% cont2par ) cat("\nn = ",x$n,"  sigma = ",format(x$sigma2.a,digits=nodi),"(",format(CIsig2[1],digits=nodi),",",format(CIsig2[2],digits=nodi),")","\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")","\ntotal edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
        
-  if(x$Model=="B" && x$margins[2] %in% cont3par ) cat("\nn = ",x$n,"  sigma2 = ",format(x$sigma2.a,digits=nodi),"(",format(CIsig2[1],digits=nodi),",",format(CIsig2[2],digits=nodi),")","  nu = ",format(x$nu.a,digits = nodi),"(",format(CInu[1],digits=nodi),",",format(CInu[2],digits=nodi),")","\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")","\ntotal edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
+  if(x$Model=="B" && x$margins[2] %in% cont3par ) cat("\nn = ",x$n,"  sigma = ",format(x$sigma2.a,digits=nodi),"(",format(CIsig2[1],digits=nodi),",",format(CIsig2[2],digits=nodi),")","  nu = ",format(x$nu.a,digits = nodi),"(",format(CInu[1],digits=nodi),",",format(CInu[2],digits=nodi),")","\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")","\ntotal edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
       
 
 

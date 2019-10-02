@@ -1,6 +1,6 @@
 bcorrec <- function(VC, params){ #, lB, uB){
 
-m2sel <- c("WEI","iG","GA","BE","FISK","DAGUM","SM","GP")
+m2sel <- c("WEI","iG","GA","BE","FISK","DAGUM","TW","SM","GP","GPII","GPo")
 
 ###############################
 # fixed quantities
@@ -19,9 +19,9 @@ if(is.null(VC$X2)){VC$X2 <- VC$X3 <- matrix(1, n, 1); VC$X2.d2 <- VC$X3.d2 <- 1}
 
 if(is.null(VC$lB) && is.null(VC$uB)){
 
-if( margin %in% c("N","N2","GU","rGU","LO") )                             { lB <- -Inf;      uB <- Inf}
-if( margin %in% c("LN","WEI","iG","GA","DAGUM","SM","FISK","GP")  )       { lB <- 0.0000001; uB <- Inf}
-if( margin %in% c("BE")  )                                                { lB <- 0.0000001; uB <- 0.9999999}
+if( margin %in% c("N","GU","rGU","LO") )                                  { lB <- -Inf;      uB <- Inf}
+if( margin %in% c("LN","WEI","iG","GA","DAGUM","SM","FISK","GP","GPII","GPo","TW")  )       { lB <- sqrt(.Machine$double.eps); uB <- Inf} # tw should be zero here?
+if( margin %in% c("BE")  )                                                { lB <- sqrt(.Machine$double.eps); uB <- 0.9999999}
 
 }else{lB <- VC$lB; uB <- VC$uB}
 
@@ -35,7 +35,7 @@ ss  <- esp.tr(VC$X2%*%params[(1+VC$X1.d2):(VC$X1.d2+VC$X2.d2)], margin)
 sigma2    <- ss$vrb
 sigma2.st <- ss$vrb.st
 
-if( margin %in% c("DAGUM","SM") ){
+if( margin %in% c("DAGUM","SM","TW") ){
 
             nus   <- enu.tr(VC$X3%*%params[(1+VC$X1.d2+VC$X2.d2):(VC$X1.d2+VC$X2.d2+VC$X3.d2)], margin)
             nu    <- nus$vrb
@@ -72,7 +72,7 @@ v.intgrad <- Vectorize(intgrad)
 intgrad   <- v.intgrad(eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc, lB = lB, uB = uB)
 gradbit2  <- -colSums( c(weights*intgrad)*VC$X2 )
 
-if( margin %in% c("DAGUM","SM") ){
+if( margin %in% c("DAGUM","SM","TW") ){
 
 intgrad   <- function(eta, sigma2, sigma2.st, nu, nu.st, margin, rc, lB, uB) distrExIntegrate(gradBbit3, lower = lB, upper = uB, eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc)              
 v.intgrad <- Vectorize(intgrad) 
@@ -103,7 +103,7 @@ v.intgrad <- Vectorize(intgrad)
 intgrad   <- v.intgrad(eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc, lB = lB, uB = uB)
 hessbit2  <- - crossprod(VC$X2*c(weights*intgrad), VC$X2)
 
-if( margin %in% c("DAGUM","SM") ){
+if( margin %in% c("DAGUM","SM","TW") ){
 
 intgrad   <- function(eta, sigma2, sigma2.st, nu, nu.st, margin, rc, lB, uB) distrExIntegrate(hessBbit4, lower = lB, upper = uB, eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc)              
 v.intgrad <- Vectorize(intgrad) 

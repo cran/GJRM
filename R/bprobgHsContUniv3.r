@@ -1,6 +1,6 @@
 bprobgHsContUniv3 <- function(params, respvec, VC, ps, AT = FALSE){
 
-epsilon <- 0.0000001 # 0.9999999 0.0001 # sqrt(.Machine$double.eps)
+epsilon <- sqrt(.Machine$double.eps)
 
 bcorR <- NULL
 
@@ -81,9 +81,13 @@ bcorR <- list(b = 0, bp = 0, bs = 0)
      #                           VC$my.env$lB <- bb$lB
      #                           VC$my.env$uB <- bb$uB
      #                      }
- 
      #if(VC$r.type == "a") 
+  
+  
      bcorR <- bcorrec(VC, params)
+     
+     
+     
      #if(VC$r.type == "n") bcorR <- bcorrec2(VC, params)
 
 

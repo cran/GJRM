@@ -1,6 +1,6 @@
 probm <- function(eta, margin, only.pr = TRUE, bc = FALSE, tau = NULL, CLM = FALSE){ # bc stands for binary continuous case
  
-  epsilon <- 0.0000001 
+  epsilon <- sqrt(.Machine$double.eps)
   
   derp1.dereta1 <- der2p1.dereta1eta1 <- d.n <- der2p.dereta <- tauetaIND <- NULL
  

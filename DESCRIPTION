@@ -1,5 +1,5 @@
 Package: GJRM
-Version: 0.2
+Version: 0.2-1
 Author: Giampiero Marra <giampiero.marra@ucl.ac.uk> and Rosalba Radice <rosalba.radice@city.ac.uk>
 Maintainer: Giampiero Marra <giampiero.marra@ucl.ac.uk>
 Title: Generalised Joint Regression Modelling
@@ -8,12 +8,12 @@ Depends: R (>= 3.2.1), mgcv
 Imports: magic, matrixcalc, VGAM, survey, trust, VineCopula, graphics,
         stats, utils, grDevices, ggplot2, matrixStats, mnormt,
         gamlss.dist, Rmpfr, scam, survival, psych, copula, distrEx,
-        numDeriv, trustOptim, evd
+        numDeriv, trustOptim, evd, ismev
 Enhances: sp
 LazyLoad: yes
 License: GPL (>= 2)
 URL: http://www.ucl.ac.uk/statistics/people/giampieromarra
 Repository: CRAN
-Date/Publication: 2019-03-07 15:02:42 UTC
+Date/Publication: 2019-10-02 19:40:02 UTC
 NeedsCompilation: no
-Packaged: 2019-03-07 14:11:35 UTC; GM
+Packaged: 2019-10-02 18:50:22 UTC; GM

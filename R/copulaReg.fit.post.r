@@ -34,8 +34,8 @@ coef.t     <- pVbres$coef.t
 sigma21 <- esp.tr(SemiParFit$fit$etas1, VC$margins[1])$vrb  
 sigma22 <- esp.tr(SemiParFit$fit$etas2, VC$margins[2])$vrb    
   
-if( is.null(VC$X3) ) {names(sigma21) <- "sigma21"
-                      names(sigma22) <- "sigma22" } 
+if( is.null(VC$X3) ) {names(sigma21) <- "sigma1"
+                      names(sigma22) <- "sigma2" } 
   
   sigma2.1.a <- mean(sigma21); sigma2.2.a <- mean(sigma22)  
 
@@ -136,6 +136,7 @@ sp <- SemiParFit$sp
                       edf1.5 = edf1[[5]], edf1.6 = edf1[[6]], edf1.7 = edf1[[7]], edf1.8 = edf1[[8]],
                       theta = theta, theta.a = theta.a, tau = tau, tau.a= tau.a,
                       sigma21 = sigma21, sigma22 = sigma22, sigma21.a = sigma2.1.a, sigma22.a = sigma2.2.a,
+                      sigma1 = sigma21, sigma2 = sigma22, sigma1.a = sigma2.1.a, sigma2.a = sigma2.2.a,
                       nu1 = nu1, nu1.a = nu1.a, nu2= nu2, nu2.a = nu2.a,
                       sp = sp, R = R, Ve = Ve, dof.a = dof.a, dof = dof, nCa1 = nCa1, nCa2 = nCa2,  coef.t = coef.t) 
 

@@ -211,7 +211,7 @@ d.bpsi <- function(y, X1, X2, X3, eta, sigma2, sigma2.st, nu, nu.st, margin, rc,
        dl.dnu.st    <- derpdf2.dernu.st/pdf2
 
 
-       if( margin %in% c("DAGUM","SM") ) res <- cbind( comp2*as.numeric(dl.dbe)%*%t(X1), comp2*as.numeric(dl.dsigma.st)%*%t(X2), comp2*as.numeric(dl.dnu.st)%*%t(X3) ) else
+       if( margin %in% c("DAGUM","SM","TW") ) res <- cbind( comp2*as.numeric(dl.dbe)%*%t(X1), comp2*as.numeric(dl.dsigma.st)%*%t(X2), comp2*as.numeric(dl.dnu.st)%*%t(X3) ) else
                                          res <- cbind( comp2*as.numeric(dl.dbe)%*%t(X1), comp2*as.numeric(dl.dsigma.st)%*%t(X2) )
       
        res[, j]
@@ -234,7 +234,7 @@ for(i in 1:n){
   eta       <- X1%*%params[1:VC$X1.d2]
   sigma2.st <- X2%*%params[(1+VC$X1.d2):(VC$X1.d2+VC$X2.d2)]
   
-     if( margin %in% c("DAGUM","SM") ){ 
+     if( margin %in% c("DAGUM","SM","TW") ){ 
   
        nu.st <- X3%*%params[(1+VC$X1.d2+VC$X2.d2):(VC$X1.d2+VC$X2.d2+VC$X3.d2)] 
  

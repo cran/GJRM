@@ -7,7 +7,7 @@ probmS <- function(eta, margin){
 #func0 <- function(eta){ -((1 - exp(eta)) * exp(-exp(eta)) * exp(eta))  }
 #grad(func0 , eta)
 
-epsilon <- 0.0000001 
+epsilon <- sqrt(.Machine$double.eps)
   
 
 if( margin == "probit" ){

@@ -25,7 +25,7 @@ ggmtrustOB <- ggmtrust(s, n, data = data, lambda = lambda.seq[i], pen = pen, par
 
 
 paramsO <- params[[i]] <- ggmtrustOB$coefficients
-paramsO[ggmtrustOB$idx] <- exp(paramsO[ggmtrustOB$idx])
+# exp already done in ggmtrust # paramsO[ggmtrustOB$idx] <- paramsO[ggmtrustOB$idx] # exp(paramsO[ggmtrustOB$idx])
 
 omega[[i]]    <- ggmtrustOB$omega
 edf[[i]]      <- ggmtrustOB$edf

@@ -1,33 +1,37 @@
 distrHsATDiscr2 <- function(y2, eta2, sigma2, nu, margin2){
 
 
+
+sigma <- sigma2
+
+
 if(margin2 %in% c("NBI","NBIa")){
 
-pdf2 <- dNBI(y2, mu = exp(eta2), sigma = sqrt(sigma2))   
+pdf2 <- dNBI(y2, mu = exp(eta2), sigma = sigma)   
 
 }
 
 if(margin2 %in% c("NBII","NBIIa")){
 
-pdf2 <- dNBII(y2, mu = exp(eta2), sigma = sqrt(sigma2)) 
+pdf2 <- dNBII(y2, mu = exp(eta2), sigma = sigma) 
 
 }
 
 if(margin2 == "PIG"){
 
-pdf2 <- dPIG(y2, mu = exp(eta2), sigma = sqrt(sigma2))  
+pdf2 <- dPIG(y2, mu = exp(eta2), sigma = sigma)  
 
 }
 
 if(margin2 == "DEL"){
 
-pdf2 <- dDEL(y2, mu = exp(eta2), sigma = sqrt(sigma2), nu = nu)  
+pdf2 <- dDEL(y2, mu = exp(eta2), sigma = sigma, nu = nu)  
 
 }
 
 if(margin2 == "SICHEL"){
 
-pdf2 <- dSICHEL(y2, mu = exp(eta2), sigma = sqrt(sigma2)) 
+pdf2 <- dSICHEL(y2, mu = exp(eta2), sigma = sigma) 
 
 }
 
@@ -81,14 +85,16 @@ pdf2     <- as.numeric( pdf2FUNC(y2, mu2) )
 
 
 
-if(margin2 %in% c("DGP")){
+if(margin2 %in% c("DGP","DGPII")){
 
-mu2    <- c(eta2)
-sigma2 <- c(sigma2)
+if(margin2 == "DGP")   mu2 <- c(eta2)
+if(margin2 == "DGPII") mu2 <- c(eta2^2)
+
+sigma <- c(sigma)
 
      
-pdf2FUNC2 <- function(y2, mu2, sigma2) suppressWarnings(    (1 + mu2*y2/sqrt(sigma2))^(-1/mu2) - (1 + mu2*(1+y2)/sqrt(sigma2))^(-1/mu2)     )
-pdf2     <-     as.numeric( pdf2FUNC2(y2, mu2, sigma2) )     
+pdf2FUNC2 <- function(y2, mu2, sigma) suppressWarnings(    (1 + mu2*y2/sigma)^(-1/mu2) - (1 + mu2*(1+y2)/sigma)^(-1/mu2)     )
+pdf2     <-     as.numeric( pdf2FUNC2(y2, mu2, sigma) )     
 
 
 # done but exclusions not implemented/checked
@@ -101,14 +107,14 @@ pdf2     <-     as.numeric( pdf2FUNC2(y2, mu2, sigma2) )
 
 
 
-epsilon <- 0.0000001 
+epsilon <- sqrt(.Machine$double.eps)
 pdf2 <- ifelse(pdf2 < epsilon, epsilon, pdf2 )
 
 
 
 ifef <- function(dv){
 
-epsilon <- 0.0000001 
+epsilon <- sqrt(.Machine$double.eps)
 dv <- ifelse(is.na(dv), epsilon, dv ) 
 dv <- ifelse(dv == Inf ,  8.218407e+20, dv )
 dv <- ifelse(dv == -Inf ,  -8.218407e+20, dv )

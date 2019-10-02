@@ -1,9 +1,9 @@
 postVb <- function(SemiParFit, VC){
 
-epsilon <- 0.0000001 
+epsilon <- sqrt(.Machine$double.eps)
 Vb.t    <- coef.t <- NULL
 
-He <- SemiParFit$fit$hessian
+He <- HeSh <- SemiParFit$fit$hessian
                                    
                                    
     # replace with new function PDef?                                  
@@ -11,8 +11,8 @@ He <- SemiParFit$fit$hessian
     He.eig <- eigen(He, symmetric = TRUE)
     if(min(He.eig$values) < sqrt(.Machine$double.eps) && sign( min( sign(He.eig$values) ) ) == -1) He.eig$values <- abs(He.eig$values)  
     if(min(He.eig$values) < sqrt(.Machine$double.eps) ) { pep <- which(He.eig$values < sqrt(.Machine$double.eps)); He.eig$values[pep] <- epsilon }
-    Vb <- He.eig$vectors%*%tcrossprod(diag(1/He.eig$values, nrow = length(He.eig$values), ncol =  length(He.eig$values)),He.eig$vectors)  # this could be taken from magic as well but we don't 
-    Vb <- (Vb + t(Vb) ) / 2 
+    Vb <- He.eig$vectors%*%tcrossprod(diag(1/He.eig$values, nrow = length(He.eig$values), ncol =  length(He.eig$values)),He.eig$vectors)   
+    Vb <- Vb1 <- (Vb + t(Vb) ) / 2 
     
                                      
 if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || VC$l.sp6!=0 || VC$l.sp7!=0 || VC$l.sp8!=0) && VC$fp==FALSE){
@@ -21,13 +21,13 @@ if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || 
     
     
     if(VC$surv.flex == TRUE){
+    
+    
 
     est.c <- SemiParFit$fit$argument
     cm <- rep(1, length(est.c))
     
-    
-    
-    
+
     if(VC$informative == "no"){
     
         if(!is.null(VC$mono.sm.pos)) mono.sm.pos <- VC$mono.sm.pos else mono.sm.pos <- c(VC$mono.sm.pos1, VC$mono.sm.pos2 + VC$X1.d2)  
@@ -62,63 +62,136 @@ if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || 
     
     }
     
+ 
+ 
+ 
+if(SemiParFit$sp.method == "perf"){ 
     
-    
-    F  <- diag(SemiParFit$magpp$edf )             # Vb%*%HeSh #  this is not correct when fixing sp  
+    F  <- diag(SemiParFit$magpp$edf )             # Vb%*%HeSh 
     F1 <- diag(SemiParFit$magpp$edf1)             # needed for testing
     R  <- SemiParFit$bs.mgfit$R                   # needed for testing especially for RE smoothers, it should not be affected by mono smooth
     Ve <- Vb%*%HeSh%*%Vb                          # diag(SemiParFit$magpp$Ve) and diag(SemiParFit$magpp$Vb) but need to be careful with dispersion parameters
     Ve <- (Ve + t(Ve) ) / 2
     
+                                  } 
+ 
+if(SemiParFit$sp.method == "efs"){ 
+
+ 
+    lbb <- Sl.initial.repara(SemiParFit$Sl, HeSh, inverse = FALSE) 
+    p <- ncol(lbb)
+    ipiv <- piv <- attr(SemiParFit$L, "pivot")
+    ipiv[piv] <- 1:p
+    lbb <- SemiParFit$D * t(SemiParFit$D * lbb) 
+
+
+        R <- suppressWarnings(chol(lbb, pivot = TRUE))
+        if (attr(R, "rank") < ncol(R)) {
+            retry <- TRUE
+            tol <- 0
+            eh <- eigen(lbb, symmetric = TRUE)
+            mev <- max(eh$values)
+            dtol <- 1e-07
+            while (retry) {
+                eh$values[eh$values < tol * mev] <- tol * mev
+                R <- sqrt(eh$values) * t(eh$vectors)
+                lbb <- crossprod(R)
+                Hp <- lbb + SemiParFit$D * t(SemiParFit$D * SemiParFit$St) # verify St, ok
+                SemiParFit$L <- suppressWarnings(chol(Hp, pivot = TRUE))
+                if (attr(SemiParFit$L, "rank") == ncol(Hp)) {
+                  R <- t(t(R)/SemiParFit$D)
+                  retry <- FALSE
+                }
+                else {
+                  tol <- tol + dtol
+                  dtol <- dtol * 10
+                }
+            }
+        }
+        else {
+            ipiv <- piv <- attr(R, "pivot")
+            ipiv[piv] <- 1:p
+            R <- t(t(R[, ipiv])/SemiParFit$D)
+        }
     
-    if(VC$robust == TRUE){
     
-    SemiParFitT <- SemiParFit 
+    R <- Sl.repara(SemiParFit$rp, R, inverse = TRUE, both.sides = FALSE)
+    R <- Sl.initial.repara(SemiParFit$Sl, R, inverse = TRUE, both.sides = FALSE, cov = FALSE)
+
+  
+    F  <- Vb%*%HeSh                                 
+    F1 <- diag(2*diag(F) - rowSums( t(F)*F ))
+    Ve <- F%*%Vb                                  
+    Ve <- (Ve + t(Ve) ) / 2
     
-    SemiParFitT$VC <- VC
-    SemiParFitT$coefficients <- SemiParFitT$fit$argument 
-    SemiParFitT$Vb <- diag(1, length(SemiParFitT$coefficients)) 
-    
-    Q <- rIC(SemiParFitT)$hbs
-    
-    Vb <- Vb%*%Q%*%Vb         # this is just freq and not Bayesian but it is ok for now. So Vb and Ve are the same 
-    Vb <- (Vb + t(Vb) ) / 2
-    
-    Ve <- Vb
-    
-    }
-    
-    
-    
-    
-    
+                                  }  
+ 
+ 
+ 
+ 
     
 }else{ 
 
-HeSh <- He
-Ve <- Vb
 
-    if(VC$robust == TRUE){
-    
-    SemiParFitT <- SemiParFit 
-    
-    SemiParFitT$VC <- VC
-    SemiParFitT$coefficients <- SemiParFitT$fit$argument 
-    SemiParFitT$Vb <- diag(1, length(SemiParFitT$coefficients)) 
-    
-    Q <- rIC(SemiParFitT)$hbs
-    
-    Vb <- Ve%*%Q%*%Ve       
-    Vb <- (Vb + t(Vb) ) / 2
-    
-    Ve <- Vb
-    
-    }
+Ve   <- Vb
 
 F <- F1 <- diag(rep(1,dim(Vb)[1]))
 R <- SemiParFit$bs.mgfit$R
 
 } 
+
+
+
+
+    if(VC$robust == TRUE){
+    
+    SemiParFitT <- SemiParFit 
+    
+    SemiParFitT$VC <- VC
+    SemiParFitT$coefficients <- SemiParFitT$fit$argument 
+    SemiParFitT$Vb1          <- Vb1 
+    
+    resq <- rIC(SemiParFitT)
+    
+    Q <- resq$hbs
+    F <- resq$F
+    
+    F1 <- diag( 2*diag(F) - rowSums( t(F)*F ) ) # this may need to be checked  
+    
+    #Vb <- Vb%*%Q%*%Vb         # this is just freq and not Bayesian but it is ok for now. So Vb and Ve are the same 
+    #Vb <- (Vb + t(Vb) ) / 2
+    #Ve <- Vb
+    
+    
+    # Vb same as standard case
+    
+    Ve <- Vb%*%Q%*%Vb         
+    Ve <- (Ve + t(Ve) ) / 2
+    
+    
+    rm(SemiParFitT)
+    
+    
+    # R maybe needs some work although it may just be fine
+    
+    }
+    
+    
+    
+    if( !is.null(VC$sp.fixed) ){
+    
+    F  <- Vb%*%HeSh   
+    F1 <- diag( 2*diag(F) - rowSums( t(F)*F ) ) 
+    R  <- SemiParFit$bs.mgfit$R                   # this is not correct
+    Ve <- Vb%*%HeSh%*%Vb                          
+    Ve <- (Ve + t(Ve) ) / 2
+    
+    }    
+    
+    
+
+
+
 
 t.edf <- sum(diag(F))
 
@@ -138,7 +211,7 @@ dimnames(SemiParFit$fit$hessian)[[1]] <- dimnames(SemiParFit$fit$hessian)[[2]] <
 
 
 
-list(He = He, Vb = Vb, Vb.t = Vb.t, HeSh = HeSh, F = F, F1 = F1, R = R, Ve = Ve, t.edf = t.edf, SemiParFit = SemiParFit, coef.t = coef.t)
+list(Vb1 = Vb1, He = He, Vb = Vb, Vb.t = Vb.t, HeSh = HeSh, F = F, F1 = F1, R = R, Ve = Ve, t.edf = t.edf, SemiParFit = SemiParFit, coef.t = coef.t)
 
 }
 

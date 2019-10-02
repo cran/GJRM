@@ -10,7 +10,7 @@ der2c.derp1.dernu <- der2c.derp2.dernu <- der2c.dernu.dernu <- der2c.derrho.dern
 if(BivD %in% c("T") ) {
 
 mm <- function(ob){
-  epsilon <- 0.00001; max.p   <- 0.99999
+  epsilon <- sqrt(.Machine$double.eps); max.p   <- 0.9999999
   res <- ifelse(ob > max.p, max.p, ob) 
   res <- ifelse(res < epsilon, epsilon, res) 
   res    
@@ -4025,7 +4025,7 @@ der2c.derp1.derrho	= -der2c.derp1.derrho
 
 ifef <- function(dv){
 
-epsilon <- 0.0000001 
+epsilon <- sqrt(.Machine$double.eps)
 dv <- ifelse(is.na(dv), epsilon, dv ) 
 dv <- ifelse(dv == Inf ,  8.218407e+20, dv )
 dv <- ifelse(dv == -Inf ,  -8.218407e+20, dv )

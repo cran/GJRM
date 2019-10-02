@@ -15,7 +15,7 @@ indN <- as.numeric(Xd1P < 0)
 
 #if(!is.null(VC$indexT)) print(table(indN))
 
-Xd1P <- ifelse(Xd1P < 1e-06, 1e-06, Xd1P ) 
+Xd1P <- ifelse(Xd1P < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), Xd1P ) 
 
     if( any(indN == TRUE) && !is.null(VC$indexT) ){
    

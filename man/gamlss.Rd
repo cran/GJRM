@@ -16,14 +16,15 @@ have been parametrised according to Rigby and Stasinopoulos (2005).
 
 \usage{
 gamlss(formula, data = list(), weights = NULL, subset = NULL,  
-       margin = "N", surv = FALSE, cens = NULL,
+       margin = "N", surv = FALSE, cens = NULL, type.cens = "R", v.rB = NULL,
        robust = FALSE, rc = 3, lB = NULL, uB = NULL, infl.fac = 1, 
        rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
        gc.l = FALSE, parscale, extra.regI = "t", gev.par = -0.25,
        chunk.size = 10000, k.tvc = 0, knots = NULL,
        informative = "no", inform.cov = NULL, margin2 = "PH", 
        fp = FALSE, sp = NULL,
-       drop.unused.levels = TRUE)
+       drop.unused.levels = TRUE, siginit = NULL, shinit = NULL,
+       sp.method = "perf")
 }
 
 
@@ -40,11 +41,12 @@ gamlss(formula, data = list(), weights = NULL, subset = NULL,
 \item{subset}{Optional vector specifying a subset of observations to be used in the fitting process.}
 
 
-\item{margin}{Possible distributions are normal ("N"), normal where 
-               sigma2 corresponds to 
-               the standard deviation instead of the variance ("N2"),  
-               log-normal ("LN"), Gumbel ("GU"), reverse Gumbel ("rGU"), 
-               logistic ("LO"), Weibull ("WEI"), inverse Gaussian ("iG"), gamma ("GA"), Dagum ("DAGUM"), 
+\item{margin}{Possible distributions are normal ("N"),  
+               log-normal ("LN"), Gumbel ("GU"), reverse Gumbel ("rGU"), generelised Pareto ("GP"), 
+               generelised Pareto II ("GPII") where the shape parameter is forced to be > -0.5, 
+               generelised Pareto (with orthogonal parametrisation) ("GPo") where the shape parameter is forced to be > -0.5,
+               discrete generelised Pareto ("DGP"),
+               discrete generelised Pareto II ("DGPII") where the shape parameter is forced to be positive, logistic ("LO"), Weibull ("WEI"), inverse Gaussian ("iG"), gamma ("GA"), Dagum ("DAGUM"), 
                Singh-Maddala ("SM"), beta ("BE"), Fisk ("FISK", also known as log-logistic distribution), Poisson ("PO"), zero truncated 
                Poisson ("ZTP"), negative binomial - type I ("NBI"), negative 
                binomial - type II ("NBII"), Poisson inverse Gaussian ("PIG"), generalised extreme value link function ("GEVlink", this 
@@ -54,6 +56,10 @@ gamlss(formula, data = list(), weights = NULL, subset = NULL,
             "probit" (generalised probit).}
 
 \item{cens}{Binary censoring indicator. This is required when \code{surv = TRUE}. This variable has to be equal to 1 if the event occurred and 0 otherwise.}
+ 
+\item{type.cens}{Type of censoring mechanism. This can be "R", "L", "I" or "mixed".}
+ 
+\item{v.rB}{Variable name of right bound when \code{type.cens = "I"}.}
  
 \item{robust}{If \code{TRUE} then the robust version of the model is fitted.}
              
@@ -106,6 +112,13 @@ documentation of \code{trust} for more details.}
  
 \item{drop.unused.levels}{By default unused levels are dropped from factors before fitting. For some smooths involving factor variables 
                           this may have to be turned off (only use if you know what you are doing).}  
+
+\item{siginit, shinit}{For the GP and DGP distributions, initial values for sigma and shape may be provided.}
+
+\item{sp.method}{Multiple smoothing automatic parameter selection is perf. efs is an alternative and only sensible option
+                 for robust models.}
+
+
 }
 
 
@@ -113,7 +126,7 @@ documentation of \code{trust} for more details.}
 
 The underlying algorithm is described in ?gjrm. 
 
-There are many continuous/discrete distributions to choose from and we plan to include more 
+There are many continuous/discrete/survival distributions to choose from and we plan to include more 
 options. Get in touch if you are interested in a particular distribution.
 
 The \code{"GEVlink"} option is used for binary response additive models and is more stable and faster than the \code{R} package \code{bgeva}.
@@ -191,8 +204,8 @@ dataSim <- data.frame(y1, x1, x2, x3)
 resp.check(y1, "N")
 
 eq.mu <- y1 ~ x1 + s(x2) + s(x3)
-eq.s2 <-    ~ s(x3)
-fl    <- list(eq.mu, eq.s2)
+eq.s  <-    ~ s(x3)
+fl    <- list(eq.mu, eq.s)
 
 out <- gamlss(fl, data = dataSim)
 
@@ -223,8 +236,8 @@ rob.const(out, 100)
 
 ##
 
-eq.s2 <-    ~ x3
-fl    <- list(eq.mu, eq.s2)
+eq.s  <-    ~ x3
+fl    <- list(eq.mu, eq.s)
 
 out <- gamlss(fl, data = dataSim, margin = "N", robust = TRUE)
 
@@ -234,10 +247,11 @@ summary(out)
 ##
 
 eq.mu <- y1 ~ x1 + s(x2) + s(x3)
-eq.s2 <-    ~ s(x3)
-fl    <- list(eq.mu, eq.s2)
+eq.s  <-    ~ s(x3)
+fl    <- list(eq.mu, eq.s)
 
-out1 <- gamlss(fl, data = dataSim, margin = "N", robust = TRUE)
+out1 <- gamlss(fl, data = dataSim, margin = "N", robust = TRUE, 
+               sp.method = "efs")
 
 conv.check(out1)
 summary(out1)

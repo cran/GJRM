@@ -4,7 +4,7 @@ bcont32 <- function(params, respvec, VC, ps, AT = FALSE){
     eta2 <- VC$X2%*%params[(VC$X1.d2 + 1):(VC$X1.d2 + VC$X2.d2)]
     etad <- etas1 <- etas2 <- etan1 <- etan2 <- l.ln <- NULL
   
-    epsilon <- 0.0000001 
+    epsilon <- sqrt(.Machine$double.eps)
     max.p   <- 0.9999999
     
     

@@ -27,6 +27,10 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   sp7 <- gp7 <- gam7 <- X7 <- NULL
   sp8 <- gp8 <- gam8 <- X8 <- NULL     
   dataset <- gamlss <- NULL
+  
+  Sl.sf <- NULL
+  sp.method <- "perf"
+  
   X2s <- X3s <- X4s <- X5s <- X6s <- X7s <- X8s <- NULL 
     surv.flex <- FALSE
 
@@ -38,10 +42,10 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   opc  <- c("N","C0","C90","C180","C270","J0","J90","J180","J270","G0","G90","G180","G270","F","AMH","FGM","T","PL","HO")
   scc  <- c("C0", "C180", "J0", "J180", "G0", "G180", BivD2)
   sccn <- c("C90", "C270", "J90", "J270", "G90", "G270")
-  m2   <- c("N","N2","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP")
-  m3   <- c("DAGUM","SM")
+  m2   <- c("N","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP","GPII","GPo")
+  m3   <- c("DAGUM","SM","TW")
   m1d  <- c("PO", "ZTP")
-  m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG","DGP")
+  m2d  <- c("NBI","NBII","PIG","DGP", "DGPII")
   m3d  <- NULL
   bl   <- c("probit", "logit", "cloglog")
 
@@ -209,7 +213,7 @@ if( !(margins[2] %in% c(m1d)) ){
 
 start.snR <- startsn(margins[2], y2)
     
-log.sig2.2 <- start.snR$log.sig2.1; names(log.sig2.2) <- "sigma2.star"
+log.sig2.2 <- start.snR$log.sig2.1; names(log.sig2.2) <- "sigma.star"
 if( margins[2] %in% c(m3) ){ log.nu.2 <- start.snR$log.nu.1; names(log.nu.2)   <- "nu.star"}     
 
 }
@@ -289,7 +293,7 @@ if(missing(parscale)) parscale <- 1
   lsgam8 <- length(gam8$smooth)
 
   VC <- list(lsgam1 = lsgam1, robust = FALSE, K1 = NULL,
-             lsgam2 = lsgam2,
+             lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
              lsgam3 = lsgam3,
              lsgam4 = lsgam4,
              lsgam5 = lsgam5,
@@ -396,7 +400,7 @@ environment(formula.aux[[2]]) <- environment(formula[[2]])
 ###
 
 
-L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, mice.formula = formula.aux,
+L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, mice.formula = formula.aux, robust = FALSE,
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, 
           gam6 = gam6, gam7 = gam7, gam8 = gam8,  
           coefficients = SemiParFit$fit$argument, coef.t = NULL, iterlimsp = iterlimsp,
@@ -438,6 +442,7 @@ L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, mice.formu
           respvec = respvec, inde = inde, 
           qu.mag = qu.mag, 
           sigma2 = SemiParFit.p$sigma2, sigma2.a = SemiParFit.p$sigma2.a,
+          sigma = SemiParFit.p$sigma2, sigma.a = SemiParFit.p$sigma2.a,
           nu = SemiParFit.p$nu,     nu.a = SemiParFit.p$nu.a,
           gp1 = gp1, gp2 = gp2, gp3 = gp3, gp4 = gp4, gp5 = gp5, gp6 = gp6, gp7 = gp7, gp8 = gp8, 
           X2s = X2s, 

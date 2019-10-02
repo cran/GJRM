@@ -1,9 +1,8 @@
-jc.probs3 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link){
+jc.probs3 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, epsilon){
 
 
 #############################################################################################
 
-epsilon <- 0.0000001 
 nu1 <- nu2 <- nu <- sigma2 <- 1
 CIp12 <- dof <- p12s <- CIkt <- tau <- NULL
 dof <- x$dof
@@ -105,7 +104,7 @@ if(y1 == 0 && y2 == 0){
 
 # kendalls' tau
 
-if(x$BivD %in% x$BivD2)    tau <- Reg2Copost(x$SemiParFit, x$VC, theta)$tau 
+if(x$BivD %in% x$BivD2)    {x$SemiParFit <- x; tau <- Reg2Copost(x$SemiParFit, x$VC, theta)$tau } 
 if(!(x$BivD %in% x$BivD2)) tau <- ass.ms(x$VC$BivD, x$VC$nCa, theta)$tau
 
 

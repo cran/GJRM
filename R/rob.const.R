@@ -1,7 +1,7 @@
 rob.const <- function(x, B = 100){
 
-cont <- c("N", "N2", "GU", "rGU", "LO", "LN", "WEI","iG", "GA", "DAGUM", "SM", "BE", "FISK","GP")
-disc <- c("NBI", "NBII", "PIG", "PO", "ZTP","DGP") 
+cont <- c("N", "N2", "GU", "rGU", "LO", "LN", "WEI","iG", "GA", "DAGUM", "SM", "TW","BE", "FISK","GP","GPII","GPo")
+disc <- c("NBI", "NBII", "PIG", "PO", "ZTP","DGP","DGPII") 
 margin <- x$margin[1]
 
 n <- x$n

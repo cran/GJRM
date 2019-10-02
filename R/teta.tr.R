@@ -1,6 +1,6 @@
 teta.tr <- function(VC, teta.st){
  
- epsilon <- 0.0000001 
+ epsilon <- sqrt(.Machine$double.eps)
  cjg <- c("C0","C180","C90","C270","J0","J180","J90","J270","G0","G180","G90","G270",VC$BivD2)
  
  if( VC$BivD %in% c("N","AMH","FGM","T") ) teta.st <- ifelse( abs(teta.st) > 8.75, sign(teta.st)*8.75, teta.st )  
@@ -13,7 +13,7 @@ teta.tr <- function(VC, teta.st){
  }    
       
  if( VC$BivD %in% cjg ) {
-      teta.st <- ifelse( teta.st > 28, 28, teta.st )     # 709, maximum allowed
+      teta.st <- ifelse( teta.st > 20, 20, teta.st )     # 709, maximum allowed
       teta.st <- ifelse( teta.st < -17, -17, teta.st )   # -20
                          }
      

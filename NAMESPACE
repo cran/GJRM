@@ -1,12 +1,12 @@
 export(AT, PE, RR, OR, rMVN, post.check,mm,enu.tr,llpsi,imputeSS, imputeCounter,
 prev, distrHs, numch, numgh,distrHsAT,distrHsAT1,distrHsDiscr,distrHsATDiscr,distrHsATDiscr2, rob.const,
 adjCov, copgHsCont, BCDF, BiCDF, jc.probs,probm,probmS,postVb,ass.ms,edf.loop,pred.var,form.check,
-adjCovSD,int.postcheck, overall.svG, susutsn, susu,pscr, pscr0, mice.impute.copulaSS,
+adjCovSD,int.postcheck, overall.svG, susutsn, susu,pscr, pscr0, mice.impute.copulaSS, r.resp,
 gt.bpm, esp.tr, eta.tr, teta.tr,copgHsAT,dof.tr,ass.dp,form.eq12,startsn, overall.sv,
 bprobgHs,bprobgHstwoParC, mb, H.tri, g.tri, triprobgHs, H.triSS, g.triSS, triprobgHsSS, 
-H.triESS, g.triESS, triprobgHsESS, pp, SS, bcontSurvGunivInform, rIC, bCopulaCLMgHsCont,
-bprobgHsPO, bcorrec, bcorrecDiscr,  Xdpred, pred.mvt, inform.setup, cv.inform, PDef, ggm.Deriv, ggmtrust, ggm.DerivOPT1, ggm.DerivOPT2,
-bprobgHsSS, intB, rob.int, resp.CLM, ggmtrust.path, Dpens, Dpens2, prediction.CLM, predict2.CLM,
+H.triESS, g.triESS, triprobgHsESS, pp, SS, bcontSurvGunivInform, rIC, bCopulaCLMgHsCont, pen,
+bprobgHsPO, bcorrec, bcorrecDiscr,  Xdpred, pred.mvt, pred.gp, inform.setup, cv.inform, PDef, ggm.Deriv, ggmtrust, ggm.DerivOPT1, ggm.DerivOPT2,
+bprobgHsSS, intB, rob.int, resp.CLM, ggmtrust.path, Dpens, Dpens2,
 bprobgHsContUniv,
 copgHs, copgHs2, copgHs3, PosDefCor,
 logLik.SemiParBIV, logLik.ggmtrust,
@@ -14,6 +14,7 @@ LM.bpm, hazsurv.plot, approx.CLM,
 VuongClarke,
 plot.SemiParBIV, vis.gjrm,
 predict.SemiParBIV,
+predict.CopulaCLM,
 print.AT, print.PE, print.RR, print.OR, 
 print.prev, 
 print.mb,
@@ -49,6 +50,10 @@ working.comp,
 resp.check,
 polys.map, polys.setup)
 
+
+importFrom(ggplot2, fortify)
+
+importFrom(ismev, gpd.fit)
 importFrom(magic, adiag)
 importFrom(evd, rgpd)
 importFrom(trustOptim, trust.optim)
@@ -61,7 +66,6 @@ import(mgcv)
 importFrom(psych, tetrachoric)
 importFrom(copula, tau, plackettCopula, iTau) 
 importFrom(VineCopula, BiCopHfunc1, BiCopHfunc2, BiCopHfuncDeriv, BiCopCDF, BiCopTau2Par, BiCopPar2Tau, BiCopPDF, BiCopDeriv, BiCopDeriv2, BiCopHfuncDeriv2)
-importFrom(ggplot2, fortify)
 importFrom(matrixStats, rowQuantiles, colQuantiles, colWeightedMeans)
 importFrom(gamlss.dist, pNBI, dNBI, pNBII, dNBII, pPIG, dPIG, pDEL, dDEL, pSICHEL, dSICHEL, pPO, rNO,rGU,rRG,rLO,rLOGNO,rWEI,rIG,rGA,rGB2,rBE,rNBI,rNBII,rPIG,rPO)
 importFrom(matrixcalc, duplication.matrix)
@@ -80,6 +84,7 @@ importFrom(stats, median, qt, dpois, qpois, qlogis, plogis, dgamma, dlnorm, dlog
            AIC, BIC, logLik)           
 importFrom(utils, getFromNamespace)
 importFrom(numDeriv, jacobian, hessian, grad)
+
 
 S3method(plot, SemiParBIV)
 S3method(summary, SemiParBIV)
@@ -104,6 +109,7 @@ S3method(print, summary.copulaSampleSel)
 S3method(logLik, SemiParBIV)
 S3method(logLik, ggmtrust)
 S3method(predict, SemiParBIV)
+S3method(predict, CopulaCLM)
 S3method(print, prev)
 S3method(print, mb)
 

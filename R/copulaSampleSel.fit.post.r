@@ -35,12 +35,12 @@ if(is.null(VC$X3)){ # START
 if(!(VC$margins[2] %in% cont1par)){ ##
 
 sigma2 <- sigma2.a <- esp.tr(SemiParFit$fit$etas, VC$margins[2])$vrb 
-names(sigma2) <- names(sigma2.a) <- "sigma2"   
+names(sigma2) <- names(sigma2.a) <- "sigma"   
 
 
 if(VC$margins[2] %in% cont3par ){
 
-	if(VC$margins[2] %in% c("DAGUM","SM")){
+	if(VC$margins[2] %in% c("DAGUM","SM","TW")){
 
 		nu <- nu.a <- esp.tr(SemiParFit$fit$etan, VC$margins[2])$vrb
 		names(nu) <- names(nu.a) <- "nu"
@@ -134,7 +134,7 @@ sp <- SemiParFit$sp
                       edf7 = edf[[7]], edf8 = edf[[8]],
                       edf1.1 = edf1[[1]], edf1.2 = edf1[[2]], edf1.3 = edf1[[3]], edf1.4 = edf1[[4]], edf1.5 = edf1[[5]], 
                       edf1.6 = edf1[[6]], edf1.7 = edf1[[7]], edf1.8 = edf1[[8]],
-                      theta = theta, theta.a = theta.a, sigma2 = sigma2, sigma2.a = sigma2.a,
+                      theta = theta, theta.a = theta.a, sigma2 = sigma2, sigma2.a = sigma2.a, sigma = sigma2, sigma.a = sigma2.a,
                       nu = nu, nu.a = nu.a, tau = tau, tau.a = tau.a,
                       sp = sp,  
                       p1n=p1n, p2n=p2n, R = R, Ve = Ve, dof.a = VC$dof, dof = VC$dof) 

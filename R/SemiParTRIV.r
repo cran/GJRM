@@ -19,6 +19,9 @@ SemiParTRIV <- function(formula, data = list(), weights = NULL, subset = NULL,
    
   fp <- FALSE
   surv.flex <- FALSE
+  
+  Sl.sf <- NULL
+  sp.method <- "perf"
 
   X2s <- X3s <- ct <- cta <- nC  <- nCa <- NULL
     
@@ -393,7 +396,7 @@ if(missing(parscale)) parscale <- 1
   lsgam8 <- length(gam8$smooth)
    
   VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL,
-             lsgam2 = lsgam2,
+             lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
              lsgam3 = lsgam3,
              lsgam4 = lsgam4,
              lsgam5 = lsgam5,
@@ -475,7 +478,7 @@ gam1$call$data <- gam2$call$data <- gam3$call$data <- gam4$call$data <- gam5$cal
   # for all.terms
   ##########################################################################################################################
 
-L <- list(fit = SemiParFit$fit, formula = formula, Model = Model,
+L <- list(fit = SemiParFit$fit, formula = formula, Model = Model, robust = FALSE,
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8,
           coefficients = SemiParFit$fit$argument, coef.t = NULL, iterlimsp = iterlimsp,
           weights = weights, 

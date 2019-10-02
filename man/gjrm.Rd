@@ -14,7 +14,7 @@ effects, copula and marginal distributions.
 \usage{
 gjrm(formula, data = list(), weights = NULL, subset = NULL,  
      BivD = "N", margins, Model, dof = 3, ordinal = FALSE,  
-     surv = FALSE, cens1 = NULL, cens2 = NULL,
+     surv = FALSE, cens1 = NULL, cens2 = NULL, dep.cens = FALSE,
      gamlssfit = FALSE, fp = FALSE, infl.fac = 1, 
      rinit = 1, rmax = 100, 
      iterlimsp = 50, tolsp = 1e-07,
@@ -49,11 +49,12 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
 \item{subset}{Optional vector specifying a subset of observations to be used in the fitting process.}
 
 
-\item{margins}{It indicates the distributions used for the two or three margins. Possible distributions are normal ("N"), normal where 
-               sigma2 corresponds to 
-               the standard deviation instead of the variance ("N2"),  
-               log-normal ("LN"), Gumbel ("GU"), reverse Gumbel ("rGU"), 
-               logistic ("LO"), Weibull ("WEI"), inverse Gaussian ("iG"), gamma ("GA"), Dagum ("DAGUM"), 
+\item{margins}{It indicates the distributions used for the two or three margins. Possible distributions are normal ("N"),  
+               log-normal ("LN"), Gumbel ("GU"), reverse Gumbel ("rGU"), generelised Pareto ("GP"), 
+               generelised Pareto II ("GPII") where the shape parameter is forced to be > -0.5,
+               generelised Pareto (with orthogonal parametrisation) ("GPo") where the shape parameter is forced to be > -0.5,
+               discrete generelised Pareto ("DGP"), 
+               discrete generelised Pareto II ("DGPII") where the shape parameter is forced to be positive, logistic ("LO"), Weibull ("WEI"), inverse Gaussian ("iG"), gamma ("GA"), Dagum ("DAGUM"), 
                Singh-Maddala ("SM"), beta ("BE"), Fisk ("FISK", also known as log-logistic distribution), Poisson ("PO"), zero truncated 
                Poisson ("ZTP"), negative binomial - type I ("NBI"), negative 
                binomial - type II ("NBII"), Poisson inverse Gaussian ("PIG"). If the responses are binary then
@@ -80,6 +81,8 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
 \item{cens1}{Binary censoring indicator 1. This is required when \code{surv = TRUE}. This variable has to be equal to 1 if the event occurred and 0 otherwise.}
 
 \item{cens2}{Binary censoring indicator 2. This is required when \code{surv = TRUE}.}
+
+\item{dep.cens}{If TRUE then the dependence censored model is employed.} 
 
 \item{gamlssfit}{If \code{gamlssfit = TRUE} then gamlss univariate models are also fitted. This is useful for obtaining 
                  starting values, for instance.}               
@@ -672,11 +675,11 @@ resp.check(y2, "N")
 
 eq.mu.1     <- y1 ~ x1 + s(x2) + s(x3)
 eq.mu.2     <- y2 ~ x1 + s(x2) + s(x3)
-eq.sigma2.1 <-    ~ 1
-eq.sigma2.2 <-    ~ 1
+eq.sigma1   <-    ~ 1
+eq.sigma2   <-    ~ 1
 eq.theta    <-    ~ x1
 
-fl <- list(eq.mu.1, eq.mu.2, eq.sigma2.1, eq.sigma2.2, eq.theta)
+fl <- list(eq.mu.1, eq.mu.2, eq.sigma1, eq.sigma2, eq.theta)
 
 # the order above is the one to follow when
 # using more than two equations
@@ -734,10 +737,10 @@ post.check(out)
 
 eq.mu.1   <- y1 ~ x1 + s(x2) 
 eq.mu.2   <- y2 ~ y1 + s(x2)
-eq.sigma2 <-    ~ 1
+eq.sigma  <-    ~ 1
 eq.theta  <-    ~ 1
 
-fl <- list(eq.mu.1, eq.mu.2, eq.sigma2, eq.theta)
+fl <- list(eq.mu.1, eq.mu.2, eq.sigma, eq.theta)
 
 out <- gjrm(fl, data = dataSim, 
             margins = c("probit","N"), gamlssfit = TRUE,
@@ -779,10 +782,10 @@ dataSim <- data.frame(y1, y2, x1, x2)
 
 eq.mu.1   <- y2 ~ y1 + s(x2) 
 eq.mu.2   <- y1 ~ x1 + s(x2)
-eq.sigma2 <-    ~ 1
+eq.sigma  <-    ~ 1
 eq.theta  <-    ~ 1
 
-fl <- list(eq.mu.1, eq.mu.2, eq.sigma2, eq.theta)
+fl <- list(eq.mu.1, eq.mu.2, eq.sigma, eq.theta)
 
 out <- gjrm(fl, data = dataSim, 
             margins = c("probit","N"),
@@ -1250,17 +1253,17 @@ mean(bet)
 
 eq.mu.1   <- ys ~ bi + s(x1) + s(x2)
 eq.mu.2   <- yo ~ bi + s(x1)
-eq.sigma2 <-    ~ bi
+eq.sigma  <-    ~ bi
 eq.theta  <-    ~ bi + x1
 
-fl <- list(eq.mu.1, eq.mu.2, eq.sigma2, eq.theta)
+fl <- list(eq.mu.1, eq.mu.2, eq.sigma, eq.theta)
 
 out <- gjrm(fl, data = dataSim, Model = "BSS",
                  margins = c("probit", "N"))
 conv.check(out)   
 post.check(out)
 summary(out)
-out$sigma2
+out$sigma
 out$theta
 
 jc.probs(out, 0, 0.3, intervals = TRUE)[1:4,]

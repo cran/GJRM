@@ -61,7 +61,7 @@ with contributions from Panagiota Filippou (specifically on the trivariate binar
 
 Thanks to Bear Braumoeller (Department of Political Science, The Ohio State University) for suggesting the implementation of bivariate models with partial observability.
 
-Thanks also to Carmen Cadarso and Francisco Gude for suggesting the inclusion of various modelling extensions. 
+Thanks also to Carmen Cadarso for suggesting the inclusion of various modelling extensions. 
 
 Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 

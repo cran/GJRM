@@ -158,7 +158,7 @@ G   <- resf$gradient
 var <- resf$hessian
 
 var.eig <- eigen(var, symmetric=TRUE)   
-if(min(var.eig$values) < sqrt(.Machine$double.eps)) var.eig$values[which(var.eig$values < sqrt(.Machine$double.eps))] <- 0.0000001
+if(min(var.eig$values) < sqrt(.Machine$double.eps)) var.eig$values[which(var.eig$values < sqrt(.Machine$double.eps))] <- sqrt(.Machine$double.eps)
 var <- var.eig$vec%*%tcrossprod(diag(1/var.eig$val),var.eig$vec)  
 
 ev <- as.numeric(t(G)%*%var%*%G)

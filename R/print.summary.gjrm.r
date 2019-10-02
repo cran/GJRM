@@ -16,8 +16,8 @@ print.summary.gjrm <- function(x, digits = max(3, getOption("digits") - 3),
  main.t <- "\nCOPULA:  "     
  cp <- "  theta = "; as.p <- x$theta.a; dof <- x$dof.a
  ct <- "  tau = "; kt.p <- x$tau.a
- s1 <- "sigma2.1 = "; s1.p <- x$sigma21.a
- s2 <- "sigma2.2 = "; s2.p <- x$sigma22.a 
+ s1 <- "sigma.1 = "; s1.p <- x$sigma21.a
+ s2 <- "sigma.2 = "; s2.p <- x$sigma22.a 
  n1 <- "nu.1 = "; n1.p <- x$nu1.a
  n2 <- "nu.2 = "; n2.p <- x$nu2.a 
    
@@ -30,8 +30,8 @@ print.summary.gjrm <- function(x, digits = max(3, getOption("digits") - 3),
   
  CIrs    <- colMeans(x$CItheta, na.rm = TRUE)
  CIkt    <- colMeans(x$CItau, na.rm = TRUE)
- if( x$margins[1] %in% c(cont2par,cont3par) ) CIsig21 <- colMeans(x$CIsig21, na.rm = TRUE)
- if( x$margins[2] %in% c(cont2par,cont3par) ) CIsig22 <- colMeans(x$CIsig22, na.rm = TRUE)
+ if( x$margins[1] %in% c(cont2par,cont3par) ) CIsig21 <- colMeans(x$CIsig1, na.rm = TRUE)
+ if( x$margins[2] %in% c(cont2par,cont3par) ) CIsig22 <- colMeans(x$CIsig2, na.rm = TRUE)
   
  if(x$margins[1] %in% cont3par)  CInu1 <- colMeans(x$CInu1, na.rm = TRUE)
  if(x$margins[2] %in% cont3par)  CInu2 <- colMeans(x$CInu2, na.rm = TRUE)  

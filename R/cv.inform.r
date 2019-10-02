@@ -1,6 +1,6 @@
 cv.inform <- function(x, K = 5, data, informative = "yes"){          
         
-if(x$VC$informative == "no") stop("This function can be used only for informative univariate survival models.")        
+if(x$VC$informative == "no") stop("This function can be used only for informative survival models.")        
         
 Slpar <- NA              
               
@@ -56,10 +56,10 @@ eta1 <- Xp%*%params1
 eta2 <- Xp%*%params2
 
 Xd1P <- Xd%*%params1 
-Xd1P <- ifelse(Xd1P < 1e-06, 1e-06, Xd1P ) # safety check
+Xd1P <- ifelse(Xd1P < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), Xd1P ) # safety check
         
 Xd2P <- Xd%*%params2
-Xd2P <- ifelse(Xd2P < 1e-06, 1e-06, Xd2P )
+Xd2P <- ifelse(Xd2P < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), Xd2P )
  
 pd1 <- probmS(eta1, x$VC$margins[1])
 pd2 <- probmS(eta2, x$VC$margins[2])

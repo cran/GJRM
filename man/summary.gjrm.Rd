@@ -63,13 +63,13 @@ to calculate intervals for the association parameter, dispersion coefficient etc
 \item{tableNP2,tableNP3, ...}{As above but for equation 2 and equations 3 and 4 if present.}
 \item{n}{Sample size.}
 \item{theta}{Estimated dependence parameter linking the two equations.}
-\item{sigma21,sigma22}{Estimated distribution specific parameters for equations 1 and 2.}
+\item{sigma1,sigma2}{Estimated distribution specific parameters for equations 1 and 2.}
 \item{nu1,nu2}{Estimated distribution specific parameters for equations 1 and 2.}
 \item{formula1,formula2,formula3, ...}{Formulas used for the model equations.}
 \item{l.sp1,l.sp2,l.sp3, ...}{Number of smooth components in model equations.}
 \item{t.edf}{Total degrees of freedom of the estimated bivariate model.}
 \item{CItheta}{Interval(s) for \eqn{\theta}{\theta}.}
-\item{CIsig21,CIsig22,CInu1,CInu2}{Intervals for distribution specific parameters} 
+\item{CIsig1,CIsig2,CInu1,CInu2}{Intervals for distribution specific parameters} 
 
 
 }

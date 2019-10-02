@@ -34,7 +34,7 @@ if(VC$hess == FALSE) SemiParFit$fit$Fisher <- SemiParFit$fit$hessian
 if(VC$margins[2] %in% cont2par ){
 
 sigma2 <- esp.tr(SemiParFit$fit$etas, VC$margins[2])$vrb 
-if( is.null(VC$X3) ) names(sigma2) <- "sigma2"
+if( is.null(VC$X3) ) names(sigma2) <- "sigma"
 
 sigma2.a <- mean(sigma2) 
 
@@ -44,12 +44,12 @@ sigma2.a <- mean(sigma2)
 
 if(VC$margins[2] %in% cont3par ){
 
-if(VC$margins[2] %in% c("DAGUM","SM")){
+if(VC$margins[2] %in% c("DAGUM","SM","TW")){
 
 sigma2 <- esp.tr(SemiParFit$fit$etas, VC$margins[2])$vrb 
 nu     <- esp.tr(SemiParFit$fit$etan, VC$margins[2])$vrb 
 
-if( is.null(VC$X4) && is.null(VC$X5) ) {names(sigma2) <- "sigma2"; names(nu) <- "nu"}
+if( is.null(VC$X4) && is.null(VC$X5) ) {names(sigma2) <- "sigma"; names(nu) <- "nu"}
            
                                       }                            
   sigma2.a <- mean(sigma2)
@@ -207,7 +207,7 @@ sp <- SemiParFit$sp
                       edf7 = edf[[7]], edf8 = edf[[8]],
                       edf1.1 = edf1[[1]], edf1.2 = edf1[[2]], edf1.3 = edf1[[3]], edf1.4 = edf1[[4]], edf1.5 = edf1[[5]], 
                       edf1.6 = edf1[[6]], edf1.7 = edf1[[7]], edf1.8 = edf1[[8]],
-                      theta = theta, theta.a = theta.a, sigma2 = sigma2, sigma2.a = sigma2.a,
+                      theta = theta, theta.a = theta.a, sigma2 = sigma2, sigma2.a = sigma2.a, sigma = sigma2, sigma.a = sigma2.a,
                       nu = nu, nu.a = nu.a, tau = tau, tau.a= tau.a,
                       sp = sp, OR = OR, GM = GM, p1n = p1n, p2n = p2n, R = R, Ve = Ve, 
                       dof.a = VC$dof, dof = VC$dof, nCa1 = nCa1, nCa2 = nCa2) 

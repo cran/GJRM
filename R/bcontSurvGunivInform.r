@@ -16,7 +16,7 @@ inde.inf2 <- VC$inde.inf2
 
     eta1 <- VC$X1%*%params1
     Xd1P <- VC$Xd1%*%params1  
-    Xd1P <- ifelse(Xd1P < 1e-06, 1e-06, Xd1P )
+    Xd1P <- ifelse(Xd1P < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), Xd1P )
         
     params2 <- params[-c(1:VC$X1.d2)]
     
@@ -46,7 +46,7 @@ inde.inf2 <- VC$inde.inf2
     eta2 <- VC$X2%*%params2
     Xd2P <- VC$Xd2%*%params2
 
-    Xd2P <- ifelse(Xd2P < 1e-06, 1e-06, Xd2P )
+    Xd2P <- ifelse(Xd2P < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), Xd2P )
 
 ##################
     

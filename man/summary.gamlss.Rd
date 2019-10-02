@@ -63,11 +63,11 @@ to calculate intervals for various parameters. It may be increased if
                 corresponding p-value, for equation 1.}
 \item{tableNP2,tableNP3}{As above but for equations 2 and 3.}
 \item{n}{Sample size.}
-\item{sigma21, nu1}{Estimated distribution specific parameters.}
+\item{sigma, nu}{Estimated distribution specific parameters.}
 \item{formula1,formula2,formula3}{Formulas used for the model equations.}
 \item{l.sp1,l.sp2,l.sp3}{Number of smooth components in model equation.}
 \item{t.edf}{Total degrees of freedom of the estimated bivariate model.}
-\item{CIsig21,CInu1}{Intervals for distribution specific parameters.} 
+\item{CIsig,CInu}{Intervals for distribution specific parameters.} 
 
 
 }
@@ -77,7 +77,19 @@ to calculate intervals for various parameters. It may be increased if
 
 Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
+
 }
+
+
+\section{WARNINGS}{
+
+For all models implemented in the package inference is based on a Bayesian approach with properly defined effective degrees of freedom. This approach yields 
+intervals and p-values that exhibit good frequentist properties. For the ONLY case of
+robust models, the same calculations are carried out. However, more research is needed here. Therefore, the user should be cautious when interpreting
+and drawing conclusions from intervals and p-values.
+
+} 
+
 
 
 

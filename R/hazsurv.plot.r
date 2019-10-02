@@ -20,9 +20,17 @@ if(missing(ylim)) ylim <- NULL
 if(eq == 1){
   ntv  <- as.character(x$formula[[1]][2])
   
-  rlb <- range(x$y1)[1]
-  rlb <- ifelse(rlb < 1e-06, 1e-06, rlb)
+  #rlb <- range(x$y1)[1]
+ 
+  if(x$univar.gamlss == TRUE) rlb <- x$rangeSurv[1] else rlb <- range(x$y1)[1] 
+ 
+  rlb <- ifelse(rlb < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), rlb)
+  
   tv   <- seq(rlb, range(x$y1)[2], length.out = ls)
+  
+  if(x$univar.gamlss == TRUE) tv <- seq(rlb, x$rangeSurv[2], length.out = ls) else tv <- seq(rlb, range(x$y1)[2], length.out = ls)
+
+  
   
   indp <- 1:x$VC$X1.d2
   gob  <- x$gam1
@@ -32,7 +40,7 @@ if(eq == 2){
   ntv  <- as.character(x$formula[[2]][2])
   
   rlb <- range(x$y2)[1]
-  rlb <- ifelse(rlb < 1e-06, 1e-06, rlb)
+  rlb <- ifelse(rlb < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), rlb)
   tv   <- seq(rlb, range(x$y2)[2], length.out = ls)  
   
   indp <- (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)

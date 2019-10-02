@@ -1,9 +1,8 @@
-jc.probs7 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link){
+jc.probs7 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, epsilon){
 
 
 # Prediction for ordinal-continuous case
 
-epsilon <- 0.0000001 
 nu1 <- nu2 <- nu <- sigma2 <- 1
 CIp12 <- NULL
 CIkt <- tau <- NULL
@@ -24,21 +23,21 @@ if(!missing(newdata)){
 nu <- sigma2 <- NA
 
 #type <- "response"
-pk   <- predict2.CLM(x, eq = 1, newdata = newdata, type = "response")$p1.cum # cdf
+pk   <- predict(x, eq = 1, newdata = newdata, type = "response")$p1.cum # cdf
 	pk <- pk[, y1]
-eta2 <- predict2.CLM(x, eq = 2, newdata = newdata, type = "response")
+eta2 <- predict(x, eq = 2, newdata = newdata, type = "response")
 
 
 if( !is.null(x$X3) && x$margins[2] %in% c(cont2par,cont3par) ){
 
-sigma2 <- esp.tr(predict2.CLM(x, eq = 3, newdata = newdata, type = "response"), x$margins[2])$vrb
+sigma2 <- esp.tr(predict(x, eq = 3, newdata = newdata, type = "response"), x$margins[2])$vrb
 
 if(x$margins[2] %in% cont2par) eq.th <- 4
 if(x$margins[2] %in% cont3par){ eq.nu <- 4; eq.th <- 5}
 
-if(x$margins[2] %in% cont3par) nu <- esp.tr(predict2.CLM(x, eq = eq.nu, newdata = newdata, type = "response"), x$margins[2])$vrb
+if(x$margins[2] %in% cont3par) nu <- esp.tr(predict(x, eq = eq.nu, newdata = newdata, type = "response"), x$margins[2])$vrb
 
-theta <- teta.tr(x$VC, predict2.CLM(x, eq = eq.th, newdata = newdata, type = "response"))$teta
+theta <- teta.tr(x$VC, predict(x, eq = eq.th, newdata = newdata, type = "response"))$teta
 
 }
 
@@ -243,7 +242,7 @@ if(length(theta) == 1) p12[x$teta.ind2] <- copgHsCond(p0[x$teta.ind2], p2[x$teta
 
 # kendalls' tau
 
-if(x$BivD %in% x$BivD2)    tau <- Reg2Copost(x$SemiParFit, x$VC, theta)$tau 
+if(x$BivD %in% x$BivD2)   {x$SemiParFit <- x; tau <- Reg2Copost(x$SemiParFit, x$VC, theta)$tau }
 if(!(x$BivD %in% x$BivD2)) tau <- ass.ms(x$VC$BivD, x$VC$nCa, theta)$tau 
 
 
@@ -284,9 +283,9 @@ bs[, 1 : (x$VC$K1 - 1)] <- cut.sim
 #type <- "lpmatrix"
 
 if(!missing(newdata)){ 
-	pred.1 <- predict2.CLM(x, eq = 1, newdata = newdata, type = "lpmatrix")
-		X1  <- pred.1$X1 ; colnames(X1) <- colnames(x$X1)
-		X2s <- predict2.CLM(x, eq = 2, newdata = newdata, type = "lpmatrix") 
+	pred.1 <- predict(x, eq = 1, newdata = newdata, type = "lpmatrix")
+		X1  <- pred.1 ; colnames(X1) <- colnames(x$X1)
+		X2s <- predict(x, eq = 2, newdata = newdata, type = "lpmatrix") 
 }
               
 
@@ -343,7 +342,7 @@ if( !is.null(x$X3) ){
   if(x$VC$margins[2] %in% cont1par){   
   
   
-if(!missing(newdata)){ X3s <- predict2.CLM(x, eq = 3, newdata = newdata, type = "lpmatrix")}
+if(!missing(newdata)){ X3s <- predict(x, eq = 3, newdata = newdata, type = "lpmatrix")}
                        
 if( missing(newdata)){ if(x$VC$ccss == "yes") X3s <- x$X3s else X3s <- x$X3}    
   
@@ -355,7 +354,7 @@ if( missing(newdata)){ if(x$VC$ccss == "yes") X3s <- x$X3s else X3s <- x$X3}
   if(x$VC$margins[2] %in% cont2par){   
   
   
-if(!missing(newdata)){ X4s <- predict2.CLM(x, eq = 4, newdata = newdata, type = "lpmatrix")}
+if(!missing(newdata)){ X4s <- predict(x, eq = 4, newdata = newdata, type = "lpmatrix")}
                        
 if( missing(newdata)){ if(x$VC$ccss == "yes") X4s <- x$X4s else X4s <- x$X4}    
   
@@ -366,7 +365,7 @@ if( missing(newdata)){ if(x$VC$ccss == "yes") X4s <- x$X4s else X4s <- x$X4}
          
   if(x$VC$margins[2] %in% cont3par){
   
-if(!missing(newdata)){ X5s <- predict2.CLM(x, eq = 5, newdata = newdata, type = "lpmatrix")}
+if(!missing(newdata)){ X5s <- predict(x, eq = 5, newdata = newdata, type = "lpmatrix")}
                        
 if( missing(newdata)){ if(x$VC$ccss == "yes") X5s <- x$X5s else X5s <- x$X5}    
   
@@ -390,7 +389,7 @@ if( x$VC$margins[2] %in% cont2par ){
       if( is.null(x$X3) )   sigma2.star <- bs[, CLM.shift2 + x$X1.d2 + x$X2.d2 + 1] 
       if( !is.null(x$X3) ) {
       
-if(!missing(newdata)){ X3s <- predict2.CLM(x, eq = 3, newdata = newdata, type = "lpmatrix")}
+if(!missing(newdata)){ X3s <- predict(x, eq = 3, newdata = newdata, type = "lpmatrix")}
                        
 if( missing(newdata)){ if(x$VC$ccss == "yes") X3s <- x$X3s else X3s <- x$X3}        
                 
@@ -412,7 +411,7 @@ if( x$VC$margins[2] %in% cont3par ){
   if( is.null(x$X3)  ) nu.st <- bs[, CLM.shift2 + x$X1.d2 + x$X2.d2 + 2] # t(as.matrix(bs[,  x$X1.d2 + x$X2.d2 + 2]))
   if( !is.null(x$X3) ){
   
-if(!missing(newdata)){ X4s <- predict2.CLM(x, eq = 4, newdata = newdata, type = "lpmatrix")}                    
+if(!missing(newdata)){ X4s <- predict(x, eq = 4, newdata = newdata, type = "lpmatrix")}                    
 if( missing(newdata)){ if(x$VC$ccss == "yes") X4s <- x$X4s else X4s <- x$X4}    
   
               nu.st <- X4s %*% t(bs[, ((x$X1.d2 + x$X2.d2 + x$X3.d2 + 1) : (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)) + CLM.shift2]) 
@@ -441,7 +440,7 @@ nu       <- matrix(rep(nu, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
 if((cond == 0 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)) || (cond == 1 && x$margins[2] %in% c(x$VC$m2, x$VC$m3))){#*# ord - cont
 
 p0s  <- pks         
-p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2])$p2
+p2s  <- matrix( distrHsAT(y2, eta2s, sigma2, nu, x$margins[2])$p2 , dim(p0s)[1], n.sim)
 
 if(x$VC$BivD %in% c("N","T")) p12s <- matrix(BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE), dim(pks)[1], n.sim) else{
 
@@ -456,7 +455,7 @@ if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- BiCDF(p0s[x$teta.ind2,], p2s[x$t
                         }
 
 if(!(x$BivD %in% x$BivD2)) {
-	p12s <- BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE)
+	p12s <- BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE)    
 	p12s <- matrix(nrow = n.s, ncol = n.sim, p12s) # This part is not in jc.probs2
 }
 
@@ -472,10 +471,10 @@ if(cond == 1 && y1 %in% seq.int(1 : x$VC$K1)) p12s <- p12s / p0s
 if(cond == 2 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*# ord - cont
 
 p0s  <- pks         
-p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2])$p2
+p2s  <- matrix( distrHsAT(y2, eta2s, sigma2, nu, x$margins[2])$p2 , dim(p0s)[1], n.sim)
 
 
-if(!(x$BivD %in% x$BivD2)) p12s <- copgHsCond(p0s, p2s, est.RHOb, dof = dof, x$BivD)$c.copula.be2
+if(!(x$BivD %in% x$BivD2)) p12s <- matrix( copgHsCond(p0s, p2s, est.RHOb, dof = dof, x$BivD)$c.copula.be2 , dim(p0s)[1], n.sim) 
          if(x$BivD == "T") p12s <- matrix(p12s, dim(pks)[1], n.sim)
 
 
@@ -631,17 +630,17 @@ if(type == "independence"){
 if(!missing(newdata)){
 
 nu   <- sigma2 <- NA
-pk   <- predict2.CLM(x, eq = 1, newdata = newdata, type = "response")$p1.cum # cdf
+pk   <- predict(x, eq = 1, newdata = newdata, type = "response")$p1.cum # cdf
 	pk <- pk[, y1]
-eta2 <- predict2.CLM(x, eq = 2, newdata = newdata, type = "response")
+eta2 <- predict(x, eq = 2, newdata = newdata, type = "response")
 
 
 if( !(x$VC$margins[2] %in% cont1par) ){
 
 if( !is.null(x$X3) ){
 
-sigma2 <- esp.tr(predict2.CLM(x, eq = 3, newdata = newdata, type = "response"), x$margins[2])$vrb
-if(x$margins[2] %in% cont3par) nu <- esp.tr(predict2.CLM(x, eq = 4, newdata = newdata, type = "response"), x$margins[2])$vrb
+sigma2 <- esp.tr(predict(x, eq = 3, newdata = newdata, type = "response"), x$margins[2])$vrb
+if(x$margins[2] %in% cont3par) nu <- esp.tr(predict(x, eq = 4, newdata = newdata, type = "response"), x$margins[2])$vrb
 
                     }
 
@@ -773,9 +772,9 @@ bs[, 1 : (x$VC$K1 - 1)] <- cut.sim
 
 ##### newdata included as inputs #####
 
-if(!missing(newdata)){ pred.1 <- predict2.CLM(x, eq = 1, newdata = newdata, type = "lpmatrix")
-				X1 <- pred.1$X1 ; colnames(X1) <- colnames(x$X1)
-                       X2s <- predict2.CLM(x, eq = 2, newdata = newdata, type = "lpmatrix") }
+if(!missing(newdata)){ pred.1 <- predict(x, eq = 1, newdata = newdata, type = "lpmatrix")
+				X1 <- pred.1 ; colnames(X1) <- colnames(x$X1)
+                       X2s <- predict(x, eq = 2, newdata = newdata, type = "lpmatrix") }
 
                        
 ##### newdata NOT included as inputs #####
@@ -829,7 +828,7 @@ if( x$VC$margins[2] %in% cont2par ){
       
       if( !is.null(x$X3) ){
       
-if(!missing(newdata)){ X3s <- predict2.CLM(x, eq = 3, newdata = newdata, type = "lpmatrix")}                     
+if(!missing(newdata)){ X3s <- predict(x, eq = 3, newdata = newdata, type = "lpmatrix")}                     
 if( missing(newdata)){ if(x$VC$ccss == "yes") X3s <- x$X3s else X3s <- x$X3}        
       
                       sigma2.star <- X3s %*% t(bs[, ((x$X1.d2 + x$X2.d2 + 1) : (x$X1.d2 + x$X2.d2 + x$X3.d2)) + CLM.shift2]) 
@@ -851,7 +850,7 @@ if( x$VC$margins[2] %in% cont3par ){
   
   if( !is.null(x$X3) ){
   
-if(!missing(newdata)){ X4s <- predict2.CLM(x, eq = 4, newdata = newdata, type = "lpmatrix")}                      
+if(!missing(newdata)){ X4s <- predict(x, eq = 4, newdata = newdata, type = "lpmatrix")}                      
 if( missing(newdata)){ if(x$VC$ccss == "yes") X4s <- x$X4s else X4s <- x$X4}     
   
              nu.st <- X4s %*% t(bs[, ((x$X1.d2 + x$X2.d2 + x$X3.d2 + 1) : (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)) + CLM.shift2]) 
@@ -880,7 +879,7 @@ if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*# ord - cont
 #if(y1 == 0 || y1 == 1){  
 
 p0s  <- pks                   
-p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2])$p2
+p2s  <- matrix( distrHsAT(y2, eta2s, sigma2, nu, x$margins[2])$p2 , dim(p0s)[1], n.sim)
 p12s <- p0s * p2s
 
 if(cond == 1) p12s <- p2s

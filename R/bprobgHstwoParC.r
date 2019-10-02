@@ -1,7 +1,7 @@
 bprobgHstwoParC <- function(params, respvec, VC, ps, AT = FALSE){
 
  
-  epsilon <- 0.0000001 
+  epsilon <- sqrt(.Machine$double.eps)
   max.p   <- 0.9999999
 
   eta1 <- VC$X1%*%params[1:VC$X1.d2]

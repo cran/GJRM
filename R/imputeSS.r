@@ -2,19 +2,23 @@ imputeSS <- function(x, m = 10){
 
 if(x$VC$Cont != "NO" && x$VC$ccss != "yes") stop("This function can only be used for a selection model.")
 
-epsilon <- 1e-07
+epsilon <- sqrt(.Machine$double.eps)
 
 posit    <- c(which(x$y1 == 0))
 vec.mi   <- list()
 yst.aver <- mean(x$y2) 
 margin   <- x$margins[2]
 
+if(margin %in% c("TW") ) stop("Tweedie not tested. Get in touch for details.") 
 
-#if(margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog","DGP") ) stop("Check next release for the tested versions of these develoments.")
+
+#if(margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog","DGP","DGPII") ) stop("Check next release for the tested versions of these develoments.")
 
 
-if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP") ) {yst.aver <- log(yst.aver); if(yst.aver == "-Inf") yst.aver <- log(1e-14) } 
-if(margin %in% c("BE") )                                           {yst.aver <- qlogis(mm(yst.aver)) }
+# tw not tested, sqrt would be better
+
+if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP","GPII","GPo","TW") ) {yst.aver <- log(yst.aver); if(yst.aver == "-Inf") yst.aver <- log(1e-14) } 
+if(margin %in% c("BE") )                                                {yst.aver <- qlogis(mm(yst.aver)) }
 
 
 #########################
@@ -88,7 +92,7 @@ teta   <- teta.tr(x$VC, x$X5s[s, ]%*%betahatSim[(l1 + l2 + l3 + l4 + 1):(l1 + l2
 
 y2 <- sim.resp(x$margins[2], 1, eta2, sigma2, nu, setseed = FALSE)
 
-list(p1 = p1, eta2 = eta2, sigma2 = sigma2, nu = nu, teta = teta, y2 = y2, margin = x$margins[2], BivD = x$BivD)
+list(p1 = p1, eta2 = eta2, sigma2 = sigma2, nu = nu, teta = teta, y2 = y2, margin = x$margins[2], BivD = x$BivD, sigma = sigma2)
 
 
 }
@@ -110,7 +114,9 @@ BivD   <- out.beta$BivD
 y2 <- y2.st 
 
 
-if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP") ) y2 <- esp.tr(y2.st, "LN")$vrb 
+# tw not tested, sqrt would be better
+
+if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP","GPII","GPo","TW") ) y2 <- esp.tr(y2.st, "LN")$vrb 
 if(margin %in% c("BE") )                                           y2 <- esp.tr(y2.st, "BE")$vrb
 
 ppdf <- distrHsAT(y2, eta2, sigma2, nu, margin)
@@ -177,14 +183,20 @@ if( margin == "ZTP"){
 }
 
 
-if( margin == "DGDP"){
+if( margin %in% c("DGP","DGPII")){
 
-mu2    <- c(exp(eta2))
+
+if( margin == "DGP")   mu2    <- c(eta2)
+if( margin == "DGPII") mu2    <- c(eta2^2)
+
+
 sigma2 <- c(sigma2)
 y2m <- seq(1, y2)                 
 
-     
-  pdf2FUNC2 <- function(y2, mu2, sigma2) (1 + sqrt(sigma2)*y2/mu2)^(-1/sqrt(sigma2)) - (1 + sqrt(sigma2)*(1+y2)/mu2)^(-1/sqrt(sigma2))  
+
+# sigma2 is sigma
+                                         
+  pdf2FUNC2 <- function(y2, mu2, sigma2) (1 + mu2*y2/sigma2)^(-1/mu2)    - (1 + mu2*(1+y2)/sigma2)^(-1/mu2)  
 
   p2  <- sum( as.numeric( pdf2FUNC2(y2m, mu2, sigma2) )  ) 
 
@@ -193,7 +205,7 @@ y2m <- seq(1, y2)
 
 
 ppd <- distrHsATDiscr(y2, eta2, sigma2, nu, margin, y2m = NULL, robust = FALSE) 
-if( margin %in% c("ZTP","DGP")) ppd$p2 <- p2
+if( margin %in% c("ZTP","DGP","DGPII")) ppd$p2 <- p2
 
 # test if it works for p2 when margin is ZTP
 
@@ -283,7 +295,7 @@ repeat{ #
    y2.imp[j] <- y2.st <- out.beta$y2 
    
 
-   if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP") ) {y2.st <- log(y2.imp[j]); if(y2.st == "-Inf") y2.st <- log(1e-14)} 
+   if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP","GPII","GPo","TW") ) {y2.st <- log(y2.imp[j]); if(y2.st == "-Inf") y2.st <- log(1e-14)} 
    if(margin %in% c("BE") )                                           {y2.st <- qlogis(mm(y2.imp[j]))}
  
 
@@ -296,7 +308,7 @@ if( margin %in% c("probit","logit","cloglog") ){
                                                 } 
  
 
-if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP") ){
+if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP","DGPII") ){
    
    
    test.oD <- NA
@@ -313,7 +325,7 @@ if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP") ){
 
 
 
-if(!(margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog","DGP")) ){
+if(!(margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog","DGP","DGPII")) ){
    
    f.g      <- obj.grad.hess(y2.st, out.beta)$value
    M.value  <- try(trust(obj.grad.hess, parinit = yst.aver, rinit = 1, rmax = 100, minimize = F, out.beta = out.beta)$value); if ('try-error' %in% class(M.value)) next

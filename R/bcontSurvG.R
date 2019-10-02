@@ -3,7 +3,7 @@ bcontSurvG <- function(params, respvec, VC, ps, AT = FALSE){
     monP <- monP1 <- k1 <- k2 <- 0; Veq1 <- Veq2 <- list()  
     monP2 <- matrix(0, length(params),length(params))
    
-    epsilon <- 0.0000001 
+    epsilon <- sqrt(.Machine$double.eps)
     rotConst <- 1
 
     params1 <- params[1:VC$X1.d2]
@@ -39,8 +39,8 @@ if( !is.null(VC$X3) ){
     indNeq1 <- as.numeric(Xd1P < 0)
     indNeq2 <- as.numeric(Xd2P < 0)
   
-    Xd1P <- ifelse(Xd1P < 1e-06, 1e-06, Xd1P ) 
-    Xd2P <- ifelse(Xd2P < 1e-06, 1e-06, Xd2P ) 
+    Xd1P <- ifelse(Xd1P < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), Xd1P ) 
+    Xd2P <- ifelse(Xd2P < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), Xd2P ) 
 
 ##################
 

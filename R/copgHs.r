@@ -877,7 +877,7 @@ bit1.th2         <- - bit1.th2
 
 
 
-epsilon <- 0.0000001 
+epsilon <- sqrt(.Machine$double.eps)
 max.p   <- 0.9999999
 
 # the bits below are probs
@@ -893,11 +893,11 @@ c.copula2.be1be2 <- ifelse(c.copula2.be1be2 < epsilon, epsilon, c.copula2.be1be2
 
 
 
-# this below is a safety check really
+# this below is a safety check, pretty ad-hoc
 
 ifef <- function(dv){
 
-epsilon <- 0.0000001 
+epsilon <- sqrt(.Machine$double.eps)
 dv <- ifelse(is.na(dv), epsilon, dv ) 
 dv <- ifelse(dv == Inf ,  8.218407e+20, dv )
 dv <- ifelse(dv == -Inf ,  -8.218407e+20, dv )

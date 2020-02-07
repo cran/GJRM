@@ -1,3 +1,7 @@
+version 0.2-2
+- copula models with ordinal and continuous resposnes implemented.
+- univariate survival models with mixed censoring implemented. 
+
 version 0.2-1
 - survival models with informative censoring.
 - models now estimate sigma instead of sigma2.

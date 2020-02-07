@@ -1,5 +1,5 @@
 gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,  
-                   margin = "N", surv = FALSE, cens = NULL, type.cens = "R", v.rB = NULL,  
+                   margin = "N", surv = FALSE, cens = NULL, type.cens = "R", upperB = NULL,  
                    robust = FALSE, rc = 3, lB = NULL, uB = NULL, infl.fac = 1, 
                    rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
                    gc.l = FALSE, parscale, extra.regI = "t", gev.par = -0.25,
@@ -17,6 +17,8 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
   if(!is.null(sp)) sp.fixed <- sp else sp.fixed <- NULL  
   #if(!is.null(sp) && robust == FALSE) stop("Smoothing parameters can not be fixed.")  
 
+  
+  v.rB <- upperB
   
   r.type <- "a"  
   i.rho <- sp <- qu.mag <- qu.mag1 <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- spgamlss1 <- indexT <- test.sv.inf <- fgam <- NULL  
@@ -96,7 +98,7 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
   
-  mf$v.rB <- mf$type.cens <- mf$sp.method <- mf$siginit <- mf$shinit <- mf$ordinal <- mf$sp <- mf$fp <- mf$lB <- mf$uB <- mf$margin2 <- mf$informative <- mf$inform.cov <- mf$knots <- mf$k.tvc <- mf$chunk.size <- mf$gev.par <- mf$surv <- mf$robust <- mf$rc <- mf$margin <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- NULL                           
+  mf$upperB <- mf$type.cens <- mf$sp.method <- mf$siginit <- mf$shinit <- mf$ordinal <- mf$sp <- mf$fp <- mf$lB <- mf$uB <- mf$margin2 <- mf$informative <- mf$inform.cov <- mf$knots <- mf$k.tvc <- mf$chunk.size <- mf$gev.par <- mf$surv <- mf$robust <- mf$rc <- mf$margin <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- NULL                           
   mf$drop.unused.levels <- drop.unused.levels
   
   #########
@@ -217,7 +219,7 @@ if(surv == TRUE && margin2 %in% bl && informative == "yes"){
    if( !is.null(siginit) ) esres[2] <- siginit 
    if( !is.null(shinit) )  esres[1] <- shinit  
 
-   data$estobXiGP <- esres[1] + runif(length(y1), min = 0, max = 0) # 0.01
+   data$estobXiGP <- esres[1] + y1/(mean(y1)*100) 
  
  }
  

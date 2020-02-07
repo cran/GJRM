@@ -16,7 +16,7 @@ have been parametrised according to Rigby and Stasinopoulos (2005).
 
 \usage{
 gamlss(formula, data = list(), weights = NULL, subset = NULL,  
-       margin = "N", surv = FALSE, cens = NULL, type.cens = "R", v.rB = NULL,
+       margin = "N", surv = FALSE, cens = NULL, type.cens = "R", upperB = NULL,
        robust = FALSE, rc = 3, lB = NULL, uB = NULL, infl.fac = 1, 
        rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
        gc.l = FALSE, parscale, extra.regI = "t", gev.par = -0.25,
@@ -59,7 +59,7 @@ gamlss(formula, data = list(), weights = NULL, subset = NULL,
  
 \item{type.cens}{Type of censoring mechanism. This can be "R", "L", "I" or "mixed".}
  
-\item{v.rB}{Variable name of right bound when \code{type.cens = "I"}.}
+\item{upperB}{Variable name of right/upper bound when \code{type.cens = "I"}.}
  
 \item{robust}{If \code{TRUE} then the robust version of the model is fitted.}
              

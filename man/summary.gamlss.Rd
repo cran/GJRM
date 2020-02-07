@@ -84,8 +84,8 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 \section{WARNINGS}{
 
 For all models implemented in the package inference is based on a Bayesian approach with properly defined effective degrees of freedom. This approach yields 
-intervals and p-values that exhibit good frequentist properties. For the ONLY case of
-robust models, the same calculations are carried out. However, more research is needed here. Therefore, the user should be cautious when interpreting
+intervals and p-values that exhibit good frequentist properties. For robust models, more research is needed to clarify certain inferential 
+aspects. Therefore, the user should be a bit more cautious when interpreting
 and drawing conclusions from intervals and p-values.
 
 } 

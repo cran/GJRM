@@ -1,4 +1,4 @@
-jc.probs1 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, epsilon){
+jc.probs1 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, epsilon, cumul = "no"){
 
 ######################################################################################################
 
@@ -271,8 +271,8 @@ if(x$margins[1] %in% c(x$VC$m2, x$VC$m3) && x$margins[2] %in% c(x$VC$m2, x$VC$m3
 
 if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d) && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){ #### DISCR - CONT ####
 
-C1  <- BiCDF(p1pdf1$p2, p2, x$nC, theta, dof) 
-C2  <- BiCDF(mm(p1pdf1$p2 - p1pdf1$pdf2), p2, x$nC, theta, dof)  
+C1  <- BiCDF(p1pdf1$p2, p2, x$nC, theta, dof); C2  <- 0 
+if(cumul == "no") C2  <- BiCDF(mm(p1pdf1$p2 - p1pdf1$pdf2), p2, x$nC, theta, dof)  
 p12 <- ifelse(C1 - C2 < epsilon, epsilon, C1 - C2) 
 
 if(cond == 1) p12 <- p12/p1pdf1$pdf2
@@ -868,8 +868,8 @@ if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- BiCDF(p1s[x$teta.ind2,], p2s[x$t
 if(x$margins[1] %in% c(x$VC$m1d,x$VC$m2d) && x$margins[2] %in% c(x$VC$m2,x$VC$m3)){ # DISCR - CONT
 
 
-if(x$VC$BivD %in% c("N","T")){ C1s <- matrix(BiCDF(p1s, p2s,       x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
-                               C2s <- matrix(BiCDF(p1s-pdf1s, p2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
+if(x$VC$BivD %in% c("N","T")){ C1s <- matrix(BiCDF(p1s, p2s,       x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim); C2s <- 0 
+                               if(cumul == "no") C2s <- matrix(BiCDF(mm(p1s-pdf1s), p2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
                                p12s <- ifelse(C1s - C2s < epsilon, epsilon, C1s - C2s)
 
                              }else{
@@ -901,8 +901,8 @@ p12s[x$teta.ind2,] <- ifelse(C1s[x$teta.ind2,] - C2s[x$teta.ind2,] < epsilon, ep
 
 
 
-if(!(x$BivD %in% x$BivD2)){ C1s <- matrix(BiCDF(p1s,       p2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
-                            C2s <- matrix(BiCDF(p1s-pdf1s, p2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)){ C1s <- matrix(BiCDF(p1s,       p2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim); C2s <- 0
+                            if(cumul == "no") C2s <- matrix(BiCDF(p1s-pdf1s, p2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
                             p12s <- ifelse(C1s - C2s < epsilon, epsilon, C1s - C2s)
                           }
 

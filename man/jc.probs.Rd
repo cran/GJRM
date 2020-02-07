@@ -22,7 +22,7 @@ using posterior simulation.}
 
 jc.probs(x, y1, y2, y3 = NULL, newdata, type = "joint", cond = 0,
          intervals = FALSE, n.sim = 100, prob.lev = 0.05, 
-         epsilon = 1e-07)
+         epsilon = 1e-07, cumul = "no")
 
 }
 
@@ -57,6 +57,9 @@ jc.probs(x, y1, y2, y3 = NULL, newdata, type = "joint", cond = 0,
 \item{prob.lev}{Overall probability of the left and right tails of the probabilities' distributions used for interval calculations.} 
   
 \item{epsilon}{Smallest zero allowed.} 
+
+\item{cumul}{Only used for discrete and continuous margins' case.} 
+
   
   
 }

@@ -7,7 +7,7 @@ bprobgHs,bprobgHstwoParC, mb, H.tri, g.tri, triprobgHs, H.triSS, g.triSS, tripro
 H.triESS, g.triESS, triprobgHsESS, pp, SS, bcontSurvGunivInform, rIC, bCopulaCLMgHsCont, pen,
 bprobgHsPO, bcorrec, bcorrecDiscr,  Xdpred, pred.mvt, pred.gp, inform.setup, cv.inform, PDef, ggm.Deriv, ggmtrust, ggm.DerivOPT1, ggm.DerivOPT2,
 bprobgHsSS, intB, rob.int, resp.CLM, ggmtrust.path, Dpens, Dpens2,
-bprobgHsContUniv,
+bprobgHsContUniv, lmc,
 copgHs, copgHs2, copgHs3, PosDefCor,
 logLik.SemiParBIV, logLik.ggmtrust,
 LM.bpm, hazsurv.plot, approx.CLM,
@@ -76,7 +76,7 @@ importFrom(Rmpfr,getPrec,mpfr,pmax)
 importFrom(mnormt, pmnorm)
 importFrom(graphics, axTicks, abline, hist, lines, par, polygon, plot, rug, points) 
 importFrom(grDevices, boxplot.stats, cm.colors, gray, heat.colors, terrain.colors, topo.colors, dev.new, dev.interactive, devAskNewPage)   
-importFrom(stats, median, qt, dpois, qpois, qlogis, plogis, dgamma, dlnorm, dlogis, dnorm, density, cor, coef, as.formula, aggregate.data.frame, integrate, 
+importFrom(stats, lm, median, qt, dpois, qpois, qlogis, plogis, dgamma, dlnorm, dlogis, dnorm, density, cor, coef, as.formula, aggregate.data.frame, integrate, 
            model.matrix, na.omit, na.pass, pbinom, pchisq, pgamma, plnorm, pnorm, printCoefmat,
            qnorm, qqnorm, quantile, residuals, rnorm, sd, uniroot, update, var, weighted.mean, dbeta, pbeta,
            ks.test, shapiro.test, runif, update.formula, qqplot, .checkMFClasses, delete.response,

@@ -1,5 +1,5 @@
-hazsurv.plot <- function(x, eq, newdata, type = "surv", intervals = TRUE, n.sim = 100, prob.lev = 0.05, 
-                         shade = FALSE, ylim, ylab, xlab, ls = 100, ...){
+hazsurv.plot <- function(x, eq, newdata, type = "surv", t.range = NULL, intervals = TRUE, n.sim = 100, prob.lev = 0.05, 
+                         shade = FALSE, ylim, ylab, xlab, ls = 100, baseline = FALSE, ...){
 
 pr <- h <- hs <- prs <- CIpr <- CIh <- poe <- poet <- NULL
 
@@ -22,14 +22,20 @@ if(eq == 1){
   
   #rlb <- range(x$y1)[1]
  
-  if(x$univar.gamlss == TRUE) rlb <- x$rangeSurv[1] else rlb <- range(x$y1)[1] 
+  if(is.null(t.range)){  if(x$univar.gamlss == TRUE) rlb <- x$rangeSurv[1] else rlb <- range(x$y1)[1] } else rlb <- t.range[1]   
  
   rlb <- ifelse(rlb < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), rlb)
   
-  tv   <- seq(rlb, range(x$y1)[2], length.out = ls)
+  
+  
+  if(is.null(t.range)){ 
+  
+  tv <- seq(rlb, range(x$y1)[2], length.out = ls)  
   
   if(x$univar.gamlss == TRUE) tv <- seq(rlb, x$rangeSurv[2], length.out = ls) else tv <- seq(rlb, range(x$y1)[2], length.out = ls)
 
+  
+  } else tv <- seq(rlb, t.range[2], length.out = ls)
   
   
   indp <- 1:x$VC$X1.d2
@@ -39,9 +45,9 @@ if(eq == 1){
 if(eq == 2){
   ntv  <- as.character(x$formula[[2]][2])
   
-  rlb <- range(x$y2)[1]
+  if(is.null(t.range)){ rlb <- range(x$y2)[1] } else rlb <- t.range[1] 
   rlb <- ifelse(rlb < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), rlb)
-  tv   <- seq(rlb, range(x$y2)[2], length.out = ls)  
+  if(is.null(t.range)){ tv   <- seq(rlb, range(x$y2)[2], length.out = ls) } else tv <- seq(rlb, t.range[2], length.out = ls)  
   
   indp <- (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)
   gob  <- x$gam2
@@ -52,6 +58,13 @@ names(ti) <- ntv
 
 newdata <- data.frame(ti, newdata)
 Xpred <- predict(x, newdata, eq = eq, type = "lpmatrix")
+
+if(baseline == TRUE){ Xd      <- Xdpred(gob, newdata, ntv)
+                      ind0    <- (colSums(Xd == 0) == dim(Xpred)[1])
+                      ind0[1] <- FALSE # intercept must stay
+                      Xpred[, ind0] <- 0
+                     } # should be general enough but it may need checking ...
+
 
 params1 <- x$coef.t[indp]
 eta1 <- Xpred%*%params1
@@ -108,7 +121,7 @@ if(intervals == TRUE){
 
 if(type == "hazard"){
 
-Xd <- Xdpred(gob, newdata, ntv)
+if(baseline == FALSE) Xd <- Xdpred(gob, newdata, ntv) # if true, already calculated above
 
 Xthe <- Xd%*%params1   
   

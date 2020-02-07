@@ -1,4 +1,5 @@
-jc.probs <- function(x, y1, y2, y3 = NULL, newdata, type = "joint", cond = 0, intervals = FALSE, n.sim = 100, prob.lev = 0.05, epsilon = 1e-07){
+jc.probs <- function(x, y1, y2, y3 = NULL, newdata, type = "joint", cond = 0, intervals = FALSE, n.sim = 100, prob.lev = 0.05, 
+                     epsilon = 1e-07, cumul = "no"){
 
 ######################################################################################################
 # preliminary checks
@@ -64,7 +65,7 @@ if( !(y3 %in% c(0,1)) ) stop("The value for y3 must be either 0 or 1.")
 ######################################################################################################
 if(x$triv == FALSE){
 
-if(x$VC$Cont == "YES" && x$surv == FALSE )              rr <- jc.probs1(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, epsilon)
+if(x$VC$Cont == "YES" && x$surv == FALSE )              rr <- jc.probs1(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, epsilon, cumul)
 
 
 if(x$VC$Cont == "NO" && !(x$margins[2] %in% bin.link) ){ 

@@ -5,9 +5,10 @@
 
 \usage{
 
-hazsurv.plot(x, eq, newdata, type = "surv", intervals = TRUE, 
+hazsurv.plot(x, eq, newdata, type = "surv", t.range = NULL, intervals = TRUE, 
              n.sim = 100, prob.lev = 0.05, 
-             shade = FALSE, ylim, ylab, xlab, ls = 100, ...)
+             shade = FALSE, ylim, ylab, xlab, ls = 100, 
+             baseline = FALSE, ...)
 
 
 
@@ -23,7 +24,9 @@ hazsurv.plot(x, eq, newdata, type = "surv", intervals = TRUE,
                  This must have one row and must be provided.}
 
   \item{type}{The plot to produce, either \code{"surv"}, \code{"hazard"} or \code{"cumhaz"}.}
-
+  
+  \item{t.range}{Time variable range to be considered for plotting. If \code{NULL} then it is determined automatically based on the observed data.}
+  
   \item{intervals}{If \code{TRUE} then intervals are also produced.}
 
   \item{n.sim}{Number of simulated coefficient vectors from the posterior distribution of the estimated model parameters. This is used
@@ -36,6 +39,9 @@ hazsurv.plot(x, eq, newdata, type = "surv", intervals = TRUE,
   \item{ylim, ylab, xlab}{Usual plot arguments.}
   
   \item{ls}{Length of sequence to use for time variable.}
+  
+  \item{baseline}{If baseline is desired; this will set all covariate/smooth effects to zero.}
+  
   
   \item{...}{Other arguments to pass to plot.}
 

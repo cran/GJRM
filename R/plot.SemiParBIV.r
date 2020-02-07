@@ -4,14 +4,14 @@ plot.SemiParBIV <- function(x, eq, ...){
 
  if(eq > x$l.flist) stop("The fitted model has a smaller number of equations.") 
 
- if(eq==1 && x$l.sp1==0) stop("There is no model component to plot.")   
- if(eq==2 && x$l.sp2==0) stop("There is no model component to plot.")   
- if(eq==3 && x$l.sp3==0) stop("There is no model component to plot.")    
- if(eq==4 && x$l.sp4==0) stop("There is no model component to plot.")   
- if(eq==5 && x$l.sp5==0) stop("There is no model component to plot.")   
- if(eq==6 && x$l.sp6==0) stop("There is no model component to plot.")   
- if(eq==7 && x$l.sp7==0) stop("There is no model component to plot.") 
- if(eq==8 && x$l.sp8==0) stop("There is no model component to plot.")   
+ #if(eq==1 && x$l.sp1==0) stop("There is no model component to plot.")   
+ #if(eq==2 && x$l.sp2==0) stop("There is no model component to plot.")   
+ #if(eq==3 && x$l.sp3==0) stop("There is no model component to plot.")    
+ #if(eq==4 && x$l.sp4==0) stop("There is no model component to plot.")   
+ #if(eq==5 && x$l.sp5==0) stop("There is no model component to plot.")   
+ #if(eq==6 && x$l.sp6==0) stop("There is no model component to plot.")   
+ #if(eq==7 && x$l.sp7==0) stop("There is no model component to plot.") 
+ #if(eq==8 && x$l.sp8==0) stop("There is no model component to plot.")   
 
 
   

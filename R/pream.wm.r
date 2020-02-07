@@ -2,6 +2,8 @@ pream.wm <- function(formula, margins, M, l.flist, type = "copR"){
   
   #if(margins[2] %in% c("GU", "rGU", "LO", "LN", "WEI","iG", "DAGUM", "SM", "BE", "FISK","TW") ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
   #scs <- c("WEI", "FISK", "LN", "LO", "N") # for survival models
+  #if(M$robust == TRUE) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
+
   
   scs <- c("WEI", "FISK") # for survival models
 
@@ -13,7 +15,7 @@ if(type == "ord"){
 
 
 #############################################################
-stop("Check next release for the ordinal version.") ####
+#stop("Check next release for the ordinal version.")     ####
 #############################################################
 
   if(M$BivD == "T" && (M$dof <=2 || M$dof > 249)) stop("dof must be a number greater than 2 and smaller than 249.")
@@ -58,8 +60,6 @@ if(type == "biv"){ # binary - cont/discr models #
 
   if(M$BivD == "T" && (M$dof <=2 || M$dof > 249)) stop("dof must be a number greater than 2 and smaller than 249.")
 
-  #if(M$intf == FALSE && margins[2] %in% c(M$m1d,M$m2d,M$m2,M$m3)) stop("Please use copulaReg() for models involving binary and continuous/discrete margins.")
-  #if(margins[2] %in% c(M$m2,M$m3,M$m1d,M$m2d) && M$Model == "BSS" ) stop("Please use function copulaSampleSel().")   
   
   if(!is.null(M$theta.fx) && M$BivD != "N") stop("This approach is not currently implemented for non-Gaussian bivariate distributions.")
   if(!is.null(M$theta.fx)) { if(M$Model != "B" && !(margins[2] %in% M$bl)) stop("Only bivariate Gaussian binary models with fixed theta are currenlty allowed for.")}
@@ -154,9 +154,6 @@ if(M$surv == TRUE){
 
   if( !(margins[1] %in% c(M$m2,M$m3,M$bl)) ) stop("The first marginal distribution must be either continuous or probit, PO or PH.")
   if( !(margins[2] %in% c(M$bl,scs)) )       stop("The second marginal distribution must be probit, PO or PH.")
-
-  #if(!(margins[1] %in% c(scs,M$bl)) || !(margins[2] %in% c(scs,M$bl))  ) stop("The marginal distributions must be WEI, FISK, probit, PO or PH.")
-  #if( (margins[1] %in% scs && margins[2] %in% M$bl) || (margins[1] %in% M$bl && margins[2] %in% scs) ) stop("You can not mix semiparametric and parametric margins.")
 
 
   if(margins[1] %in% c("TW") || margins[2] %in% c("TW") ) stop("Tweedie not yet allowed for. Get in touch for details.")   
@@ -297,13 +294,11 @@ if(M$surv == TRUE){
 
 ########################################################################################################################################  
 
-if(M$robust == TRUE) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
 
 if( M$margin %in% c("GP", "GPII", "GPo","DGP", "DGPII") ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")  
 
 
 ######################################################################################################################################## 
-# INTRODUCE CONDITION ON GP, DGP, DGPII
 
 }
   

@@ -37,9 +37,14 @@ if(margin == "GAi")   y <- rGA(   rsim,    mu =     eta1,     sigma = esp.tr(eta
 if(margin == "TW"){
 
     if(rsim == 1) y <- rTweedie(mu = exp(eta1), p = esp.tr(eta2, margin)$vrb, phi = exp(eta3))
-    if(rsim > 1){ # this needs to be generalised
+    if(rsim > 1){
 
       y <- NA
+      
+      if(length(eta1) == 1) eta1 <- rep(eta1, rsim)
+      if(length(eta2) == 1) eta2 <- rep(eta2, rsim)
+      if(length(eta3) == 1) eta3 <- rep(eta3, rsim)
+      
       for(i in 1:rsim){
         y[i] <- rTweedie(mu = exp(eta1[i]), p = esp.tr(eta2[i], margin)$vrb, phi = exp(eta3[i]))
                       }
@@ -63,7 +68,12 @@ if(margin %in% c("GP","GPII","GPo")){
              
              if(rsim > 1){
                 y <- NA
-                if(length(eta2) == 1) sigma <- rep(exp(eta2), rsim) 
+                
+                if(length(eta1) == 1) eta1 <- rep(eta1, rsim)
+                if(length(eta2) == 1) eta2 <- rep(eta2, rsim)
+                                
+                # if(length(eta2) == 1) sigma <- rep(exp(eta2), rsim) 
+                
                 for(i in 1:rsim){
                   if(margin == "GP")     y[i] <- rgpd(  1, loc = 0, shape = eta1[i],            scale = esp.tr(eta2[i], margin)$vrb)
                   if(margin == "GPII")   y[i] <- rgpd(  1, loc = 0, shape = exp(eta1[i]) - 0.5, scale = esp.tr(eta2[i], margin)$vrb)

@@ -1,8 +1,8 @@
 bcontSurvGcont2Surv <- function(params, respvec, VC, ps, AT = FALSE){
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
     rotConst <- 1
 
-    epsilon <- sqrt(.Machine$double.eps)
     etad <- etas1 <- etas2 <- l.ln <- NULL 
 
     params1 <- params[1:VC$X1.d2]
@@ -16,7 +16,7 @@ bcontSurvGcont2Surv <- function(params, respvec, VC, ps, AT = FALSE){
     etad <- etas1 <- etas2 <- l.ln <- NULL 
     
     Xd2P <- VC$Xd2%*%params2
-    Xd2P <- ifelse(Xd2P < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), Xd2P ) # safety thing, never used as per model definition
+    Xd2P <- ifelse(Xd2P < VC$min.dn, VC$min.dn, Xd2P ) # safety thing, never used as per model definition
     
 if(is.null(VC$X3)){  
     X3 <- X4 <- matrix(1, VC$n, 1)
@@ -94,7 +94,7 @@ nC2 <- VC$ct[which(VC$ct[,1] == Cop2),2]
 
 ##################
 
-  dHs1 <- distrHs(respvec$y1, eta1, sigma21, sigma21.st, nu = 1, nu.st = 1, margin2 = VC$margins[1], naive = FALSE)
+  dHs1 <- distrHs(respvec$y1, eta1, sigma21, sigma21.st, nu = 1, nu.st = 1, margin2 = VC$margins[1], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   pdf1 <- dHs1$pdf2
   p1   <- dHs1$p2
   derp1.dersigma21.st   <- dHs1$derp2.dersigma.st
@@ -109,7 +109,7 @@ nC2 <- VC$ct[which(VC$ct[,1] == Cop2),2]
   der2pdf1.dereta1dersigma21.st <- dHs1$der2pdf2.dereta2dersigma2.st
   der2p1.dereta1dersigma21.st   <- dHs1$der2p2.dereta2dersigma2.st
 
-  pd2      <- probmS(eta2, VC$margins[2]) 
+  pd2      <- probmS(eta2, VC$margins[2], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
   p2       <- pd2$pr 
   dS2eta2  <- pd2$dS
   d2S2eta2 <- pd2$d2S
@@ -117,29 +117,25 @@ nC2 <- VC$ct[which(VC$ct[,1] == Cop2),2]
 
 ##################
 
-  if( length(teta1) != 0) dH1 <- copgHs(p1[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof)
-  if( length(teta2) != 0) dH2 <- copgHs(p1[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof)
+  if( length(teta1) != 0) dH1 <- copgHs(p1[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  if( length(teta2) != 0) dH2 <- copgHs(p1[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   c.copula2.be1be2 <- c.copula.be1 <- c.copula.be2 <- p00 <- c.copula.theta <- c.copula.thet <- bit1.th2ATE <- NA
   
   if( length(teta1) != 0){ c.copula2.be1be2[teta.ind1] <- dH1$c.copula2.be1be2
                            c.copula.be1[teta.ind1]     <- dH1$c.copula.be1
-                           #c.copula.be2[teta.ind1]     <- dH1$c.copula.be2
                            c.copula.theta[teta.ind1]   <- dH1$c.copula.theta
                            c.copula.thet[teta.ind1]    <- dH1$c.copula.thet 
                            bit1.th2ATE[teta.ind1]      <- dH1$bit1.th2ATE
-                           #p00[teta.ind1] <- BiCDF(p1[teta.ind1], p2[teta.ind1], nC1, teta1, VC$dof) 
                          }
                          
 # CHECK THAT WE NEED ALL BITS ABOVE                         
   
   if( length(teta2) != 0){ c.copula2.be1be2[teta.ind2] <- dH2$c.copula2.be1be2  
                            c.copula.be1[teta.ind2]     <- dH2$c.copula.be1
-                           #c.copula.be2[teta.ind2]     <- dH2$c.copula.be2
                            c.copula.theta[teta.ind2]   <- dH2$c.copula.theta
                            c.copula.thet[teta.ind2]    <- dH2$c.copula.thet
                            bit1.th2ATE[teta.ind2]      <- dH2$bit1.th2ATE
-                           #p00[teta.ind2] <- BiCDF(p1[teta.ind2], p2[teta.ind2], nC2, teta2, VC$dof) 
                          }
  
 
@@ -529,7 +525,10 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
          list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, 
               l=S.res, l.ln = l.ln, l.par=l.par, ps = ps, 
               eta1=eta1, eta2=eta2, etad=etad, etas1 = sigma21.st, etas2 = 1, 
-              BivD=VC$BivD, p1 = p1, p2 = p2,
+              BivD=VC$BivD, p1 = p1, p2 = p2, pdf1 = pdf1, pdf2 = -dS2eta2,          
+              c.copula.be2 = c.copula.be2,
+              c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2, 
               dl.dbe1          = NULL,       
               dl.dbe2          = NULL,       
               dl.dteta.st      = NULL, 

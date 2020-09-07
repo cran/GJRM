@@ -1,11 +1,11 @@
 bprobgHsCont3SS <- function(params, respvec, VC, ps, AT = FALSE){
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
   eta1 <- VC$X1%*%params[1:VC$X1.d2]
   eta2 <- VC$X2%*%params[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)]
   etad <- etas <- etan <- NULL 
 
-  epsilon <- sqrt(.Machine$double.eps)
-  max.p   <- 0.9999999
+
   
   
 if(is.null(VC$X3)){  
@@ -26,14 +26,14 @@ if(!is.null(VC$X3)){
     sigma2    <- sstr1$vrb 
 
     
-sstr1 <- esp.tr(nu.st, VC$margins[2])  
+sstr1 <- enu.tr(nu.st, VC$margins[2])  
 nu.st <- sstr1$vrb.st 
 nu    <- sstr1$vrb 
 
     eta2 <- eta.tr(eta2, VC$margins[2])
     
 
- dHs  <- distrHs(respvec$y2, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[2], naive = FALSE)
+ dHs  <- distrHs(respvec$y2, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
  pdf2                         <- dHs$pdf2
  p2                           <- dHs$p2 
@@ -63,7 +63,7 @@ nu    <- sstr1$vrb
  der2p2.dersigma2.stdernu.st   <- dHs$der2p2.dersigma2.stdernu.st            
  der2pdf2.dersigma2.stdernu.st <- dHs$der2pdf2.sigma2.st2dernu.st 
   
-  pd1 <- probm(eta1, VC$margins[1], bc = TRUE) 
+  pd1 <- probm(eta1, VC$margins[1], bc = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
   
   p1 <- 1 - pd1$pr
 
@@ -76,7 +76,7 @@ teta    <- resT$teta
 
 ########################################################################################################
 
-dH <- copgHs(p1[VC$inde], p2, eta1 = NULL, eta2 = NULL, teta, teta.st, VC$BivD, VC$dof)
+dH <- copgHs(p1[VC$inde], p2, eta1 = NULL, eta2 = NULL, teta, teta.st, VC$BivD, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
 h <- dH$c.copula.be2  
 
@@ -346,7 +346,10 @@ dl.dteta.stt[VC$inde]  <- dl.dteta.st	;dl.dteta.st  <- dl.dteta.stt
               eta1 = eta1, eta2 = eta2, etad = etad, etan = etan,
               dl.dbe1=dl.dbe1, dl.dbe2=dl.dbe2, dl.dsigma.st = dl.dsigma.st, 
               dl.dnu.st = dl.dnu.st, dl.dteta.st = dl.dteta.st,
-              BivD=VC$BivD, p1=1-p1, p2=p2, theta.star = teta.st)      
+              BivD=VC$BivD,                             p1 = 1-p1, p2 = p2, pdf1 = pdf1, pdf2 = pdf2,          
+	      	                    c.copula.be2 = c.copula.be2,
+	      	                    c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2, theta.star = teta.st)      
 
 }
 

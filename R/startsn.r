@@ -1,5 +1,7 @@
 startsn <- function(margins, y1){
        
+      
+       
 log.nu.1 <- NULL      
 
 #  if( margins %in% c("GO") )  log.sig2.1 <- log((1/mean(y1))^2)  

@@ -1,4 +1,7 @@
-distrHsAT <- function(y2, eta2, sigma2, nu, margin2){
+distrHsAT <- function(y2, eta2, sigma2, nu, margin2,
+                      min.dn, min.pr, max.pr){
+
+
 
 
 # sigma2 is sigma
@@ -181,7 +184,7 @@ sigma    <- ifelse(sigma < 0.006, 0.006, sigma) # related to gamma function
 if(margin2 %in% c("GAi")){
 
 sigma <- ifelse(sigma < 0.006, 0.006, sigma) # related to gamma function
-eta2   <- ifelse(eta2 < 0.0000001, 0.0000001, eta2)
+eta2   <- ifelse(eta2 < 1e-07, 1e-07, eta2)
 
  pdf2  <-  dgamma(y2, shape = 1/sigma^2, scale = eta2 * sigma^2)       
     p2 <-  pgamma(y2, shape = 1/sigma^2, scale = eta2 * sigma^2)
@@ -204,7 +207,9 @@ pdf2 <- sigma*nu/y2*( ((y2/exp(eta2))^(sigma*nu)) /  ( (y2/exp(eta2))^sigma + 1 
 
 if(margin2 == "TW"){
 
-p2  <- 0 # to do in future
+
+
+
     
    
 aTW <- 1.001  
@@ -216,7 +221,21 @@ sigma.stTW <- log( (sigma - aTW) / (bTW - sigma) )
 
 TWob <- ldTweedie(y2, mu = mu, p = NA, phi = NA, rho = nu.stTW, theta = sigma.stTW, all.derivs = TRUE) 
 
-pdf2 <- exp(TWob[, 1])      
+pdf2 <- exp(TWob[, 1])   
+
+
+p2 <- NA
+
+
+if(length(sigma) == 1) sigma <- rep(sigma, length(y2))
+if(length(nu) == 1)    nu    <- rep(nu, length(y2))
+if(length(mu) == 1)    mu    <- rep(mu, length(y2))
+
+
+ 
+for(i in 1:length(y2)) p2[i] <- pTweed(y = y2[i], mu = mu[i], phi = nu[i], p = sigma[i])$d0 
+
+
     
 
 }
@@ -299,32 +318,12 @@ p2   <- ifelse( indx == TRUE, p2, 0)
 
 
 
-p2 <- mm(p2) 
-
-epsilon <- sqrt(.Machine$double.eps)
-pdf2 <- ifelse(pdf2 < epsilon, epsilon, pdf2 )
-
-
-ifef <- function(dv){
-
-epsilon <- sqrt(.Machine$double.eps)
-dv <- ifelse(is.na(dv), epsilon, dv ) 
-dv <- ifelse(dv == Inf ,  8.218407e+20, dv )
-dv <- ifelse(dv == -Inf ,  -8.218407e+20, dv )
-dv
-
-}
-
-# for safety
-
-pdf2 = ifef(pdf2)
-p2   = ifef(p2)
+pdf2 <- ifelse(pdf2 < min.dn, min.dn, pdf2)
+p2   <- mm(p2, min.pr = min.pr, max.pr = max.pr) 
 
 
 
-
-
-list(pdf2 = pdf2, p2 = p2)     
+list(pdf2 = ifef(pdf2), p2 = ifef(p2))     
 
 
 }

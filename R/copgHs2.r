@@ -1,4 +1,7 @@
-copgHs2 <- function(p1, p2, eta1 = NULL, eta2 = NULL, teta, teta.st, BivD, par2 = NULL){
+copgHs2 <- function(p1, p2, eta1 = NULL, eta2 = NULL, teta, teta.st, BivD, par2 = NULL,
+                    min.pr, max.pr){
+
+
 
 ########################################################################################
 # Rotations
@@ -141,31 +144,16 @@ c.copula.be2  <- 1 - c.copula.be2
 
 
 
-ifef <- function(dv){
-
-epsilon <- sqrt(.Machine$double.eps)
-dv <- ifelse(is.na(dv), epsilon, dv ) 
-dv <- ifelse(dv == Inf ,  8.218407e+20, dv )
-dv <- ifelse(dv == -Inf ,  -8.218407e+20, dv )
-dv
-
-}
-
-# safety check
-
-c.copula.be2 <- ifef(c.copula.be2)
 
 
-
-
-epsilon <- sqrt(.Machine$double.eps)
-max.p   <- 0.9999999
   
-c.copula.be2 <- ifelse(c.copula.be2 > max.p, max.p, c.copula.be2) 
-c.copula.be2 <- ifelse(c.copula.be2 < epsilon,     epsilon, c.copula.be2)
+c.copula.be2 <- mm(c.copula.be2, min.pr = min.pr, max.pr = max.pr) 
 
 
-list( c.copula.be2 = c.copula.be2 )     
+list( c.copula.be2 = ifef(c.copula.be2) )  
+
+
+
 
 
 }

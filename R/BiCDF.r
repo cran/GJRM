@@ -1,5 +1,7 @@
 BiCDF <- function (u1, u2, family, par1, par2 = NULL, test = TRUE){
 
+
+
 if(test == TRUE){
 
     if(is.null(u1) == TRUE || is.null(u2) == TRUE) stop("The margins are not set or have length zero.")
@@ -32,8 +34,8 @@ if(test == TRUE){
     if(family %in% c(3,7,11))                 res <- u2 - BCDF(1 - u1, u2, family, -par1)                  # 90
     if(family %in% c(5,9,13))                 res <- u1 - BCDF(u1, 1 - u2, family, -par1)                  # 270
 
-    res <- mm(res)
     res
+    
       
 }
 

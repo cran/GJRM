@@ -1,8 +1,9 @@
-copgHsAT <- function(p1, p2, teta, BivD, Ln = FALSE, par2 = NULL){
+copgHsAT <- function(p1, p2, teta, BivD, Ln = FALSE, par2 = NULL,
+                     min.dn, min.pr, max.pr){
+
 
 
 c.copula.be2 <- c.copula2.be1be2 <- 1
-
 
 ########################################################################################
 # Rotations
@@ -128,7 +129,7 @@ if(BivD %in% c("C90","J90","G90") )    c.copula.be2  <- 1 - c.copula.be2
 if(BivD %in% c("C180","J180","G180") ) c.copula.be2  <- 1 - c.copula.be2
 
 
-c.copula.be2 <- mm(c.copula.be2)
+c.copula.be2 <- mm(c.copula.be2, min.pr = min.pr, max.pr = max.pr)
 
 
 
@@ -263,9 +264,8 @@ c.copula2.be1be2 <- (1 - p1)^(-1 +
 #} 
 
 
-epsilon <- sqrt(.Machine$double.eps)
-max.p   <- 0.9999999
-c.copula2.be1be2 <- ifelse(c.copula2.be1be2 < epsilon, epsilon, c.copula2.be1be2)
+
+c.copula2.be1be2 <- ifelse(c.copula2.be1be2 < min.dn, min.dn, c.copula2.be1be2)
 
 
 
@@ -277,28 +277,7 @@ c.copula2.be1be2 <- ifelse(c.copula2.be1be2 < epsilon, epsilon, c.copula2.be1be2
 
 
 
-ifef <- function(dv){
-
-epsilon <- sqrt(.Machine$double.eps)
-dv <- ifelse(is.na(dv), epsilon, dv ) 
-dv <- ifelse(dv == Inf ,  8.218407e+20, dv )
-dv <- ifelse(dv == -Inf ,  -8.218407e+20, dv )
-dv 
-
-}
-
-# safety check
-
-c.copula.be2     <- ifef(c.copula.be2)
-c.copula2.be1be2 <- ifef(c.copula2.be1be2)
-
-
-
-
-
-
-
-list(c.copula.be2 = c.copula.be2, c.copula2.be1be2 = c.copula2.be1be2)     
+list(c.copula.be2 = ifef(c.copula.be2), c.copula2.be1be2 = ifef(c.copula2.be1be2))     
 
 
 }

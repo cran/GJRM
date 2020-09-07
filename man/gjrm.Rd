@@ -14,7 +14,7 @@ effects, copula and marginal distributions.
 \usage{
 gjrm(formula, data = list(), weights = NULL, subset = NULL,  
      BivD = "N", margins, Model, dof = 3, ordinal = FALSE,  
-     surv = FALSE, cens1 = NULL, cens2 = NULL, dep.cens = FALSE,
+     surv = FALSE, cens1 = NULL, cens2 = NULL, cens3 = NULL, dep.cens = FALSE,
      gamlssfit = FALSE, fp = FALSE, infl.fac = 1, 
      rinit = 1, rmax = 100, 
      iterlimsp = 50, tolsp = 1e-07,
@@ -22,7 +22,8 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
      k1.tvc = 0, k2.tvc = 0, knots = NULL,
      penCor = "unpen", sp.penCor = 3, 
      Chol = FALSE, gamma = 1, w.alasso = NULL,
-     drop.unused.levels = TRUE, ind.ord = FALSE)
+     drop.unused.levels = TRUE, ind.ord = FALSE,
+     min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999)
 }
 
 
@@ -81,6 +82,8 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
 \item{cens1}{Binary censoring indicator 1. This is required when \code{surv = TRUE}. This variable has to be equal to 1 if the event occurred and 0 otherwise.}
 
 \item{cens2}{Binary censoring indicator 2. This is required when \code{surv = TRUE}.}
+
+\item{cens3}{Binary censoring indicator employed only when \code{surv = TRUE}, \code{dep.cens = TRUE} and administrative censoring is present.}
 
 \item{dep.cens}{If TRUE then the dependence censored model is employed.} 
 
@@ -143,6 +146,19 @@ documentation of \code{trust} for more details.}
                           this may have to be turned off (only use if you know what you are doing).} 
  
 \item{ind.ord}{Joint ordinal model under independence.} 
+ 
+ \item{min.dn, min.pr, max.pr}{These values are used to set, depending on the model used for modelling, the minimum and maximum allowed 
+                              for the densities and probabilities; recall that the margins of copula models have to be in the range (0,1). These
+                              parameters are employed to avoid potential overflows/underflows in the calculations and the default 
+                              values seem to offer a good compromise. Function \code{conv.check()} provides some relevant  
+                              diagnostic information which can be used, for example, to check whether the lower bounds 
+                              of \code{min.dn} and \code{min.pr} have been reached. So based on this or if the user wishes to do some sensitivity 
+                              analysis then this can be easily carried out using these three arguments.
+                              However, the user has to be cautious. For instance, it would not make much sense to choose for \code{min.dn} and \code{min.pr} 
+                              values bigger than the default ones. Bear in mind that the bounds can be reached for ill-defined models. For 
+                              certain distributions/models, if convergence failure occurs and the bounds have been reached then the user
+                              can try a sensitivity analysis as mentioned above.}
+
  
 }
 
@@ -865,8 +881,8 @@ dataSim$z      <- z
 
 
 
-eq1 <- u1 ~ s(u1, bs = "mpi") + z1 + s(z2)
-eq2 <- u2 ~ s(u2, bs = "mpi") + z 
+eq1 <- u1 ~ s(log(u1), bs = "mpi") + z1 + s(z2)
+eq2 <- u2 ~ s(log(u2), bs = "mpi") + z 
 eq3 <-    ~ s(z2)
 
 out <- gjrm(list(eq1, eq2), data = dataSim, surv = TRUE,
@@ -903,13 +919,14 @@ plot(out, eq = 1, scale = 0, pages = 1)
 plot(out, eq = 2, scale = 0, pages = 1)
 
 hazsurv.plot(out, eq = 1, newdata = data.frame(z1 = 0, z2 = 0), 
-             shade = TRUE, n.sim = 1000)
+             shade = TRUE, n.sim = 100, baseline = TRUE)
 hazsurv.plot(out, eq = 1, newdata = data.frame(z1 = 0, z2 = 0), 
-             shade = TRUE, n.sim = 1000, type = "hazard")
+             shade = TRUE, n.sim = 100, type = "hazard", baseline = TRUE, 
+             intervals = FALSE)
 hazsurv.plot(out, eq = 2, newdata = data.frame(z = 0), 
-             shade = TRUE, n.sim = 1000)
+             shade = FALSE, n.sim = 100, baseline = TRUE)
 hazsurv.plot(out, eq = 2, newdata = data.frame(z = 0), 
-             shade = TRUE, n.sim = 1000, type = "hazard")
+             shade = TRUE, n.sim = 100, type = "hazard", baseline = TRUE)
  
 jc.probs(out, type = "joint", intervals = TRUE)[1:5,]
  

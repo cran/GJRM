@@ -88,7 +88,7 @@ if( is.null(object$VC$theta.fx) ){############
      
      if(object$VC$margins[2] %in% c("DAGUM","SM","TW")){
      
-     nu <- esp.tr(nu.st, object$VC$margins[2])$vrb  
+     nu <- enu.tr(nu.st, object$VC$margins[2])$vrb  
 
                                                   }
      
@@ -265,8 +265,8 @@ if(object$VC$margins[1] %in% cont3par && object$VC$margins[2] %in% cont3par ){
   
                 }   
    
-nu1 <- esp.tr(nu1.st, object$VC$margins[1])$vrb   
-nu2 <- esp.tr(nu2.st, object$VC$margins[2])$vrb   
+nu1 <- enu.tr(nu1.st, object$VC$margins[1])$vrb   
+nu2 <- enu.tr(nu2.st, object$VC$margins[2])$vrb   
 
 
    CInu1 <- rowQuantiles(nu1, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
@@ -289,7 +289,7 @@ if(object$VC$margins[1] %in% cont2par && object$VC$margins[2] %in% cont3par ){
   
                 }   
   
-nu2 <- esp.tr(nu2.st, object$VC$margins[2])$vrb   
+nu2 <- enu.tr(nu2.st, object$VC$margins[2])$vrb   
  
    
    CInu2 <- rowQuantiles(nu2, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
@@ -312,7 +312,7 @@ if(object$VC$margins[1] %in% c(cont3par) && object$VC$margins[2] %in% cont1par &
   
                 }   
   
-nu1 <- esp.tr(nu1.st, object$VC$margins[1])$vrb   
+nu1 <- enu.tr(nu1.st, object$VC$margins[1])$vrb   
  
    
    CInu1 <- rowQuantiles(nu1, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
@@ -344,7 +344,7 @@ if(object$VC$margins[1] %in% cont1par && object$VC$margins[2] %in% cont3par ){
   
                 }   
   
-nu2 <- esp.tr(nu2.st, object$VC$margins[2])$vrb   
+nu2 <- enu.tr(nu2.st, object$VC$margins[2])$vrb   
  
    
    CInu2 <- rowQuantiles(nu2, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
@@ -373,7 +373,7 @@ if(object$VC$margins[1] %in% cont3par && object$VC$margins[2] %in% cont2par ){
   
                 }   
   
-nu1 <- esp.tr(nu1.st, object$VC$margins[1])$vrb  
+nu1 <- enu.tr(nu1.st, object$VC$margins[1])$vrb  
 
    CInu1 <- rowQuantiles(nu1, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
    if( is.null(object$X3) ) CInu1 <- t(CInu1)
@@ -432,7 +432,7 @@ if(object$VC$margins[1] %in% cont3par){
   if(  is.null(object$X3) ) nu1.st <- t(as.matrix(bs[, lf]))
   if( !is.null(object$X3) ) nu1.st <- object$X3%*%t(bs[,(object$X1.d2 + object$X2.d2 + 1):(object$X1.d2 + object$X2.d2 + object$X3.d2)]) 
   
-  nu1 <- esp.tr(nu1.st, object$VC$margins[1])$vrb   
+  nu1 <- enu.tr(nu1.st, object$VC$margins[1])$vrb   
   
   CInu1 <- rowQuantiles(nu1, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
 
@@ -507,7 +507,7 @@ if(type == "copSS"){
      
      if(object$VC$margins[2] %in% c("DAGUM","SM","TW")){
      
-     nu <- esp.tr(nu.st, object$VC$margins[2])$vrb  
+     nu <- enu.tr(nu.st, object$VC$margins[2])$vrb  
 
      
      }

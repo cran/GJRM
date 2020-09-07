@@ -1,6 +1,5 @@
 Reg2Copost <- function(SemiParFit, VC, theta){
 
-
 thetaT <- theta 
 
 if(length(thetaT) > 1){

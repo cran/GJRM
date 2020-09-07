@@ -29,6 +29,7 @@ rob.int(x, rc, l.grid = 1000, tol = 1e-4, var.range = NULL)
 \item{var.range}{Range of values, min and max, to use in calculations.}
 
 
+
 }
 
 

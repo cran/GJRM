@@ -1,4 +1,5 @@
 bcontSurvGunivI <- function(params, respvec, VC, ps, AT = FALSE){
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
 monP <- monP1 <- monP2 <- k <- 0; V <- list()
 
@@ -14,12 +15,12 @@ etad <- etas1 <- etas2 <- l.ln <- NULL
    
     indN <- as.numeric(Xd1P < 0) 
 
-    Xd1P <- ifelse(Xd1P < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), Xd1P ) # safety check 
+    Xd1P <- ifelse(Xd1P < VC$min.dn, VC$min.dn, Xd1P ) # safety check 
 
 ##################
     
-pd1  <- probmS(eta1, VC$margins[1]) 
-pd2  <- probmS(eta2, VC$margins[1]) 
+pd1  <- probmS(eta1, VC$margins[1], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
+pd2  <- probmS(eta2, VC$margins[1], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
   
 p1       <- pd1$pr
 dS1eta1  <- pd1$dS
@@ -35,7 +36,7 @@ d3S2eta2 <- pd2$d3S
 ##################
 
 
-l.par <- VC$weights*( VC$cens*( log(-dS1eta1) + log(Xd1P) ) + (1 - VC$cens)*log(mm(p1-p2)) )   
+l.par <- VC$weights*( VC$cens*( log(-dS1eta1) + log(Xd1P) ) + (1 - VC$cens)*log(mm(p1-p2, min.pr = VC$min.pr, max.pr = VC$max.pr)) )   
 res   <- -sum(l.par)
 
 ##################
@@ -57,7 +58,7 @@ dl.dbe1 <- -VC$weights*(
 
    VC$cens*( c((dS1eta1*Xd1P)^-1)*(c(d2S1eta1*Xd1P)*dereta1derb1 + c(dS1eta1)*der2eta1dery1b1) ) + 
    
-   (1 - VC$cens)*c(mm(p1-p2))^-1*(c(dS1eta1)*dereta1derb1-c(dS2eta2)*dereta2derb1)    
+   (1 - VC$cens)*c(mm(p1-p2, min.pr = VC$min.pr, max.pr = VC$max.pr))^-1*(c(dS1eta1)*dereta1derb1-c(dS2eta2)*dereta2derb1)    
      
                        )
    
@@ -78,24 +79,24 @@ G <- colSums(dl.dbe1)
    crossprod(VC$weights*VC$cens*c(-Xd1P^-2)*der2eta1dery1b1, der2eta1dery1b1) +  
 
 
-  crossprod(c(VC$weights*(1 - VC$cens)*(mm(p1-p2)^-1*d2S1eta1))*dereta1derb1, dereta1derb1) +      ### 
+  crossprod(c(VC$weights*(1 - VC$cens)*(mm(p1-p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*d2S1eta1))*dereta1derb1, dereta1derb1) +      ### 
 
-  crossprod(c(VC$weights*(1 - VC$cens)*(-mm(p1-p2)^-1*d2S2eta2))*dereta2derb1, dereta2derb1) +  
+  crossprod(c(VC$weights*(1 - VC$cens)*(-mm(p1-p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*d2S2eta2))*dereta2derb1, dereta2derb1) +  
  
    
-     diag( colSums( t( t(c(VC$weights*(1 - VC$cens)*mm(p1-p2)^-1*dS1eta1)*VC$X1)*der2.par1 ) ) ) + 
+     diag( colSums( t( t(c(VC$weights*(1 - VC$cens)*mm(p1-p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*dS1eta1)*VC$X1)*der2.par1 ) ) ) + 
   
-     diag( colSums( t( t(c(VC$weights*(1 - VC$cens)*-mm(p1-p2)^-1*dS2eta2)*VC$X2)*der2.par1 ) ) ) +
+     diag( colSums( t( t(c(VC$weights*(1 - VC$cens)*-mm(p1-p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*dS2eta2)*VC$X2)*der2.par1 ) ) ) +
      
 
-   crossprod(c(VC$weights*(1 - VC$cens)*(-mm(p1-p2)^-2*dS1eta1^2))*dereta1derb1, dereta1derb1) +
+   crossprod(c(VC$weights*(1 - VC$cens)*(-mm(p1-p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*dS1eta1^2))*dereta1derb1, dereta1derb1) +
      
-   crossprod(c(VC$weights*(1 - VC$cens)*(-mm(p1-p2)^-2*dS2eta2^2))*dereta2derb1, dereta2derb1) +
+   crossprod(c(VC$weights*(1 - VC$cens)*(-mm(p1-p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*dS2eta2^2))*dereta2derb1, dereta2derb1) +
      
      
-   crossprod(c(VC$weights*(1 - VC$cens)*(mm(p1-p2)^-2*dS1eta1*dS2eta2))*dereta1derb1, dereta2derb1) +
+   crossprod(c(VC$weights*(1 - VC$cens)*(mm(p1-p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*dS1eta1*dS2eta2))*dereta1derb1, dereta2derb1) +
    
-   crossprod(c(VC$weights*(1 - VC$cens)*(mm(p1-p2)^-2*dS1eta1*dS2eta2))*dereta2derb1, dereta1derb1) 
+   crossprod(c(VC$weights*(1 - VC$cens)*(mm(p1-p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*dS1eta1*dS2eta2))*dereta2derb1, dereta1derb1) 
 
 
   )
@@ -121,7 +122,10 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
          list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, indN = indN, V = V, 
               l=S.res, l.ln = l.ln, l.par=l.par, ps = ps, k = VC$my.env$k, monP2 = monP2, params1 = params1,
               eta1=eta1, 
-              p1 = p1,
+                     p1 = p1, p2 = p2, pdf1 = -dS1eta1, pdf2 = -dS2eta2,          
+	                           c.copula.be2 = c.copula.be2,
+	                           c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2,
               dl.dbe1          = NULL,       
               dl.dbe2          = NULL,       
               dl.dteta.st      = NULL) 

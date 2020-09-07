@@ -19,8 +19,6 @@ m2  <- x$VC$m2
 m3  <- x$VC$m3 
 bin.link <- x$VC$bl  
 end <- 0
-epsilon <- sqrt(.Machine$double.eps)
-max.p   <- 0.9999999
 est.ATb <- NA
 indD <- list()
 
@@ -170,8 +168,8 @@ if(eq==2) ngam <- x$gam2
 # RR
 #############################################################################
 
-p.int1 <- probm(eti1, x$margins[eq])$pr 
-p.int0 <- probm(eti0, x$margins[eq])$pr  
+p.int1 <- probm(eti1, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
+p.int0 <- probm(eti0, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr  
 
 est.AT <- mean(p.int1, na.rm = TRUE) / mean(p.int0, na.rm = TRUE) 
                         
@@ -190,8 +188,8 @@ est.AT <- mean(p.int1, na.rm = TRUE) / mean(p.int0, na.rm = TRUE)
                            } 
 
 
- peti1s <- probm(eti1s, x$margins[eq])$pr   
- peti0s <- probm(eti0s, x$margins[eq])$pr 
+ peti1s <- probm(eti1s, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr   
+ peti0s <- probm(eti0s, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
 
  est.ATb <- colMeans(peti1s, na.rm = TRUE) / colMeans(peti0s, na.rm = TRUE) 
 
@@ -277,8 +275,8 @@ etins  <- lpm%*%coefes
 
 # lpm%*%bs[5, ind.int]
 
-fy1.y2[[i]]  <- mean( probm(eta1, x$margins[eq])$pr )
-fy1.y2S[[i]] <- colMeans( probm(etins, x$margins[eq])$pr  )
+fy1.y2[[i]]  <- mean( probm(eta1, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr )
+fy1.y2S[[i]] <- colMeans( probm(etins, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr  )
 
 }
 

@@ -1,14 +1,4 @@
-probmS <- function(eta, margin){ 
-
-#library(Deriv); library(numDeriv)
-#expr <- expression(   -((1 - exp(eta)) * exp(-exp(eta)) * exp(eta))   )
-#Simplify(D(D(expr, "eta"), "eta")) 
-#Simplify(D(expr, "eta")) 
-#func0 <- function(eta){ -((1 - exp(eta)) * exp(-exp(eta)) * exp(eta))  }
-#grad(func0 , eta)
-
-epsilon <- sqrt(.Machine$double.eps)
-  
+probmS <- function(eta, margin, min.dn, min.pr, max.pr){ 
 
 if( margin == "probit" ){
  
@@ -42,9 +32,11 @@ if( margin == "cloglog" ){ # to change
 }
 
 
-pr <- mm(pr) 
+pr <- mm(pr, min.pr = min.pr, max.pr = max.pr) 
 dS <- abs(dS)
-dS <- -ifelse(dS < epsilon, epsilon, dS )
+dS <- -ifelse(dS < min.dn, min.dn, dS )
+
+
 
 list(pr = pr, dS = dS, d2S = d2S, d3S = d3S)  
  

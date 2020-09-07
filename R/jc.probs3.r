@@ -1,4 +1,4 @@
-jc.probs3 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, epsilon){
+jc.probs3 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr){
 
 
 #############################################################################################
@@ -47,19 +47,19 @@ nC2 <- x$VC$ct[which(x$VC$ct[,1] == x$Cop2),2]
 p12 <- NA
 
 if( length(x$teta1) != 0){
-if(length(theta) > 1)  p12[x$teta.ind1] <- BiCDF(p1[x$teta.ind1], p2[x$teta.ind1], nC1, theta[x$teta.ind1])
-if(length(theta) == 1) p12[x$teta.ind1] <- BiCDF(p1[x$teta.ind1], p2[x$teta.ind1], nC1, theta)
+if(length(theta) > 1)  p12[x$teta.ind1] <- mm(BiCDF(p1[x$teta.ind1], p2[x$teta.ind1], nC1, theta[x$teta.ind1]), min.pr = min.pr, max.pr = max.pr  )
+if(length(theta) == 1) p12[x$teta.ind1] <- mm(BiCDF(p1[x$teta.ind1], p2[x$teta.ind1], nC1, theta), min.pr = min.pr, max.pr = max.pr  )
                           }
                        
 if( length(x$teta2) != 0){
-if(length(theta) > 1)  p12[x$teta.ind2] <- BiCDF(p1[x$teta.ind2], p2[x$teta.ind2], nC2, theta[x$teta.ind2])
-if(length(theta) == 1) p12[x$teta.ind2] <- BiCDF(p1[x$teta.ind2], p2[x$teta.ind2], nC2, theta)
+if(length(theta) > 1)  p12[x$teta.ind2] <- mm(BiCDF(p1[x$teta.ind2], p2[x$teta.ind2], nC2, theta[x$teta.ind2]), min.pr = min.pr, max.pr = max.pr  )
+if(length(theta) == 1) p12[x$teta.ind2] <- mm(BiCDF(p1[x$teta.ind2], p2[x$teta.ind2], nC2, theta), min.pr = min.pr, max.pr = max.pr  )
                           }                       
 
 }
 
 
-if(!(x$BivD %in% x$BivD2)) p12 <- BiCDF(p1, p2, x$nC, theta, dof) 
+if(!(x$BivD %in% x$BivD2)) p12 <- mm(BiCDF(p1, p2, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr  ) 
 
 
 
@@ -77,7 +77,7 @@ if(y1 == 1 && y2 == 1){
 
 if(y1 == 1 && y2 == 0){ 
 
-  p12 <- pmax(p1 - p12, epsilon)      
+  p12 <- pmax(p1 - p12, min.pr)      
   if(cond == 1) p12 <- p12/p1
   if(cond == 2) p12 <- p12/(1-p2)
 
@@ -85,7 +85,7 @@ if(y1 == 1 && y2 == 0){
 
 if(y1 == 0 && y2 == 1){ 
 
-  p12 <- pmax(p2 - p12, epsilon)      
+  p12 <- pmax(p2 - p12, min.pr)      
   if(cond == 1) p12 <- p12/(1-p1)
   if(cond == 2) p12 <- p12/p2
 
@@ -93,7 +93,7 @@ if(y1 == 0 && y2 == 1){
 
 if(y1 == 0 && y2 == 0){ 
 
-  p12 <- pmax(1 - p12 - pmax(p1 - p12, epsilon) - pmax(p2 - p12, epsilon) , epsilon)      
+  p12 <- pmax(1 - p12 - pmax(p1 - p12, min.pr) - pmax(p2 - p12, min.pr) , min.pr)      
   if(cond == 1) p12 <- p12/(1-p1)
   if(cond == 2) p12 <- p12/(1-p2)
 
@@ -127,8 +127,8 @@ if( missing(newdata)){ X1 <- x$X1
                        } 
 
 
-p1s <- probm( X1%*%t(bs[,1:x$X1.d2]), x$VC$margins[1])$pr 
-p2s <- probm(X2s%*%t(bs[,(x$X1.d2+1):(x$X1.d2+x$X2.d2)]) , x$VC$margins[2])$pr
+p1s <- probm( X1%*%t(bs[,1:x$X1.d2]), x$VC$margins[1],                      min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr 
+p2s <- probm(X2s%*%t(bs[,(x$X1.d2+1):(x$X1.d2+x$X2.d2)]) , x$VC$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
 
 #############  
 # thetas # this may have to be changed when we have dof
@@ -160,16 +160,16 @@ if( is.null(x$X3) ) est.RHOb <- matrix(rep(est.RHOb, each = dim(p1s)[1]), ncol =
 
 #############
 
-if(x$VC$BivD %in% c("N","T")) p12s <- matrix(BiCDF(p1s, p2s, x$nC, est.RHOb, dof, test = FALSE), dim(p1s)[1], n.sim) else{
+if(x$VC$BivD %in% c("N","T")) p12s <- matrix(mm(BiCDF(p1s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim) else{
 
-if(!(x$BivD %in% x$BivD2)) p12s <- matrix(BiCDF(p1s, p2s, x$nC, est.RHOb, dof, test = FALSE), dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)) p12s <- matrix(mm(BiCDF(p1s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
 
 if(x$BivD %in% x$BivD2){
 
 p12s <- matrix(NA, ncol = n.sim, nrow = dim(p1s)[1])
 
-if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- BiCDF(p1s[x$teta.ind1,], p2s[x$teta.ind1,], nC1,  est.RHOb[x$teta.ind1,])                  
-if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- BiCDF(p1s[x$teta.ind2,], p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,])
+if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- mm(BiCDF(p1s[x$teta.ind1,], p2s[x$teta.ind1,], nC1,  est.RHOb[x$teta.ind1,]), min.pr = min.pr, max.pr = max.pr  )                
+if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- mm(BiCDF(p1s[x$teta.ind2,], p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,]), min.pr = min.pr, max.pr = max.pr  )
                       
 }
 
@@ -194,7 +194,7 @@ if(y1 == 1 && y2 == 1){
 
 if(y1 == 1 && y2 == 0){ 
 
-  p12s <- pmax(p1s - p12s, epsilon)     
+  p12s <- pmax(p1s - p12s, min.pr)     
   if(cond == 1) p12s <- p12s/p1s
   if(cond == 2) p12s <- p12s/(1-p2s)
 
@@ -202,7 +202,7 @@ if(y1 == 1 && y2 == 0){
 
 if(y1 == 0 && y2 == 1){ 
 
-  p12s <- pmax(p2s - p12s, epsilon)      
+  p12s <- pmax(p2s - p12s, min.pr)      
   if(cond == 1) p12s <- p12s/(1-p1s)
   if(cond == 2) p12s <- p12s/p2s
 
@@ -210,7 +210,7 @@ if(y1 == 0 && y2 == 1){
 
 if(y1 == 0 && y2 == 0){ 
 
-  p12s <- pmax(1 - p12s - pmax(p1s - p12s, epsilon) - pmax(p2s - p12s, epsilon) , epsilon)      
+  p12s <- pmax(1 - p12s - pmax(p1s - p12s, min.pr) - pmax(p2s - p12s, min.pr) , min.pr)      
   if(cond == 1) p12s <- p12s/(1-p1s)
   if(cond == 2) p12s <- p12s/(1-p2s)
 
@@ -280,8 +280,8 @@ if(type == "independence"){
 
 if(!missing(newdata)){
 
-p1 <- probm( predict.SemiParBIV(x, eq = 1, newdata = newdata, type = "lpmatrix")%*%x$gam1$coefficients, x$VC$margins[1])$pr
-p2 <- probm( predict.SemiParBIV(x, eq = 2, newdata = newdata, type = "lpmatrix")%*%x$gam2$coefficients, x$VC$margins[2])$pr
+p1 <- probm( predict.SemiParBIV(x, eq = 1, newdata = newdata, type = "lpmatrix")%*%x$gam1$coefficients, x$VC$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
+p2 <- probm( predict.SemiParBIV(x, eq = 2, newdata = newdata, type = "lpmatrix")%*%x$gam2$coefficients, x$VC$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
 
 }
 
@@ -289,8 +289,8 @@ p2 <- probm( predict.SemiParBIV(x, eq = 2, newdata = newdata, type = "lpmatrix")
 
 if(missing(newdata)){
 
-p1 <- probm( predict.SemiParBIV(x, eq = 1, type = "lpmatrix")%*%x$gam1$coefficients, x$VC$margins[1])$pr
-p2 <- probm( predict.SemiParBIV(x, eq = 2, type = "lpmatrix")%*%x$gam2$coefficients, x$VC$margins[2])$pr
+p1 <- probm( predict.SemiParBIV(x, eq = 1, type = "lpmatrix")%*%x$gam1$coefficients, x$VC$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
+p2 <- probm( predict.SemiParBIV(x, eq = 2, type = "lpmatrix")%*%x$gam2$coefficients, x$VC$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
 
 
 }
@@ -347,8 +347,8 @@ bs2 <- rMVN(n.sim, mean = x$gam2$coefficients, sigma=x$gam2$Vp)
 
 if(!missing(newdata)){
 
-p1s <- probm( predict.SemiParBIV(x, eq = 1, newdata = newdata, type = "lpmatrix")%*%t(bs1[,1:x$X1.d2]), x$VC$margins[1])$pr
-p2s <- probm( predict.SemiParBIV(x, eq = 2, newdata = newdata, type = "lpmatrix")%*%t(bs2[,1:x$X2.d2]), x$VC$margins[2])$pr
+p1s <- probm( predict.SemiParBIV(x, eq = 1, newdata = newdata, type = "lpmatrix")%*%t(bs1[,1:x$X1.d2]), x$VC$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
+p2s <- probm( predict.SemiParBIV(x, eq = 2, newdata = newdata, type = "lpmatrix")%*%t(bs2[,1:x$X2.d2]), x$VC$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
 
 }
 
@@ -356,8 +356,8 @@ p2s <- probm( predict.SemiParBIV(x, eq = 2, newdata = newdata, type = "lpmatrix"
 
 if(missing(newdata)){
 
-p1s <- probm( predict.SemiParBIV(x, eq = 1, type = "lpmatrix")%*%t(bs1[,1:x$X1.d2]), x$VC$margins[1])$pr
-p2s <- probm( predict.SemiParBIV(x, eq = 2, type = "lpmatrix")%*%t(bs2[,1:x$X2.d2]), x$VC$margins[2])$pr
+p1s <- probm( predict.SemiParBIV(x, eq = 1, type = "lpmatrix")%*%t(bs1[,1:x$X1.d2]), x$VC$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
+p2s <- probm( predict.SemiParBIV(x, eq = 2, type = "lpmatrix")%*%t(bs2[,1:x$X2.d2]), x$VC$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
 
 
 }

@@ -42,7 +42,7 @@ if(VC$margins[2] %in% cont3par ){
 
 	if(VC$margins[2] %in% c("DAGUM","SM","TW")){
 
-		nu <- nu.a <- esp.tr(SemiParFit$fit$etan, VC$margins[2])$vrb
+		nu <- nu.a <- enu.tr(SemiParFit$fit$etan, VC$margins[2])$vrb
 		names(nu) <- names(nu.a) <- "nu"
                                               }  
  
@@ -85,7 +85,7 @@ if(VC$margins[2] %in% cont3par){
 SemiParFit$fit$etan <- VC$X4s%*%SemiParFit$fit$argument[(VC$X1.d2+VC$X2.d2+VC$X3.d2+1):(VC$X1.d2+VC$X2.d2+VC$X3.d2+VC$X4.d2)]
 SemiParFit$fit$etad <- VC$X5s%*%SemiParFit$fit$argument[(VC$X1.d2+VC$X2.d2+VC$X3.d2+VC$X4.d2+1):(VC$X1.d2+VC$X2.d2+VC$X3.d2+VC$X4.d2+VC$X5.d2)]
  
-  nu    <- esp.tr(SemiParFit$fit$etan, VC$margins[2])$vrb   
+  nu    <- enu.tr(SemiParFit$fit$etan, VC$margins[2])$vrb   
   theta <- teta.tr(VC, SemiParFit$fit$etad)$teta  
   nu.a <- mean(nu) 
  

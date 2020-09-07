@@ -1,6 +1,7 @@
 pen <- function(qu.mag, sp, VC, univ, l.splist){
 
 ##############################################################
+
     ma1 <- matrix(0,VC$gp1,VC$gp1)   
     if(l.splist$l.sp1 == 0) EQ1P <- adiag(ma1)
     

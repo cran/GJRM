@@ -1,14 +1,12 @@
 bprobgHsPO0 <- function(params, respvec, VC, ps){
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
-
-  epsilon <- sqrt(.Machine$double.eps)
-  max.p   <- 0.9999999
 
   eta1 <- VC$X1%*%params[1:VC$X1.d2]
   eta2 <- VC$X2%*%params[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)]
 
-  pd1 <- probm(eta1, VC$margins[1], only.pr = FALSE)
-  pd2 <- probm(eta2, VC$margins[2], only.pr = FALSE)
+  pd1 <- probm(eta1, VC$margins[1], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  pd2 <- probm(eta2, VC$margins[2], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   p1 <- pd1$pr; d.n1 <- pd1$d.n 
   p2 <- pd2$pr; d.n2 <- pd2$d.n  
@@ -20,11 +18,11 @@ bprobgHsPO0 <- function(params, respvec, VC, ps){
   
 teta.st <- teta <- 0  
   
-p11 <-  BiCDF(p1, p2, VC$nC, teta)
+p11 <-  mm(BiCDF(p1, p2, VC$nC, teta), min.pr = VC$min.pr, max.pr = VC$max.pr  )
 
 ########################################################################################################
 
-  cp11 <- pmax(1 - p11, epsilon)
+  cp11 <- mm(1 - p11, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   l.par <- VC$weights*( respvec$y1*log(p11) + respvec$cy*log(cp11) )
 
@@ -127,7 +125,10 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
               dl.dbe1=dl.dbe1, dl.dbe2=dl.dbe2,
               #d2l.be1.be1=d2l.be1.be1, d2l.be2.be2=d2l.be2.be2, 
               #d2l.be1.be2=d2l.be1.be2,
-              BivD=VC$BivD, p1=p1, p2=p2)      
+              BivD=VC$BivD, p1 = p1, p2 = p2, pdf1 = d.n1, pdf2 = d.n2,          
+	      	                    c.copula.be2 = c.copula.be2,
+	      	                    c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2)      
 
 }
 

@@ -15,28 +15,26 @@ g.triESS <- function(params, respvec, VC, TIn){
   cov2 <- TIn$theta13 - TIn$theta12 * TIn$theta23
   cov3 <- TIn$theta12 - TIn$theta13 * TIn$theta23
   
-  cov1 <- mmf(cov1)
-  cov2 <- mmf(cov2)
-  cov3 <- mmf(cov3)  
+  cov1 <- mmf(cov1, max.pr = VC$max.pr)
+  cov2 <- mmf(cov2, max.pr = VC$max.pr)
+  cov3 <- mmf(cov3, max.pr = VC$max.pr)  
   
   d.1 <- dnorm(TIn$mar1)
   d.2 <- dnorm(TIn$mar2)
   d.3 <- dnorm(TIn$mar3)
   
-  p.1.11  <- mm(pbinorm( TIn$mar2,   TIn$mar3, mean1 =   mean1[VC$inde], mean2 =   mean2[VC$inde], var1 = var1, var2 = var2, cov12 =   cov1) )            
-  p.1.10  <- mm(pbinorm( TIn$mar2,  -TIn$mar3, mean1 =   mean1[VC$inde], mean2 =  -mean2[VC$inde], var1 = var1, var2 = var2, cov12 =  -cov1) ) 
-  p.1.00  <- mm(pbinorm(-TIn$mar2,  -TIn$mar3, mean1 =  -mean1[VC$inde], mean2 =  -mean2[VC$inde], var1 = var1, var2 = var2, cov12 =   cov1) ) 
-  p.1.01  <- mm(pbinorm(-TIn$mar2,   TIn$mar3, mean1 =  -mean1[VC$inde], mean2 =   mean2[VC$inde], var1 = var1, var2 = var2, cov12 =  -cov1) )
+  p.1.11  <- mm(pbinorm( TIn$mar2,   TIn$mar3, mean1 =   mean1[VC$inde], mean2 =   mean2[VC$inde], var1 = var1, var2 = var2, cov12 =   cov1), min.pr = VC$min.pr, max.pr = VC$max.pr )            
+  p.1.10  <- mm(pbinorm( TIn$mar2,  -TIn$mar3, mean1 =   mean1[VC$inde], mean2 =  -mean2[VC$inde], var1 = var1, var2 = var2, cov12 =  -cov1), min.pr = VC$min.pr, max.pr = VC$max.pr ) 
+  p.1.00  <- mm(pbinorm(-TIn$mar2,  -TIn$mar3, mean1 =  -mean1[VC$inde], mean2 =  -mean2[VC$inde], var1 = var1, var2 = var2, cov12 =   cov1), min.pr = VC$min.pr, max.pr = VC$max.pr ) 
+  p.1.01  <- mm(pbinorm(-TIn$mar2,   TIn$mar3, mean1 =  -mean1[VC$inde], mean2 =   mean2[VC$inde], var1 = var1, var2 = var2, cov12 =  -cov1), min.pr = VC$min.pr, max.pr = VC$max.pr )
+  p.2.11  <- mm(pbinorm( TIn$mar1[VC$inde],   TIn$mar3, mean1 =   mean3, mean2 =   mean4, var1 = var1, var2 = var3, cov12 =   cov2) , min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p.2.10  <- mm(pbinorm( TIn$mar1[VC$inde],  -TIn$mar3, mean1 =   mean3, mean2 =  -mean4, var1 = var1, var2 = var3, cov12 =  -cov2) , min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p.3.11  <- mm(pbinorm( TIn$mar1[VC$inde],   TIn$mar2, mean1 =   mean5, mean2 =   mean6, var1 = var2, var2 = var3, cov12 =   cov3) , min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p.3.10  <- mm(pbinorm( TIn$mar1[VC$inde],  -TIn$mar2, mean1 =   mean5, mean2 =  -mean6, var1 = var2, var2 = var3, cov12 =  -cov3) , min.pr = VC$min.pr, max.pr = VC$max.pr) 
   
-  p.2.11  <- mm(pbinorm( TIn$mar1[VC$inde],   TIn$mar3, mean1 =   mean3, mean2 =   mean4, var1 = var1, var2 = var3, cov12 =   cov2) )
-  p.2.10  <- mm(pbinorm( TIn$mar1[VC$inde],  -TIn$mar3, mean1 =   mean3, mean2 =  -mean4, var1 = var1, var2 = var3, cov12 =  -cov2) )
-  
-  p.3.11  <- mm(pbinorm( TIn$mar1[VC$inde],   TIn$mar2, mean1 =   mean5, mean2 =   mean6, var1 = var2, var2 = var3, cov12 =   cov3) )
-  p.3.10  <- mm(pbinorm( TIn$mar1[VC$inde],  -TIn$mar2, mean1 =   mean5, mean2 =  -mean6, var1 = var2, var2 = var3, cov12 =  -cov3) ) 
-  
-  dmar1 <- probm(TIn$eta1, VC$margins[1], only.pr = FALSE)$d.n
-  dmar2 <- probm(TIn$eta2, VC$margins[2], only.pr = FALSE)$d.n
-  dmar3 <- probm(TIn$eta3, VC$margins[3], only.pr = FALSE)$d.n
+  dmar1 <- probm(TIn$eta1, VC$margins[1], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$d.n
+  dmar2 <- probm(TIn$eta2, VC$margins[2], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$d.n
+  dmar3 <- probm(TIn$eta3, VC$margins[3], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$d.n
   
   dF1.de1 <- (1/d.1) * dmar1
   dF2.de2 <- (1/d.2) * dmar2
@@ -74,13 +72,13 @@ g.triESS <- function(params, respvec, VC, TIn){
   sd.13   <- sqrt( deno / ( 1 - TIn$theta13^2 ) )
   sd.23   <- sqrt( deno / ( 1 - TIn$theta23^2 ) )
   
-  p12.g <- mm( pnorm( (TIn$mar3          - mean.12)/sd.12) )
-  p13.g <- mm( pnorm( (TIn$mar2          - mean.13)/sd.13) )
-  p23.g <- mm( pnorm( (TIn$mar1[VC$inde] - mean.23)/sd.23) )
+  p12.g <- mm( pnorm( (TIn$mar3          - mean.12)/sd.12) , min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p13.g <- mm( pnorm( (TIn$mar2          - mean.13)/sd.13) , min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p23.g <- mm( pnorm( (TIn$mar1[VC$inde] - mean.23)/sd.23) , min.pr = VC$min.pr, max.pr = VC$max.pr)
   
-  p12.g.c <- mm(1 - p12.g)
-  p13.g.c <- mm(1 - p13.g)
-  p23.g.c <- mm(1 - p23.g)
+  p12.g.c <- mm(1 - p12.g, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p13.g.c <- mm(1 - p13.g, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p23.g.c <- mm(1 - p23.g, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   
   d11.12 <- dbinorm( TIn$mar1[VC$inde],  TIn$mar2, cov12 =  TIn$theta12)

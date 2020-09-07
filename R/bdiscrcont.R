@@ -1,13 +1,11 @@
 bdiscrcont <- function(params, respvec, VC, ps, AT = FALSE){
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
     eta1 <- VC$X1%*%params[1:VC$X1.d2]
     eta2 <- VC$X2%*%params[(VC$X1.d2 + 1):(VC$X1.d2 + VC$X2.d2)]
     etad <- etas1 <- etas2 <- l.ln <- NULL 
   
-    epsilon <- sqrt(.Machine$double.eps)
-    max.p   <- 0.9999999
-    
-    
+ 
   if(is.null(VC$X3)){  
     sigma21.st <- etas1 <- params[(VC$X1.d2 + VC$X2.d2 + 1)]
     sigma22.st <- etas2 <- params[(VC$X1.d2 + VC$X2.d2 + 2)]
@@ -88,8 +86,8 @@ Cop2 <- Cop1Cop2R$Cop2
  
 ##################
 
-  dHs1 <- distrHsDiscr(respvec$y1, eta1, sigma21, sigma21.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = FALSE, y2m = VC$y1m)
-  dHs2 <-      distrHs(respvec$y2, eta2, sigma22, sigma22.st, nu = 1, nu.st = 1, margin2=VC$margins[2], naive = FALSE)
+  dHs1 <- distrHsDiscr(respvec$y1, eta1, sigma21, sigma21.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = FALSE, y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  dHs2 <-      distrHs(respvec$y2, eta2, sigma22, sigma22.st, nu = 1, nu.st = 1, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
   pdf1 <- dHs1$pdf2
   pdf2 <- dHs2$pdf2
@@ -98,21 +96,21 @@ Cop2 <- Cop1Cop2R$Cop2
   p2 <- dHs2$p2
   
   
-  if( length(teta1) != 0) dH11 <- copgHs(p1[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof)
-  if( length(teta2) != 0) dH12 <- copgHs(p1[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof)
+  if( length(teta1) != 0) dH11 <- copgHs(p1[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  if( length(teta2) != 0) dH12 <- copgHs(p1[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   h1  <- NA    
   if( length(teta1) != 0) h1[teta.ind1] <- dH11$c.copula.be2
   if( length(teta2) != 0) h1[teta.ind2] <- dH12$c.copula.be2      
     
 
-  if( length(teta1) != 0) dH21 <- copgHs(mm(p1[teta.ind1]-pdf1[teta.ind1]), p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof)
-  if( length(teta2) != 0) dH22 <- copgHs(mm(p1[teta.ind2]-pdf1[teta.ind2]), p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof)
+  if( length(teta1) != 0) dH21 <- copgHs(mm(p1[teta.ind1]-pdf1[teta.ind1], min.pr = VC$min.pr, max.pr = VC$max.pr), p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  if( length(teta2) != 0) dH22 <- copgHs(mm(p1[teta.ind2]-pdf1[teta.ind2], min.pr = VC$min.pr, max.pr = VC$max.pr), p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   h2  <- NA    
   if( length(teta1) != 0) h2[teta.ind1] <- dH21$c.copula.be2
   if( length(teta2) != 0) h2[teta.ind2] <- dH22$c.copula.be2    
   
   diffh1.h2 <- h1 - h2 
-  diffh1.h2 <- ifelse(diffh1.h2 < epsilon, epsilon, diffh1.h2)  
+  diffh1.h2 <- mm(diffh1.h2, min.pr = VC$min.pr, max.pr = VC$max.pr)  
 
   l.par <- VC$weights*( log(pdf2) + log(diffh1.h2) )
  
@@ -166,8 +164,8 @@ Cop2 <- Cop1Cop2R$Cop2
  if( length(teta1) != 0) BITS.H11 <- copgHsCont(p1[teta.ind1], p2[teta.ind1], teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof-2))
  if( length(teta2) != 0) BITS.H12 <- copgHsCont(p1[teta.ind2], p2[teta.ind2], teta2, teta.st2, Cop2, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof-2))
  
- if( length(teta1) != 0) BITS.H21 <- copgHsCont(mm(p1[teta.ind1]-pdf1[teta.ind1]), p2[teta.ind1], teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof-2)) 
- if( length(teta2) != 0) BITS.H22 <- copgHsCont(mm(p1[teta.ind2]-pdf1[teta.ind2]), p2[teta.ind2], teta2, teta.st2, Cop2, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof-2)) 
+ if( length(teta1) != 0) BITS.H21 <- copgHsCont(mm(p1[teta.ind1]-pdf1[teta.ind1], min.pr = VC$min.pr, max.pr = VC$max.pr), p2[teta.ind1], teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof-2)) 
+ if( length(teta2) != 0) BITS.H22 <- copgHsCont(mm(p1[teta.ind2]-pdf1[teta.ind2], min.pr = VC$min.pr, max.pr = VC$max.pr), p2[teta.ind2], teta2, teta.st2, Cop2, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof-2)) 
  
   der2h.derp1p1.H1 <- NA
   if( length(teta1) != 0) der2h.derp1p1.H1[teta.ind1] <- BITS.H11$der2h.derp1p1 
@@ -403,25 +401,25 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
   
 if( VC$margins[2] == "LN"){
 
-  dHs2 <- distrHsAT(exp(respvec$y2), eta2, sigma22, 1, margin2=VC$margins[2])
+  dHs2 <- distrHsAT(exp(respvec$y2), eta2, sigma22, 1, margin2=VC$margins[2], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   pdf2 <- dHs2$pdf2
   p2   <- dHs2$p2
   
-  if( length(teta1) != 0) dH11 <- copgHs(p1[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1)
-  if( length(teta2) != 0) dH12 <- copgHs(p1[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2)
+  if( length(teta1) != 0) dH11 <- copgHs(p1[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  if( length(teta2) != 0) dH12 <- copgHs(p1[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   h1  <- NA    
   if( length(teta1) != 0) h1[teta.ind1] <- dH11$c.copula.be2
   if( length(teta2) != 0) h1[teta.ind2] <- dH12$c.copula.be2      
     
 
-  if( length(teta1) != 0) dH21 <- copgHs(mm(p1[teta.ind1]-pdf1[teta.ind1]), p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1)
-  if( length(teta2) != 0) dH22 <- copgHs(mm(p1[teta.ind2]-pdf1[teta.ind2]), p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2)
+  if( length(teta1) != 0) dH21 <- copgHs(mm(p1[teta.ind1]-pdf1[teta.ind1], min.pr = VC$min.pr, max.pr = VC$max.pr), p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  if( length(teta2) != 0) dH22 <- copgHs(mm(p1[teta.ind2]-pdf1[teta.ind2], min.pr = VC$min.pr, max.pr = VC$max.pr), p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   h2  <- NA    
   if( length(teta1) != 0) h2[teta.ind1] <- dH21$c.copula.be2
   if( length(teta2) != 0) h2[teta.ind2] <- dH22$c.copula.be2    
   
   diffh1.h2 <- h1 - h2 
-  diffh1.h2 <- ifelse(diffh1.h2 < epsilon, epsilon, diffh1.h2)    
+  diffh1.h2 <- mm(diffh1.h2, min.pr = VC$min.pr, max.pr = VC$max.pr)    
 
   l.ln <- -sum( VC$weights*( log(pdf2) + log(diffh1.h2) ) )
 
@@ -433,7 +431,10 @@ if( VC$margins[2] == "LN"){
 
          list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l.ln = l.ln, l.par=l.par, ps = ps, 
               eta1=eta1, eta2=eta2, etad=etad, etas1 = etas1, etas2 = etas2, 
-              BivD=VC$BivD, p1 = p1, p2 = p2,
+              BivD=VC$BivD, p1 = p1, p2 = p2, pdf1 = pdf1, pdf2 = pdf2,          
+              c.copula.be2 = c.copula.be2,
+              c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2, 
               dl.dbe1          =dl.dbe1,       
               dl.dbe2          =dl.dbe2,       
               dl.dsigma21.st   =dl.dsigma21.st,

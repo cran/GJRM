@@ -24,7 +24,9 @@ gamlss(formula, data = list(), weights = NULL, subset = NULL,
        informative = "no", inform.cov = NULL, margin2 = "PH", 
        fp = FALSE, sp = NULL,
        drop.unused.levels = TRUE, siginit = NULL, shinit = NULL,
-       sp.method = "perf")
+       sp.method = "perf", hrate = NULL, d.lchrate = NULL, d.rchrate = NULL,
+       d.lchrate.td = NULL, d.rchrate.td = NULL, truncation.time = NULL,
+       min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.9999999, ygrid.tol = 1e-08)
 }
 
 
@@ -55,11 +57,13 @@ gamlss(formula, data = list(), weights = NULL, subset = NULL,
 \item{surv}{If \code{TRUE} then a survival model is fitted. Here margin can be "PH" (generalised proportional hazards), "PO" (generalised proportional odds), 
             "probit" (generalised probit).}
 
-\item{cens}{Binary censoring indicator. This is required when \code{surv = TRUE}. This variable has to be equal to 1 if the event occurred and 0 otherwise.}
+\item{cens}{This is required when \code{surv = TRUE}. When \code{type.cens} is different from \code{mixed}, this variable can be equal to 1 if the event occurred 
+            and 0 otherwise. If \code{type.cens = "mixed"} then \code{cens} is a mixed factor variable (made up of four possible 
+            categories: \code{I} for interval, \code{L} for left, \code{R} for right, and \code{U} for uncensored.}
  
 \item{type.cens}{Type of censoring mechanism. This can be "R", "L", "I" or "mixed".}
  
-\item{upperB}{Variable name of right/upper bound when \code{type.cens = "I"}.}
+\item{upperB}{Variable name of right/upper bound when \code{type.cens = "I"} or \code{type.cens = "mixed"} and interval censoring is present.}
  
 \item{robust}{If \code{TRUE} then the robust version of the model is fitted.}
              
@@ -117,6 +121,47 @@ documentation of \code{trust} for more details.}
 
 \item{sp.method}{Multiple smoothing automatic parameter selection is perf. efs is an alternative and only sensible option
                  for robust models.}
+                 
+\item{hrate}{Vector of population hazard rates computed at time of death of each uncensored patient. The length of \code{hrate} should be equal to the number of uncensored observations in the dataset. Needed in the context of excess hazard modelling when uncensored observations are present. Note that this includes left truncated uncensored observations as well.}          
+
+\item{d.lchrate}{Vector of differences of population cumulative excess hazards computed at the age of the patient when the left 
+                 censoring occurred and at the initial age of the patient. The length of \code{d.lchrate} should be equal to the number 
+                 of left and/or interval censored observations in the dataset. Needed in the context of excess hazard modelling 
+                 if left censored and/or interval censored observations are present. In the latter case, \code{d.rchrate} also need be provided.}
+
+\item{d.rchrate}{Vector of differences of population cumulative excess hazards computed at the age of the patient when the at the right 
+                 interval censoring time and at the initial age of the patient. The length of \code{d.rchrate} should be equal to the number 
+                 of right censored and/or interval censored observations in the dataset. Needed in the context of excess hazard modelling 
+                 if right censored and/or interval censored observations are present. In the latter case, \code{d.lchrate} also need be provided.}
+
+\item{d.lchrate.td}{Vector of differences of population cumulative excess hazards computed at the age of the patient when the left 
+                   censoring occurred and at the age of the patient when the truncation occurred. The length of \code{d.lchrate.td} should be 
+                   equal to the number of left truncated left censored and/or left truncated interval censored observations in 
+                   the dataset. Needed in the context of excess hazard modelling if left truncated left censored and/or left truncated 
+                   interval censored observations are present. In the latter case, \code{d.rchrate.td} also need be provided.}
+
+\item{d.rchrate.td}{Vector of differences of population cumulative excess hazards computed at the age of the patient when the right 
+                   censoring occurred and at the age of the patient when the truncation occurred. The length of \code{d.rchrate.td} should be 
+                   equal to the number of left truncated right censored and/or left truncated interval censored observations in the dataset. Needed in 
+                   the context of excess hazard modelling if left truncated right censored and/or left truncated interval censored 
+                   observations are present. In the latter case, \code{d.lchrate.td} also need be provided.}
+
+\item{truncation.time}{Variable name of truncation time.}
+
+            
+\item{min.dn, min.pr, max.pr}{These values are used to set, depending on the model used for modelling, the minimum and maximum allowed 
+                              for the densities and probabilities. These
+                              parameters are employed to avoid potential overflows/underflows in the calculations and the default 
+                              values seem to offer a good compromise. Function \code{conv.check()} provides some relevant  
+                              diagnostic information which can be used, for example, to check whether the lower bounds 
+                              of \code{min.dn} and \code{min.pr} have been reached. So based on this or if the user wishes to do some sensitivity 
+                              analysis then this can be easily carried out using these three arguments.
+                              However, the user has to be cautious. For instance, it would not make much sense to choose for \code{min.dn} and \code{min.pr} 
+                              values bigger than the default ones. Bear in mind that the bounds can be reached for ill-defined models. For 
+                              certain distributions/models, if convergence failure occurs and the bounds have been reached then the user
+                              can try a sensitivity analysis as mentioned above.}
+
+\item{ygrid.tol}{Tolerance used to choose grid of response values for robust discrete models. Values smaller than 1e-160 are not allowed for.}
 
 
 }
@@ -319,9 +364,9 @@ gevpeta <- gevpeta[gevpetaIND]
 
 pr <- exp(-(1 + gevpeta)^(-1/gev.par))
 
-##################################
-## Flexible survival model example
-##################################
+###################################
+## Flexible survival model examples
+###################################
 
 library(GJRM)
 
@@ -335,7 +380,7 @@ c  <- runif(n, 3, 8)
 u  <- runif(n, 0, 1)
 z1 <- rbinom(n, 1, 0.5)
 z2 <- runif(n, 0, 1)
-t <- rep(NA, n)
+t  <- rep(NA, n)
 
 beta_0 <- -0.2357
 beta_1 <- 1
@@ -357,16 +402,19 @@ u       <- apply(cbind(t, c), 1, min)
 dataSim <- data.frame(u, delta, z1, z2)
 1-mean(delta) # average censoring rate
 
-out <- gamlss(list(u ~ s(u, bs = "mpi") + z1 + s(z2) ), data = dataSim, 
+# log(u) helps obtaining smoother hazards
+
+out <- gamlss(list(u ~ s(log(u), bs = "mpi") + z1 + s(z2) ), data = dataSim, 
               surv = TRUE, margin = "PH", cens = delta)
 post.check(out)
 summary(out)
 AIC(out)
 BIC(out)
 plot(out, eq = 1, scale = 0, pages = 1)
-hazsurv.plot(out, newdata = data.frame(z1 = 0, z2 = 0), shade = TRUE, n.sim = 1000)
+hazsurv.plot(out, newdata = data.frame(z1 = 0, z2 = 0), shade = TRUE, 
+             n.sim = 1000, baseline = TRUE)
 hazsurv.plot(out, type = "hazard", newdata = data.frame(z1 = 0, z2 = 0), 
-             shade = TRUE, n.sim = 1000)
+             shade = TRUE, n.sim = 1000, baseline = TRUE)
 
 out1 <- gam(u ~ z1 + s(z2), family = cox.ph(), 
             data = dataSim, weights = delta)
@@ -411,23 +459,104 @@ u       <- apply(cbind(t, c), 1, min)
 dataSim <- data.frame(u, delta, z)
 1-mean(delta) # average censoring rate
 
-out <- gamlss(list(u ~ s(u, bs = "mpi") + z ), data = dataSim, surv = TRUE, 
+out <- gamlss(list(u ~ s(log(u), bs = "mpi") + z ), data = dataSim, surv = TRUE, 
               margin = "PO", cens = delta)
 post.check(out)
 summary(out)
 AIC(out)
 BIC(out)
 plot(out, eq = 1, scale = 0)
-hazsurv.plot(out, newdata = data.frame(z =0), shade = TRUE, n.sim = 1000)
+hazsurv.plot(out, newdata = data.frame(z = 0), shade = TRUE, n.sim = 1000,
+             baseline = TRUE)
 hazsurv.plot(out, type = "hazard", newdata = data.frame(z = 0), 
              shade = TRUE, n.sim = 1000)
+             
+                          
+#############################
+## Mixed censoring example ##
+#############################             
+             
+f1 <- function(t, u, z1, z2, z3, z4, s1, s2){ 
 
-# note that the Fisk is implemented as AFT
-# as using the PH parametrisation makes
-# computation unstable
-out1 <- gamlss(list(u ~ z), data = dataSim, surv = TRUE, 
-               margin = "FISK", cens = delta)
+    S_0 <- 0.7 * exp(-0.03*t^1.8) + 0.3*exp(-0.3*t^2.5)
+   
+    exp( -exp(log(-log(S_0)) + 1.3*z1 + 0.5*z2 + s1(z3) + s2(z4)  ) ) - u   
+            
+  }
+  
+   
+datagen <- function(n, z1, z2, z3, z4, s1, s2, f1){
+  
+  u <- runif(n, 0, 1)
+  t <- rep(NA, n)
+  
+  for (i in 1:n) t[i] <- uniroot(f1, c(0, 100), tol = .Machine$double.eps^0.5, 
+                                 u = u[i], s1 = s1, s2 = s2, z1 = z1[i], z2 = z2[i], 
+                                 z3 = z3[i], z4 = z4[i], extendInt = "yes")$root
+ 
+  c1 <-      runif(n, 0, 2)
+  c2 <- c1 + runif(n, 0, 6) 
+  
+  df <- data.frame(u1 = t, u2 = t, cens = character(n), stringsAsFactors = FALSE)
 
+for (i in 1:n){
+
+  if(t[i] <= c1[i]) {
+        df[i, 1] <- c1[i]
+        df[i, 2] <- NA
+        df[i, 3] <- "L"
+       
+  }else if(c1[i] < t[i] && t[i] <= c2[i]){
+        df[i, 1] <- c1[i]
+        df[i, 2] <- c2[i]
+        df[i, 3] <- "I"
+        
+  }else if(t[i] > c2[i]){
+        df[i, 1] <- c2[i]
+        df[i, 2] <- NA
+        df[i, 3] <- "R"}
+
+}
+
+uncens <- (df[, 3] \%in\% c("L", "I")) + (rbinom(n, 1, 0.2) == 1) == 2 
+
+df[uncens, 1] <- t[uncens]
+df[uncens, 2] <- NA
+df[uncens, 3] <- "U"
+
+dataSim <- data.frame(u1 = df$u1, u2 = df$u2, cens = as.factor(df$cens), z1, z2, z3, z4, t)
+dataSim
+  
+}
+
+set.seed(0)
+
+n      <- 1000
+SigmaC <- matrix(0.5, 4, 4); diag(SigmaC) <- 1
+cov    <- rMVN(n, rep(0,4), SigmaC)
+cov    <- pnorm(cov)
+z1     <- round(cov[, 1])
+z2     <- round(cov[, 2])
+z3     <- cov[, 3]
+z4     <- cov[, 4]
+s1     <- function(x) -0.075*exp(3.2 * x) 
+s2     <- function(x) sin(2*pi*x) 
+ 
+eq1    <- u1 ~ s(log(u1), bs = "mpi") + z1 + z2 + s(z3) + s(z4)
+
+dataSim <- datagen(n, z1, z2, z3, z4, s1, s2, f1)
+
+out <- gamlss(list(eq1), data = dataSim, surv = TRUE, margin = "PH", 
+              cens = cens, type.cen = "mixed", upperB = "u2")
+
+conv.check(out)
+summary(out)
+plot(out, eq = 1, scale = 0, pages = 1)             
+  
+ndf <- data.frame(z1 = 1, z2 = 0, z3 = 0.2, z4 = 0.5)
+
+hazsurv.plot(out, eq = 1, newdata = ndf, type = "surv")
+hazsurv.plot(out, eq = 1, newdata = ndf, type = "hazard", n.sim = 1000)         
 }
 
 }

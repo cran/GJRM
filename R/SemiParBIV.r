@@ -4,13 +4,17 @@ SemiParBIV <- function(formula, data = list(), weights = NULL, subset = NULL,
                              fp = FALSE, hess = TRUE, infl.fac = 1, theta.fx = NULL, 
                              rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
                              gc.l = FALSE, parscale, extra.regI = "t", intf = FALSE, knots = NULL,
-                             drop.unused.levels = TRUE){
+                             drop.unused.levels = TRUE,
+                             min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999){
   
   ##########################################################################################################################
   # model set up and starting values
   ##########################################################################################################################
   
   i.rho <- sp <- qu.mag <- n.sel <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- inde <- y2m <- NULL  
+  
+  y00 <- y10 <- y0p <- y1p <- gam2TW <- NULL # for binary - tweedie margins 
+  
   end <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- i.rho <- 0
   gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- gamlss2 <- dof.st <- NULL
   gamlss2 <- NULL
@@ -90,7 +94,7 @@ if(BivD %in% BivD2){
   fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
-  mf$ordinal <- mf$knots <- mf$dof <- mf$intf <- mf$theta.fx <- mf$Model <- mf$BivD <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
+  mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$ordinal <- mf$knots <- mf$dof <- mf$intf <- mf$theta.fx <- mf$Model <- mf$BivD <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
   mf$drop.unused.levels <- drop.unused.levels
   
   if(Model=="BSS") mf$na.action <- na.pass
@@ -194,10 +198,25 @@ if(BivD %in% BivD2){
     l.sp2 <- length(gam2$sp)
     if(l.sp2 != 0) sp2 <- gam2$sp
     
-    cy <- 1 - y1
+    if(margins[2] != "TW") cy <- 1 - y1
     
-  } 
+       
+       if(margins[2] == "TW"){
+    
+         gam2TW <- eval(substitute(gam(formula[-c(1,5)], gamma = infl.fac, weights = weights, data = data, knots = knots, drop.unused.levels = drop.unused.levels, family = twlss()), list(weights = weights)))
 
+         y2b <- y2 > 0
+    
+         y00 <- (1 - y1)*(1 - y2b) 
+         y10 <-       y1*(1 - y2b)
+         y0p <- (1 - y1)*y2b 
+         y1p <-       y1*y2b    
+    
+       }
+   
+  } 
+  
+  
  ##############################################################
  # Equation 2 for BSS 
  ##############################################################  
@@ -213,7 +232,7 @@ if(BivD %in% BivD2){
 # TEST
 ######
 X2s <- try(predict.gam(gam2, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
-if(class(X2s)=="try-error") stop("Check that the numbers of factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?SemiParBIV for more information.") 
+if(any(class(X2s)=="try-error")) stop("Check that the numbers of factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?SemiParBIV for more information.") 
 ######  
   
   X2.d2 <- length(gam2$coefficients)
@@ -290,8 +309,8 @@ names(i.rho) <- "theta.star"
 # Starting values for whole parameter vector
 ##############################################################
            
-         
-           
+if(margins[2] != "TW"){  
+          
 if(margins[1] %in% bl && margins[2] %in% c(bl,m1d) && Model %in% c("B","BPO") && is.null(theta.fx)) start.v <- c(gam1$coefficients, gam2$coefficients, i.rho) 
 
 if(Model == "BSS")  start.v <- c(gam1$coefficients, c.gam2, i.rho) 
@@ -306,14 +325,17 @@ if(margins[1] %in% bl && margins[2] %in% c(m2,m3,m2d) ){
      
    if(margins[2] %in% c(m2,m2d)) start.v <- c(gam1$coefficients, gam2$coefficients, log.sig2,         i.rho)        
    if(margins[2] %in% m3)        start.v <- c(gam1$coefficients, gam2$coefficients, log.sig2, log.nu, i.rho)                                  
-
-                                                       } 
-    
-  
+   
+                                                       }       
+} 
+ 
  
 ##############################################################  
   
 if(l.flist > 2){  
+
+if(margins[2] == "TW") log.nu <- log.sig2 <- 0.1
+
  
 vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2 = log.sig2, log.nu = log.nu, n = n, drop.unused.levels = drop.unused.levels)  
   
@@ -334,8 +356,21 @@ vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2 = log.sig2, log.nu 
     sp6 = overall.svGR$sp6; sp7 = overall.svGR$sp7; sp8 = overall.svGR$sp8
     X3s = overall.svGR$X3s; X4s = overall.svGR$X4s
   
-  
-  
+
+    if(margins[2] == "TW"){  
+    
+          gamlssfit <- FALSE # no need since I already use start.v from gam2TW 
+    
+          nams <- names(start.v) 
+          start.v <- c(gam1$coefficients, gam2TW$coefficients, gam5$coefficients)
+          names(start.v) <- nams   
+
+          if(l.sp2 != 0){ sp2 <- gam2TW$sp[1:l.sp2];                                     names(sp2) <- names(gam2$sp)}    
+          if(l.sp3 != 0){ sp3 <- gam2TW$sp[(l.sp2 + 1):(l.sp2 + l.sp3)];                 names(sp3) <- names(gam3$sp)}
+          if(l.sp4 != 0){ sp4 <- gam2TW$sp[(l.sp2 + l.sp3 + 1):(l.sp2 + l.sp3 + l.sp4)]; names(sp4) <- names(gam4$sp)}
+                                                                                           
+                          }
+
 }  
   
   
@@ -371,7 +406,8 @@ if(missing(parscale)) parscale <- 1
                   cy1.y2 = cy1.y2, 
                   cy1.cy2 = cy1.cy2, 
                   cy1 = cy1,
-                  cy = cy, univ = 0)
+                  cy = cy, univ = 0,
+                  y00 = y00, y10 = y10, y0p = y0p, y1p = y1p)
 
   my.env <- new.env()
   my.env$signind <- 1
@@ -438,7 +474,10 @@ if(missing(parscale)) parscale <- 1
              X2s = X2s, X3s = X3s, triv = FALSE, y2m = y2m,
              theta.fx = theta.fx, i.rho = i.rho, 
              BivD2 = BivD2, cta = cta, ct = ct, zerov = -10, surv.flex = surv.flex, gp2.inf = NULL,
-             informative = "no") # original n only needed in SemiParBIV.fit
+             informative = "no", 
+             zero.tol = 1e-02,
+             min.dn = min.dn, min.pr = min.pr, max.pr = max.pr,
+             y00 = y00, y10 = y10, y0p = y0p, y1p = y1p) # original n only needed in SemiParBIV.fit
              
   if(gc.l == TRUE) gc()           
              
@@ -540,7 +579,7 @@ environment(formula.aux[[2]]) <- environment(formula[[2]])
 
 L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, SemiParFit = SemiParFit, mice.formula = formula.aux,
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, robust = FALSE,
-          gam7 = gam7, gam8 = gam8,  
+          gam7 = gam7, gam8 = gam8, gam2TW = gam2TW,
           coefficients = SemiParFit$fit$argument, coef.t = NULL, iterlimsp = iterlimsp,
           weights = weights, 
           sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, 

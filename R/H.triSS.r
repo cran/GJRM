@@ -8,32 +8,32 @@ H.triSS <- function(params, respvec, VC, TIn, LgTRI){
   
   dst.1 <- dnorm( (TIn$mar2  - TIn$theta12 * TIn$mar1[VC$inde1] )/sqrt(1 - TIn$theta12^2) )  
   pst.1 <- pnorm( ( ((TIn$mar3 - TIn$theta13 * TIn$mar1[VC$inde2])/sqrt(1 - TIn$theta13^2)) - ((TIn$theta23 - TIn$theta12 * TIn$theta13)/sqrt((1 - TIn$theta12^2) * (1 - TIn$theta13^2))) * ((TIn$mar2[VC$inde2.1]  - TIn$theta12 * TIn$mar1[VC$inde2])/sqrt(1 - TIn$theta12^2)) )/sqrt(1 - ((TIn$theta23 - TIn$theta12 * TIn$theta13)/sqrt((1 - TIn$theta12^2) * (1 - TIn$theta13^2)))^2))
-  pst.1 <- mm(pst.1)
+  pst.1 <- mm(pst.1, min.pr = VC$min.pr, max.pr = VC$max.pr)
   st.1 <- -TIn$theta12/sqrt(1 - TIn$theta12^2)
   
   dst.2 <- dnorm((TIn$mar3 - TIn$theta13 * TIn$mar1[VC$inde2])/sqrt(1 - TIn$theta13^2))
   pst.2 <- pnorm( ( ((TIn$mar2[VC$inde2.1]  - TIn$theta12 * TIn$mar1[VC$inde2])/sqrt(1 - TIn$theta12^2)) - ((TIn$theta23 - TIn$theta12 * TIn$theta13)/sqrt((1 - TIn$theta12^2) * (1 - TIn$theta13^2))) * ((TIn$mar3 - TIn$theta13 * TIn$mar1[VC$inde2])/sqrt(1 - TIn$theta13^2)) )/sqrt(1 - ((TIn$theta23 - TIn$theta12 * TIn$theta13)/sqrt((1 - TIn$theta12^2) * (1 - TIn$theta13^2)))^2))
-  pst.2 <- mm(pst.2)
+  pst.2 <- mm(pst.2, min.pr = VC$min.pr, max.pr = VC$max.pr)
   st.2 <- -TIn$theta13/sqrt(1 - TIn$theta13^2)
   
   dst.3 <- dnorm((TIn$mar1[VC$inde1] - TIn$theta12 * TIn$mar2)/sqrt(1 - TIn$theta12^2))
   pst.3 <- pnorm( ( ((TIn$mar3 - TIn$theta23 * TIn$mar2[VC$inde2.1])/sqrt(1 - TIn$theta23^2)) - ((TIn$theta13 - TIn$theta12 * TIn$theta23)/sqrt((1 - TIn$theta12^2) * (1 - TIn$theta23^2))) * ((TIn$mar1[VC$inde2] - TIn$theta12 * TIn$mar2[VC$inde2.1])/sqrt(1 - TIn$theta12^2)) )/sqrt(1 - ((TIn$theta13 - TIn$theta12 * TIn$theta23)/sqrt((1 - TIn$theta12^2) * (1 - TIn$theta23^2)))^2))
-  pst.3 <- mm(pst.3)
+  pst.3 <- mm(pst.3, min.pr = VC$min.pr, max.pr = VC$max.pr)
   st.3 <- -TIn$theta12/sqrt(1 - TIn$theta12^2)
   
   dst.4 <- dnorm((TIn$mar3 - TIn$theta23 * TIn$mar2[VC$inde2.1])/sqrt(1 - TIn$theta23^2))
   pst.4 <- pnorm( ( ((TIn$mar1[VC$inde2] - TIn$theta12 * TIn$mar2[VC$inde2.1])/sqrt(1 - TIn$theta12^2)) - ((TIn$theta13 - TIn$theta12 * TIn$theta23)/sqrt((1 - TIn$theta12^2) * (1 - TIn$theta23^2))) * ((TIn$mar3 - TIn$theta23 * TIn$mar2[VC$inde2.1])/sqrt(1 - TIn$theta23^2)) )/sqrt(1 - ((TIn$theta13 - TIn$theta12 * TIn$theta23)/sqrt((1 - TIn$theta12^2) * (1 - TIn$theta23^2)))^2))
-  pst.4 <- mm(pst.4)
+  pst.4 <- mm(pst.4, min.pr = VC$min.pr, max.pr = VC$max.pr)
   st.4  <- -TIn$theta23/sqrt(1 - TIn$theta23^2)
   
   dst.5 <- dnorm((TIn$mar1[VC$inde2] - TIn$theta13 * TIn$mar3)/sqrt(1 - TIn$theta13^2))
   pst.5 <- pnorm( ( ((TIn$mar2[VC$inde2.1]  - TIn$theta23 * TIn$mar3)/sqrt(1 - TIn$theta23^2)) - ((TIn$theta12 - TIn$theta13 * TIn$theta23)/sqrt((1 - TIn$theta13^2) * (1 - TIn$theta23^2))) * ((TIn$mar1[VC$inde2] - TIn$theta13 * TIn$mar3)/sqrt(1 - TIn$theta13^2)) )/sqrt(1 - ((TIn$theta12 - TIn$theta13 * TIn$theta23)/sqrt((1 - TIn$theta13^2) * (1 - TIn$theta23^2)))^2))
-  pst.5 <- mm(pst.5)
+  pst.5 <- mm(pst.5, min.pr = VC$min.pr, max.pr = VC$max.pr)
   st.5  <- -TIn$theta13/sqrt(1 - TIn$theta13^2)
   
   dst.6 <- dnorm((TIn$mar2[VC$inde2.1] - TIn$theta23 * TIn$mar3)/sqrt(1 - TIn$theta23^2))
   pst.6 <- pnorm( ( ((TIn$mar1[VC$inde2] - TIn$theta13 * TIn$mar3)/sqrt(1 - TIn$theta13^2)) - ((TIn$theta12 - TIn$theta13 * TIn$theta23)/sqrt((1 - TIn$theta13^2) * (1 - TIn$theta23^2))) * ((TIn$mar2[VC$inde2.1] - TIn$theta23 * TIn$mar3)/sqrt(1 - TIn$theta23^2)) )/sqrt(1 - ((TIn$theta12 - TIn$theta13 * TIn$theta23)/sqrt((1 - TIn$theta13^2) * (1 - TIn$theta23^2)))^2))
-  pst.6 <- mm(pst.6)
+  pst.6 <- mm(pst.6, min.pr = VC$min.pr, max.pr = VC$max.pr)
   st.6  <- -TIn$theta23/sqrt(1 - TIn$theta23^2)
   
   ########################################################################
@@ -52,9 +52,9 @@ H.triSS <- function(params, respvec, VC, TIn, LgTRI){
   ## The next 6 lines are new  ##                 
   ###############################
   
-  der2p.dereta1 <- probm(TIn$eta1, VC$margins[1], only.pr = FALSE)$der2p.dereta
-  der2p.dereta2 <- probm(TIn$eta2, VC$margins[2], only.pr = FALSE)$der2p.dereta
-  der2p.dereta3 <- probm(TIn$eta3, VC$margins[3], only.pr = FALSE)$der2p.dereta
+  der2p.dereta1 <- probm(TIn$eta1, VC$margins[1], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$der2p.dereta
+  der2p.dereta2 <- probm(TIn$eta2, VC$margins[2], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$der2p.dereta
+  der2p.dereta3 <- probm(TIn$eta3, VC$margins[3], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$der2p.dereta
   
   d2F1.de1 <- (TIn$mar1 * LgTRI$dmar1^2)/LgTRI$d.1^2 + der2p.dereta1/LgTRI$d.1
   d2F2.de2 <- (TIn$mar2 * LgTRI$dmar2^2)/LgTRI$d.2^2 + der2p.dereta2/LgTRI$d.2
@@ -131,13 +131,13 @@ H.triSS <- function(params, respvec, VC, TIn, LgTRI){
   ## I replaced TIn$eta1 with TIn$mar1. Same for TIn$eta2 and TIn$eta3  ##                 
   ########################################################################
   
-  p1.1 <- mm( pnorm((TIn$mar3             - mean11[VC$inde2.1])/sd11) )
-  p2.2 <- mm( pnorm((TIn$mar2[VC$inde2.1] - mean22)/sd22) )
-  p3.3 <- mm( pnorm((TIn$mar1[VC$inde2]   - mean33)/sd33) )
+  p1.1 <- mm( pnorm((TIn$mar3             - mean11[VC$inde2.1])/sd11), min.pr = VC$min.pr, max.pr = VC$max.pr )
+  p2.2 <- mm( pnorm((TIn$mar2[VC$inde2.1] - mean22)/sd22), min.pr = VC$min.pr, max.pr = VC$max.pr )
+  p3.3 <- mm( pnorm((TIn$mar1[VC$inde2]   - mean33)/sd33) , min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   ###########################################################################
   
-  p1.1.c <- mm(1 - p1.1)
+  p1.1.c <- mm(1 - p1.1, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   #####
   # ! #

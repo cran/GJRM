@@ -1,11 +1,11 @@
 bprobgHsContSS <- function(params, respvec, VC, ps, AT = FALSE){
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
   eta1 <- VC$X1%*%params[1:VC$X1.d2]
   eta2 <- VC$X2%*%params[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)]
   etad <- etas <- l.ln <- etan <- NULL 
 
-  epsilon <- sqrt(.Machine$double.eps)
-  max.p   <- 0.9999999
+
   
   
 if(is.null(VC$X3)){  
@@ -27,7 +27,7 @@ if(!is.null(VC$X3)){
     eta2 <- eta.tr(eta2, VC$margins[2])
     
 
- dHs  <- distrHs(respvec$y2, eta2, sigma2, sigma2.st, margin2=VC$margins[2], naive = FALSE)
+ dHs  <- distrHs(respvec$y2, eta2, sigma2, sigma2.st, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
  pdf2                         <- dHs$pdf2
  p2                           <- dHs$p2 
@@ -44,7 +44,7 @@ if(!is.null(VC$X3)){
  der2pdf2.dereta2dersigma2.st <- dHs$der2pdf2.dereta2dersigma2.st  
  
   
-  pd1 <- probm(eta1, VC$margins[1], bc = TRUE) 
+  pd1 <- probm(eta1, VC$margins[1], bc = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
   
   p1 <- 1 - pd1$pr
 
@@ -57,7 +57,7 @@ teta    <- resT$teta
 
 ########################################################################################################
 
-dH <- copgHs(p1[VC$inde], p2, eta1 = NULL, eta2 = NULL, teta, teta.st, VC$BivD, VC$dof)
+dH <- copgHs(p1[VC$inde], p2, eta1 = NULL, eta2 = NULL, teta, teta.st, VC$BivD, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
 h <- dH$c.copula.be2  
 
@@ -297,10 +297,10 @@ dl.dteta.stt[VC$inde]  <- dl.dteta.st	;dl.dteta.st  <- dl.dteta.stt
 
  if(VC$margins[2] == "LN"){
     
- dHs  <- distrHsAT(exp(respvec$y2), eta2, sigma2, 1, margin2 = VC$margins[2])
+ dHs  <- distrHsAT(exp(respvec$y2), eta2, sigma2, 1, margin2 = VC$margins[2], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
  pdf2 <- dHs$pdf2
  p2   <- dHs$p2 
- dH   <- copgHsAT(p1[VC$inde], p2, teta, VC$BivD)
+ dH   <- copgHsAT(p1[VC$inde], p2, teta, VC$BivD, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
  h    <- dH$c.copula.be2  
  
  l.par1 <- log(p1)
@@ -316,7 +316,10 @@ dl.dteta.stt[VC$inde]  <- dl.dteta.st	;dl.dteta.st  <- dl.dteta.stt
               eta1 = eta1, eta2 = eta2, etad = etad, etan = etan,
               dl.dbe1=dl.dbe1, dl.dbe2=dl.dbe2, dl.dsigma.st = dl.dsigma.st, 
               dl.dteta.st = dl.dteta.st,
-              BivD=VC$BivD, p1=1-p1, p2=p2, theta.star = teta.st)      
+              BivD=VC$BivD,                             p1 = 1-p1, p2 = p2, pdf1 = pdf1, pdf2 = pdf2,          
+	      	                    c.copula.be2 = c.copula.be2,
+	      	                    c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2, theta.star = teta.st)      
 
 }
 

@@ -1,13 +1,11 @@
 bcontROB <- function(params, respvec, VC, ps, AT = FALSE){
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
     eta1 <- VC$X1%*%params[1:VC$X1.d2]
     eta2 <- VC$X2%*%params[(VC$X1.d2 + 1):(VC$X1.d2 + VC$X2.d2)]
     etad <- etas1 <- etas2 <- l.ln <- NULL 
   
-    epsilon <- sqrt(.Machine$double.eps)
-    max.p   <- 0.9999999
-    
-    
+      
   if(is.null(VC$X3)){  
     sigma21.st <- etas1 <- params[(VC$X1.d2 + VC$X2.d2 + 1)]
     sigma22.st <- etas2 <- params[(VC$X1.d2 + VC$X2.d2 + 2)]
@@ -45,8 +43,8 @@ teta    <- resT$teta
 ##################
 ##################
 
-  dHs1 <- distrHs(respvec$y1, eta1, sigma21, sigma21.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = FALSE)
-  dHs2 <- distrHs(respvec$y2, eta2, sigma22, sigma22.st, nu = 1, nu.st = 1, margin2=VC$margins[2], naive = FALSE)
+  dHs1 <- distrHs(respvec$y1, eta1, sigma21, sigma21.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  dHs2 <- distrHs(respvec$y2, eta2, sigma22, sigma22.st, nu = 1, nu.st = 1, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
   pdf1 <- dHs1$pdf2
   pdf2 <- dHs2$pdf2
@@ -54,7 +52,7 @@ teta    <- resT$teta
   p1 <- dHs1$p2
   p2 <- dHs2$p2
   
-  dH <- copgHsAT(p1, p2, teta, VC$BivD, Ln = TRUE)
+  dH <- copgHsAT(p1, p2, teta, VC$BivD, Ln = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
   c.copula2.be1be2 <- dH$c.copula2.be1be2
   
@@ -284,8 +282,8 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
 if( VC$margins[1] == "LN" || VC$margins[2] == "LN"){
   
   
-  if(VC$margins[1] == "LN") dHs1 <- distrHsAT(exp(respvec$y1), eta1, sigma21, 1, margin2=VC$margins[1])
-  if(VC$margins[2] == "LN") dHs2 <- distrHsAT(exp(respvec$y2), eta2, sigma22, 1, margin2=VC$margins[2])
+  if(VC$margins[1] == "LN") dHs1 <- distrHsAT(exp(respvec$y1), eta1, sigma21, 1, margin2=VC$margins[1], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  if(VC$margins[2] == "LN") dHs2 <- distrHsAT(exp(respvec$y2), eta2, sigma22, 1, margin2=VC$margins[2], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
   pdf1 <- dHs1$pdf2
   pdf2 <- dHs2$pdf2
@@ -293,7 +291,7 @@ if( VC$margins[1] == "LN" || VC$margins[2] == "LN"){
   p1 <- dHs1$p2
   p2 <- dHs2$p2
   
-  dH <- copgHsAT(p1, p2, teta, VC$BivD, Ln = TRUE)
+  dH <- copgHsAT(p1, p2, teta, VC$BivD, Ln = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
   c.copula2.be1be2 <- dH$c.copula2.be1be2
   
@@ -307,7 +305,10 @@ if( VC$margins[1] == "LN" || VC$margins[2] == "LN"){
 
          list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l.ln = l.ln, l.par=l.par, ps = ps, 
               eta1=eta1, eta2=eta2, etad=etad, etas1 = etas1, etas2 = etas2, 
-              BivD=VC$BivD, p1 = p1, p2 = p2,
+              BivD=VC$BivD,               p1 = p1, p2 = p2, pdf1 = pdf1, pdf2 = pdf2,          
+              c.copula.be2 = c.copula.be2,
+              c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2, 
               dl.dbe1          =dl.dbe1,       
               dl.dbe2          =dl.dbe2,       
               dl.dsigma21.st   =dl.dsigma21.st,

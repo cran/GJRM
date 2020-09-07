@@ -7,10 +7,6 @@ if(missing(nm.end)) stop("You must provide the name of the endogenous variable."
 if(!(x$margins[1] %in% x$bl) ) stop("First equation must be for the binary response.")
 
 
-
-
-epsilon <- sqrt(.Machine$double.eps)
-
 posit0 <- c(which(x$y1 == 0))
 posit1 <- c(which(x$y1 == 1))
 
@@ -31,7 +27,7 @@ if(margin %in% c("TW") ) stop("Tweedie not tested. Get in touch for details.")
 
 
 if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP","GPII","GPo","TW") ) {yst.aver <- log(yst.aver); if(yst.aver == "-Inf") yst.aver <- log(1e-14) } 
-if(margin %in% c("BE") )                                                 {yst.aver <- qlogis(mm(yst.aver)) }
+if(margin %in% c("BE") )                                                 {yst.aver <- qlogis(mm(yst.aver, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)) }
 
 
 #########################
@@ -50,9 +46,7 @@ l5 <- length(x$gam5$coefficients)
 
 betahatSim <- rMVN(1, x$coefficients, x$Vb)
  
- 
- 
-p1 <- as.numeric( probm(x$X1[s, ]%*%betahatSim[1:l1], x$margins[1])$pr )
+p1 <- as.numeric( probm(x$X1[s, ]%*%betahatSim[1:l1], x$margins[1], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr )
 p0 <- as.numeric( 1 - p1 )
 
 
@@ -205,12 +199,12 @@ y2 <- y2.st
 if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP","GPII","GPo","TW") ) y2 <- esp.tr(y2.st, "LN")$vrb 
 if(margin %in% c("BE") )                                           y2 <- esp.tr(y2.st, "BE")$vrb
 
-ppdf <- distrHsAT(y2, eta2, sigma2, nu, margin)
+ppdf <- distrHsAT(y2, eta2, sigma2, nu, margin, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)
 
 p2          <- ppdf$p2
 derp2.dery2 <- ppdf$pdf2 
 
-c.copula.be2 <- copgHsAT(ppr, p2, teta, BivD, Ln = FALSE, par2 = x$dof)$c.copula.be2
+c.copula.be2 <- copgHsAT(ppr, p2, teta, BivD, Ln = FALSE, par2 = x$dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$c.copula.be2
 
 cc12          <- copgHs3(ppr, p2, eta1 = NULL, eta2 = NULL, teta, teta.st = NULL, BivD, par2 = x$dof)
 c.copula2.be2 <- cc12$c.copula2.be2 
@@ -254,16 +248,16 @@ BivD   <- out.beta$BivD
 
 y2 <- y2.st 
 
-ppd <- distrHsATDiscr(y2, eta2, sigma2, nu, margin, y2m = NULL, robust = FALSE) 
+ppd <- distrHsATDiscr(y2, eta2, sigma2, nu, margin, y2m = NULL, robust = FALSE, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr) 
 # p2 not available for ZTP unless we supply y2m and we set robust = TRUE
 
 p2 <- ppd$p2
 pdf2 <- ppd$pdf2
 
-C1 <- BiCDF(ppr, p2, x$VC$nC, teta, x$VC$dof)
-C2 <- BiCDF(ppr, mm(p2 - pdf2), x$VC$nC, teta, x$VC$dof)
+C1 <- mm(BiCDF(ppr, p2, x$VC$nC, teta, x$VC$dof), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr  )
+C2 <- mm(BiCDF(ppr, mm(p2 - pdf2, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr), x$VC$nC, teta, x$VC$dof), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr  )
   
-A <- ifelse( (C1 - C2) < epsilon, epsilon, C1 - C2)
+A <-  mm(C1 - C2, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)
 
 f.g <- A/(ppr*pdf2)
 
@@ -293,10 +287,13 @@ y2 <- y2.st
 if(zo == 0 && y2 == 1){
 
 
-p2 <- probm(eta2, margin)$pr 
 
-p11 <- BiCDF(1 - ppr, p2, x$VC$nC, teta, x$VC$dof)
-p01 <- pmax(p2 - p11, epsilon)
+
+
+p2 <- probm(eta2, margin, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
+
+p11 <- mm(BiCDF(mm(1 - ppr, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr), p2, x$VC$nC, teta, x$VC$dof), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr  )
+p01 <- mm(p2 - p11, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)
 
 f.g <- p01/(ppr*p2)
 
@@ -307,12 +304,21 @@ f.g <- p01/(ppr*p2)
 
 if(zo == 0 && y2 == 0){ 
 
-p2 <- 1 - probm(eta2, margin)$pr 
+p2 <- 1 - probm(eta2, margin, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
 
-p11 <- BiCDF(1-ppr, 1-p2, x$VC$nC, teta, x$VC$dof)
-p01 <- pmax((1-p2) - p11, epsilon)
-p10 <- pmax((1 - ppr) - p11, epsilon)
-p00 <- pmax(1 - p11 - p10 - p01, epsilon)
+p11 <- mm(BiCDF(mm(1-ppr, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr), mm(1-p2, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr), x$VC$nC, teta, x$VC$dof), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr  )
+p01 <- mm((1-p2) - p11, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)
+p10 <- mm((1 - ppr) - p11, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)
+p00 <- mm(1 - p11 - p10 - p01, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)
+
+  sall.p <- rowSums(cbind(p11, p10, p01, p00))
+  
+  p11 <- p11/sall.p 
+  p10 <- p10/sall.p
+  p01 <- p01/sall.p
+  p00 <- p00/sall.p
+
+
 
 f.g <- p00/(ppr*p2)
 
@@ -324,9 +330,9 @@ f.g <- p00/(ppr*p2)
 if(zo == 1 && y2 == 1){
 
 
-p2 <- probm(eta2, margin)$pr 
+p2 <- probm(eta2, margin, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
 
-p11 <- BiCDF(ppr, p2, x$VC$nC, teta, x$VC$dof)
+p11 <- mm(BiCDF(ppr, p2, x$VC$nC, teta, x$VC$dof), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr  )
 
 f.g <- p11/(ppr*p2)
 
@@ -337,10 +343,10 @@ f.g <- p11/(ppr*p2)
 
 if(zo == 1 && y2 == 0){ 
 
-p2 <- 1 - probm(eta2, margin)$pr 
+p2 <- 1 - probm(eta2, margin, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
 
-p11 <- BiCDF(ppr, 1-p2, x$VC$nC, teta, x$VC$dof)
-p10 <- pmax(ppr - p11, epsilon)
+p11 <- mm(BiCDF(ppr, mm(1-p2, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr), x$VC$nC, teta, x$VC$dof), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr  )
+p10 <- mm(ppr - p11, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)
 
 f.g <- p10/(ppr*p2)
 
@@ -377,7 +383,7 @@ repeat{ #
    
 
    if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP","GPII","GPo") ) {y2.st <- log(y2.imp[j]); if(y2.st == "-Inf") y2.st <- log(1e-14)} 
-   if(margin %in% c("BE") )                                           {y2.st <- qlogis(mm(y2.imp[j]))}
+   if(margin %in% c("BE") )                                           {y2.st <- qlogis(mm(y2.imp[j], min.pr = x$VC$min.pr, max.pr = x$VC$max.pr))}
  
 
 
@@ -453,7 +459,7 @@ repeat{ #
    
 
    if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK","GP","GPII","GPo") ) {y2.st <- log(y2.imp[j]); if(y2.st == "-Inf") y2.st <- log(1e-14)} 
-   if(margin %in% c("BE") )                                           {y2.st <- qlogis(mm(y2.imp[j]))}
+   if(margin %in% c("BE") )                                           {y2.st <- qlogis(mm(y2.imp[j], min.pr = x$VC$min.pr, max.pr = x$VC$max.pr))}
  
 
 

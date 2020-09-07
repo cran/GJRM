@@ -1,12 +1,13 @@
 gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,  
                              BivD = "N", margins, Model, dof = 3, ordinal = FALSE,
-                             surv = FALSE, cens1 = NULL, cens2 = NULL, dep.cens = FALSE,  
+                             surv = FALSE, cens1 = NULL, cens2 = NULL, cens3 = NULL, dep.cens = FALSE,  
                              gamlssfit = FALSE, fp = FALSE, infl.fac = 1, 
                              rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
                              gc.l = FALSE, parscale, extra.regI = "t", k1.tvc = 0, k2.tvc = 0, 
                              knots = NULL, penCor = "unpen",
                              sp.penCor = 3, Chol = FALSE, gamma = 1, w.alasso = NULL,
-                             drop.unused.levels = TRUE, ind.ord = FALSE){
+                             drop.unused.levels = TRUE, ind.ord = FALSE,
+                             min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999){
   
   if(missing(margins)) stop("You must choose the margins' values.")
   if(missing(Model)) stop("You must choose a Model type.")
@@ -31,7 +32,8 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                                fp, hess = TRUE, infl.fac, 
                                rinit, rmax, iterlimsp, tolsp,
                                gc.l, parscale, extra.regI, intf = TRUE, 
-                               theta.fx = NULL, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights)))                               
+                               theta.fx = NULL, knots = knots, drop.unused.levels = drop.unused.levels,
+                               min.dn = min.dn, min.pr = min.pr, max.pr = max.pr),list(weights=weights)))                               
   
                                                                         }
   
@@ -53,7 +55,8 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                                fp, hess = TRUE, infl.fac, 
                                rinit, rmax, iterlimsp, tolsp,
                                gc.l, parscale, extra.regI, intf = TRUE, 
-                               theta.fx = NULL, knots = knots, drop.unused.levels = drop.unused.levels, ind.ord = ind.ord),list(weights=weights)))                               
+                               theta.fx = NULL, knots = knots, drop.unused.levels = drop.unused.levels, ind.ord = ind.ord,
+                               min.dn = min.dn, min.pr = min.pr, max.pr = max.pr),list(weights=weights)))                               
   
                                                                         }
   
@@ -75,7 +78,8 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                               BivD, margins, dof,
                               fp, infl.fac, 
                               rinit, rmax, iterlimsp, tolsp,
-                             gc.l, parscale, extra.regI, knots, drop.unused.levels = drop.unused.levels),list(weights=weights)))  
+                             gc.l, parscale, extra.regI, knots, drop.unused.levels = drop.unused.levels,
+                             min.dn = min.dn, min.pr = min.pr, max.pr = max.pr),list(weights=weights)))  
  
                                                                          }
 
@@ -93,7 +97,8 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                              infl.fac, gamma, w.alasso, 
                              rinit, rmax, 
                              iterlimsp, tolsp,
-                             gc.l, parscale, extra.regI, knots, drop.unused.levels = drop.unused.levels),list(weights=weights))) 
+                             gc.l, parscale, extra.regI, knots, drop.unused.levels = drop.unused.levels,
+                             min.dn = min.dn, min.pr = min.pr, max.pr = max.pr),list(weights=weights))) 
 
                                                                       }
 
@@ -181,7 +186,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
   
-  mf$dep.cens <- mf$ordinal <- mf$Model <- mf$knots <- mf$k1.tvc <- mf$k2.tvc <- mf$surv <- mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
+  mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$dep.cens <- mf$ordinal <- mf$Model <- mf$knots <- mf$k1.tvc <- mf$k2.tvc <- mf$surv <- mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
   mf$drop.unused.levels <- drop.unused.levels 
   mf[[1]] <- as.name("model.frame")
   data <- eval(mf, parent.frame())
@@ -206,9 +211,13 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                         data$cens2 <- cens2
                         names(data)[length(names(data))] <- "(cens2)"} else cens2 <- data[,"(cens2)"]  
                         
+  if(!("(cens3)" %in% names(data))) {cens3 <- rep(0,dim(data)[1]) 
+                        data$cens3 <- cens3
+                        names(data)[length(names(data))] <- "(cens3)"} else cens3 <- data[,"(cens3)"]                          
+                        
   M <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, m3d = m3d, BivD = BivD, bl = bl, 
             robust = robust, opc = opc, extra.regI = extra.regI, margins = margins, BivD2 = BivD2, dof = dof,
-            surv = surv, c1 = cens1, c2 = cens2, dep.cens = dep.cens) 
+            surv = surv, c1 = cens1, c2 = cens2, c3 = cens3, dep.cens = dep.cens) 
  
   M$K1 <- NULL
  
@@ -243,7 +252,7 @@ if(surv == TRUE && margins[1] %in% bl){
   f.eq1 <- form.eq12R$f.eq1
   data$urcfcphmwicu <- seq(-10, 10, length.out = dim(data)[1])
   tempb <- eval(substitute(gam(f.eq1, family = cox.ph(), data = data, weights = cens1, drop.unused.levels = drop.unused.levels),list(cens1=cens1)))
-  data$Sh <- as.vector(mm(predict(tempb, type = "response")))
+  data$Sh <- as.vector(mm(predict(tempb, type = "response"), min.pr = min.pr, max.pr = max.pr))
   
   cens11 <- ifelse(cens1 == 0, 1e-07, cens1)
   gam1 <- eval(substitute(scam(formula.eq1, gamma=infl.fac, weights=weights*cens11, data=data), list(weights=weights, cens11 = cens11)))
@@ -283,24 +292,24 @@ if(surv == TRUE && margins[1] %in% bl){
   
   for(i in 1:lsgam1){ 
   
-    if( max(as.numeric(grepl(v1[1], gam1$smooth[[i]]$vn))) != 0 && clsm[i] == "mpi.smooth" ) mono.sm.pos1 <- c(mono.sm.pos1, c(gam1$smooth[[i]]$first.para:gam1$smooth[[i]]$last.para) ) 
+    if( max(as.numeric(grepl(v1[1], gam1$smooth[[i]]$term))) != 0 && clsm[i] == "mpi.smooth" ) mono.sm.pos1 <- c(mono.sm.pos1, c(gam1$smooth[[i]]$first.para:gam1$smooth[[i]]$last.para) ) 
     
-    if( max(as.numeric(grepl(v1[1], gam1$smooth[[i]]$vn))) != 0 && clsm[i] != "mpi.smooth" ){ 
-    
-    
-                                                                if( clsm[i] != "pspline.smooth" && k1.tvc !=0) stop("You have to use a ps smooth to allow for doubly penalised tvc terms in the first eq.")
-                                                                                                                                
-                                                                if( clsm[i] == "pspline.smooth"){
-                                                                
-                                                                pos.pbeq1[[j]] <- c(gam1$smooth[[i]]$first.para:gam1$smooth[[i]]$last.para)
-                                                                indexTeq1      <- c(indexTeq1, pos.pbeq1[[j]] ) 
-                                                                Deq1[[j]]      <- diff(diag(length(pos.pbeq1[[j]])), differences = 1)
-                                                                j <- j + 1
-                                                                
-                                                                }
-                                                                
-                                                                
-                                                                                            }    
+    #if( max(as.numeric(grepl(v1[1], gam1$smooth[[i]]$vn))) != 0 && clsm[i] != "mpi.smooth" ){ 
+    #
+    #
+    #                                                            if( clsm[i] != "pspline.smooth" && k1.tvc !=0) stop("You have to use a ps smooth to allow for doubly penalised tvc terms in the first eq.")
+    #                                                                                                                            
+    #                                                            if( clsm[i] == "pspline.smooth"){
+    #                                                            
+    #                                                            pos.pbeq1[[j]] <- c(gam1$smooth[[i]]$first.para:gam1$smooth[[i]]$last.para)
+    #                                                            indexTeq1      <- c(indexTeq1, pos.pbeq1[[j]] ) 
+    #                                                            Deq1[[j]]      <- diff(diag(length(pos.pbeq1[[j]])), differences = 1)
+    #                                                            j <- j + 1
+    #                                                            
+    #                                                            }
+    #                                                            
+    #                                                            
+    #                                                                                        }    
     
 
                     }
@@ -375,7 +384,7 @@ if(surv == TRUE && margins[2] %in% bl){
   f.eq2 <- form.eq12R$f.eq1
   data$urcfcphmwicu <- seq(-10, 10, length.out = dim(data)[1])
   tempb <- eval(substitute(gam(f.eq2, family = cox.ph(), data = data, weights = cens2, drop.unused.levels = drop.unused.levels),list(cens2=cens2)))
-  data$Sh <- as.vector(mm(predict(tempb, type = "response")))
+  data$Sh <- as.vector(mm(predict(tempb, type = "response"), min.pr = min.pr, max.pr = max.pr))
   
   cens22 <- ifelse(cens2 == 0, 1e-07, cens2)
   gam2 <- eval(substitute(scam(formula.eq2, gamma=infl.fac, weights=weights*cens22, data=data), list(weights=weights, cens22 = cens22)))
@@ -417,23 +426,23 @@ if(surv == TRUE && margins[2] %in% bl){
   for(i in 1:lsgam2){ 
   
   
-    if( max(as.numeric(grepl(v2[1], gam2$smooth[[i]]$vn))) != 0 && clsm[i] == "mpi.smooth" ) mono.sm.pos2 <- c(mono.sm.pos2, c(gam2$smooth[[i]]$first.para:gam2$smooth[[i]]$last.para) )   
+    if( max(as.numeric(grepl(v2[1], gam2$smooth[[i]]$term))) != 0 && clsm[i] == "mpi.smooth" ) mono.sm.pos2 <- c(mono.sm.pos2, c(gam2$smooth[[i]]$first.para:gam2$smooth[[i]]$last.para) )   
     
-    if( max(as.numeric(grepl(v2[1], gam2$smooth[[i]]$vn))) != 0 && clsm[i] != "mpi.smooth" ){ 
-    
-    
-                                                                if( clsm[i] != "pspline.smooth" && k2.tvc !=0) stop("You have to use a ps smooth to allow for doubly penalised tvc terms in the second eq.")
-                                                                                                                                
-                                                                if( clsm[i] == "pspline.smooth"){
-                                                                
-                                                                pos.pbeq2[[j]] <- c(gam2$smooth[[i]]$first.para:gam2$smooth[[i]]$last.para)
-                                                                indexTeq2      <- c(indexTeq2, pos.pbeq2[[j]] ) 
-                                                                Deq2[[j]]      <- diff(diag(length(pos.pbeq2[[j]])), differences = 1)
-                                                                j <- j + 1
-                                                                
-                                                                }
-
-                                                                                            }     
+    #if( max(as.numeric(grepl(v2[1], gam2$smooth[[i]]$vn))) != 0 && clsm[i] != "mpi.smooth" ){ 
+    #
+    #
+    #                                                            if( clsm[i] != "pspline.smooth" && k2.tvc !=0) stop("You have to use a ps smooth to allow for doubly penalised tvc terms in the second eq.")
+    #                                                                                                                            
+    #                                                            if( clsm[i] == "pspline.smooth"){
+    #                                                            
+    #                                                            pos.pbeq2[[j]] <- c(gam2$smooth[[i]]$first.para:gam2$smooth[[i]]$last.para)
+    #                                                            indexTeq2      <- c(indexTeq2, pos.pbeq2[[j]] ) 
+    #                                                            Deq2[[j]]      <- diff(diag(length(pos.pbeq2[[j]])), differences = 1)
+    #                                                            j <- j + 1
+    #                                                            
+    #                                                            }
+    #
+    #                                                                                            }     
 
                     }
     
@@ -630,8 +639,7 @@ if(surv == TRUE && dep.cens == TRUE){
 c11 <- NULL
 c10 <- cens1
 c01 <- cens2 # (1-cens1)
-c00 <- NULL
-
+c00 <- cens3 # NULL, in case of A cens then 1 - cens1 - cens2
 
 
 }
@@ -651,7 +659,7 @@ my.env$k2   <- k2.tvc
              lsgam3 = lsgam3, robust = FALSE, sp.fixed = NULL,
              lsgam4 = lsgam4, Sl.sf = Sl.sf, sp.method = sp.method,
              lsgam5 = lsgam5, K1 = NULL,
-             lsgam6 = lsgam6,
+             lsgam6 = lsgam6, 
              lsgam7 = lsgam7,
              lsgam8 = lsgam8,
              X1 = X1, 
@@ -713,7 +721,9 @@ my.env$k2   <- k2.tvc
              mono.sm.pos1 = mono.sm.pos1, mono.sm.pos2 = mono.sm.pos2, 
              surv.flex = surv.flex,
              mono.sm.pos = mono.sm.pos, gp2.inf = NULL,
-             informative = "no") # original n only needed in SemiParBIV.fit
+             informative = "no",
+             zero.tol = 1e-02,
+             min.dn = min.dn, min.pr = min.pr, max.pr = max.pr) # original n only needed in SemiParBIV.fit
   
   if(gc.l == TRUE) gc()           
              
@@ -790,7 +800,7 @@ L <- list(fit = SemiParFit$fit, dataset = NULL, n = n, gamlss1 = gamlss1, gamlss
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8,  
           coefficients = SemiParFit$fit$argument, coef.t = SemiParFit.p$coef.t, 
           iterlimsp = iterlimsp,
-          weights = weights, cens1 = cens1, cens2 = cens2,
+          weights = weights, cens1 = cens1, cens2 = cens2, cens3 = cens3,
           sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, 
           l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, 
           l.sp4 = l.sp4, l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8, bl = bl,

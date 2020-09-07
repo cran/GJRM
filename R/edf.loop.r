@@ -21,16 +21,16 @@ if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || 
         
      for(i in 1:8){
 
-       if(i==1) {mm <- VC$lsgam1; if(mm==0) next}
-       if(i==2) {mm <- VC$lsgam2; if(mm==0) next} 
-       if(i==3) {mm <- VC$lsgam3; if(mm==0) next} 
-       if(i==4) {mm <- VC$lsgam4; if(mm==0) next} 
-       if(i==5) {mm <- VC$lsgam5; if(mm==0) next}        
-       if(i==6) {mm <- VC$lsgam6; if(mm==0) next} 
-       if(i==7) {mm <- VC$lsgam7; if(mm==0) next}        
-       if(i==8) {mm <- VC$lsgam8; if(mm==0) break}        
+       if(i==1) {mmm <- VC$lsgam1; if(mmm==0) next}
+       if(i==2) {mmm <- VC$lsgam2; if(mmm==0) next} 
+       if(i==3) {mmm <- VC$lsgam3; if(mmm==0) next} 
+       if(i==4) {mmm <- VC$lsgam4; if(mmm==0) next} 
+       if(i==5) {mmm <- VC$lsgam5; if(mmm==0) next}        
+       if(i==6) {mmm <- VC$lsgam6; if(mmm==0) next} 
+       if(i==7) {mmm <- VC$lsgam7; if(mmm==0) next}        
+       if(i==8) {mmm <- VC$lsgam8; if(mmm==0) break}        
 
-          for(k in 1:mm){
+          for(k in 1:mmm){
 
               if(i==1){ gam <- GAM$gam1; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift } 
               if(i==2){ gam <- GAM$gam2; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + VC$X1.d2 } 

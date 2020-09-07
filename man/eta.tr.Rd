@@ -40,7 +40,8 @@
 \alias{ggm.DerivOPT1}
 \alias{ggm.DerivOPT2}
 \alias{Dpens2}
-
+\alias{survExcInd}
+\alias{pTweed}
 
 \title{Internal Function}
 

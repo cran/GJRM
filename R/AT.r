@@ -50,8 +50,8 @@ d1[, nm.end] <- 1
 eti1 <- d1%*%coef.int 
 eti0 <- d0%*%coef.int 
 
-p.int1 <- probm(eti1, x$margins[eq])$pr 
-p.int0 <- probm(eti0, x$margins[eq])$pr
+p.int1 <- probm(eti1, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
+p.int0 <- probm(eti0, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr
 
 est.AT <- mean(p.int1, na.rm = TRUE) - mean(p.int0, na.rm = TRUE) 
 
@@ -65,8 +65,8 @@ if(type == "joint")  {bs <- rMVN(n.sim, mean = x$coefficients, sigma=x$Vb)
                           eti1s <- d1%*%t(bs[,ind.int])
                           eti0s <- d0%*%t(bs[,ind.int]) } 
 
- peti1s  <- probm(eti1s, x$margins[eq])$pr 
- peti0s  <- probm(eti0s, x$margins[eq])$pr 
+ peti1s  <- probm(eti1s, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
+ peti0s  <- probm(eti0s, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
  
  est.ATb <- colMeans(peti1s, na.rm = TRUE) - colMeans(peti0s, na.rm = TRUE) 
  CIs     <- as.numeric(quantile(est.ATb, c(prob.lev/2, 1 - prob.lev/2), na.rm = TRUE))
@@ -106,19 +106,17 @@ if(x$triv == FALSE){
 etap.noi <- X.int <- X.noi <- eti1 <- eti0 <- etno <- indS <- bs <- ind.excl <- p.int1 <- p.int0 <- d.int1 <- d.int0 <- p.etn <- d.etn <- ass.p <- ass.pst <- C.11 <- C.10 <- sig2 <- peti1s <- peti0s <- sigma2.st <- sigma2s <- eti1s <- eti0s <- d0 <- d1 <- p.etns <- etnos <- etds <- ass.ps <- 1
 diffEf <- fy1.y2 <- est.ATso <- y2 <- CIF <- Pr <- Effects <- C.11 <- C.10 <- NULL
 
-m1d  <- x$VC$m1d 
-m2d  <- x$VC$m2d 
+m1d <- x$VC$m1d 
+m2d <- x$VC$m2d 
 m2  <- x$VC$m2 
 m3  <- x$VC$m3 
 bin.link <- x$VC$bl  
 mat <- c("TW","SM","DAGUM","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK") # excludes "N"
 
 
-end <- 0
-epsilon <- sqrt(.Machine$double.eps)
-max.p   <- 0.9999999
+end     <- 0
 est.ATb <- NA
-indD <- list()
+indD    <- list()
 
 
 
@@ -269,8 +267,8 @@ if(type == "univariate"){
 
 #############
 
-p.int1 <- probm(eti1, x$margins[eq])$pr 
-p.int0 <- probm(eti0, x$margins[eq])$pr
+p.int1 <- probm(eti1, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
+p.int0 <- probm(eti0, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr
 
 est.AT <- mean(p.int1, na.rm = TRUE) - mean(p.int0, na.rm = TRUE) 
 
@@ -283,8 +281,8 @@ if(delta == FALSE){
  if(type == "univariate") {bs <- rMVN(n.sim, mean = ngam$coefficients, sigma=ngam$Vp); eti1s <- d1%*%t(bs);           eti0s <- d0%*%t(bs) }
  if(type == "joint")  {bs <- rMVN(n.sim, mean = x$coefficients, sigma=x$Vb);       eti1s <- d1%*%t(bs[,ind.int]); eti0s <- d0%*%t(bs[,ind.int]) } 
 
- peti1s  <- probm(eti1s, x$margins[eq])$pr 
- peti0s  <- probm(eti0s, x$margins[eq])$pr 
+ peti1s  <- probm(eti1s, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
+ peti0s  <- probm(eti0s, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
  est.ATb <- colMeans(peti1s, na.rm = TRUE) - colMeans(peti0s, na.rm = TRUE) 
  
  CIs <- as.numeric(quantile(est.ATb, c(prob.lev/2, 1 - prob.lev/2), na.rm = TRUE))
@@ -378,8 +376,8 @@ est.AT <- mean(p.int1, na.rm = TRUE) - mean(p.int0, na.rm = TRUE)
 
 if(delta == FALSE){
 
- if(type == "univariate")    {bs <- rMVN(n.sim, mean = ngam$coefficients, sigma=ngam$Vb); eti1s <- d1%*%t(bs[,1:x$X2.d2]); eti0s <- d0%*%t(bs[,1:x$X2.d2]) }
- if(type == "joint")  {bs <- rMVN(n.sim, mean = x$coefficients,    sigma=x$Vb);    eti1s <- d1%*%t(bs[,ind.int]);   eti0s <- d0%*%t(bs[,ind.int]) } 
+ if(type == "univariate"){bs <- rMVN(n.sim, mean = ngam$coefficients, sigma=ngam$Vb); eti1s <- d1%*%t(bs[,1:x$X2.d2]); eti0s <- d0%*%t(bs[,1:x$X2.d2]) }
+ if(type == "joint")     {bs <- rMVN(n.sim, mean = x$coefficients,    sigma=x$Vb);    eti1s <- d1%*%t(bs[,ind.int]);   eti0s <- d0%*%t(bs[,ind.int]) } 
 
  
 if(x$margins[2] == "GA"){
@@ -480,8 +478,8 @@ lpm    <- as.matrix( predict.gam(x$gam1, newdata = data, type = "lpmatrix") )
 eta1   <- lpm%*%coefe
 etins  <- lpm%*%coefes
 
-fy1.y2[[i]]  <- mean(probm(eta1, x$margins[eq])$pr )
-fy1.y2S[[i]] <- colMeans( probm(etins, x$margins[eq])$pr  )
+fy1.y2[[i]]  <- mean(probm(eta1, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr )
+fy1.y2S[[i]] <- colMeans( probm(etins, x$margins[eq], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr  )
 
 }
 

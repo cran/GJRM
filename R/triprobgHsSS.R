@@ -16,9 +16,9 @@ triprobgHsSS <- function (params, respvec, VC, ps, AT = FALSE){
   ## I replaced "probit" with  margins[1], margins[2] and margins[3] ##                   
   #####################################################################
   
-  p1 <- probm(eta1, VC$margins[1])$pr
-  p2 <- probm(eta2, VC$margins[2])$pr
-  p3 <- probm(eta3, VC$margins[3])$pr 
+  p1 <- probm(eta1, VC$margins[1], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$pr
+  p2 <- probm(eta2, VC$margins[2], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$pr
+  p3 <- probm(eta3, VC$margins[3], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$pr 
   
   #####################################################################
   
@@ -66,31 +66,31 @@ triprobgHsSS <- function (params, respvec, VC, ps, AT = FALSE){
     
   }
   
-  theta12 <- mmf(theta12)
-  theta13 <- mmf(theta13)
-  theta23 <- mmf(theta23)  
+  theta12 <- mmf(theta12, max.pr = VC$max.pr)
+  theta13 <- mmf(theta13, max.pr = VC$max.pr)
+  theta23 <- mmf(theta23, max.pr = VC$max.pr)  
   
-  p11 <- mm(pbinorm(mar1[VC$inde1], mar2, cov12 = theta12))
-  p13 <- mm(pbinorm(mar1[VC$inde2], mar3, cov12 = theta13))
-  p23 <- mm(pbinorm(mar2[VC$inde2.1], mar3, cov12 = theta23))
+  p11 <- mm(pbinorm(mar1[VC$inde1],   mar2, cov12 = theta12), min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p13 <- mm(pbinorm(mar1[VC$inde2],   mar3, cov12 = theta13), min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p23 <- mm(pbinorm(mar2[VC$inde2.1], mar3, cov12 = theta23), min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   #params <- c(params[1:(VC$X1.d2 + VC$X2.d2 + VC$X3.d2)],theta12.st,theta13.st,theta23.st)
   
   
   
   if(VC$approx == FALSE){ eta123 <- cbind(mar1[VC$inde2],mar2[VC$inde2.1],mar3)
-  for(i in 1:length(mar3)) p111[i] <- mm( pmnorm(x = eta123[i, ], varcov = Sigma)[1] )
+  for(i in 1:length(mar3)) p111[i] <- mm( pmnorm(x = eta123[i, ], varcov = Sigma)[1] , min.pr = VC$min.pr, max.pr = VC$max.pr)
   }
   
-  if(VC$approx == TRUE) p111 <- mm(  TRIapprox(mar1[VC$inde2], mar2[VC$inde2.1], mar3, Sigma) )
+  if(VC$approx == TRUE) p111 <- mm(  TRIapprox(mar1[VC$inde2], mar2[VC$inde2.1], mar3, Sigma) , min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   
   ############################################################################################
   
-  p110 <- mm(p11[VC$inde2.1] - p111)
+  p110 <- mm(p11[VC$inde2.1] - p111, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
-  p0   <- mm(1 - p1)       
-  p10  <- mm(p1[VC$inde1] - p11) 
+  p0   <- mm(1 - p1, min.pr = VC$min.pr, max.pr = VC$max.pr)       
+  p10  <- mm(p1[VC$inde1] - p11, min.pr = VC$min.pr, max.pr = VC$max.pr) 
   
   ##########################################################################################
   l.par1             <- respvec$cy1*log(p0) 

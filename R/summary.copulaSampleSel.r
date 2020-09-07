@@ -7,7 +7,6 @@ cont2par  <- c(object$VC$m2,object$VC$m2d)
 cont3par  <- object$VC$m3  
 bin.link  <- object$VC$bl  
 n <- object$n; n.sel <- object$n.sel
-epsilon <- sqrt(.Machine$double.eps); max.p   <- 0.9999999
 
 lf <- length(object$coefficients)
 Vb <- object$Vb 

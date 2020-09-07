@@ -3,7 +3,8 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
                              fp = FALSE, infl.fac = 1, 
                              rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
                              gc.l = FALSE, parscale, extra.regI = "t", knots = NULL,
-                             drop.unused.levels = TRUE){
+                             drop.unused.levels = TRUE,
+                             min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999){
   
   ##########################################################################################################################
   # model set up and starting values
@@ -104,7 +105,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
-  mf$ordinal <- mf$knots <- mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- NULL                           
+  mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$ordinal <- mf$knots <- mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- NULL                           
   mf$drop.unused.levels <- drop.unused.levels 
   mf$na.action <- na.pass
   mf[[1]] <- as.name("model.frame")
@@ -165,7 +166,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
     # TEST
     ######
     X2s <- try(predict.gam(gam2, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
-    if(class(X2s)=="try-error") stop("Check that the numbers of factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?copulaSampleSel for more information.") 
+    if(any(class(X2s)=="try-error")) stop("Check that the numbers of factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?copulaSampleSel for more information.") 
     ######
     
     gam2$formula <- formula.eq2r  
@@ -294,7 +295,7 @@ if(missing(parscale)) parscale <- 1
 
   VC <- list(lsgam1 = lsgam1, robust = FALSE, K1 = NULL,
              lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
-             lsgam3 = lsgam3,
+             lsgam3 = lsgam3, 
              lsgam4 = lsgam4,
              lsgam5 = lsgam5,
              lsgam6 = lsgam6,
@@ -346,7 +347,9 @@ if(missing(parscale)) parscale <- 1
              m1d = m1d, m2d = m2d, m3d = m3d, bl = bl, inde = inde,
              X2s = X2s, X3s = X3s, X4s = X4s, X5s = X5s, triv = FALSE, y2m = y2m, zerov = -10,
              BivD2 = BivD2, cta = cta, ct = ct, surv.flex = surv.flex, gp2.inf = NULL,
-             informative = "no", sp.fixed = NULL) 
+             informative = "no", sp.fixed = NULL,
+             zero.tol = 1e-02,
+             min.dn = min.dn, min.pr = min.pr, max.pr = max.pr) 
              
   if(gc.l == TRUE) gc()           
              

@@ -1,5 +1,6 @@
 copgHsCont <- function(p1, p2, teta, teta.st, BivD, Cont = FALSE, par2 = NULL, nu.st = NULL){
      
+     
 
 der2c.derp1.dernu <- der2c.derp2.dernu <- der2c.dernu.dernu <- der2c.derrho.dernu <- dernu.dernu.st <- der2nu.dernu.stnu.st <- der2h.derp1nu <- der2c.derrho.derrho <- der2c.derp1.derp1 <- der2c.derp2.derp2 <- der2c.derp1.derp2 <- der2c.derp1.derrho <- der2c.derp2.derrho <- 1     
      
@@ -8,13 +9,6 @@ der2c.derp1.dernu <- der2c.derp2.dernu <- der2c.dernu.dernu <- der2c.derrho.dern
 ########################################################################################   
 
 if(BivD %in% c("T") ) {
-
-mm <- function(ob){
-  epsilon <- sqrt(.Machine$double.eps); max.p   <- 0.9999999
-  res <- ifelse(ob > max.p, max.p, ob) 
-  res <- ifelse(res < epsilon, epsilon, res) 
-  res    
-}
 
 dernu.dernu.st <- der2nu.dernu.stnu.st <- exp(nu.st)  
 
@@ -78,21 +72,6 @@ teta <- -teta
 ########################################################################################   
 ########################################################################################
      
-
-
-
-#library(Deriv); library(numDeriv)
-#
-#expr <- expression( exp( -( (-log(p1))^(1/teta) + (-log(p2))^(1/teta)   )^teta) )
-#Simplify( D(D(D(expr, "p1"), "p2"), "p2") ) 
-#
-#expr <- expression( exp( -( (-log(p1))^(1/teta) + (-log(p2))^(1/teta)   )^teta) )
-#Simplify( D(D(D(D(expr, "p1"), "p2"), "p2"), "p2") ) 
-#
-#func0 <- function(p2){  }
-#grad(func0, p2)
-
-
 
 
 if(BivD %in% c("HO")){
@@ -1646,6 +1625,21 @@ der2c.derp2.derrho <- diffc*t6*t3 + c*t3*t9;
 if(BivD == "T"){
 
 
+if(Cont == TRUE){
+
+eps <- 0.001 # because of num deriv below
+m.p <- 0.999
+
+p1 <- ifelse(p1 > m.p, m.p, p1) 
+p1 <- ifelse(p1 < eps, eps, p1) 
+
+p2 <- ifelse(p2 > m.p, m.p, p2) 
+p2 <- ifelse(p2 < eps, eps, p2) 
+
+}
+
+
+
 der2h.derp2teta       <- BiCopHfuncDeriv2(p1, p2, family = 2, teta, par2, deriv = "par1u2")
 
 der3C.p1p1teta        <- BiCopHfuncDeriv2(p2, p1, family = 2, teta, par2, deriv = "par1u2")     
@@ -1657,11 +1651,6 @@ der3C.derp1p1p1       <- BiCopHfuncDeriv2(p2, p1, family = 2, teta, par2, deriv 
 der2h.derteta.teta.st <- BiCopHfuncDeriv2(p1, p2, family = 2, teta, par2, deriv = "par")
 
 der3C.derp1tetateta   <- BiCopHfuncDeriv2(p2, p1, family = 2, teta, par2, deriv = "par") 
-
-
-
-
-
 
 der2h.derp1p2         <- BiCopDeriv(p1, p2, family = 2, teta, par2, deriv = "u2")
 der2h.derp1teta       <- BiCopDeriv(p1, p2, family = 2, teta, par2, deriv = "par")  
@@ -1678,8 +1667,6 @@ der2c.derp1.dernu   <- BiCopDeriv2(p1, p2, family = 2, teta, par2, deriv = "par2
 der2c.derp2.dernu   <- BiCopDeriv2(p1, p2, family = 2, teta, par2, deriv = "par2u2")
 der2c.derp1.derp1   <- BiCopDeriv2(p1, p2, family = 2, teta, par2, deriv = "u1") 
 der2c.derp2.derp2   <- BiCopDeriv2(p1, p2, family = 2, teta, par2, deriv = "u2")  
-
-p1 <- mm(p1)
 
 funcDD <- function(p1) BiCopDeriv(p1, p2, family = 2, teta, par2, deriv = "u2") 
 der2c.derp1.derp2   <- numgh(funcDD, p1)$fi  
@@ -4023,75 +4010,34 @@ der2c.derp1.derrho	= -der2c.derp1.derrho
 
 
 
-ifef <- function(dv){
-
-epsilon <- sqrt(.Machine$double.eps)
-dv <- ifelse(is.na(dv), epsilon, dv ) 
-dv <- ifelse(dv == Inf ,  8.218407e+20, dv )
-dv <- ifelse(dv == -Inf ,  -8.218407e+20, dv )
-dv 
-
-}
-
-
-# stuff below is for safety and it generally does nothing
-
-der2h.derp2p2              =  ifef(der2h.derp2p2             )
-der3C.derp1p1p1            =  ifef(der3C.derp1p1p1           )
-
-
-der2h.derteta.teta.st      =  ifef(der2h.derteta.teta.st     )
-der3C.derp1tetateta        =  ifef(der3C.derp1tetateta       )
-derteta.derteta.st         =  ifef(derteta.derteta.st        )
-der2teta.derteta.stteta.st =  ifef(der2teta.derteta.stteta.st)
-der2h.derp1p2              =  ifef(der2h.derp1p2       )      
-der2h.derp1teta            =  ifef(der2h.derp1teta     )     
-der2h.derp1nu              =  ifef(der2h.derp1nu       )
-
-der2h.derp2teta            =  ifef(der2h.derp2teta     ) 
-der3C.p1p1teta             =  ifef(der3C.p1p1teta      )
-
-der2h.derp1p1              =  ifef(der2h.derp1p1       )      
-der2c.derrho.derrho        =  ifef(der2c.derrho.derrho )   
-der2c.derrho.dernu         =  ifef(der2c.derrho.dernu)
-der2c.dernu.dernu          =  ifef(der2c.dernu.dernu)
-der2c.derp1.derp1          =  ifef(der2c.derp1.derp1 )        
-der2c.derp2.derp2          =  ifef(der2c.derp2.derp2 )        
-der2c.derp1.derp2          =  ifef(der2c.derp1.derp2 )        
-der2c.derp1.derrho         =  ifef(der2c.derp1.derrho)        
-der2c.derp2.derrho         =  ifef(der2c.derp2.derrho)        
-
-
-
-
-
-
 
 list(
-der2h.derp2p2              = der2h.derp2p2,
-der3C.derp1p1p1            = der3C.derp1p1p1,
-der2h.derteta.teta.st      = der2h.derteta.teta.st,  
-der3C.derp1tetateta        = der3C.derp1tetateta,
-derteta.derteta.st         = derteta.derteta.st, 
-dernu.dernu.st             = dernu.dernu.st,
-der2nu.dernu.stnu.st       = der2nu.dernu.stnu.st,
-der2teta.derteta.stteta.st = der2teta.derteta.stteta.st,  
-der2h.derp1p2              = der2h.derp1p2,  
-der2h.derp1teta            = der2h.derp1teta,  
-der2h.derp1nu              = der2h.derp1nu,
-der2h.derp2teta            = der2h.derp2teta,  
-der3C.p1p1teta             = der3C.p1p1teta,
-der2h.derp1p1              = der2h.derp1p1,
-der2c.derrho.derrho        = der2c.derrho.derrho,
-der2c.derrho.dernu         = der2c.derrho.dernu,
-der2c.dernu.dernu          = der2c.dernu.dernu,
-der2c.derp1.derp1          = der2c.derp1.derp1, 
-der2c.derp2.derp2          = der2c.derp2.derp2, 
-der2c.derp1.derp2          = der2c.derp1.derp2, 
-der2c.derp1.derrho         = der2c.derp1.derrho, 
-der2c.derp2.derrho         = der2c.derp2.derrho,
-der2c.derp1.dernu          = der2c.derp1.dernu,
-der2c.derp2.dernu          = der2c.derp2.dernu   )     
+der2h.derp2p2              = ifef(der2h.derp2p2),
+der3C.derp1p1p1            = ifef(der3C.derp1p1p1),
+der2h.derteta.teta.st      = ifef(der2h.derteta.teta.st),  
+der3C.derp1tetateta        = ifef(der3C.derp1tetateta),
+derteta.derteta.st         = ifef(derteta.derteta.st), 
+dernu.dernu.st             = ifef(dernu.dernu.st),
+der2nu.dernu.stnu.st       = ifef(der2nu.dernu.stnu.st),
+der2teta.derteta.stteta.st = ifef(der2teta.derteta.stteta.st),  
+der2h.derp1p2              = ifef(der2h.derp1p2),  
+der2h.derp1teta            = ifef(der2h.derp1teta),  
+der2h.derp1nu              = ifef(der2h.derp1nu),
+der2h.derp2teta            = ifef(der2h.derp2teta),  
+der3C.p1p1teta             = ifef(der3C.p1p1teta),
+der2h.derp1p1              = ifef(der2h.derp1p1),
+der2c.derrho.derrho        = ifef(der2c.derrho.derrho),
+der2c.derrho.dernu         = ifef(der2c.derrho.dernu),
+der2c.dernu.dernu          = ifef(der2c.dernu.dernu),
+der2c.derp1.derp1          = ifef(der2c.derp1.derp1), 
+der2c.derp2.derp2          = ifef(der2c.derp2.derp2), 
+der2c.derp1.derp2          = ifef(der2c.derp1.derp2), 
+der2c.derp1.derrho         = ifef(der2c.derp1.derrho), 
+der2c.derp2.derrho         = ifef(der2c.derp2.derrho),
+der2c.derp1.dernu          = ifef(der2c.derp1.dernu),
+der2c.derp2.dernu          = ifef(der2c.derp2.dernu)   
+
+)     
 
 
 

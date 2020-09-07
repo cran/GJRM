@@ -1,5 +1,8 @@
 copgHs3 <- function(p1, p2, eta1 = NULL, eta2 = NULL, teta, teta.st, BivD, par2 = NULL){
 
+
+
+
 ########################################################################################
 
 ########################################################################################
@@ -396,25 +399,9 @@ c.copula2.be2  <- - c.copula2.be2
 
 
 
-ifef <- function(dv){
-
-epsilon <- sqrt(.Machine$double.eps)
-dv <- ifelse(is.na(dv), epsilon, dv ) 
-dv <- ifelse(dv == Inf ,  8.218407e+20, dv )
-dv <- ifelse(dv == -Inf ,  -8.218407e+20, dv )
-dv
-
-}
 
 
-
-c.copula2.be2 <- ifef(c.copula2.be2 ) 
-der2h.derp2p2 <- ifef(der2h.derp2p2 )
-
-
-
-
-list( c.copula2.be2 = c.copula2.be2, der2h.derp2p2 = der2h.derp2p2 )     
+list( c.copula2.be2 = ifef(c.copula2.be2), der2h.derp2p2 = ifef(der2h.derp2p2) )     
 
 
 }

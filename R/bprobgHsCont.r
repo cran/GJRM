@@ -1,13 +1,13 @@
 bprobgHsCont <- function(params, respvec, VC, ps, AT = FALSE){
 
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+
 
   eta1 <- VC$X1%*%params[1:VC$X1.d2]
   eta2 <- VC$X2%*%params[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)]
   etad <- etas <- l.ln <- NULL 
 
-  epsilon <- sqrt(.Machine$double.eps)
-  max.p   <- 0.9999999
-  
+
   
 if(is.null(VC$X3)){  
   sigma2.st <- etas <- params[(VC$X1.d2 + VC$X2.d2 + 1)]
@@ -25,7 +25,7 @@ if(!is.null(VC$X3)){
 
     eta2 <- eta.tr(eta2, VC$margins[2])
     
- dHs  <- distrHs(respvec$y2, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[2], naive = FALSE)
+ dHs  <- distrHs(respvec$y2, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
  pdf2                         <- dHs$pdf2
  p2                           <- dHs$p2 
@@ -41,7 +41,7 @@ if(!is.null(VC$X3)){
  der2pdf2.dereta2dersigma2.st <- dHs$der2pdf2.dereta2dersigma2.st  
   
   
-  pd1 <- probm(eta1, VC$margins[1], bc = TRUE) 
+  pd1 <- probm(eta1, VC$margins[1], bc = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
   
   p1 <- 1 - pd1$pr #   pnorm(-eta1)
 
@@ -101,8 +101,8 @@ Cop2 <- Cop1Cop2R$Cop2
 ########################################################################################################
 
 
-  if( length(teta1) != 0) dH1 <- copgHs(p1[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof)
-  if( length(teta2) != 0) dH2 <- copgHs(p1[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof)
+  if( length(teta1) != 0) dH1 <- copgHs(p1[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  if( length(teta2) != 0) dH2 <- copgHs(p1[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   h <- NA
   if( length(teta1) != 0) h[teta.ind1] <- dH1$c.copula.be2 
@@ -314,13 +314,13 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
 
  if(VC$margins[2] == "LN"){
     
- dHs  <- distrHsAT(exp(respvec$y2), eta2, sigma2, 1, margin2 = VC$margins[2])
+ dHs  <- distrHsAT(exp(respvec$y2), eta2, sigma2, 1, margin2 = VC$margins[2], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
  pdf2 <- dHs$pdf2
  p2   <- dHs$p2 
  
   
-  if( length(teta1) != 0) dH1 <- copgHsAT(p1[teta.ind1], p2[teta.ind1], teta1, Cop1)
-  if( length(teta2) != 0) dH2 <- copgHsAT(p1[teta.ind2], p2[teta.ind2], teta2, Cop2)
+  if( length(teta1) != 0) dH1 <- copgHsAT(p1[teta.ind1], p2[teta.ind1], teta1, Cop1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  if( length(teta2) != 0) dH2 <- copgHsAT(p1[teta.ind2], p2[teta.ind2], teta2, Cop2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
    
   h <- NA
   if( length(teta1) != 0) h[teta.ind1] <- dH1$c.copula.be2 
@@ -335,8 +335,12 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
          list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l.ln=l.ln, l.par=l.par, ps = ps, etas = etas,
               eta1=eta1, eta2=eta2, etad=etad,
               dl.dbe1=dl.dbe1, dl.dbe2=dl.dbe2, dl.dsigma.st = dl.dsigma.st, dl.dteta.st = dl.dteta.st,
-              BivD=VC$BivD, p1=1-p1, p2=p2, theta.star = teta.st,
+              BivD=VC$BivD, theta.star = teta.st,
               teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,
+                            p1 = 1-p1, p2 = p2, pdf1 = pdf1, pdf2 = pdf2,          
+	      	                    c.copula.be2 = c.copula.be2,
+	      	                    c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2,
               Cop1 = Cop1, Cop2 = Cop2, teta1 = teta1, teta2 = teta2)      
 
 }

@@ -15,7 +15,7 @@ if(type == "ord"){
 
 
 #############################################################
-#stop("Check next release for the ordinal version.")     ####
+#stop("Check next release for the ordinal version.") ####
 #############################################################
 
   if(M$BivD == "T" && (M$dof <=2 || M$dof > 249)) stop("dof must be a number greater than 2 and smaller than 249.")
@@ -269,9 +269,11 @@ if(M$surv == TRUE){
 
   if( M$type.cens %in% c("mixed") ){
      if( !is.factor(M$cens) ) stop("The cens variable must be a factor variable.")
-     c.set <- c("R","L","I","U")
+     
+     # NEW: include truncated censoring indicators
+     c.set <- c("R","L","I","U","RT","LT","IT","UT")
      ucens <- unique(M$cens); l.uc <- length(ucens)
-     for(i in 1:l.uc){ if(!(ucens[i] %in% c.set)) stop("The cens variable can only take values in (R, L, I, U).")} 
+     for(i in 1:l.uc){ if(!(ucens[i] %in% c.set)) stop("The cens variable can only take values in (R, L, I, U, RT, LT, IT, UT).")} 
                                     }
     
 }  
@@ -291,14 +293,6 @@ if(M$surv == TRUE){
   
   if(M$surv == TRUE && M$margin %in% M$bl && M$informative == "yes" && M$type.cens != "R" ) stop("The informative model only allows for right censoring.")
   
-
-########################################################################################################################################  
-
-
-if( M$margin %in% c("GP", "GPII", "GPo","DGP", "DGPII") ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")  
-
-
-######################################################################################################################################## 
 
 }
   

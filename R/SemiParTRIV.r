@@ -5,7 +5,8 @@ SemiParTRIV <- function(formula, data = list(), weights = NULL, subset = NULL,
                              rinit = 1, rmax = 100, 
                              iterlimsp = 50, tolsp = 1e-07,
                              gc.l = FALSE, parscale, extra.regI = "t", knots = NULL,
-                             drop.unused.levels = TRUE){
+                             drop.unused.levels = TRUE,
+                             min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999){
   
   ##########################################################################################################################
   # model set up and starting values
@@ -76,7 +77,7 @@ SemiParTRIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
-  mf$ordinal <- mf$knots <- mf$Chol <- mf$margins <- mf$infl.fac <- mf$rinit <- mf$approx <- mf$gamma <- mf$w.alasso <- mf$rmax <- mf$Model <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$penCor <- mf$sp.penCor <- NULL                           
+  mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$ordinal <- mf$knots <- mf$Chol <- mf$margins <- mf$infl.fac <- mf$rinit <- mf$approx <- mf$gamma <- mf$w.alasso <- mf$rmax <- mf$Model <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$penCor <- mf$sp.penCor <- NULL                           
   mf$drop.unused.levels <- drop.unused.levels 
   if(Model=="TSS") mf$na.action <- na.pass
   mf[[1]] <- as.name("model.frame")
@@ -154,7 +155,7 @@ if(Model=="TESS"){
   if(Model %in% c("TSS","TESS")){
   
   X2s <- try(predict.gam(gam2, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
-  if(class(X2s)=="try-error") stop("Check that the numbers of factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?SemiParTRIV for more information.")    
+  if(any(class(X2s)=="try-error")) stop("Check that the numbers of factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?SemiParTRIV for more information.")    
   
   }
   
@@ -176,7 +177,7 @@ if(Model=="TESS"){
   if(Model %in% c("TSS","TESS")){
   
   X3s <- try(predict.gam(gam3, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
-  if(class(X3s)=="try-error") stop("Check that the numbers of factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?SemiParTRIV for more information.")    
+  if(any(class(X3s)=="try-error")) stop("Check that the numbers of factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?SemiParTRIV for more information.")    
     
   }  
     
@@ -448,7 +449,9 @@ if(missing(parscale)) parscale <- 1
              X2s = X2s, X3s = X3s,
              approx = approx, gamma = gamma, wc = w.alasso, qu.mag = qu.mag,
              zerov = -10, Chol = Chol, surv.flex = surv.flex, l.flist = l.flist, gp2.inf = NULL,
-             informative = "no")
+             informative = "no",
+             zero.tol = 1e-02,
+             min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
              
   if(gc.l == TRUE) gc()           
              

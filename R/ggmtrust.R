@@ -117,12 +117,6 @@ gc()
     Vb <- chol2inv(chol(He))
     
     
-    #He.eig <- eigen(He, symmetric = TRUE)
-    #if(min(He.eig$values) < sqrt(.Machine$double.eps) && sign( min( sign(He.eig$values) ) ) == -1) He.eig$values <- abs(He.eig$values)  
-    #if(min(He.eig$values) < sqrt(.Machine$double.eps) ) { pep <- which(He.eig$values < sqrt(.Machine$double.eps)); He.eig$values[pep] <- epsilon }
-    #Vb <- He.eig$vectors%*%tcrossprod(diag(1/He.eig$values, nrow = length(He.eig$values), ncol =  length(He.eig$values)),He.eig$vectors)     
-        
-    
     
     
     Vb <- (Vb + t(Vb) )/2 

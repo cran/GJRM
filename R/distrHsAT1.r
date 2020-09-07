@@ -1,5 +1,6 @@
 distrHsAT1 <- function(y2.st, eta2, sigma2, nu, margin2){
  
+
  
 # TW is missing here 
 
@@ -343,35 +344,15 @@ mu2 <- exp(eta2)
 #
 #func0 <- function(y2){ exp( (1/sigma^2) * log(y2/(mu2 * sigma^2)) - y2/(mu2 * sigma^2) - log(y2) - lgamma(1/sigma^2) )}
 #grad(func0 , y2)
-
 #dgamma(y2, shape = 1/sigma^2, scale = mu2 * sigma^2)  
 
     }
     
     
     
- 
- 
-   
-    
-    
-
-ifef <- function(dv){
-
-epsilon <- sqrt(.Machine$double.eps) 
-dv <- ifelse(is.na(dv), epsilon, dv ) 
-dv <- ifelse(dv == Inf ,  8.218407e+20, dv )
-dv <- ifelse(dv == -Inf ,  -8.218407e+20, dv )
-dv
-
-}
-
-der2p2.dery22  <- ifef(der2p2.dery22 )
-dery.dery.st   <- ifef(dery.dery.st  )
-der2y.dery.st2 <- ifef(der2y.dery.st2)
 
 
-list(der2p2.dery22 = der2p2.dery22, dery.dery.st = dery.dery.st, der2y.dery.st2 = der2y.dery.st2)     
+list(der2p2.dery22 = ifef(der2p2.dery22), dery.dery.st = ifef(dery.dery.st), der2y.dery.st2 = ifef(der2y.dery.st2))     
 
 
 }

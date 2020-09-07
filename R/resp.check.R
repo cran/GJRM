@@ -3,7 +3,8 @@ resp.check <- function(y, margin = "N",
                            xlab = "Response", print.par = FALSE, plots = TRUE, 
                            loglik = FALSE, os = FALSE, 
                            intervals = FALSE, n.sim = 100, prob.lev = 0.05, 
-                           i.f = FALSE, ...){
+                           i.f = FALSE, 
+                           min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999, ...){
 
 m2 <- c("N","GU","rGU","LO","LN","WEI","iG","GA","GAi","BE","FISK","GP","GPII","GPo")
 m3 <- c("DAGUM","SM","TW")
@@ -45,7 +46,8 @@ VC <- list(X1 = matrix(1, nrow = length(y), ncol = 1), X1.d2 = 1,
            l.sp1 = 0, l.sp2 = 0, l.sp3 = 0, l.sp4 = 0, l.sp5 = 0, l.sp6 = 0, l.sp7 = 0, l.sp8 = 0, 
            weights = 1, m2 = m2, m3 = m3, m1d = m1d, m2d = m2d, m3d = m3d, 
            margins = margins, fp = TRUE,
-           extra.regI = "t", Cont = "NO", ccss = "no", triv = FALSE, surv = FALSE)
+           extra.regI = "t", Cont = "NO", ccss = "no", triv = FALSE, surv = FALSE, zero.tol = 1e-02, 
+           min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 
 ps <- list(S.h = 0, S.h1 = 0, S.h2 = 0)
 
@@ -141,12 +143,13 @@ if(margin == "LN") y <- exp(y)
      
     }
 
+    
 
 
-if(margin %in% m2)   pp <-      distrHsAT(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, 1, margin)
-if(margin %in% m3)   pp <-      distrHsAT(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, exp(univfit$argument[3]), margin)
-if(margin %in% m1d)  pp <- distrHsATDiscr(y, univfit$argument[1], 1, 1, margin, y2m = y1m)
-if(margin %in% m2d)  pp <- distrHsATDiscr(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, 1, margin, y2m = y1m)
+if(margin %in% m2)   pp <-      distrHsAT(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, 1, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+if(margin %in% m3)   pp <-      distrHsAT(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, exp(univfit$argument[3]), margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+if(margin %in% m1d)  pp <- distrHsATDiscr(y, univfit$argument[1], 1, 1, margin2 = margin, y2m = y1m, robust = FALSE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+if(margin %in% m2d)  pp <- distrHsATDiscr(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, 1, margin2 = margin, y2m = y1m, robust = FALSE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 
 
 p <- pp$p2
@@ -198,7 +201,7 @@ if(margin %in% mub)   mu <- plogis(mu)
 
 if(!(margin %in% m1d)) sigma <- NULL else sigma <- esp.tr(univfit$argument[2], margin)$vrb
 
-if(margin %in% m3)  nu <- esp.tr(univfit$argument[3], margin)$vrb   
+if(margin %in% m3)  nu <- enu.tr(univfit$argument[3], margin)$vrb   
 if(margin %in% m3d) nu <- enu.tr(univfit$argument[3], margin)$vrb   
 
 
@@ -224,7 +227,7 @@ if(loglik == TRUE){ ##
 
 if(margin == "LN"){ 
 
-if(plots == FALSE) d <- distrHsAT(exp(y), univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, 1, margin)$pdf2
+if(plots == FALSE) d <- distrHsAT(exp(y), univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, 1, margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)$pdf2
 lk <- sum(log(d))
 
                   }

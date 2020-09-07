@@ -1,10 +1,11 @@
-mmf <- function(ob){
-  
+mmf <- function(ob, max.pr){
+
+# 0.999999 could have one more 9 (or add 1e-06) but then it would probably be too close
+ 
   sob   <- sign(ob)
-  max.p <- 0.9999999
   ob    <- abs(ob)
 
-  res <- ifelse(ob > max.p, max.p, ob) 
+  res <- ifelse(ob > max.pr, max.pr, ob) 
   res <- res*sob
 
   res

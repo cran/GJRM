@@ -1,5 +1,10 @@
 Dpens2 <- function(params, type = "lasso", lambda = 1, w.alasso = NULL, gamma = 1, a = 3.7, eps = 1e-10){ 
 
+
+
+
+
+
 # "lasso", "alasso", "scad" 
 
 if(type == "lasso"){

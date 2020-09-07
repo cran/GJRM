@@ -1,12 +1,12 @@
 bprobgHsCont3 <- function(params, respvec, VC, ps, AT = FALSE){
 
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
   eta1 <- VC$X1%*%params[1:VC$X1.d2]
   eta2 <- VC$X2%*%params[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)]
   etad <- etas <- etan <- NULL 
 
-  epsilon <- sqrt(.Machine$double.eps)
-  max.p   <- 0.9999999
+
   
   
 if(is.null(VC$X3)){  
@@ -27,14 +27,14 @@ if(!is.null(VC$X3)){
     sigma2    <- sstr1$vrb 
 
     
-sstr1 <- esp.tr(nu.st, VC$margins[2])  
+sstr1 <- enu.tr(nu.st, VC$margins[2])  
 nu.st <- sstr1$vrb.st 
 nu    <- sstr1$vrb 
 
     eta2 <- eta.tr(eta2, VC$margins[2])
     
 
- dHs  <- distrHs(respvec$y2, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[2], naive = FALSE)
+ dHs  <- distrHs(respvec$y2, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
  pdf2                         <- dHs$pdf2
  p2                           <- dHs$p2 
@@ -64,7 +64,7 @@ nu    <- sstr1$vrb
  der2p2.dersigma2.stdernu.st   <- dHs$der2p2.dersigma2.stdernu.st            
  der2pdf2.dersigma2.stdernu.st <- dHs$der2pdf2.sigma2.st2dernu.st 
   
-  pd1 <- probm(eta1, VC$margins[1], bc = TRUE) 
+  pd1 <- probm(eta1, VC$margins[1], bc = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
   
   p1 <- 1 - pd1$pr #   pnorm(-eta1)
 
@@ -123,8 +123,8 @@ VC$my.env$signind <- ifelse(teta.ind1 == TRUE,  1, -1)
  ########################################################################################################
  
  
-   if( length(teta1) != 0) dH1 <- copgHs(p1[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof)
-   if( length(teta2) != 0) dH2 <- copgHs(p1[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof)
+   if( length(teta1) != 0) dH1 <- copgHs(p1[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+   if( length(teta2) != 0) dH2 <- copgHs(p1[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
    
    h <- NA
    if( length(teta1) != 0) h[teta.ind1] <- dH1$c.copula.be2 
@@ -404,7 +404,11 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
 #d2l.rho.sigma   = d2l.rho.sigma  ,
 #d2l.rho.nu      = d2l.rho.nu     ,
 #d2l.sigma.nu    = d2l.sigma.nu   ,            
-BivD=VC$BivD, p1=1-p1, p2=p2, theta.star = teta.st,
+BivD=VC$BivD, theta.star = teta.st,
+                            p1 = 1-p1, p2 = p2, pdf1 = pdf1, pdf2 = pdf2,          
+	      	                    c.copula.be2 = c.copula.be2,
+	      	                    c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2,
 teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,
               Cop1 = Cop1, Cop2 = Cop2, teta1 = teta1, teta2 = teta2)      
 

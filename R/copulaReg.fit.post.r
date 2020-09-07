@@ -46,7 +46,7 @@ if( is.null(VC$X3) ) {names(sigma21) <- "sigma1"
 
 if(VC$margins[1] %in% cont3par ){  
 
-nu1 <- esp.tr(SemiParFit$fit$etan1, VC$margins[1])$vrb    
+nu1 <- enu.tr(SemiParFit$fit$etan1, VC$margins[1])$vrb    
 if( is.null(VC$X3) ) names(nu1) <- "nu1"
 
 nu1.a <- mean(nu1)
@@ -57,7 +57,7 @@ nu1.a <- mean(nu1)
 
 if(VC$margins[2] %in% cont3par ){  
 
-nu2 <- esp.tr(SemiParFit$fit$etan2, VC$margins[2])$vrb    
+nu2 <- enu.tr(SemiParFit$fit$etan2, VC$margins[2])$vrb    
 if( is.null(VC$X3) ) names(nu2) <- "nu2"
                        
 nu2.a <- mean(nu2)

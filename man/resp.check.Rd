@@ -16,7 +16,8 @@ resp.check(y, margin = "N", main = "Histogram and Density of Response",
            xlab = "Response", print.par = FALSE, plots = TRUE, 
            loglik = FALSE, os = FALSE,  
            intervals = FALSE, n.sim = 100, prob.lev = 0.05, 
-           i.f = FALSE, ...)
+           i.f = FALSE, 
+           min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999, ...)
 
 }
 
@@ -49,6 +50,9 @@ resp.check(y, margin = "N", main = "Histogram and Density of Response",
 \item{prob.lev}{Overall probability of the left and right tails of the probabilities' distribution used for interval calculations.} 
 
 \item{i.f}{Internal fitting option. This is not for user purposes.}
+
+\item{min.dn, min.pr, max.pr}{Allowed minimum and maximum for estimated probabities and densities for parameter estimation.}
+
 
 \item{...}{Other graphics parameters to pass on to plotting commands.}
 

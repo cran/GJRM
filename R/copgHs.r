@@ -1,6 +1,8 @@
-copgHs <- function(p1, p2, eta1 = NULL, eta2 = NULL, teta, teta.st, BivD, nu = NULL, nu.st = NULL, CLM = FALSE){
+copgHs <- function(p1, p2, eta1 = NULL, eta2 = NULL, teta, teta.st, BivD, nu = NULL, nu.st = NULL, CLM = FALSE,
+                   min.dn, min.pr, max.pr){
 
 ########################################################################################
+
 
 
 c.copula.dof.st <- c.copula2.be1dof.st <- c.copula2.be2dof.st <- c.copula2.dof2.st <- c.copula2.thdof.st <- 1
@@ -877,82 +879,45 @@ bit1.th2         <- - bit1.th2
 
 
 
-epsilon <- sqrt(.Machine$double.eps)
-max.p   <- 0.9999999
-
-# the bits below are probs
   
   
 if(CLM == FALSE){  
   
-c.copula.be2 <- mm(c.copula.be2)
-c.copula.be1 <- mm(c.copula.be1)
-c.copula2.be1be2 <- ifelse(c.copula2.be1be2 < epsilon, epsilon, c.copula2.be1be2)
-
-}
-
-
-
-# this below is a safety check, pretty ad-hoc
-
-ifef <- function(dv){
-
-epsilon <- sqrt(.Machine$double.eps)
-dv <- ifelse(is.na(dv), epsilon, dv ) 
-dv <- ifelse(dv == Inf ,  8.218407e+20, dv )
-dv <- ifelse(dv == -Inf ,  -8.218407e+20, dv )
-dv
+c.copula.be2 <- mm(c.copula.be2, min.pr = min.pr, max.pr = max.pr)
+c.copula.be1 <- mm(c.copula.be1, min.pr = min.pr, max.pr = max.pr)
+c.copula2.be1be2 <- ifelse(c.copula2.be1be2 < min.dn, min.dn, c.copula2.be1be2)
 
 
 }
-
-
-c.copula.be1     <- ifef(c.copula.be1    )  
-c.copula.be2     <- ifef(c.copula.be2    ) 
-c.copula.theta   <- ifef(c.copula.theta  ) 
-c.copula.thet    <- ifef(c.copula.thet   ) 
-c.copula2.be1    <- ifef(c.copula2.be1   ) 
-c.copula2.be2    <- ifef(c.copula2.be2   ) 
-c.copula2.be1be2 <- ifef(c.copula2.be1be2) 
-c.copula2.be1th  <- ifef(c.copula2.be1th ) 
-c.copula2.be2th  <- ifef(c.copula2.be2th ) 
-c.copula2.be1t   <- ifef(c.copula2.be1t  ) 
-c.copula2.be2t   <- ifef(c.copula2.be2t  ) 
-bit1.th2ATE      <- ifef(bit1.th2ATE     ) 
-bit1.th2         <- ifef(bit1.th2        ) 
-derteta.derteta.st         <- ifef(derteta.derteta.st        )
-der2teta.derteta.stteta.st <- ifef(der2teta.derteta.stteta.st)
-
-c.copula.dof.st      <- ifef(c.copula.dof.st    ) 
-c.copula2.be1dof.st  <- ifef(c.copula2.be1dof.st) 
-c.copula2.be2dof.st  <- ifef(c.copula2.be2dof.st) 
-c.copula2.dof2.st    <- ifef(c.copula2.dof2.st)
-c.copula2.thdof.st   <- ifef(c.copula2.thdof.st) 
 
 
 
 list(
-c.copula.be1     = c.copula.be1,    
-c.copula.be2     = c.copula.be2,    
-c.copula.theta   = c.copula.theta,  
-c.copula.thet    = c.copula.thet,  
-c.copula2.be1    = c.copula2.be1,  
-c.copula2.be2    = c.copula2.be2,   
-c.copula2.be1be2 = c.copula2.be1be2,
-c.copula2.be1th  = c.copula2.be1th, 
-c.copula2.be2th  = c.copula2.be2th, 
-c.copula2.be1t   = c.copula2.be1t, 
-c.copula2.be2t   = c.copula2.be2t, 
-bit1.th2ATE      = bit1.th2ATE,     
-bit1.th2         = bit1.th2, 
-derteta.derteta.st = derteta.derteta.st,
-der2teta.derteta.stteta.st = der2teta.derteta.stteta.st,
-c.copula.dof.st     =  c.copula.dof.st,         
-c.copula2.be1dof.st =  c.copula2.be1dof.st,
-c.copula2.be2dof.st =  c.copula2.be2dof.st,
-c.copula2.dof2.st = c.copula2.dof2.st,
-c.copula2.thdof.st = c.copula2.thdof.st
+
+c.copula.be1               = ifef(c.copula.be1    ) , 
+c.copula.be2               = ifef(c.copula.be2    ) ,
+c.copula.theta             = ifef(c.copula.theta  ) ,
+c.copula.thet              = ifef(c.copula.thet   ) ,
+c.copula2.be1              = ifef(c.copula2.be1   ) ,
+c.copula2.be2              = ifef(c.copula2.be2   ) ,
+c.copula2.be1be2           = ifef(c.copula2.be1be2) ,
+c.copula2.be1th            = ifef(c.copula2.be1th ) ,
+c.copula2.be2th            = ifef(c.copula2.be2th ) ,
+c.copula2.be1t             = ifef(c.copula2.be1t  ) ,
+c.copula2.be2t             = ifef(c.copula2.be2t  ) ,
+bit1.th2ATE                = ifef(bit1.th2ATE     ) ,
+bit1.th2                   = ifef(bit1.th2        ) ,
+derteta.derteta.st         = ifef(derteta.derteta.st        ),
+der2teta.derteta.stteta.st = ifef(der2teta.derteta.stteta.st),
+c.copula.dof.st            = ifef(c.copula.dof.st    ) ,
+c.copula2.be1dof.st        = ifef(c.copula2.be1dof.st) ,
+c.copula2.be2dof.st        = ifef(c.copula2.be2dof.st) ,
+c.copula2.dof2.st          = ifef(c.copula2.dof2.st),
+c.copula2.thdof.st         = ifef(c.copula2.thdof.st)
+
 )
+
+
 
 }
 

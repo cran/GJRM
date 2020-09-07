@@ -7,7 +7,10 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
                    informative = "no", inform.cov = NULL, margin2 = "PH", fp = FALSE,
                    sp = NULL, drop.unused.levels = TRUE,
                    siginit = NULL, shinit = NULL,
-                   sp.method = "perf"){ 
+                   sp.method = "perf", hrate = NULL, d.lchrate = NULL, d.rchrate = NULL,
+                   d.lchrate.td = NULL, d.rchrate.td = NULL,
+                   truncation.time = NULL, min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.9999999,
+                   ygrid.tol = 1e-08){ 
   
   ##########################################################################################################################
   # preamble 
@@ -17,9 +20,14 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
   if(!is.null(sp)) sp.fixed <- sp else sp.fixed <- NULL  
   #if(!is.null(sp) && robust == FALSE) stop("Smoothing parameters can not be fixed.")  
 
-  
+  ygrid.tol <- ifelse(ygrid.tol < 1e-160, 1e-160, ygrid.tol)  
+
   v.rB <- upperB
-  
+
+  # NEW 1: we now also need the truncation time
+  v.td <- truncation.time
+
+
   r.type <- "a"  
   i.rho <- sp <- qu.mag <- qu.mag1 <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- spgamlss1 <- indexT <- test.sv.inf <- fgam <- NULL  
   end <- X2.d2 <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- 0
@@ -30,6 +38,10 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
   Xd2 <- mono.sm.pos2 <- Sl.sf <- rangeSurv <- NULL
   Xd1 <- Xd <- mono.sm.pos <- gam1TW <- NULL
   indvU <- indvR <- indvL <- indvI <- NULL
+  
+  # NEW 2: new censoring indicators
+  indvUT <- indvRT <- indvLT <- indvIT <- NULL
+
   Sl.sf1 <- Sl.sf2 <- Sl.sf3 <- list()
   tfc <- no.pb <- NA
   surv.flex <- FALSE
@@ -91,14 +103,21 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
   
   ###
   if(!is.null(v.rB)) pred.n <- c(pred.n, v.rB)
+
+  # NEW 3: include also truncation time
+  if(!is.null(v.td)) pred.n <- c(pred.n, v.td)
   ###
   
 
   fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
+
   
-  mf$upperB <- mf$type.cens <- mf$sp.method <- mf$siginit <- mf$shinit <- mf$ordinal <- mf$sp <- mf$fp <- mf$lB <- mf$uB <- mf$margin2 <- mf$informative <- mf$inform.cov <- mf$knots <- mf$k.tvc <- mf$chunk.size <- mf$gev.par <- mf$surv <- mf$robust <- mf$rc <- mf$margin <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- NULL                           
+  mf$ygrid.tol <- mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$hrate <- mf$d.lchrate <- mf$d.rchrate <- mf$upperB <- mf$type.cens <- mf$sp.method <- mf$siginit <- mf$shinit <- mf$ordinal <- mf$sp <- mf$fp <- mf$lB <- mf$uB <- mf$margin2 <- mf$informative <- mf$inform.cov <- mf$knots <- mf$k.tvc <- mf$chunk.size <- mf$gev.par <- mf$surv <- mf$robust <- mf$rc <- mf$margin <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- NULL                           
+  
+  # NEW 4: include new excess hazard constants and truncation time
+  mf$d.lchrate.td <- mf$d.rchrate.td <- mf$truncation.time <- NULL	  
   mf$drop.unused.levels <- drop.unused.levels
   
   #########
@@ -119,14 +138,15 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
   
   if(surv == TRUE && !("(cens)" %in% names(data)) ) stop("You must provide the binary censoring indicator.")
        
-       
+        
   if(!("(cens)" %in% names(data))) {cens <- rep(1,dim(data)[1]) 
                         data$cens <- cens
                         names(data)[length(names(data))] <- "(cens)"} else cens <- data[,"(cens)"]                         
   
+  # NEW 5: added new variables to M
   M <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, m3d = m3d, robust = robust, extra.regI = extra.regI, margin = margin,
             surv = surv, cens = cens, bl = bl, informative = informative, list.inf.cov = inform.cov, sp.method = sp.method,
-            type.cens = type.cens, v.rB = v.rB)  
+            type.cens = type.cens, v.rB = v.rB, v.td = v.td)  
             
   pream.wm(formula, margins = NULL, M, l.flist, type = "gamls")
   
@@ -139,16 +159,23 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
   
   }  
  
-  if( surv == TRUE && type.cens %in% c("mixed") && any(unique(cens) == "I") ){
+  # NEW 6: same as following if clause. Note: has to be before the next if clause (if not the na.omit(data) command will cancel the truncated observations)
+  if( surv == TRUE && type.cens %in% c("mixed") && !is.null(truncation.time) ) data[!(cens %in% c("UT", "LT", "RT", "IT")), v.td] <- data[!(cens %in% c("UT", "LT", "RT", "IT")), v1[1] ] 
 
-     data[cens != "I", v.rB] <- data[cens != "I", v1[1] ]    
+  if( surv == TRUE && type.cens %in% c("mixed") && any(unique(cens) %in% c("I", "IT")) ){
+
+     data[!(cens %in% c("I", "IT")), v.rB] <- data[!(cens %in% c("I", "IT")), v1[1] ]    
      data <- na.omit(data)  
                
   } 
-  
-  
-  if( surv == TRUE && !is.null(v.rB) )  rangeSurv <- range( c( data[, v1[1]], data[, v.rB] )  ) # for hazard plot
-  if( surv == TRUE &&  is.null(v.rB) )  rangeSurv <- range(    data[, v1[1]]  ) 
+ 
+
+
+  # NEW 7: rangeSurv should include also truncation time
+  if( surv == TRUE && !is.null(v.rB) && !is.null(v.td)) rangeSurv <- range( c( data[, v1[1]], data[, v.rB], data[, v.td] )  ) # for hazard plot
+  if( surv == TRUE &&  is.null(v.rB) && !is.null(v.td)) rangeSurv <- range( c( data[, v1[1]], data[, v.td] )  )
+  if( surv == TRUE && !is.null(v.rB) && is.null(v.td))  rangeSurv <- range( c( data[, v1[1]], data[, v.rB] )  ) # for hazard plot
+  if( surv == TRUE &&  is.null(v.rB) && is.null(v.td))  rangeSurv <- range(    data[, v1[1]]  ) 
   
   
   
@@ -242,6 +269,7 @@ if(surv == TRUE && margin2 %in% bl && informative == "yes"){
                                                                rm(gam1ff)}
                                       
                                                               }
+                                                              
                                                              
  if(margin == "GEVlink"){ gam1 <- eval(substitute(gam(formula.eq1, binomial(link = "cloglog"), gamma=infl.fac, weights=weights, data=data, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights)))
   
@@ -261,11 +289,20 @@ if(surv == TRUE && margin2 %in% bl && informative == "yes"){
   gam1TW <- eval(substitute(gam(formula, gamma = infl.fac, weights = weights, data = data, knots = knots, drop.unused.levels = drop.unused.levels, family = twlss()), list(weights = weights)))
  
   # test below, Sl.sf can be set up directly or in pieces
-  # gam1TWff <- eval(substitute(gam(formula, gamma = infl.fac, weights = weights, data = data, knots = knots, drop.unused.levels = drop.unused.levels, family = twlss(), fit = FALSE), list(weights = weights)))
-  # Sl.sf <- Sl.setup(gam1TWff)
-  # rm(gam1TWff)
+  #if(sp.method != "perf"){ 
+  #   gam1TWff <- eval(substitute(gam(formula, gamma = infl.fac, weights = weights, data = data, knots = knots, drop.unused.levels = drop.unused.levels, family = twlss(), fit = FALSE), list(weights = weights)))
+  #   Sl.sf <- Sl.setup(gam1TWff)
+  #   rm(gam1TWff)
+  #                       }
   
   }
+  
+  
+  
+  
+  
+  
+
 
 
  #############################################################################################
@@ -328,22 +365,23 @@ if(surv == TRUE && margin2 %in% bl && informative == "yes"){
     data$temp.respV <- data[, v1[1]] # this is u1
     
       # "R" is fine as it is
-    
-      if( any(unique(cens) == "L") ) data$temp.respV[cens == "L"] <-  data$temp.respV[cens == "L"]/2
       
-      if( any(unique(cens) == "I") ){
+      # NEW 8: must include truncated cens as well now (both left AND left truncated as well as interval AND interval truncated)
+      if( any(unique(cens) %in% c("L", "LT")) ) data$temp.respV[cens %in% c("L","LT")] <-  data$temp.respV[cens %in% c("L","LT")]/2
+      
+      if( any(unique(cens) %in% c("I", "IT")) ){
       
       
-           r.op  <-  range(data$temp.respV[cens != "I"])
-           r.upL <- length(data$temp.respV[cens == "I"])
+           r.op  <- range(data$temp.respV[!(cens %in% c("I", "IT"))])
+           r.upL <- length(data$temp.respV[cens %in% c("I", "IT")])
            
            for(i in 1:r.upL){ 
            
-                  if( data$temp.respV[cens == "I"][i] < r.op[1] ) {r.op <- range(c(r.op, data$temp.respV[cens == "I"][i]))}    
+                  if( data$temp.respV[cens %in% c("I", "IT")][i] < r.op[1] ) {r.op <- range(c(r.op, data$temp.respV[cens %in% c("I", "IT")][i]))}    
                   
-                  if( data[cens == "I", v.rB][i] > r.op[2] )      { data$temp.respV[cens == "I"][i] <- data[cens == "I", v.rB][i]; r.op <- range(c(r.op, data$temp.respV[cens == "I"][i]))} 
+                  if( data[cens %in% c("I", "IT"), v.rB][i] > r.op[2] )      { data$temp.respV[cens %in% c("I", "IT")][i] <- data[cens %in% c("I", "IT"), v.rB][i]; r.op <- range(c(r.op, data$temp.respV[cens %in% c("I", "IT")][i]))} 
                   
-                  if( data$temp.respV[cens == "I"][i] > r.op[1] && data[cens == "I", v.rB][i] < r.op[2]) data$temp.respV[cens == "I"][i] <- (data$temp.respV[cens == "I"][i] + data[cens == "I", v.rB][i])/2       
+                  if( data$temp.respV[cens %in% c("I", "IT")][i] > r.op[1] && data[cens %in% c("I", "IT"), v.rB][i] < r.op[2]) data$temp.respV[cens %in% c("I", "IT")][i] <- (data$temp.respV[cens %in% c("I", "IT")][i] + data[cens %in% c("I", "IT"), v.rB][i])/2       
 
                              }
 
@@ -362,13 +400,20 @@ if(surv == TRUE && margin2 %in% bl && informative == "yes"){
   
   
   
-  data$Sh <- as.vector(mm(predict(tempb, type = "response")))
+  data$Sh <- as.vector(mm(predict(tempb, type = "response"), min.pr = min.pr, max.pr = max.pr))
   
   #data$Sh <- as.vector(mm(rstpm2:::Shat(coxph(Surv(u, delta == 1) ~ 1, data = data, model = TRUE))))
   #does not seem to have an impact
   ###################################################################
   
-  cens1 <- ifelse(cens == 0, 1e-07, cens)
+  # NEW 9: must include truncated cens here too
+  if( type.cens %in% c("mixed") ){
+  
+     cens1 <- cens
+     cens1 <- ifelse(cens1 %in% c("L", "I", "R", "LT", "IT", "RT"), 0, 1)
+     cens1 <- ifelse(cens1 == 0, 1e-07, cens1)
+ 
+  }else cens1 <- ifelse(cens == 0, 1e-07, cens)
   
   
   if(type.cens != "R"){
@@ -396,6 +441,8 @@ if(surv == TRUE && margin2 %in% bl && informative == "yes"){
   
   if( sum(as.numeric(clsm[1] %in% c("mpi.smooth")))==0 ) stop("You must have a monotonic smooth of time and it has to be the first to be included.")
   
+                                                         # don't remember why it has to be the first; double check
+  
     
   #if(clsm[1] != "mpi.smooth") stop("The first smoother must be a monotonic smooth of time.")  
   #if( sum( as.numeric(clsm %in% c("mpi.smooth")) ) != sum( ggr ) ) stop("You must use mpi smooth function(s) of time.")   
@@ -416,6 +463,9 @@ if(surv == TRUE && margin2 %in% bl && informative == "yes"){
   #sp.c <- 1 # this will have to be improved but not sure how at the moment
             # it may not affect results though, only maybe in peculiar situations
   sp1[1] <- 1 
+  sp1[clsm %in% c("mpi.smooth")] <- 1 # this may be relevant for interaction terms
+                                      # although it could be done with any type of smooth
+  
 
   gam.call <- gam1$call
   gam.call$sp <- sp1
@@ -427,29 +477,29 @@ if(surv == TRUE && margin2 %in% bl && informative == "yes"){
   j <- 1
   for(i in 1:lsgam1){ 
   
-    if( max(as.numeric(grepl(v1[1], gam1$smooth[[i]]$vn))) != 0 && clsm[i] == "mpi.smooth" ) mono.sm.pos <- c(mono.sm.pos, c(gam1$smooth[[i]]$first.para:gam1$smooth[[i]]$last.para) ) 
+    if( max(as.numeric(grepl(v1[1], gam1$smooth[[i]]$term))) != 0 && clsm[i] == "mpi.smooth" ) mono.sm.pos <- c(mono.sm.pos, c(gam1$smooth[[i]]$first.para:gam1$smooth[[i]]$last.para) ) 
    
-    if( max(as.numeric(grepl(v1[1], gam1$smooth[[i]]$vn))) != 0 && clsm[i] != "mpi.smooth" ){ 
-    
-    # these checks are not entirely general and the user may
-    # still specify the model in the wrong way
-    
-                                                                if( clsm[i] != "pspline.smooth" && k.tvc !=0) stop("You have to use a ps smooth to allow for doubly penalised tvc terms.")
-                                                                                                                                
-                                                                if( clsm[i] == "pspline.smooth"){
-                                                                
-                                                                pos.pb[[j]] <- c(gam1$smooth[[i]]$first.para:gam1$smooth[[i]]$last.para)
-                                                                indexT      <- c(indexT, pos.pb[[j]] ) # this is fine, do not touch it, good for starting values
-                                                                D[[j]]      <- diff(diag(length(pos.pb[[j]])), differences = 1)
-                                                                j <- j + 1
-                                                                
-                                                                # scaling factor should not matter since lambda is fixed here
-                                                                #D[[j]] <- diff(diag(rep(0,length(pos.pb))), differences = 1)
-                                                                
-                                                                }
-                                                                
-                                                                
-                                                                                            }
+    #if( max(as.numeric(grepl(v1[1], gam1$smooth[[i]]$vn))) != 0 && clsm[i] != "mpi.smooth" ){ 
+    #
+    ## these checks are not entirely general and the user may
+    ## still specify the model in the wrong way
+    #
+    #                                                            if( clsm[i] != "pspline.smooth" && k.tvc !=0) stop("You have to use a ps smooth to allow for doubly penalised tvc terms.")
+    #                                                                                                                            
+    #                                                            if( clsm[i] == "pspline.smooth"){
+    #                                                            
+    #                                                            pos.pb[[j]] <- c(gam1$smooth[[i]]$first.para:gam1$smooth[[i]]$last.para)
+    #                                                            indexT      <- c(indexT, pos.pb[[j]] ) # this is fine, do not touch it, good for starting values
+    #                                                            D[[j]]      <- diff(diag(length(pos.pb[[j]])), differences = 1)
+    #                                                            j <- j + 1
+    #                                                            
+    #                                                            # scaling factor should not matter since lambda is fixed here
+    #                                                            #D[[j]] <- diff(diag(rep(0,length(pos.pb))), differences = 1)
+    #                                                            
+    #                                                            }
+    #                                                            
+    #                                                            
+    #                                                                                        }
   
   
   }  
@@ -467,6 +517,14 @@ if( any(unique(cens) == "U") ) indvU[cens == "U"] <- 1
 if( any(unique(cens) == "R") ) indvR[cens == "R"] <- 1 
 if( any(unique(cens) == "L") ) indvL[cens == "L"] <- 1  
 if( any(unique(cens) == "I") ) indvI[cens == "I"] <- 1   
+
+
+# NEW 10: for the truncated observations
+indvUT <- indvRT <- indvLT <- indvIT <- rep(0, n)
+if( any(unique(cens) == "UT") ) indvUT[cens == "UT"] <- 1 
+if( any(unique(cens) == "RT") ) indvRT[cens == "RT"] <- 1 
+if( any(unique(cens) == "LT") ) indvLT[cens == "LT"] <- 1  
+if( any(unique(cens) == "IT") ) indvIT[cens == "IT"] <- 1 
   
   
 } 
@@ -488,19 +546,35 @@ if(type.cens %in% c("I", "L", "mixed")){
                                    }    
  
       	     if( type.cens == "mixed" ){ 
-      	     
-                          if( any(unique(cens) == "I") ){ 
+      	              
+                          # NEW 11: include truncated interval as well when defining X2
+                          if( any(unique(cens) %in% c("I", "IT")) ){ 
                           
-                              data[cens == "I", v1[1]] <- data[cens == "I", v.rB]  
+                              data[cens %in% c("I", "IT"), v1[1]] <- data[cens %in% c("I", "IT"), v.rB]  
                               X2 <- predict(gam1, type = "lpmatrix", newdata = data)  
                             
-                                                        }
-                                       }     
+                          }
+      	       
+                	       # NEW 12: need third design matrix for truncated obs
+                	       if( any(unique(cens) %in% c("UT", "LT", "RT", "IT")) ){
+                	         
+                	         data[cens %in% c("UT", "LT", "RT", "IT"), v1[1]] <- data[cens %in% c("UT", "LT", "RT", "IT"), v.td]
+                	         X3 <- predict(gam1, type = "lpmatrix", newdata = data)
+                	         
+                	       }
+      	       
+      	     }
+        
+        
+        
 }
 
-                                                                     
-  if(is.null(X2)) X2 <- matrix(1, dim(X1)[1], dim(X1)[2])       
   
+                                                                     
+  if(is.null(X2)) X2 <- matrix(1, dim(X1)[1], dim(X1)[2]) 
+
+  # NEW 13: initialize X3 as matrix of ones like we do for X2      
+  if(is.null(X3)) X3 <-  matrix(1, dim(X1)[1], dim(X1)[2])
   
   
   if( !is.null(indexT) && k.tvc !=0){ if(range(X1[, indexT])[1] < 0) stop("Check design matrix for smooth(s) of tvc terms.")}
@@ -538,8 +612,26 @@ if(type.cens %in% c("I", "L", "mixed")){
   
   
   
-  
-  
+ ####################################
+ ####################################
+ # Survival indices for excess hazard 
+ ####################################
+ ####################################
+ 
+ # NEW 14: include new excess hazard constants (d.lchrate.td and d.rchrate.td)
+ if( !is.null(hrate) || !is.null(d.lchrate) || !is.null(d.rchrate) || !is.null(d.lchrate.td) || !is.null(d.rchrate.td)){  
+ 
+ resExcInd <- survExcInd(n = n, cens = cens, type.cens = type.cens, hrate = hrate, 
+                         d.lchrate = d.lchrate, d.rchrate = d.rchrate, 
+                         d.lchrate.td = d.lchrate.td, d.rchrate.td = d.rchrate.td)
+ 
+ hrate        <- resExcInd$hrate
+ d.lchrate    <- resExcInd$d.lchrate
+ d.rchrate    <- resExcInd$d.rchrate
+ d.lchrate.td <- resExcInd$d.lchrate.td
+ d.rchrate.td <- resExcInd$d.rchrate.td
+ 
+ } 
   
   
   
@@ -549,7 +641,7 @@ if(informative == "yes"){
   f.eq1 <- form.eq12R2$f.eq1
   data$urcfcphmwicu <- seq(-10, 10, length.out = dim(data)[1])
   tempb <- eval(substitute(gam(f.eq1, family = cox.ph(), data = data, weights = 1 - cens, drop.unused.levels = drop.unused.levels),list(cens=cens))) 
-  data$Sh <- as.vector(mm(predict(tempb, type = "response")))
+  data$Sh <- as.vector(mm(predict(tempb, type = "response"), min.pr = min.pr, max.pr = max.pr))
   
 
   ###################################################################
@@ -594,27 +686,27 @@ if(informative == "yes"){
   j <- 1
   for(i in 1:lsgam2){ 
   
-    if( max(as.numeric(grepl(v2[1], gam2$smooth[[i]]$vn))) != 0 && clsm[i] == "mpi.smooth" ) mono.sm.pos2 <- c(mono.sm.pos2, c(gam2$smooth[[i]]$first.para:gam2$smooth[[i]]$last.para) ) 
+    if( max(as.numeric(grepl(v2[1], gam2$smooth[[i]]$term))) != 0 && clsm[i] == "mpi.smooth" ) mono.sm.pos2 <- c(mono.sm.pos2, c(gam2$smooth[[i]]$first.para:gam2$smooth[[i]]$last.para) ) 
    
-    if( max(as.numeric(grepl(v2[1], gam2$smooth[[i]]$vn))) != 0 && clsm[i] != "mpi.smooth" ){ # this part is not important and was for experimentation
-    
-    
-                                                                if( clsm[i] != "pspline.smooth" && k.tvc !=0) stop("You have to use a ps smooth to allow for doubly penalised tvc terms.")
-                                                                                                                                
-                                                                if( clsm[i] == "pspline.smooth"){
-                                                                
-                                                                pos.pb[[j]] <- c(gam2$smooth[[i]]$first.para:gam2$smooth[[i]]$last.para)
-                                                                indexT      <- c(indexT, pos.pb[[j]] ) # this is fine, do not touch it, good for starting values
-                                                                D[[j]]      <- diff(diag(length(pos.pb[[j]])), differences = 1)
-                                                                j <- j + 1
-                                                                
-                                                                # scaling factor should not matter since lambda is fixed here
-                                                                #D[[j]] <- diff(diag(rep(0,length(pos.pb))), differences = 1)
-                                                                
-                                                                }
-                                                                
-                                                                
-                                                                                            }
+    #if( max(as.numeric(grepl(v2[1], gam2$smooth[[i]]$vn))) != 0 && clsm[i] != "mpi.smooth" ){ # this part is not important and was for experimentation
+    #
+    #
+    #                                                            if( clsm[i] != "pspline.smooth" && k.tvc !=0) stop("You have to use a ps smooth to allow for doubly penalised tvc terms.")
+    #                                                                                                                            
+    #                                                            if( clsm[i] == "pspline.smooth"){
+    #                                                            
+    #                                                            pos.pb[[j]] <- c(gam2$smooth[[i]]$first.para:gam2$smooth[[i]]$last.para)
+    #                                                            indexT      <- c(indexT, pos.pb[[j]] ) # this is fine, do not touch it, good for starting values
+    #                                                            D[[j]]      <- diff(diag(length(pos.pb[[j]])), differences = 1)
+    #                                                            j <- j + 1
+    #                                                            
+    #                                                            # scaling factor should not matter since lambda is fixed here
+    #                                                            #D[[j]] <- diff(diag(rep(0,length(pos.pb))), differences = 1)
+    #                                                            
+    #                                                            }
+    #                                                            
+    #                                                            
+    #                                                                                        }
   
   
   }  
@@ -924,19 +1016,30 @@ respvec2 <- list(y1 = y1, univ = 2)
 
 if(robust == TRUE && margin %in% c(m1d, m2d)){
 
-# grid worked out this way seems good enough for the moment
-# but would this grid be good for gradient and hessian components?
-# maybe we need to look into this again 
-# also what about a dinamic grid (that changes with eta and sigma)?
+
+# what about a dinamic grid (that changes with eta and sigma)?
 
 eta.m <- max(predict(gam1, type = "link"))
 if( margin %in% c(m2d) ) sigma2.m <- exp(log.sig2.1) else sigma2.m <- 1 # this looks already quite high given that it is from the unconditional fit
 
-if(margin != "ZTP") ygrid <- 0:(max(y1)*100) else ygrid <- 1:(max(y1)*100) 
+if(margin != "ZTP") ygrid <- 0:(max(y1)*100) else ygrid <- 1:(max(y1)*100) # 100 is ad-hoc
 
-pdf.test <- distrHsATDiscr(ygrid, eta.m, sigma2.m, 1, margin, y1m, robust = TRUE)$pdf2 > sqrt(.Machine$double.eps)
 
-maxv <- max( which(pdf.test == TRUE) ) + 10 # 10 is a sort of safety thing but it could be increased
+pdf.test <- distrHsATDiscr(ygrid, eta.m, sigma2.m, 1, margin, y1m, robust = FALSE, min.dn = ygrid.tol, min.pr = min.pr, max.pr = max.pr)$pdf2 > ygrid.tol
+
+
+
+if( any(pdf.test == FALSE) != TRUE ){
+
+     if(margin != "ZTP") ygrid <- 0:(max(y1)*200) else ygrid <- 1:(max(y1)*200) # this rule can be made adaptive but ok for now
+    
+    pdf.test <- distrHsATDiscr(ygrid, eta.m, sigma2.m, 1, margin, y1m, robust = FALSE, min.dn = ygrid.tol, min.pr = min.pr, max.pr = max.pr)$pdf2 > ygrid.tol 
+
+}
+
+
+
+maxv <- max( which(pdf.test == TRUE) ) 
 
 ygrid <- ygrid[1:maxv]
 
@@ -974,10 +1077,10 @@ j <- 1
 if( LSl.sf1 != 0 ){
         for(i in 1:LSl.sf1 ){ Sl.sf[[j]] <- Sl.sf1[[i]]
                               j <- j + 1 } 
-        attr(Sl.sf, "lambda") <- attr(Sl.sf1, "lambda")      
-        attr(Sl.sf, "E")      <- attr(Sl.sf1, "E")                       
-        
-        
+        attr(Sl.sf, "lambda")   <- attr(Sl.sf1, "lambda")      
+        attr(Sl.sf, "E")        <- attr(Sl.sf1, "E")
+        attr(Sl.sf, "cholesky") <- attr(Sl.sf1, "cholesky")
+             
 }
 
 if( LSl.sf2 != 0 ){
@@ -986,6 +1089,8 @@ if( LSl.sf2 != 0 ){
                               Sl.sf[[j]]$stop  <- Sl.sf[[j]]$stop  + length(gam1$coefficients)   
                               j <- j + 1 } 
         attr(Sl.sf, "lambda") <- c(attr(Sl.sf, "lambda"), attr(Sl.sf2, "lambda")) 
+        
+        attr(Sl.sf, "cholesky") <- attr(Sl.sf2, "cholesky")
   
         if(LSl.sf1 != 0) attr(Sl.sf, "E") <- adiag(attr(Sl.sf, "E"), attr(Sl.sf2, "E"))                      
         if(LSl.sf1 == 0) attr(Sl.sf, "E") <- adiag(pa1,              attr(Sl.sf2, "E"))                      
@@ -1000,6 +1105,7 @@ if( LSl.sf3 != 0 ){
                               j <- j + 1 } 
         attr(Sl.sf, "lambda") <- c(attr(Sl.sf, "lambda"), attr(Sl.sf3, "lambda"))
         
+        attr(Sl.sf, "cholesky") <- attr(Sl.sf3, "cholesky")
         
         if(LSl.sf1 != 0 && LSl.sf2 != 0)  attr(Sl.sf, "E") <- adiag(attr(Sl.sf, "E"), attr(Sl.sf3, "E"))
         if(LSl.sf1 == 0 && LSl.sf2 != 0)  attr(Sl.sf, "E") <- adiag(attr(Sl.sf, "E"), attr(Sl.sf3, "E"))
@@ -1015,7 +1121,7 @@ if( LSl.sf3 != 0 ){
 
 
                            
-
+  # NEW 15: new variables added (excess hazard constants, censoring indicators and third design matrix)
   VC <- list(lsgam1 = lsgam1, ygrid = ygrid, # why lsgam1? maybe useful outside fitting functions, do not remember, check again
              lsgam2 = lsgam2, indexT = indexT, D = D, my.env = my.env, k = k.tvc, pos.pb = pos.pb,
              lsgam3 = lsgam3, r.type = r.type, Sl.sf = Sl.sf, sp.method = sp.method,
@@ -1081,11 +1187,18 @@ if( LSl.sf3 != 0 ){
              indvU = indvU,
              indvR = indvR,
              indvL = indvL,
-             indvI = indvI)
-
-
-
-
+             indvI = indvI,
+	     indvUT = indvUT,
+             indvRT = indvRT,
+             indvLT = indvLT,
+             indvIT = indvIT,
+             hrate = hrate,
+             d.lchrate = d.lchrate, 
+             d.rchrate = d.rchrate,
+             d.lchrate.td = d.lchrate.td, 
+             d.rchrate.td = d.rchrate.td,
+             zero.tol = 1e-02,
+             min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 
 if(surv == TRUE && margin2 %in% bl && informative == "yes"){
 
@@ -1110,14 +1223,26 @@ VC$margins <- c(margin, margin2)
   ##########################################################################################################################
   if(margin != "GEVlink"){
   
-  	if(margin %in% c(m1d, m2d, m2) )                                     func.opt1 <- bprobgHsContUniv 
-  	if(margin %in% c(m3) )                                               func.opt1 <- bprobgHsContUniv3 
-  	if(margin %in% c(bl) && informative == "no" && type.cens == "R")     func.opt1 <- bcontSurvGuniv
-  	if(margin %in% c(bl) && informative == "no" && type.cens == "L")     func.opt1 <- bcontSurvGunivL
-  	if(margin %in% c(bl) && informative == "no" && type.cens == "I")     func.opt1 <- bcontSurvGunivI
-  	if(margin %in% c(bl) && informative == "no" && type.cens == "mixed") func.opt1 <- bcontSurvGunivMIXED
-  	if(margin %in% c(bl) && informative == "yes")                        func.opt1 <- bcontSurvGunivInform
-  
+  	if(margin %in% c(m1d, m2d, m2) )                                                        func.opt1 <- bprobgHsContUniv 
+  	if(margin %in% c(m3) )                                                                  func.opt1 <- bprobgHsContUniv3 
+  	if(margin %in% c(bl) && informative == "no" && type.cens == "R" && is.null(hrate))      func.opt1 <- bcontSurvGuniv
+  	if(margin %in% c(bl) && informative == "no" && type.cens == "L" && is.null(hrate))      func.opt1 <- bcontSurvGunivL
+  	if(margin %in% c(bl) && informative == "no" && type.cens == "I" && is.null(hrate))      func.opt1 <- bcontSurvGunivI
+  	if(margin %in% c(bl) && informative == "no" && type.cens == "mixed" && is.null(hrate))  func.opt1 <- bcontSurvGunivMIXED   # Remember to fix this part, ok for testing
+  	if(margin %in% c(bl) && informative == "yes")                                           func.opt1 <- bcontSurvGunivInform
+  	
+  	# EXCESS HAZARD setting (we assume that we always have at least one uncensored observation and thus that 
+  	# Excess Hazard setting can be uniquely identified by having hrate not NULL, i.e. !is.null(hrate) = TRUE )
+  	if(margin %in% c(bl) && informative == "no" && type.cens == "R" && !is.null(hrate) )     func.opt1 <- bcontSurvGuniv_ExcessHazard
+  	if(margin %in% c(bl) && informative == "no" && type.cens == "L" && !is.null(hrate) )     func.opt1 <- bcontSurvGunivL_ExcessHazard
+  	if(margin %in% c(bl) && informative == "no" && type.cens == "I" && !is.null(hrate) )     func.opt1 <- bcontSurvGunivI_ExcessHazard
+  	if(margin %in% c(bl) && informative == "no" && type.cens == "mixed" && !is.null(hrate) ) func.opt1 <- bcontSurvGunivMIXED_ExcessHazard
+
+      # NEW 16
+  	# Most general case possible: includes excess hazards and left-truncation, with previous functions being subcases
+  	# (last condition which appears in if clause is temporary, needs more thought)
+  	if(margin %in% c(bl) && informative == "no" && type.cens == "mixed" && !is.null(hrate) && !is.null(truncation.time)) func.opt1 <- bcontSurvGunivMIXED_LeftTruncation
+
   }
   
   if(margin == "GEVlink") func.opt1 <- bprobgHsContUnivBIN

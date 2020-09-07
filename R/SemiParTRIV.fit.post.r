@@ -49,8 +49,8 @@ theta23.a  <- mean(theta23)
   SemiParFit$fit$eta3 <- VC$X3s%*%SemiParFit$fit$argument[(VC$X1.d2+VC$X2.d2+1):(VC$X1.d2+VC$X2.d2+VC$X3.d2)]
   
   p1n <- predict.gam(GAM$gam1, type = "response")
-  p2n <- probm(VC$X2s%*%GAM$gam2$coefficients, VC$margins[2])$pr 
-  p3n <- probm(VC$X3s%*%GAM$gam3$coefficients, VC$margins[3])$pr 
+  p2n <- probm(VC$X2s%*%GAM$gam2$coefficients, VC$margins[2], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$pr 
+  p3n <- probm(VC$X3s%*%GAM$gam3$coefficients, VC$margins[3], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$pr 
  
 }
 

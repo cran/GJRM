@@ -7,7 +7,7 @@ summary.SemiParBIV <- function(object, n.sim = 100, prob.lev = 0.05, gm = FALSE,
   cont3par  <- object$VC$m3  
   bin.link  <- object$VC$bl  
   n <- object$n; n.sel <- object$n.sel
-  epsilon <- sqrt(.Machine$double.eps); max.p   <- 0.9999999
+
   
   lf <- length(object$coefficients)
   Vb <- object$Vb 
@@ -41,19 +41,19 @@ if(object$VC$margins[2] %in% bin.link && object$VC$Model != "BPO0"){
    et1s <- object$X1%*%t(bs[,1:object$X1.d2])    
    et2s <- object$X2%*%t(bs[,(object$X1.d2+1):(object$X1.d2+object$X2.d2)]) 
      
-   p1s <- probm(et1s, object$margins[1])$pr 
-   p2s <- probm(et2s, object$margins[2])$pr
+   p1s <- probm(et1s, object$margins[1], min.dn = object$VC$min.dn, min.pr = object$VC$min.pr, max.pr = object$VC$max.pr)$pr 
+   p2s <- probm(et2s, object$margins[2], min.dn = object$VC$min.dn, min.pr = object$VC$min.pr, max.pr = object$VC$max.pr)$pr
    
    p11s <- matrix(NA,dim(p1s)[1],dim(p1s)[2])
      
-   if( !is.null(object$X3) ) { for(i in 1:n.sim) p11s[,i] <- BiCDF(p1s[,i], p2s[,i], object$nC, est.RHOb[,i], object$VC$dof) }
-   if(  is.null(object$X3) ) { for(i in 1:n.sim) p11s[,i] <- BiCDF(p1s[,i], p2s[,i], object$nC, est.RHOb[i], object$VC$dof)  }
+   if( !is.null(object$X3) ) { for(i in 1:n.sim) p11s[,i] <- mm(BiCDF(p1s[,i], p2s[,i], object$nC, est.RHOb[,i], object$VC$dof), min.pr = object$VC$min.pr, max.pr = object$VC$max.pr  ) }
+   if(  is.null(object$X3) ) { for(i in 1:n.sim) p11s[,i] <- mm(BiCDF(p1s[,i], p2s[,i], object$nC, est.RHOb[i], object$VC$dof), min.pr = object$VC$min.pr, max.pr = object$VC$max.pr  )  }
     
- p11s <- pmax(p11s, epsilon )
- p11s <- ifelse(p11s > max.p, max.p, p11s)  
- p10s <- p1s - p11s 
- p00s <- (1 - p2s) - ( p1s - p11s )
- p01s <- p2s - p11s
+ p11s <- mm(p11s,                       min.pr = object$VC$min.pr, max.pr = object$VC$max.pr)              # does not check if sum = 1 but not longer used anyway
+ p11s <- mm(p11s,                       min.pr = object$VC$min.pr, max.pr = object$VC$max.pr)  
+ p10s <- mm(p1s - p11s,                 min.pr = object$VC$min.pr, max.pr = object$VC$max.pr) 
+ p00s <- mm((1 - p2s) - ( p1s - p11s ), min.pr = object$VC$min.pr, max.pr = object$VC$max.pr)
+ p01s <- mm(p2s - p11s,                 min.pr = object$VC$min.pr, max.pr = object$VC$max.pr)
  
 
  ORs <- (p00s*p11s)/(p01s*p10s)

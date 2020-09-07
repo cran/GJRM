@@ -1,7 +1,6 @@
-probm <- function(eta, margin, only.pr = TRUE, bc = FALSE, tau = NULL, CLM = FALSE){ # bc stands for binary continuous case
- 
-  epsilon <- sqrt(.Machine$double.eps)
-  
+probm <- function(eta, margin, only.pr = TRUE, bc = FALSE, tau = NULL, CLM = FALSE,
+                  min.dn, min.pr, max.pr){ # bc stands for binary continuous case
+   
   derp1.dereta1 <- der2p1.dereta1eta1 <- d.n <- der2p.dereta <- tauetaIND <- NULL
  
  
@@ -16,7 +15,6 @@ if( margin == "GEVlink" ){
   if(only.pr == FALSE){
   
   d.n <- exp(-(1 + taueta)^-(1/tau))/(1 + taueta)^(1 + 1/tau)
-  d.n <- ifelse(d.n < epsilon, epsilon, d.n )
   der2p.dereta <- -(exp(-(1 + taueta)^-(1/tau)) * (tau * (1 + 1/tau)/(1 + taueta)^(1/tau + 2) - 1/(1 + taueta)^(2 * (1 + 1/tau))))
 
                       }
@@ -39,7 +37,6 @@ if( margin == "probit" ){
   if(only.pr == FALSE){
   
   d.n <- dnorm(eta)
-  d.n <- ifelse(d.n < epsilon, epsilon, d.n )
   der2p.dereta <- -(eta * dnorm(eta))          # second deriv
   
                       }
@@ -67,7 +64,6 @@ if(CLM == FALSE){
   if(only.pr == FALSE){
   
   d.n <- dlogis(eta)
-  d.n <- ifelse(d.n < epsilon, epsilon, d.n )
   der2p.dereta <- -((1 - 2 * (exp(-eta)/(1 + exp(-eta)))) * exp(-eta)/(1 + exp(-eta))^2)
   
   }
@@ -95,7 +91,6 @@ if(CLM == TRUE){
   if(only.pr == FALSE){
   
   d.n <- dlogis(eta)
-  d.n <- ifelse(d.n < epsilon, epsilon, d.n )
   der2p.dereta <- -((1 - 2 * (ex_eta/(1 + ex_eta))) * ex_eta/(1 + ex_eta)^2)
   
   }
@@ -132,7 +127,6 @@ if( margin == "cloglog" ){
   if(only.pr == FALSE){
   
   d.n <- exp(-exp(eta)) * exp(eta)
-  d.n <- ifelse(d.n < epsilon, epsilon, d.n )
   der2p.dereta <- (1 - exp(eta)) * exp(-exp(eta)) * exp(eta) 
   
   
@@ -160,7 +154,6 @@ if( margin == "cauchit" ){
   if(only.pr == FALSE){
   
   d.n <- 1 / (pi * (1 + eta^2))
-  d.n <- ifelse(d.n < epsilon, epsilon, d.n )
   der2p.dereta <- -(2 * (eta/(pi * (1 + eta^2)^2)))
   
   }
@@ -193,7 +186,6 @@ if( margin == "log" ){
   if(only.pr == FALSE){
   
   d.n <- exp(eta)
-  d.n <- ifelse(d.n < epsilon, epsilon, d.n )
   der2p.dereta <- exp(eta)
   
   
@@ -211,11 +203,19 @@ if( margin == "log" ){
 }
 
 
- if(CLM == FALSE) pr <- mm(pr) 
+ if(CLM == FALSE){
+ 
+ pr  <- mm(pr, min.pr = min.pr, max.pr = max.pr) 
+ d.n <- ifelse(d.n < min.dn, min.dn, d.n)
+
   
-    
+ }
+ 
+ 
+ 
     
  list(pr = pr, d.n = d.n, der2p.dereta = der2p.dereta, 
-      derp1.dereta1 = derp1.dereta1, der2p1.dereta1eta1 = der2p1.dereta1eta1, tauetaIND = tauetaIND )  
+      derp1.dereta1 = derp1.dereta1, der2p1.dereta1eta1 = der2p1.dereta1eta1, 
+      tauetaIND = tauetaIND )  
  
 }    

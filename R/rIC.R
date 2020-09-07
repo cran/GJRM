@@ -8,10 +8,15 @@ fit <- obj
 m1d  <- c("PO", "ZTP")
 m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG","DGP","DGPII")
 
-n      <- fit$VC$n
-rc     <- fit$VC$rc
-margin <- fit$VC$margins[2]
+n       <- fit$VC$n
+rc      <- fit$VC$rc
+margin  <- fit$VC$margins[2]
 weights <- fit$VC$weights
+
+
+min.dn <- 1e-160 # fit$VC$min.dn 
+min.pr <- fit$VC$min.pr
+max.pr <- fit$VC$max.pr 
 
 
 #################################################################
@@ -80,7 +85,7 @@ if( margin %in% m2d ) X2L <- apply(as.matrix(fit$VC$X2[num.ind==i,]), 2, rep, ea
 
  if( margin %in% m1d ){
  
-   g1b <- c( weightsL*gradBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym) )*X1L 
+   g1b <- c( weightsL*gradBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym) )*X1L 
    G1B <- t(g1b)%*%g1b
 
      if(iter.split == 1) gradbit1b <- matrix(0, dim(G1B), dim(G1B))
@@ -94,8 +99,8 @@ if( margin %in% m2d ) X2L <- apply(as.matrix(fit$VC$X2[num.ind==i,]), 2, rep, ea
   if( margin %in% m2d ){
   
      
-     g1b <- c( weightsL*gradBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym) )*X1L 
-     g2b <- c( weightsL*gradBbit2(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym) )*X2L
+     g1b <- c( weightsL*gradBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym) )*X1L 
+     g2b <- c( weightsL*gradBbit2(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym) )*X2L
      gb  <- cbind(g1b, g2b)
      GB  <- t(gb)%*%gb
      
@@ -128,7 +133,7 @@ if( margin %in% m2d ) X2L <- apply(fit$VC$X2, 2, rep, each = length(ygrid))
 
  if( margin %in% m1d ){
 
-g1b <- c( weightsL*gradBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym) )*X1L
+g1b <- c( weightsL*gradBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym) )*X1L
 
 gradbit1b <- -t(g1b)%*%g1b
 
@@ -137,9 +142,9 @@ gradbit1b <- -t(g1b)%*%g1b
 
 if( margin %in% m2d ){
 
-   g1b <- c( weightsL*gradBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym) )*X1L
+   g1b <- c( weightsL*gradBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym) )*X1L
 
-   g2b <- c( weightsL*gradBbit2(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym) )*X2L
+   g2b <- c( weightsL*gradBbit2(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym) )*X2L
 
    gb <- cbind(g1b, g2b)
 
@@ -207,7 +212,7 @@ if(is.null(fit$VC$lB) && is.null(fit$VC$uB)){
 
 if( margin %in% c("N","N2","GU","rGU","LO","LN") )             { lB <- -Inf;      uB <- Inf}
 if( margin %in% c("WEI","iG","GA","DAGUM","SM","FISK","GP","GPII","GPo","TW")  ) { lB <- sqrt(.Machine$double.eps); uB <- Inf} # tw not test, 0 included?
-if( margin %in% c("BE")  )                                     { lB <- sqrt(.Machine$double.eps); uB <- 0.9999999}
+if( margin %in% c("BE")  )                                     { lB <- sqrt(.Machine$double.eps); uB <- 0.999999}
 
 }else{lB <- fit$VC$lB; uB <- fit$VC$uB}
 
@@ -234,17 +239,17 @@ if( margin %in% c("DAGUM","SM","TW") ){
 
 if( margin %in% m2sel ){
 
-intgrad   <- function(eta, sigma2, sigma2.st, nu, nu.st, margin, rc, lB, uB) distrExIntegrate(gradBbit1, lower = lB, upper = uB, eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc)              
+intgrad   <- function(eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, lB, uB) distrExIntegrate(gradBbit1, lower = lB, upper = uB, eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)              
 v.intgrad <- Vectorize(intgrad) 
-intgrad   <- v.intgrad(eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc, lB = lB, uB = uB)
+intgrad   <- v.intgrad(eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, lB = lB, uB = uB)
 
 gradbit1  <- -c(weights*intgrad)*fit$VC$X1 
 
 }
 
-intgrad   <- function(eta, sigma2, sigma2.st, nu, nu.st, margin, rc, lB, uB) distrExIntegrate(gradBbit2, lower = lB, upper = uB, eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc)              
+intgrad   <- function(eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, lB, uB) distrExIntegrate(gradBbit2, lower = lB, upper = uB, eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)              
 v.intgrad <- Vectorize(intgrad) 
-intgrad   <- v.intgrad(eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc, lB = lB, uB = uB)
+intgrad   <- v.intgrad(eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, lB = lB, uB = uB)
 
 
 gradbit2  <- -c(weights*intgrad)*fit$VC$X2 
@@ -252,9 +257,9 @@ gradbit2  <- -c(weights*intgrad)*fit$VC$X2
 
 if( margin %in% c("DAGUM","SM","TW") ){
 
-intgrad   <- function(eta, sigma2, sigma2.st, nu, nu.st, margin, rc, lB, uB) distrExIntegrate(gradBbit3, lower = lB, upper = uB, eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc)              
+intgrad   <- function(eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, lB, uB) distrExIntegrate(gradBbit3, lower = lB, upper = uB, eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)              
 v.intgrad <- Vectorize(intgrad) 
-intgrad   <- v.intgrad(eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc, lB = lB, uB = uB)
+intgrad   <- v.intgrad(eta = eta, sigma2 = sigma2, sigma2.st = sigma2.st, nu = nu, nu.st = nu.st, margin = margin, rc = rc, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, lB = lB, uB = uB)
 
 gradbit3  <- -c(weights*intgrad)*fit$VC$X3
 

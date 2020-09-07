@@ -57,11 +57,12 @@ selection is also possible via the use of shrinakge smoothers and/or information
 
 Giampiero Marra (University College London, Department of Statistical Science) and Rosalba Radice (Cass Business School, City, University of London)
 
-with contributions from Panagiota Filippou (specifically on the trivariate binary models) and Francesco Donat (on the bivariate models with ordinal and continuous margins).
+with contributions from Panagiota Filippou (specifically on the trivariate binary models), Francesco Donat (on the bivariate models with ordinal and 
+continuous margins), Matteo Fasiolo (for the implementation of the pdf and cdf, and related 
+derivatives, of the Tweedie distribution), and Alessia Eletti (on survival models with mixed censoring and excess hazards).
 
-Thanks to Bear Braumoeller (Department of Political Science, The Ohio State University) for suggesting the implementation of bivariate models with partial observability.
-
-Thanks also to Carmen Cadarso for suggesting the inclusion of various modelling extensions. 
+Thanks to: Bear Braumoeller for suggesting the implementation of 
+bivariate models with partial observability, and Carmen Cadarso for suggesting the inclusion of various modelling extensions.
 
 Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
@@ -73,6 +74,8 @@ Part funded by EPSRC: EP/J006742/1
 
 
 Key methodological references:
+
+Dettoni R., Marra G., Radice R. (in press), Generalized Link-Based Additive Survival Models with Informative Censoring. \emph{Journal of Computational and Graphical Statistics}.
 
 Filippou P., Kneib T., Marra G., Radice R. (2019), A Trivariate Additive Regression Model with Arbitrary Link Functions and Varying Correlation Matrix. \emph{Journal of Statistical Planning and Inference}, 199, 236-248.
 
@@ -90,11 +93,13 @@ Marra G., Radice R. (2013), Estimation of a Regression Spline Sample Selection M
 
 Marra G., Radice R. (2017), Bivariate Copula Additive Models for Location, Scale and Shape. \emph{Computational Statistics and Data Analysis}, 112, 99-113.
 
-Marra G., Radice R. (in press), Copula Link-Based Additive Models for Right-Censored Event Time Data. \emph{Journal of the American Statistical Association}.
+Marra G., Radice R. (2020), Copula Link-Based Additive Models for Right-Censored Event Time Data. \emph{Journal of the American Statistical Association}, 115(530), 886-895.
 
 Marra G., Radice R., Barnighausen T., Wood S.N., McGovern M.E. (2017), A Simultaneous Equation Approach to Estimating HIV Prevalence with Non-Ignorable Missing Responses. \emph{Journal of the American Statistical Association}, 112(518), 484-496.
 
 Marra G., Radice R., Filippou P. (2017), Testing the Hypothesis of Exogeneity in Regression Spline Bivariate Probit Models. \emph{Communications in Statistics - Simulation and Computation}, 46(3), 2283-2298.
+
+Marra G., Radice R., Zimmer D. (in press), Estimating the Binary Endogenous Effect of Insurance on Doctor Visits by Copula-Based Regression Additive Models. \emph{Journal of the Royal Statistical Society Series C}.
 
 Marra G., Wyszynski K. (2016), Semi-Parametric Copula Sample Selection Models for Count Responses. \emph{Computational Statistics and Data Analysis}, 104, 110-129.
 
@@ -103,7 +108,7 @@ Radice R., Marra G., Wojtys M. (2016), Copula Regression Spline Models for Binar
 Wojtys M., Marra G., Radice R. (2018), Copula Based Generalized Additive Models for Location, Scale and Shape with Non-Random Sample Selection. \emph{Computational Statistics and Data Analysis}, 127, 1-14.
 
 
-For applied case studies see \url{http://www.homepages.ucl.ac.uk/~ucakgm0/pubs.htm}.  
+For applied case studies see \url{https://www.homepages.ucl.ac.uk/~ucakgm0/pubs.htm}.  
 
 
 }

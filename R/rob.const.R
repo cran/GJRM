@@ -6,6 +6,9 @@ margin <- x$margin[1]
 
 n <- x$n
 
+min.dn <- 1e-160 # x$VC$min.dn
+
+
 eta1   <- x$eta1
 sigma2 <- x$sigma2 
 nu     <- x$nu
@@ -17,8 +20,9 @@ for(i in 1:B){
 
 y2s <- sim.resp(margin, n, eta1, sigma2, nu, setseed = FALSE)
 
-if(margin %in% cont) lpdf <- log(distrHsAT(y2s, eta1, sigma2, nu, margin)$pdf2) 
-if(margin %in% disc) lpdf <- log(distrHsATDiscr2(y2s, eta1, sigma2, nu, margin)$pdf2) 
+if(margin %in% cont) lpdf <- log(distrHsAT(y2s, eta1, sigma2, nu, margin, min.dn = min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pdf2) 
+if(margin %in% disc) lpdf <- log(distrHsATDiscr2(y2s, eta1, sigma2, nu, margin, min.dn = min.dn)$pdf2) 
+
 
 sw[i] <- sum(llpsi(lpdf, x$VC$rc)$d.psi)
                  

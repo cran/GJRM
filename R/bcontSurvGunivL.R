@@ -1,4 +1,5 @@
 bcontSurvGunivL <- function(params, respvec, VC, ps, AT = FALSE){
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
 monP <- monP1 <- monP2 <- k <- 0; V <- list()
 
@@ -15,7 +16,11 @@ indN <- as.numeric(Xd1P < 0)
 
 #if(!is.null(VC$indexT)) print(table(indN))
 
-Xd1P <- ifelse(Xd1P < 1e-06, 1e-06, Xd1P ) 
+
+  Xd1P <- ifelse(Xd1P < VC$min.dn, VC$min.dn, Xd1P ) 
+
+
+
 
     if( any(indN == TRUE) && !is.null(VC$indexT) ){
    
@@ -44,7 +49,7 @@ Xd1P <- ifelse(Xd1P < 1e-06, 1e-06, Xd1P )
   
 ##################
     
-pd1  <- probmS(eta1, VC$margins[1]) 
+pd1  <- probmS(eta1, VC$margins[1], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
   
 p1       <- pd1$pr
 dS1eta1  <- pd1$dS
@@ -126,7 +131,10 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
          list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, indN = indN, V = V, 
               l=S.res, l.ln = l.ln, l.par=l.par, ps = ps, k = VC$my.env$k, monP2 = monP2, params1 = params1,
               eta1=eta1, 
-              p1 = p1,
+                                   p1 = p1, p2 = p2, pdf1 = -dS1eta1, pdf2 = pdf2,          
+	      	                           c.copula.be2 = c.copula.be2,
+	      	                           c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2,
               dl.dbe1          = NULL,       
               dl.dbe2          = NULL,       
               dl.dteta.st      = NULL) 

@@ -1,6 +1,6 @@
 bprobgHsContUniv3 <- function(params, respvec, VC, ps, AT = FALSE){
 
-epsilon <- sqrt(.Machine$double.eps)
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
 bcorR <- NULL
 
@@ -25,8 +25,8 @@ nu    <- sstr1$vrb
   
 if(VC$surv == TRUE) naiveind <- FALSE else naiveind <- TRUE   
  
-if(VC$margins[1] %in% VC$m3)  dHs <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[1], naive = naiveind)
-if(VC$margins[1] %in% VC$m3d) dHs <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[2], naive = TRUE, y2m = VC$y1m)
+if(VC$margins[1] %in% VC$m3)  dHs <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[1], naive = naiveind, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+if(VC$margins[1] %in% VC$m3d) dHs <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[2], naive = TRUE, y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
 
 ########################################################################################################
@@ -274,6 +274,10 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
 list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l.par=l.par, bcorR = bcorR,  
      ps = ps, sigma2.st = sigma2.st, nu.st = nu.st, etas1 = sigma2.st, etan1 = nu.st, 
      BivD=VC$BivD, eta1 = eta2, eta2 = eta2, sigma2 = sigma2, nu = nu, d.psi = d.psi,
-     dl.dbe = dl.dbe, dl.dsigma.st = dl.dsigma.st, dl.dnu.st = dl.dnu.st)      
+     dl.dbe = dl.dbe, dl.dsigma.st = dl.dsigma.st, dl.dnu.st = dl.dnu.st,
+                                 p1 = p1, p2 = p2, pdf1 = pdf1, pdf2 = pdf2,          
+	      	                    c.copula.be2 = c.copula.be2,
+	      	                    c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2)      
 
 }

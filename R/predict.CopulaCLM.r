@@ -79,7 +79,7 @@ if (!is.null(object$VC$K1)) {
 			cut  <- t(matrix(nrow = K1 - 1, ncol = n, object$coefficients[1 : (K1 - 1)]))
 			lp1  <- cbind(cut - eta1)
 
-			pk <- probm(lp1, object$VC$margins[1], only.pr = FALSE, bc = TRUE)$pr	
+			pk <- probm(lp1, object$VC$margins[1], only.pr = FALSE, bc = TRUE, min.dn = object$VC$min.dn, min.pr = object$VC$min.pr, max.pr = object$VC$max.pr)$pr	
 			p1 <- matrix(nrow = n, ncol = K1, 0)
 				p1[,  1] <- pk[, 1]
 				p1[, K1] <- 1 - pk[, K1 - 1]

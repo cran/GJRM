@@ -46,7 +46,7 @@ sigma2.a <- mean(sigma2)
 
 if(VC$margins[1] %in% cont3par ){  
 
-nu <- esp.tr(SemiParFit$fit$etan1, VC$margins[1])$vrb    
+nu <- enu.tr(SemiParFit$fit$etan1, VC$margins[1])$vrb    
 if( is.null(VC$X3) ) names(nu) <- "nu"
 
 nu.a <- mean(nu)

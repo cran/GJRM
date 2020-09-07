@@ -1,19 +1,21 @@
 sim.resp <- function(margin, rsim, eta, sigma2, nu, setseed = TRUE){
 
+
 if(margin == "ZTP") rZTP <- function(n, mu) qpois(runif(n, dpois(0, mu), 1), mu)
 
 if(margin %in% c("DGP","DGPII")){
 
        rDGP <- function(n, mu, sigma, margin){ # mu is eta here
 
-                minp <- distrHsATDiscr(0, mu, sigma, NULL, margin, NULL, robust = TRUE)$pdf2
+                minp <- distrHsATDiscr(0, mu, sigma, NULL, margin, NULL, robust = TRUE, min.dn = 1e-323, min.pr = 1e-16, max.pr = 0.999999)$pdf2
                 
                 p    <- runif(rsim)
 
                 indv <- p <= minp
                 
-                if(margin == "DGP")   q <- ifelse(indv == TRUE, 0, ceiling( sigma/mu*( (1 - p)^(-mu) - 1   ) - 1 ))
-                if(margin == "DGPII") q <- ifelse(indv == TRUE, 0, ceiling( sigma/(mu^2)*( (1 - p)^(-(mu^2)) - 1   ) - 1 ))
+
+                if(margin == "DGP")   q <- ifelse(indv == TRUE, 0, ceiling( sigma/mu*(     (1 - p)^(-mu)   - 1   )) - 1 )
+                if(margin == "DGPII") q <- ifelse(indv == TRUE, 0, ceiling( sigma/(mu^2)*( (1 - p)^(-mu^2) - 1   )) - 1 )
                 
                 q
                 
@@ -47,7 +49,7 @@ if(margin == "TW"){
            y <- NA
            if(length(sigma2) == 1) sigma2 <- rep(sigma2, rsim) 
            if(length(nu)     == 1) nu     <- rep(nu, rsim) 
-           for(i in 1:rsim) y[i] <- y <- rTweedie(mu = exp(eta[i]), p = sigma2[i], phi = nu[i])                
+           for(i in 1:rsim) y[i] <- rTweedie(mu = exp(eta[i]), p = sigma2[i], phi = nu[i])                
                  }     
      
 }
@@ -91,7 +93,7 @@ if(margin == "ZTP")   y <- rZTP(  rsim,    mu = exp(eta))
 
 if(margin %in% c("DGP", "DGPII"))   y <- rDGP(  rsim,    mu = eta,         sigma = sigma2, margin = margin) # in dgpII eta^2 is done internally
 
-if(margin %in% c("probit", "logit", "cloglog"))  y <- rbinom(rsim, 1, prob = probm(eta, margin)$pr )
+if(margin %in% c("probit", "logit", "cloglog"))  y <- rbinom(rsim, 1, prob = probm(eta, margin, min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999)$pr )
                                                 
 
 if(setseed == TRUE) rm(list = ".Random.seed", envir = globalenv()) 

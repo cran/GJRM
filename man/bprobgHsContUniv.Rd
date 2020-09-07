@@ -6,6 +6,11 @@
 \alias{bcontSurvGunivI}
 \alias{bcontSurvGunivL}
 \alias{bcontSurvGunivMIXED}
+\alias{bcontSurvGunivMIXED_ExcessHazard}
+\alias{bcontSurvGunivL_ExcessHazard}
+\alias{bcontSurvGuniv_ExcessHazard}
+\alias{bcontSurvGunivI_ExcessHazard}
+\alias{bcontSurvGunivMIXED_LeftTruncation}
 
 
 

@@ -1,6 +1,7 @@
 PosDefCor <- function(Sigma, Chol = FALSE, theta12.st, theta13.st, theta23.st){
 
 
+
 if(Chol == FALSE){
   
   eS <- eigen(Sigma)                 

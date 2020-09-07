@@ -1,5 +1,6 @@
 ass.ms <- function(BivD, nCa, theta){
 
+
 if(BivD %in% c("J0","J180","J90","J270")) theta <- ifelse(abs(theta) > 50, 50, abs(theta))
 if(BivD %in% c("J90","J270"))             theta <- -theta 
 
@@ -16,11 +17,11 @@ if(BivD %in% c("C90","C270","G90","G270"))                         theta <- -the
 
 
 if(BivD %in% c("HO")){ theta <- ifelse(theta == 0, sqrt(.Machine$double.eps), theta)
-                       theta <- ifelse(theta == 1, 0.9999999,                 theta)
+                       theta <- ifelse(theta == 1, 0.999999,                  theta)
                       }
 
 tau <- 0
-if(BivD %in% c("F", "J0","J180","J90","J270")) tau <- BiCopPar2Tau(family = nCa, par = theta) # this function is slow
+if(BivD %in% c("F", "J0","J180","J90","J270")) tau <- BiCopPar2Tau(family = nCa, par = theta)               ## this function is slow ##
 if(BivD == "AMH")                              tau <- 1 - (2/3)/theta^2*(theta + (1-theta)^2*log(1-theta))
 if(BivD == "FGM")                              tau <- 2/9*theta
 if(BivD == "HO")                               tau <- 1 - theta  

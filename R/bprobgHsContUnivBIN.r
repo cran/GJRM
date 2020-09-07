@@ -1,15 +1,16 @@
 bprobgHsContUnivBIN <- function(params, respvec, VC, ps, AT = FALSE){
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
 weights <- VC$weights
 
 l.lnun <- NULL
 
 eta2 <- VC$X1%*%params
-pd   <- probm(eta2, VC$margins[1], only.pr = FALSE, tau = VC$gev.par)
+pd   <- probm(eta2, VC$margins[1], only.pr = FALSE, tau = VC$gev.par, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 y    <- respvec$y1
 
 #########################################################################
-tauetaIND    <- pd$tauetaIND==FALSE
+tauetaIND    <- pd$tauetaIND == FALSE
 
 pr           <- pd$pr[tauetaIND]
 d.n          <- pd$d.n[tauetaIND]
@@ -55,7 +56,11 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
 list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l.lnun = l.lnun, 
      l.par=l.par, ps = ps, sigma2.st = NULL,
      etas1 = NULL, eta1 = eta2, 
-     BivD=VC$BivD, eta2 = eta2, sigma2 = NULL, nu = NULL, tauetaIND = tauetaIND)      
+     BivD=VC$BivD, eta2 = eta2, sigma2 = NULL, nu = NULL, tauetaIND = tauetaIND,
+                                 p1 = pr, p2 = d.n, pdf1 = pdf1, pdf2 = pdf2,          
+	      	                    c.copula.be2 = c.copula.be2,
+	      	                    c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2)      
 
 
 }

@@ -10,9 +10,9 @@ triprobgHsESS <- function (params, respvec, VC, ps, AT = FALSE){
   theta13.st <- params[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2+2)]    
   theta23.st <- params[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2+3)]    
   
-  p1 <- probm(eta1, VC$margins[1])$pr
-  p2 <- probm(eta2, VC$margins[2])$pr
-  p3 <- probm(eta3, VC$margins[3])$pr 
+  p1 <- probm(eta1, VC$margins[1], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$pr
+  p2 <- probm(eta2, VC$margins[2], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$pr
+  p3 <- probm(eta3, VC$margins[3], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$pr 
   
   mar1 <- qnorm(p1)
   mar2 <- qnorm(p2)
@@ -53,37 +53,36 @@ triprobgHsESS <- function (params, respvec, VC, ps, AT = FALSE){
   }
   
   
-  theta12 <- mmf(theta12)
-  theta13 <- mmf(theta13)
-  theta23 <- mmf(theta23)
+  theta12 <- mmf(theta12, max.pr = VC$max.pr)
+  theta13 <- mmf(theta13, max.pr = VC$max.pr)
+  theta23 <- mmf(theta23, max.pr = VC$max.pr)
   
-  p11 <- mm(pbinorm(mar1[VC$inde], mar2, cov12 = theta12))
-  p13 <- mm(pbinorm(mar1[VC$inde], mar3, cov12 = theta13))
-  p23 <- mm(pbinorm(mar2, mar3, cov12 = theta23))
+  p11 <- mm(pbinorm(mar1[VC$inde], mar2, cov12 = theta12), min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p13 <- mm(pbinorm(mar1[VC$inde], mar3, cov12 = theta13), min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p23 <- mm(pbinorm(mar2,          mar3, cov12 = theta23), min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   #params <- c(params[1:(VC$X1.d2 + VC$X2.d2 + VC$X3.d2)],theta12.st,theta13.st,theta23.st)
   
   
   
   if(VC$approx == FALSE){ eta123 <- cbind(mar1[VC$inde],mar2,mar3)
-  for(i in 1:length(mar3)) p111[i] <- mm( pmnorm(x = eta123[i, ], varcov = Sigma)[1] )
+  for(i in 1:length(mar3)) p111[i] <- mm( pmnorm(x = eta123[i, ], varcov = Sigma)[1] , min.pr = VC$min.pr, max.pr = VC$max.pr)
   }
   
-  if(VC$approx == TRUE) p111 <- mm(  TRIapprox(mar1[VC$inde], mar2, mar3, Sigma) )
+  if(VC$approx == TRUE) p111 <- mm(  TRIapprox(mar1[VC$inde], mar2, mar3, Sigma) , min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   ############################################################################################
   
   
-  p110 <- mm(p11 - p111)
-  p101 <- mm(p13 - p111)
-  p100 <- mm(p1[VC$inde] - p11 - p101)
+  p110 <- mm(p11 - p111, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p101 <- mm(p13 - p111, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p100 <- mm(p1[VC$inde] - p11 - p101, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
-  p0   <- mm(1 - p1) 
+  p0   <- mm(1 - p1, min.pr = VC$min.pr, max.pr = VC$max.pr) 
   
   ##########################################################################################
   l.par1            <- respvec$cy1*log(p0) 
-  l.par1[VC$inde]   <- respvec$y1.y2.y3  * log(p111) + respvec$y1.cy2.y3  * log(p101) +
-    respvec$y1.y2.cy3 * log(p110) + respvec$y1.cy2.cy3 * log(p100)
+  l.par1[VC$inde]   <- respvec$y1.y2.y3  * log(p111) + respvec$y1.cy2.y3  * log(p101) + respvec$y1.y2.cy3 * log(p110) + respvec$y1.cy2.cy3 * log(p100)
   l.par              <- VC$weights * l.par1 
   
   res <- -sum(l.par) 

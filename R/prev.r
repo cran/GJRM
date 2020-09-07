@@ -1,6 +1,6 @@
 prev <- function(x, sw = NULL, type = "joint", ind = NULL, delta = FALSE, n.sim = 100, prob.lev = 0.05, 
-                      hd.plot = FALSE, main = "Histogram and Kernel Density of Simulated Prevalences", 
-       xlab="Simulated Prevalences", ...){
+                 hd.plot = FALSE, main = "Histogram and Kernel Density of Simulated Prevalences", 
+                 xlab = "Simulated Prevalences", ...){
 
 
 if(x$Cont == "YES") stop("This function is not suitable for bivariate models with continuous/discrete margins.")
@@ -69,7 +69,7 @@ if( !is.null(ind) ){
 
 #######
 
-wm <- weighted.mean(probm(etasg, x$margins[2])$pr, w=sw)
+wm <- weighted.mean(probm(etasg, x$margins[2], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr, w=sw)
 
 #######
 
@@ -82,7 +82,7 @@ if(type != "naive"){
 
 if(delta == TRUE){
 
-core <- colWeightedMeans( c( probm(etasg, x$margins[2], only.pr = FALSE)$d.n )*Xsg, w = sw, na.rm = FALSE) 
+core <- colWeightedMeans( c( probm(etasg, x$margins[2], only.pr = FALSE, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$d.n )*Xsg, w = sw, na.rm = FALSE) 
 
 
 if(x$Model == "BSS" && type == "joint"){
@@ -149,7 +149,7 @@ if(delta == FALSE){
   
   
  
-  ps  <- probm( Xsg%*%t(bs) , x$margins[2])$pr 
+  ps  <- probm( Xsg%*%t(bs) , x$margins[2], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
   wms <- colWeightedMeans( ps, w = sw, na.rm = FALSE)
   bb <- quantile(wms, probs = c(prob.lev/2,1-prob.lev/2), na.rm=TRUE )
 
@@ -206,21 +206,12 @@ ub <- wm + qz*sv
 }
   
 
-
-
-
-
-
-
-
-
-
   res <- c(lb, wm, ub)
   
 
-  rm(lb,wm,ub,qz,sv,Vv,G,Xsg)
+  rm(lb, wm, ub, qz, sv, Vv, G, Xsg)
 
-  out <- list(res=res, prob.lev=prob.lev, sim.prev = wms)
+  out <- list(res = res, prob.lev = prob.lev, sim.prev = wms)
  
   class(out) <- "prev"
 

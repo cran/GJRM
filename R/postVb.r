@@ -1,16 +1,20 @@
 postVb <- function(SemiParFit, VC){
 
-epsilon <- sqrt(.Machine$double.eps)
+
+tolH <- sqrt(.Machine$double.eps) 
+
 Vb.t    <- coef.t <- NULL
 
 He <- HeSh <- SemiParFit$fit$hessian
                                    
                                    
-    # replace with new function PDef?                                  
+    # one could use PDef but this has worked fine so far  
+    # also tolH has worked ok so far
                                    
     He.eig <- eigen(He, symmetric = TRUE)
-    if(min(He.eig$values) < sqrt(.Machine$double.eps) && sign( min( sign(He.eig$values) ) ) == -1) He.eig$values <- abs(He.eig$values)  
-    if(min(He.eig$values) < sqrt(.Machine$double.eps) ) { pep <- which(He.eig$values < sqrt(.Machine$double.eps)); He.eig$values[pep] <- epsilon }
+    if(min(He.eig$values) < tolH && sign( min( sign(He.eig$values) ) ) == -1) He.eig$values <- abs(He.eig$values)  
+    if(min(He.eig$values) < tolH ) { pep <- which(He.eig$values < tolH); He.eig$values[pep] <- tolH }
+    
     Vb <- He.eig$vectors%*%tcrossprod(diag(1/He.eig$values, nrow = length(He.eig$values), ncol =  length(He.eig$values)),He.eig$vectors)   
     Vb <- Vb1 <- (Vb + t(Vb) ) / 2 
     

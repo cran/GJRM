@@ -6,6 +6,8 @@ m2d  <- c("NBI", "NBII","PIG","DGP","DGPII")
 # below there are operations that can be 
 # simplified based on whether sigma2 has regressors or not
 # and the set up of the matrices
+# sumb <- sumb + sum(weightsL*intB(ygridL, etaL, sigma2L, 1, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym))
+
 
 ###############################
 # fixed quantities
@@ -18,6 +20,10 @@ ym     <- VC$y1m
 y      <- VC$y
 ygrid  <- VC$ygrid
 chs    <- VC$chunk.size
+
+min.dn <- 1e-160 # smallest possible allowed VC$min.dn
+min.pr <- VC$min.pr
+max.pr <- VC$max.pr 
 
 weights <- VC$weights
 
@@ -67,16 +73,17 @@ if( margin %in% m2d ) X2L <- apply(as.matrix(VC$X2[num.ind==i,]), 2, rep, each =
 
 ####
 
-sumb <- sumb + sum(weightsL*intB(ygridL, etaL, sigma2L, 1, 1, 1, margin, rc, discr = TRUE, ym))
 
-gradbit1b <- gradbit1b - colSums( c( weightsL*gradBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym) )*X1L )
-hessbit1b <- hessbit1b - crossprod(X1L*c(weightsL*hessBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym)), X1L)
+                                    sumb <- sumb + sum(weightsL*intB(ygridL, etaL, sigma2L, 1, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym))
+
+gradbit1b <-     gradbit1b - colSums( c( weightsL*gradBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym) )*X1L )
+hessbit1b <- hessbit1b - crossprod(X1L*c(weightsL*hessBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym)), X1L)
 
   if( margin %in% m2d ){
 
-     gradbit2b <- gradbit2b - colSums(  c( weightsL*gradBbit2(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym) )*X2L )
-     hessbit2b <- hessbit2b - crossprod(X2L*c(weightsL*hessBbit2(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym)), X2L)
-     hessbit3b <- hessbit3b - crossprod(X1L*c(weightsL*hessBbit3(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym)), X2L)
+     gradbit2b <-    gradbit2b - colSums(  c( weightsL*gradBbit2(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym) )*X2L )
+     hessbit2b <- hessbit2b - crossprod(X2L*c(weightsL*hessBbit2(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym)), X2L)
+     hessbit3b <- hessbit3b - crossprod(X1L*c(weightsL*hessBbit3(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym)), X2L)
                 
                        }
                      
@@ -100,16 +107,16 @@ if( margin %in% m2d ) X2L <- apply(VC$X2, 2, rep, each = length(ygrid))
 
 ####
 
-sumb <- sum(weightsL*intB(ygridL, etaL, sigma2L, 1, 1, 1, margin, rc, discr = TRUE, ym))
+sumb <-                                 sum(weightsL*intB(ygridL, etaL, sigma2L, 1, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym))
 
-gradbit1b <- -colSums( c( weightsL*gradBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym) )*X1L )
-hessbit1b <- -crossprod(X1L*c(weightsL*hessBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym)), X1L)
+gradbit1b <-     -colSums( c( weightsL*gradBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym) )*X1L )
+hessbit1b <- -crossprod(X1L*c(weightsL*hessBbit1(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym)), X1L)
 
 if( margin %in% m2d ){
 
-   gradbit2b <- -colSums(  c( weightsL*gradBbit2(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym) )*X2L )
-   hessbit2b <- -crossprod(X2L*c(weightsL*hessBbit2(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym)), X2L)
-   hessbit3b <- -crossprod(X1L*c(weightsL*hessBbit3(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, discr = TRUE, ym)), X2L)
+   gradbit2b <-    -colSums(  c( weightsL*gradBbit2(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym) )*X2L )
+   hessbit2b <- -crossprod(X2L*c(weightsL*hessBbit2(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym)), X2L)
+   hessbit3b <- -crossprod(X1L*c(weightsL*hessBbit3(ygridL, etaL, sigma2L, sigma2.stL, 1, 1, margin, rc, min.dn, min.pr, max.pr, discr = TRUE, ym)), X2L)
                 
                      }
 

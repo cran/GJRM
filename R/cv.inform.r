@@ -56,13 +56,13 @@ eta1 <- Xp%*%params1
 eta2 <- Xp%*%params2
 
 Xd1P <- Xd%*%params1 
-Xd1P <- ifelse(Xd1P < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), Xd1P ) # safety check
+Xd1P <- ifelse(Xd1P < x$VC$min.dn, x$VC$min.dn, Xd1P ) # safety check
         
 Xd2P <- Xd%*%params2
-Xd2P <- ifelse(Xd2P < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), Xd2P )
+Xd2P <- ifelse(Xd2P < x$VC$min.dn, x$VC$min.dn, Xd2P )
  
-pd1 <- probmS(eta1, x$VC$margins[1])
-pd2 <- probmS(eta2, x$VC$margins[2])
+pd1 <- probmS(eta1, x$VC$margins[1], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)
+pd2 <- probmS(eta2, x$VC$margins[2], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)
   
 p1 <- pd1$pr
 p2 <- pd2$pr

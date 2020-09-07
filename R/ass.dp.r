@@ -1,6 +1,7 @@
 ass.dp <- function(ass.s, BivD, scc, sccn, nCa){
 
-eps <- sqrt(.Machine$double.eps)
+eps <- sqrt(.Machine$double.eps) # this looks fine here and it is not that dangerous 
+
 
 if(BivD %in% scc)  ass.s <-  abs(ass.s)   
 if(BivD %in% sccn) ass.s <- -abs(ass.s) 

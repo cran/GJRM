@@ -1,10 +1,7 @@
-mm <- function(ob){
+mm <- function(ob, min.pr, max.pr){
 
-  epsilon <- sqrt(.Machine$double.eps)
-  max.p   <- 0.9999999
-
-  res <- ifelse(ob > max.p, max.p, ob) 
-  res <- ifelse(res < epsilon, epsilon, res) 
+  res <- ifelse(ob > max.pr, max.pr, ob) 
+  res <- ifelse(res < min.pr, min.pr, res) 
 
   res
       

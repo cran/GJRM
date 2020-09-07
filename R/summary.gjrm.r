@@ -6,7 +6,6 @@ summary.gjrm <- function(object, n.sim = 100, prob.lev = 0.05, ...){
   cont2par  <- c(object$VC$m2,object$VC$m2d) 
   cont3par  <- c(object$VC$m3,object$VC$m3d) 
   n <- object$n  
-  epsilon <- sqrt(.Machine$double.eps); max.p   <- 0.9999999
 
   lf <- length(object$coefficients)
   Vb <- object$Vb 

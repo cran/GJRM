@@ -16,6 +16,8 @@ if(type == "biv"){
   if(M$Model=="B" && margins[2] %in% M$m2 &&  is.null(M$K1) ) {func.opt <- bprobgHsCont  ; func.optUniv <- bprobgHsContUniv }   
   if(M$Model=="B" && margins[2] %in% M$m3 &&  is.null(M$K1) ) {func.opt <- bprobgHsCont3 ; func.optUniv <- bprobgHsContUniv3}  
   
+  if(M$Model=="B" && margins[2] == "TW"   &&  is.null(M$K1) ) {func.opt <- bprobgHsCont3binTW; func.optUniv <- bprobgHsContUniv3}  
+
   if(M$Model=="B" && margins[2] %in% M$m2 && !is.null(M$K1) ) {func.opt <- bCopulaCLMgHsCont}
   
 }
@@ -46,19 +48,20 @@ if(type == "copR"){
   if(margins[1] %in% M$m3 && margins[2] %in% M$m2 && M$BivD != "T") func.opt <- bcont32 
   if(margins[1] %in% M$m3 && margins[2] %in% M$m2 && M$BivD == "T") func.opt <- bcont32twoParC 
   
-  if(margins[1] %in% M$m2 && margins[2] %in% M$m2 && M$surv == TRUE)  func.opt <- bcontSurv
-  if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvG
   
   
   
   
   
-  if(margins[1] %in% M$m2 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont2Surv 
-  #if(margins[1] %in% M$m3 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont3Surv 
+  if(margins[1] %in% M$m2 && margins[2] %in% M$m2 && M$surv == TRUE)  func.opt <- bcontSurv   # not really used
   
-
-  if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE && M$dep.cens == TRUE)  func.opt <- bcontSurvGDep
+  if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE && M$dep.cens == FALSE)  func.opt <- bcontSurvG
   
+   if(margins[1] %in% M$m2 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont2Surv # not really used
+  #if(margins[1] %in% M$m3 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont3Surv # not really used
+  
+  if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE && M$dep.cens == TRUE &&  is.null(M$c3)) func.opt <- bcontSurvGDep
+  if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE && M$dep.cens == TRUE && !is.null(M$c3)) func.opt <- bcontSurvGDepA
   
 
 }

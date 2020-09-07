@@ -1,8 +1,6 @@
 BCDF <- function (u1, u2, family, par1){
 
-par1 <- as.numeric(par1)
-u1   <- as.numeric(u1)
-u2   <- as.numeric(u2)
+
 
 
 if(family %in% c(2:5) ) res <- (u1^-par1 + u2^-par1 - 1)^(-1/par1) # Clayton

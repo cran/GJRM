@@ -32,7 +32,7 @@ eta2   <- mo$eta1
 sigma2 <- mo$sigma21 <- mo$sigma2 
 nu     <- mo$nu
 
-}
+}else{
 
 
 
@@ -60,7 +60,7 @@ nu     <- mo$nu2
 }
 
 
-
+}
 
 
 
@@ -73,7 +73,22 @@ for(i in 1:n.rep){
 
 y2s <- sim.resp(margin, n, eta2, sigma2, nu, setseed = FALSE)
 
-if(margin %in% cont) qrs[,i] <- sort(  qnorm(  distrHsAT(y2s, eta2, sigma2, nu, margin)$p2 )  )
+
+
+
+
+if(margin %in% cont){
+
+
+p22s <- distrHsAT(y2s, eta2, sigma2, nu, margin, min.dn = mo$VC$min.dn, min.pr = mo$VC$min.pr, max.pr = mo$VC$max.pr)$p2
+
+if(margin %in% c("TW")) p22s[y2s == 0] <- runif(sum(y2s == 0), min = 0, max = p22s[y2s == 0]) 
+
+qrs[,i] <- sort(  qnorm( p22s  )  )
+
+
+
+}
 
 
 if(margin %in% disc){
@@ -95,7 +110,7 @@ if(margin %in% c("ZTP","DGP","DGPII")){
     
                          }
 
-tmp  <- distrHsATDiscr(y2s, eta2, sigma2, nu, margin, y2m = y2ms)
+tmp  <- distrHsATDiscr(y2s, eta2, sigma2, nu, margin, y2m = y2ms, min.dn = mo$VC$min.dn, min.pr = mo$VC$min.pr, max.pr = mo$VC$max.pr)
 tmpp <- tmp$p2
 tmpd <- tmp$pdf2   
 qrs[,i] <- sort( qnorm( runif(y2s, tmpp - tmpd, tmpp) )  )
@@ -115,12 +130,24 @@ lim <- apply(qrs, 1, FUN = quantile, p = c(prob.lev/2, 1 - prob.lev/2))
 
 
 
-if(margin %in% cont) qr <- qnorm( distrHsAT(y2, eta2, sigma2, nu, margin)$p2 ) 
+if(margin %in% cont){
+
+
+p22 <- distrHsAT(y2, eta2, sigma2, nu, margin, min.dn = mo$VC$min.dn, min.pr = mo$VC$min.pr, max.pr = mo$VC$max.pr)$p2
+
+if(margin %in% c("TW")) p22[y2 == 0] <- runif(sum(y2 == 0), min = 0, max = p22[y2 == 0]) 
+
+
+qr <- qnorm( p22 ) 
+
+
+
+}
 
 
 if(margin %in% disc){
 
-tmp  <- distrHsATDiscr(y2, eta2, sigma2, nu, margin, y2m = y2m)
+tmp  <- distrHsATDiscr(y2, eta2, sigma2, nu, margin, y2m = y2m, min.dn = mo$VC$min.dn, min.pr = mo$VC$min.pr, max.pr = mo$VC$max.pr)
 tmpp <- tmp$p2
 tmpd <- tmp$pdf2   
 set.seed(100)

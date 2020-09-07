@@ -1,4 +1,6 @@
-copgHsCond <- function(p1, p2, teta, dof = 3, BivD){
+copgHsCond <- function(p1, p2, teta, dof = 3, BivD, min.pr, max.pr){
+
+
 
 ########################################################################################
 # Rotations
@@ -199,10 +201,10 @@ c.copula.be1     <- 1 - c.copula.be1
 }   
 
 
-c.copula.be2 <- mm(c.copula.be2)
-c.copula.be1 <- mm(c.copula.be1)
+c.copula.be2 <- mm(c.copula.be2, min.pr = min.pr, max.pr = max.pr)
+c.copula.be1 <- mm(c.copula.be1, min.pr = min.pr, max.pr = max.pr)
 
-list(c.copula.be1 = c.copula.be1, c.copula.be2 = c.copula.be2)
+list(c.copula.be1 = ifef(c.copula.be1), c.copula.be2 = ifef(c.copula.be2))
 
 }
 

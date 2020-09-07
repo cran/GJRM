@@ -1,4 +1,7 @@
-distrHsATDiscr <- function(y2, eta2, sigma2, nu, margin2, y2m, robust = FALSE){
+distrHsATDiscr <- function(y2, eta2, sigma2, nu, margin2, y2m, robust = FALSE,
+                           min.dn, min.pr, max.pr){
+
+
 
 p2 <- 1
 
@@ -73,7 +76,7 @@ if(length(y2) == 1){ # pPIG can not use duplicate rule automatically
 
    ml <- max( c( length(y2), length(eta2), length(sigma) ) )
 
-   if( length(eta2) == 1 )   eta2   <- rep(eta2,   length = ml)
+   if( length(eta2) == 1 )   eta2 <- rep(eta2,  length = ml)
    if( length(sigma) == 1 ) sigma <- rep(sigma, length = ml)
 
    p2 <- NA
@@ -166,40 +169,13 @@ if(robust == FALSE) p2  <- rowSums( matrix(as.numeric( pdf2FUNC2(y2m, mu2)),dim(
 
 
 
+pdf2 <- ifelse(pdf2 < min.dn, min.dn, pdf2)
+p2   <- mm(p2, min.pr = min.pr, max.pr = max.pr) 
 
 
 
 
-
-
-
-
-
-
-epsilon <- sqrt(.Machine$double.eps)
-pdf2 <- ifelse(pdf2 < epsilon, epsilon, pdf2 )
-
-p2 <- mm(p2) 
-
-
-ifef <- function(dv){
-
-epsilon <- sqrt(.Machine$double.eps)
-dv <- ifelse(is.na(dv), epsilon, dv ) 
-dv <- ifelse(dv == Inf ,  8.218407e+20, dv )
-dv <- ifelse(dv == -Inf ,  -8.218407e+20, dv )
-dv
-
-}
-
-# for safety
-
-pdf2 = ifef(pdf2)
-p2   = ifef(p2)
-
-
-
-list(pdf2 = pdf2, p2 = p2)     
+list(pdf2 = ifef(pdf2), p2 = ifef(p2))     
 
 
 }

@@ -1,4 +1,5 @@
-distrHsATDiscr2 <- function(y2, eta2, sigma2, nu, margin2){
+distrHsATDiscr2 <- function(y2, eta2, sigma2, nu, margin2, min.dn){
+
 
 
 
@@ -103,30 +104,10 @@ pdf2     <-     as.numeric( pdf2FUNC2(y2, mu2, sigma) )
 }
 
 
+pdf2 <- ifelse(pdf2 < min.dn, min.dn, pdf2 )
 
 
-
-
-epsilon <- sqrt(.Machine$double.eps)
-pdf2 <- ifelse(pdf2 < epsilon, epsilon, pdf2 )
-
-
-
-ifef <- function(dv){
-
-epsilon <- sqrt(.Machine$double.eps)
-dv <- ifelse(is.na(dv), epsilon, dv ) 
-dv <- ifelse(dv == Inf ,  8.218407e+20, dv )
-dv <- ifelse(dv == -Inf ,  -8.218407e+20, dv )
-dv
-
-}
-
-# for safety
-
-pdf2 = ifef(pdf2)
-
-list(pdf2 = pdf2)     
+list(pdf2 = ifef(pdf2))     
 
 
 }

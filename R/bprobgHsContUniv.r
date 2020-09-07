@@ -1,13 +1,14 @@
 bprobgHsContUniv <- function(params, respvec, VC, ps, AT = FALSE){
 
-epsilon <- sqrt(.Machine$double.eps)
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+
 
 weights <- VC$weights
 
 l.lnun <- bcorR <- NULL
 
 eta2 <- VC$X1%*%params[1:VC$X1.d2] # this is eta1 but changed to eta2 for convenience
-eta2 <- eta.tr(eta2, VC$margins[1]) # eta2 is xi for GP and there is no restriction
+eta2 <- eta.tr(eta2, VC$margins[1], zero.tol = VC$zero.tol) # eta2 is xi for GP and there is no restriction
 
 
 if( !(VC$margins[1] %in% c(VC$m1d)) ){ 
@@ -27,8 +28,8 @@ if(VC$margins[1] %in% VC$m1d) sigma2.st <- 0
 
 if(VC$surv == TRUE) naiveind <- FALSE else naiveind <- TRUE  
 
-if(VC$margins[1] %in% VC$m2)            dHs  <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = naiveind)
-if(VC$margins[1] %in% c(VC$m1d,VC$m2d)) dHs  <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = TRUE, y2m = VC$y1m)
+if(VC$margins[1] %in% VC$m2)            dHs  <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = naiveind, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+if(VC$margins[1] %in% c(VC$m1d,VC$m2d)) dHs  <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = TRUE, y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
 #########################################################################
 #########################################################################
@@ -264,7 +265,7 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
   
 if( VC$margins[1] == "LN"){
   
-  dHs1 <- distrHsAT(exp(respvec$y1), eta2, sigma2, 1, margin2=VC$margins[1])
+  dHs1 <- distrHsAT(exp(respvec$y1), eta2, sigma2, 1, margin2=VC$margins[1], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   if(VC$surv == FALSE) l.lnun <- -( sum(weights*log(dHs1$pdf2)) - bcorR$b )
   if(VC$surv == TRUE)  l.lnun <- -sum(weights*(VC$cens*log(dHs1$pdf2)+(1-VC$cens)*log(1-dHs1$p2) )      )
     
@@ -281,7 +282,11 @@ list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l
      l.par=l.par, ps = ps, sigma2.st = sigma2.st,
      etas1 = sigma2.st, eta1 = eta2, bcorR = bcorR,  
      BivD=VC$BivD, eta2 = eta2, sigma2 = sigma2, nu = NULL, d.psi = d.psi,
-     dl.dbe = dl.dbe, dl.dsigma.st = dl.dsigma.st, indx = indx)      
+     dl.dbe = dl.dbe, dl.dsigma.st = dl.dsigma.st, indx = indx,
+                                 p1 = p1, p2 = p2, pdf1 = pdf1, pdf2 = pdf2,          
+	      	                    c.copula.be2 = c.copula.be2,
+	      	                    c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2)      
 
 
 }

@@ -25,8 +25,6 @@ m3       <- x1$VC$m3
 bin.link <- x1$VC$bl  
 
 end <- 0
-epsilon <- sqrt(.Machine$double.eps)
-max.p   <- 0.9999999
 est.ATb <- NA
 indD <- list()
 
@@ -48,8 +46,8 @@ eta1 <- t(X1)%*%x1$coefficients[ind1]
 eta2 <- t(X2)%*%x1$coefficients[ind2]  
 
 
-p.1 <- probm(eta1, x1$margins[1])$pr 
-p.2 <- probm(eta2, x1$margins[1])$pr
+p.1 <- probm(eta1, x1$margins[1], min.dn = x1$VC$min.dn, min.pr = x1$VC$min.pr, max.pr = x1$VC$max.pr)$pr 
+p.2 <- probm(eta2, x1$margins[1], min.dn = x1$VC$min.dn, min.pr = x1$VC$min.pr, max.pr = x1$VC$max.pr)$pr
 
 if( is.null(x1$X3)  )   ass.p <- x1$theta    
 
@@ -60,9 +58,9 @@ if( !is.null(x1$X3) ) { X3    <- as.matrix( x1$X3[idx,] )
 
 
 
-AUX   <- pmax( BiCDF(p.1, p.2, x1$nC, ass.p) , epsilon ) # this is p11
+AUX   <- mm( BiCDF(p.1, p.2, x1$nC, ass.p), min.pr = x1$VC$min.pr, max.pr = x1$VC$max.pr  )  # this is p11
 C.11  <- AUX / p.1
-C.10  <- pmax( p.2 - AUX, epsilon )   / (1 - p.1)   # this is actually C01, this has been corrected
+C.10  <- mm( p.2 - AUX, min.pr = x1$VC$min.pr, max.pr = x1$VC$max.pr )   / mm(1 - p.1, min.pr = x1$VC$min.pr, max.pr = x1$VC$max.pr)   # this is actually C01, this has been corrected
               
               
 ######
@@ -74,8 +72,8 @@ bs <- rMVN(n.sim, mean = x1$coefficients, sigma=x1$Vb)
 eta1s <- t(X1)%*%t(bs[,ind1]) 
 eta2s <- t(X2)%*%t(bs[,ind2])  
 
-p.1s <- probm(eta1s, x1$margins[1])$pr 
-p.2s <- probm(eta2s, x1$margins[1])$pr
+p.1s <- probm(eta1s, x1$margins[1], min.dn = x1$VC$min.dn, min.pr = x1$VC$min.pr, max.pr = x1$VC$max.pr)$pr 
+p.2s <- probm(eta2s, x1$margins[1], min.dn = x1$VC$min.dn, min.pr = x1$VC$min.pr, max.pr = x1$VC$max.pr)$pr
 
 if( !is.null(x1$X3) ) etds <- t(X3)%*%t(bs[,(x1$X1.d2+x1$X2.d2+1):(x1$X1.d2+x1$X2.d2+x1$X3.d2)])
 if(  is.null(x1$X3) ) etds <- bs[, length(x1$coefficients)]
@@ -90,18 +88,18 @@ if(x1$BivD == "N") {
 
 	for(i in 1:n.sim){ 
 	
-	         AUXs[i]  <- pmax( BiCDF(p.1s[i], p.2s[i], x1$nC, ass.ps[i], test = FALSE), epsilon )
+	         AUXs[i]  <- mm( BiCDF(p.1s[i], p.2s[i], x1$nC, ass.ps[i], test = FALSE), min.pr = x1$VC$min.pr, max.pr = x1$VC$max.pr  ) 
 		 C.11s[i] <- AUXs[i]  / p.1s[i]
-		 C.10s[i] <- ( p.2s[i] - AUXs[i] ) / (1 - p.1s[i])  
+		 C.10s[i] <- mm( p.2s[i] - AUXs[i], min.pr = x1$VC$min.pr, max.pr = x1$VC$max.pr ) / mm(1 - p.1s[i], min.pr = x1$VC$min.pr, max.pr = x1$VC$max.pr)  
 	                  }                 
 }
 
 if(x1$BivD != "N") {
 
 
- AUXs  <- pmax( BiCDF(p.1s, p.2s, x1$nC, ass.ps, test = FALSE), epsilon )
+ AUXs  <- mm( BiCDF(p.1s, p.2s, x1$nC, ass.ps, test = FALSE), min.pr = x1$VC$min.pr, max.pr = x1$VC$max.pr  ) 
  C.11s <- AUXs / p.1s 
- C.10s <- ( p.2s - AUXs ) / (1 - p.1s)
+ C.10s <- mm( p.2s - AUXs, min.pr = x1$VC$min.pr, max.pr = x1$VC$max.pr ) / mm(1 - p.1s, min.pr = x1$VC$min.pr, max.pr = x1$VC$max.pr)
              
 }
 

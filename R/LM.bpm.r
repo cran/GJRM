@@ -138,7 +138,8 @@ if( l.sp1!=0 || l.sp2!=0){
              Model = Model,
              end = end, fp = fp,
              BivD = BivD, nC = 1, extra.regI = FALSE, margins = c("probit","probit"),
-             bl = c("probit", "logit", "cloglog", "cauchit"), triv = FALSE, univ.gamls = FALSE , n = n)
+             bl = c("probit", "logit", "cloglog", "cauchit"), triv = FALSE, univ.gamls = FALSE , n = n,
+             min.dn = 1e-323, min.pr = 1e-32, max.pr = 0.9999999)
 
 
 params <- c(gam1$coefficients, gam2$coefficients,0)
@@ -157,8 +158,10 @@ resf <- func.opt(params, respvec, VC, ps)
 G   <- resf$gradient
 var <- resf$hessian
 
+tolH <- sqrt(.Machine$double.eps)
+
 var.eig <- eigen(var, symmetric=TRUE)   
-if(min(var.eig$values) < sqrt(.Machine$double.eps)) var.eig$values[which(var.eig$values < sqrt(.Machine$double.eps))] <- sqrt(.Machine$double.eps)
+if(min(var.eig$values) < tolH) var.eig$values[which(var.eig$values < tolH)] <- tolH
 var <- var.eig$vec%*%tcrossprod(diag(1/var.eig$val),var.eig$vec)  
 
 ev <- as.numeric(t(G)%*%var%*%G)

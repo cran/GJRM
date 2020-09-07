@@ -1,12 +1,12 @@
 bprobgHsDiscr2SS <- function(params, respvec, VC, ps, AT = FALSE){
 
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
   eta1 <- VC$X1%*%params[1:VC$X1.d2]
   eta2 <- VC$X2%*%params[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)]
   etad <- etas <- l.ln <- NULL 
 
-  epsilon <- sqrt(.Machine$double.eps)
-  max.p   <- 0.9999999
+
   
   
 if(is.null(VC$X3)){  
@@ -26,7 +26,7 @@ if(!is.null(VC$X3)){
     eta2 <- eta.tr(eta2, VC$margins[2])
     
   
- dHs <- distrHsDiscr(respvec$y2, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[2], naive = FALSE, y2m = VC$y2m)
+ dHs <- distrHsDiscr(respvec$y2, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[2], naive = FALSE, y2m = VC$y2m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   
  pdf2                         <- dHs$pdf2
@@ -43,7 +43,7 @@ if(!is.null(VC$X3)){
  der2pdf2.dereta2dersigma2.st <- dHs$der2pdf2.dereta2dersigma2.st  
   
   
-  pd1 <- probm(eta1, VC$margins[1], bc = TRUE) 
+  pd1 <- probm(eta1, VC$margins[1], bc = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
   p1  <- 1 - pd1$pr                           #   pnorm(-eta1), p(y1=0)
 
 
@@ -56,11 +56,11 @@ teta    <- resT$teta
 
 ########################################################################################################
 
-C1 <- BiCDF(p1[VC$inde], p2,          VC$nC, teta, VC$dof)
-C2 <- BiCDF(p1[VC$inde], mm(p2-pdf2), VC$nC, teta, VC$dof)
+C1 <- mm(BiCDF(p1[VC$inde], p2,          VC$nC, teta, VC$dof), min.pr = VC$min.pr, max.pr = VC$max.pr  )
+C2 <- mm(BiCDF(p1[VC$inde], mm(p2-pdf2, min.pr = VC$min.pr, max.pr = VC$max.pr), VC$nC, teta, VC$dof), min.pr = VC$min.pr, max.pr = VC$max.pr  )
 
-A <- ifelse(C1 - C2 < epsilon, epsilon, C1 - C2)
-B <- ifelse( pdf2 - A < epsilon, epsilon, pdf2 - A)
+A <- mm(C1 - C2, min.pr = VC$min.pr, max.pr = VC$max.pr)
+B <- mm(pdf2 - A, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
 l.par1          <- log(p1)
 l.par1[VC$inde] <- log(B) 
@@ -70,8 +70,8 @@ l.par <- VC$weights*l.par1
 
 ########################################################################################################
  
-dH1 <- copgHs(p1[VC$inde], p2,          eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, VC$dof)
-dH2 <- copgHs(p1[VC$inde], mm(p2-pdf2), eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, VC$dof) 
+dH1 <- copgHs(p1[VC$inde], p2,          eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+dH2 <- copgHs(p1[VC$inde], mm(p2-pdf2, min.pr = VC$min.pr, max.pr = VC$max.pr), eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
  
 c.copula.be1.C1 <- dH1$c.copula.be1 
 c.copula.be1.C2 <- dH2$c.copula.be1 
@@ -89,7 +89,7 @@ c.copula.theta.C2 <- dH2$c.copula.theta
 derp1.dereta1   <- pd1$derp1.dereta1    # -dnorm(-eta1) 
 
 
-Cc <- mm(c.copula.be1.C1 - c.copula.be1.C2) 
+Cc <- mm(c.copula.be1.C1 - c.copula.be1.C2, min.pr = VC$min.pr, max.pr = VC$max.pr) 
 C  <- Cc*derp1.dereta1[VC$inde] 
 
 Cs    <- c.copula.theta.C1  - c.copula.theta.C2
@@ -280,7 +280,10 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
          list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l.par=l.par, ps = ps, etas = etas,
               eta1=eta1, eta2=eta2, etad=etad,
               dl.dbe1=dl.dbe1, dl.dbe2=dl.dbe2, dl.dsigma.st = dl.dsigma.st, dl.dteta.st = dl.dteta.st,
-              BivD=VC$BivD, p1=1-p1, p2=p2, theta.star = teta.st)      
+              BivD=VC$BivD,                             p1 = 1-p1, p2 = p2, pdf1 = pdf1, pdf2 = pdf2,          
+	      	                    c.copula.be2 = c.copula.be2,
+	      	                    c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2, theta.star = teta.st)      
 
 }
 

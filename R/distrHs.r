@@ -1,4 +1,5 @@
-distrHs <- function(y2, eta2, sigma2, sigma2.st, nu, nu.st, margin2, naive = FALSE){
+distrHs <- function(y2, eta2, sigma2, sigma2.st, nu, nu.st, margin2, naive = FALSE,
+                    min.dn, min.pr, max.pr){
 
 # sigma2 here means sigma, it was just a typo
 
@@ -264,27 +265,19 @@ der2p2.derdermu2sigma2 <- -(nu * y2 * (1/(mu2^2 * (1 + 1/(y2/mu2)^sigma)^(1 + nu
 
 if(margin2 == "TW"){
 
-aTW <- 1.001  
-bTW <- 1.999
-
-mu2                 <- exp(eta2)
-dermu2.dereta2      <- exp(eta2)
-der2mu2.dereta2eta2 <- exp(eta2) 
-
-dersigma2.dersigma2.st  <- 1  
-dersigma2.dersigma2.st2 <- 0   
-
-dernu.dernu.st  <- 1
-dernu.dernu.st2 <- 0
-
-nu.stTW    <- log(nu)
-
 # sigma must not touch the boundaries
 # sigma.stTW beween -14.5 and 20 as in eta.tr
 
+aTW <- 1.001  
+bTW <- 1.999
+
+mu2        <- exp(eta2)
+nu.stTW    <- log(nu)
 sigma.stTW <- log( (sigma - aTW) / (bTW - sigma) ) # sigma = (aTW + bTW*exp(sigma.stTW))/(1 + exp(sigma.stTW))
 
+
 TWob <- ldTweedie(y2, mu = mu2, p = NA, phi = NA, rho = nu.stTW, theta = sigma.stTW, all.derivs = TRUE) 
+
 
 pdf2           <- exp(TWob[, 1])            
 derpdf2.dermu2 <- TWob[, 7]*pdf2
@@ -300,26 +293,107 @@ der2pdf2.mu2dernu       <- pdf2*TWob[, 10] + derpdf2.dermu2*derpdf2.nu/pdf2
 der2pdf2.dersigma2dernu <- pdf2*TWob[, 6]  + derpdf2.nu*derpdf2.sigma2/pdf2 
         
         
-                
-if(naive == FALSE){   # to do
+        
+             
+if(naive == FALSE){ 
  
+if(length(sigma) == 1) sigma <- rep(sigma, length(mu2))
+if(length(nu) == 1)    nu    <- rep(nu, length(mu2))
+
+
+
+###
+
+dermu2.dereta2      <- 1
+der2mu2.dereta2eta2 <- 0   
+  
+dersigma2.dersigma2.st  <- (bTW - (aTW + bTW * exp(sigma2.st))/(1 + exp(sigma2.st))) * exp(sigma2.st)/(1 + exp(sigma2.st))  
+dersigma2.dersigma2.st2 <- (bTW * (1 - exp(sigma2.st)/(1 + exp(sigma2.st))) - ((2 * bTW - 
+    2 * ((aTW + bTW * exp(sigma2.st))/(1 + exp(sigma2.st)))) * 
+    exp(sigma2.st) + aTW)/(1 + exp(sigma2.st))) * exp(sigma2.st)/(1 + 
+    exp(sigma2.st))   
+
+dernu.dernu.st <- dernu.dernu.st2 <- exp(nu.st)  
+
+###
+
+
+
+p2 <- derp2.dermu2 <- derp2.dersigma2 <- derp2.dernu <- der2p2.dermu22 <- der2p2.dersigma22 <- der2p2.dernu2 <- der2p2.dersigma2dernu <- der2p2.dermu2dernu <- der2p2.derdermu2sigma2 <- NA 
+  
  
-p2  <- 0
+for(i in 1:length(mu2)){ 
+ 
+p2[i] <- pTweed(y = y2[i], mu = mu2[i], phi = nu[i], p = sigma[i])$d0 
 
-derp2.dermu2    <- 0  
-derp2.dersigma2 <- 0
-derp2.dernu     <- 0
+scTW <- pTweed(y = y2[i], mu = mu2[i], phi = nu[i], p = sigma[i], deriv = 1)$d1
+heTW <- pTweed(y = y2[i], mu = mu2[i], phi = nu[i], p = sigma[i], deriv = 2)$d2
 
-der2p2.dermu22    <- 0
-der2p2.dersigma22 <- 0
-der2p2.dernu2     <- 0
+derp2.dermu2[i]    <- scTW[1]
+
+derp2.dersigma2[i] <- scTW[3]
+derp2.dernu[i]     <- scTW[2]
+
+der2p2.dermu22[i]    <- heTW[1, 1] 
+der2p2.dersigma22[i] <- heTW[3, 3]
+der2p2.dernu2[i]     <- heTW[2, 2]
     
-der2p2.dersigma2dernu  <- 0
-der2p2.dermu2dernu     <- 0
-der2p2.derdermu2sigma2 <- 0
- 
+der2p2.dersigma2dernu[i]  <- heTW[3, 2] 
+der2p2.dermu2dernu[i]     <- heTW[2, 1]
+der2p2.derdermu2sigma2[i] <- heTW[3, 1]
+
+}
+
+
+
+# I attach link function parametrisation here (but need to do that for mu as done for the pdf)
+
+
+derp2.dereta2                <- derp2.dermu2*dermu2.dereta2
+der2p2.dereta2eta2           <- der2p2.dermu22*dermu2.dereta2^2 + derp2.dermu2*der2mu2.dereta2eta2   
+
+derp2.dersigma.st            <- derp2.dersigma2 *  dersigma2.dersigma2.st 
+der2p2.dersigma2.st2         <- der2p2.dersigma22 * dersigma2.dersigma2.st^2 + derp2.dersigma2 * dersigma2.dersigma2.st2
+
+der2p2.dereta2dersigma2      <- der2p2.derdermu2sigma2* dermu2.dereta2    
+der2p2.dereta2dersigma2.st   <- der2p2.dereta2dersigma2 *  dersigma2.dersigma2.st  
+
+der2p2.dereta2dernu          <- der2p2.dermu2dernu* dermu2.dereta2 
+der2p2.dereta2dernu.st       <- der2p2.dereta2dernu * dernu.dernu.st 
+der2p2.dersigma2.stdernu.st  <- der2p2.dersigma2dernu * dersigma2.dersigma2.st * dernu.dernu.st  
+
+derp2.nu.st                  <- derp2.dernu *  dernu.dernu.st 
+der2p2.dernu.st2             <- der2p2.dernu2 * dernu.dernu.st^2 + derp2.dernu * dernu.dernu.st2
+
+
+# now change names
+
+
+derp2.dermu2      <- derp2.dereta2              
+der2p2.dermu22    <- der2p2.dereta2eta2         
+
+derp2.dersigma2   <- derp2.dersigma.st          
+der2p2.dersigma22 <- der2p2.dersigma2.st2     
+
+derp2.dernu       <- derp2.nu.st                
+der2p2.dernu2     <- der2p2.dernu.st2 
+
+der2p2.dermu2dernu     <- der2p2.dereta2dernu.st     
+der2p2.derdermu2sigma2 <- der2p2.dereta2dersigma2.st 
+der2p2.dersigma2dernu  <- der2p2.dersigma2.stdernu.st
 
                     }
+                   
+dermu2.dereta2      <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2) 
+                   
+                    
+dersigma2.dersigma2.st  <- 1  
+dersigma2.dersigma2.st2 <- 0   
+
+dernu.dernu.st  <- 1
+dernu.dernu.st2 <- 0                    
+                    
 
 
 }
@@ -1683,7 +1757,7 @@ sigma2.st <- log(sigma)
 
 
 
-if(margin2 == "GAi"){eta2 <- ifelse(eta2 < 0.0000001, 0.0000001, eta2); mu2 <- eta2; dermu2.dereta2 <- 1; der2mu2.dereta2eta2 <- 0}
+if(margin2 == "GAi"){eta2 <- ifelse(eta2 < 1e-05, 1e-05, eta2); mu2 <- eta2; dermu2.dereta2 <- 1; der2mu2.dereta2eta2 <- 0}
 
 if(margin2 == "GA") { 
    mu2                 <- exp(eta2)
@@ -1846,70 +1920,30 @@ der2p2.dernu.st2             <- der2p2.dernu2 * dernu.dernu.st^2 + derp2.dernu *
 }###############
 
 
-
-epsilon <- sqrt(.Machine$double.eps)
-pdf2 <- ifelse(pdf2 < epsilon, epsilon, pdf2 )
-p2   <- mm(p2) 
+pdf2 <- ifelse(pdf2 < min.dn, min.dn, pdf2)
+p2   <- mm(p2, min.pr = min.pr, max.pr = max.pr) 
 
 
-
-ifef <- function(dv){
-
-epsilon <- sqrt(.Machine$double.eps)
-dv <- ifelse(is.na(dv), epsilon, dv ) 
-dv <- ifelse(dv == Inf ,  8.218407e+20, dv )
-dv <- ifelse(dv == -Inf ,  -8.218407e+20, dv )
-dv
-
-}
-
-
-# for safety
-
-pdf2                         = ifef(pdf2)
-p2                           = ifef(p2) 
-derpdf2.dereta2              = ifef(derpdf2.dereta2) 
-derpdf2.dersigma2.st         = ifef(derpdf2.dersigma2.st) 
-derp2.dersigma.st            = ifef(derp2.dersigma.st)
-derp2.dereta2                = ifef(derp2.dereta2)
-der2p2.dereta2eta2           = ifef(der2p2.dereta2eta2) 
-der2pdf2.dereta2             = ifef(der2pdf2.dereta2)
-der2p2.dersigma2.st2         = ifef(der2p2.dersigma2.st2) 
-der2pdf2.dersigma2.st2       = ifef(der2pdf2.dersigma2.st2)
-der2p2.dereta2dersigma2.st   = ifef(der2p2.dereta2dersigma2.st)  
-der2pdf2.dereta2dersigma2.st = ifef(der2pdf2.dereta2dersigma2.st)
-der2pdf2.dereta2dernu.st     = ifef(der2pdf2.dereta2dernu.st)   
-der2pdf2.sigma2.st2dernu.st  = ifef(der2pdf2.sigma2.st2dernu.st)
-derpdf2.dernu.st             = ifef(derpdf2.dernu.st)           
-der2pdf2.dernu.st2           = ifef(der2pdf2.dernu.st2)         
-derp2.nu.st                  = ifef(derp2.nu.st)                
-der2p2.dernu.st2             = ifef(der2p2.dernu.st2)           
-der2p2.dereta2dernu.st       = ifef(der2p2.dereta2dernu.st)     
-der2p2.dersigma2.stdernu.st  = ifef(der2p2.dersigma2.stdernu.st )
-
-
-
-
-list(pdf2                         = pdf2,
-     p2                           = p2, 
-     derpdf2.dereta2              = derpdf2.dereta2, 
-     derpdf2.dersigma2.st         = derpdf2.dersigma2.st, 
-     derp2.dersigma.st            = derp2.dersigma.st,
-     derp2.dereta2                = derp2.dereta2,
-     der2p2.dereta2eta2           = der2p2.dereta2eta2, 
-     der2pdf2.dereta2             = der2pdf2.dereta2,
-     der2p2.dersigma2.st2         = der2p2.dersigma2.st2, 
-     der2pdf2.dersigma2.st2       = der2pdf2.dersigma2.st2,
-     der2p2.dereta2dersigma2.st   = der2p2.dereta2dersigma2.st,            
-     der2pdf2.dereta2dersigma2.st = der2pdf2.dereta2dersigma2.st,
-     der2pdf2.dereta2dernu.st     = der2pdf2.dereta2dernu.st,   
-     der2pdf2.sigma2.st2dernu.st  = der2pdf2.sigma2.st2dernu.st,
-     derpdf2.dernu.st             = derpdf2.dernu.st,           
-     der2pdf2.dernu.st2           = der2pdf2.dernu.st2,         
-     derp2.nu.st                  = derp2.nu.st,                
-     der2p2.dernu.st2             = der2p2.dernu.st2,           
-     der2p2.dereta2dernu.st       = der2p2.dereta2dernu.st,     
-     der2p2.dersigma2.stdernu.st  = der2p2.dersigma2.stdernu.st, 
+list(pdf2                         = ifef(pdf2),
+     p2                           = ifef(p2), 
+     derpdf2.dereta2              = ifef(derpdf2.dereta2), 
+     derpdf2.dersigma2.st         = ifef(derpdf2.dersigma2.st), 
+     derp2.dersigma.st            = ifef(derp2.dersigma.st),
+     derp2.dereta2                = ifef(derp2.dereta2),
+     der2p2.dereta2eta2           = ifef(der2p2.dereta2eta2), 
+     der2pdf2.dereta2             = ifef(der2pdf2.dereta2),
+     der2p2.dersigma2.st2         = ifef(der2p2.dersigma2.st2), 
+     der2pdf2.dersigma2.st2       = ifef(der2pdf2.dersigma2.st2),
+     der2p2.dereta2dersigma2.st   = ifef(der2p2.dereta2dersigma2.st),            
+     der2pdf2.dereta2dersigma2.st = ifef(der2pdf2.dereta2dersigma2.st),
+     der2pdf2.dereta2dernu.st     = ifef(der2pdf2.dereta2dernu.st),   
+     der2pdf2.sigma2.st2dernu.st  = ifef(der2pdf2.sigma2.st2dernu.st),
+     derpdf2.dernu.st             = ifef(derpdf2.dernu.st),           
+     der2pdf2.dernu.st2           = ifef(der2pdf2.dernu.st2),         
+     derp2.nu.st                  = ifef(derp2.nu.st),                
+     der2p2.dernu.st2             = ifef(der2p2.dernu.st2),           
+     der2p2.dereta2dernu.st       = ifef(der2p2.dereta2dernu.st),     
+     der2p2.dersigma2.stdernu.st  = ifef(der2p2.dersigma2.stdernu.st), 
      indx = indx)     
 
 

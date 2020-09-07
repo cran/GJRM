@@ -1,4 +1,5 @@
-jc.probs1 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, epsilon, cumul = "no"){
+jc.probs1 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr, cumul = "no"){
+
 
 ######################################################################################################
 
@@ -58,8 +59,8 @@ if(x$margins[1] %in% cont1par && x$margins[2] %in% cont3par){ eq.nu1 <- NA; eq.n
                    
 
 
-if(x$margins[1] %in% cont3par) nu1 <- esp.tr(predict.SemiParBIV(x, eq = eq.nu1, newdata = newdata), x$margins[1])$vrb
-if(x$margins[2] %in% cont3par) nu2 <- esp.tr(predict.SemiParBIV(x, eq = eq.nu2, newdata = newdata), x$margins[2])$vrb
+if(x$margins[1] %in% cont3par) nu1 <- enu.tr(predict.SemiParBIV(x, eq = eq.nu1, newdata = newdata), x$margins[1])$vrb
+if(x$margins[2] %in% cont3par) nu2 <- enu.tr(predict.SemiParBIV(x, eq = eq.nu2, newdata = newdata), x$margins[2])$vrb
 
 theta <- teta.tr(x$VC, predict.SemiParBIV(x, eq = eq.th, newdata = newdata))$teta
 
@@ -116,15 +117,15 @@ dof   <- as.numeric(dof)
 
 
 
-if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1 <- as.numeric(distrHsAT(y1, eta1, sigma21, nu1, x$margins[1])$p2) 
-if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)) p2 <- as.numeric(distrHsAT(y2, eta2, sigma22, nu2, x$margins[2])$p2) 
+if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1 <- as.numeric(distrHsAT(y1, eta1, sigma21, nu1, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2) 
+if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)) p2 <- as.numeric(distrHsAT(y2, eta2, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2) 
 
-if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d)) {p1pdf1 <- distrHsATDiscr(y1, eta1, sigma21, nu = 1, x$margins[1], x$VC$y1m)
+if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d)) {p1pdf1 <- distrHsATDiscr(y1, eta1, sigma21, nu = 1, x$margins[1], x$VC$y1m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)
                                              p1pdf1$p2 <- as.numeric(p1pdf1$p2)
                                              p1pdf1$pdf2 <- as.numeric(p1pdf1$pdf2)
                                              p1 <- p1pdf1$p2 
                                              }
-if(x$margins[2] %in% c(x$VC$m1d, x$VC$m2d)) {p2pdf2 <- distrHsATDiscr(y2, eta2, sigma22, nu = 1, x$margins[2], x$VC$y2m)
+if(x$margins[2] %in% c(x$VC$m1d, x$VC$m2d)) {p2pdf2 <- distrHsATDiscr(y2, eta2, sigma22, nu = 1, x$margins[2], x$VC$y2m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)
                                              p2pdf2$p2 <- as.numeric(p2pdf2$p2)
                                              p2pdf2$pdf2 <- as.numeric(p2pdf2$pdf2)
                                              p2 <- p2pdf2$p2 
@@ -162,12 +163,12 @@ p12 <- C11 <- C01 <- C10 <- C00 <- NA
 if(x$margins[1] %in% c(x$VC$m2, x$VC$m3) && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){ #### CONT - CONT ####
 
 if( length(x$teta1) != 0){
-if(length(theta) > 1)  p12[x$teta.ind1] <- BiCDF(p1[x$teta.ind1], p2[x$teta.ind1], nC1, theta[x$teta.ind1], dof)
-if(length(theta) == 1) p12[x$teta.ind1] <- BiCDF(p1[x$teta.ind1], p2[x$teta.ind1], nC1, theta, dof)
+if(length(theta) > 1)  p12[x$teta.ind1] <- mm(BiCDF(p1[x$teta.ind1], p2[x$teta.ind1], nC1, theta[x$teta.ind1], dof), min.pr = min.pr, max.pr = max.pr  )
+if(length(theta) == 1) p12[x$teta.ind1] <- mm(BiCDF(p1[x$teta.ind1], p2[x$teta.ind1], nC1, theta, dof), min.pr = min.pr, max.pr = max.pr  )
                           }                       
 if( length(x$teta2) != 0){
-if(length(theta) > 1)  p12[x$teta.ind2] <- BiCDF(p1[x$teta.ind2], p2[x$teta.ind2], nC2, theta[x$teta.ind2], dof)
-if(length(theta) == 1) p12[x$teta.ind2] <- BiCDF(p1[x$teta.ind2], p2[x$teta.ind2], nC2, theta, dof)
+if(length(theta) > 1)  p12[x$teta.ind2] <- mm(BiCDF(p1[x$teta.ind2], p2[x$teta.ind2], nC2, theta[x$teta.ind2], dof), min.pr = min.pr, max.pr = max.pr  )
+if(length(theta) == 1) p12[x$teta.ind2] <- mm(BiCDF(p1[x$teta.ind2], p2[x$teta.ind2], nC2, theta, dof), min.pr = min.pr, max.pr = max.pr  )
                           }                            
                                                                                    } #### CONT - CONT ####
 
@@ -177,12 +178,12 @@ if(length(theta) == 1) p12[x$teta.ind2] <- BiCDF(p1[x$teta.ind2], p2[x$teta.ind2
 if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d) && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){ #### DISCR - CONT ####
 
 if( length(x$teta1) != 0){
-if(length(theta) > 1)  p12[x$teta.ind1] <- BiCDF(p1pdf1$p2[x$teta.ind1], p2[x$teta.ind1], nC1, theta[x$teta.ind1], dof) - BiCDF(mm(p1pdf1$p2[x$teta.ind1] - p1pdf1$pdf2[x$teta.ind1]), p2[x$teta.ind1], nC1, theta[x$teta.ind1], dof); p12[x$teta.ind1] <- ifelse(p12[x$teta.ind1] < epsilon, epsilon, p12[x$teta.ind1]) 
-if(length(theta) == 1) p12[x$teta.ind1] <- BiCDF(p1pdf1$p2[x$teta.ind1], p2[x$teta.ind1], nC1, theta, dof)              - BiCDF(mm(p1pdf1$p2[x$teta.ind1] - p1pdf1$pdf2[x$teta.ind1]), p2[x$teta.ind1], nC1, theta,              dof); p12[x$teta.ind1] <- ifelse(p12[x$teta.ind1] < epsilon, epsilon, p12[x$teta.ind1]) 
+if(length(theta) > 1)  p12[x$teta.ind1] <- mm(BiCDF(p1pdf1$p2[x$teta.ind1], p2[x$teta.ind1], nC1, theta[x$teta.ind1], dof), min.pr = min.pr, max.pr = max.pr  ) - mm(BiCDF(mm(p1pdf1$p2[x$teta.ind1] - p1pdf1$pdf2[x$teta.ind1], min.pr, max.pr), p2[x$teta.ind1], nC1, theta[x$teta.ind1], dof), min.pr = min.pr, max.pr = max.pr  ); p12[x$teta.ind1] <- ifelse(p12[x$teta.ind1] < min.pr, min.pr, p12[x$teta.ind1]) 
+if(length(theta) == 1) p12[x$teta.ind1] <- mm(BiCDF(p1pdf1$p2[x$teta.ind1], p2[x$teta.ind1], nC1, theta, dof), min.pr = min.pr, max.pr = max.pr  )              - mm(BiCDF(mm(p1pdf1$p2[x$teta.ind1] - p1pdf1$pdf2[x$teta.ind1], min.pr, max.pr), p2[x$teta.ind1], nC1, theta,              dof), min.pr = min.pr, max.pr = max.pr  ); p12[x$teta.ind1] <- ifelse(p12[x$teta.ind1] < min.pr, min.pr, p12[x$teta.ind1]) 
                           }                      
 if( length(x$teta2) != 0){
-if(length(theta) > 1)  p12[x$teta.ind2] <- BiCDF(p1pdf1$p2[x$teta.ind2], p2[x$teta.ind2], nC2, theta[x$teta.ind2], dof) - BiCDF(mm(p1pdf1$p2[x$teta.ind2] - p1pdf1$pdf2[x$teta.ind2]), p2[x$teta.ind2], nC2, theta[x$teta.ind2], dof); p12[x$teta.ind2] <- ifelse(p12[x$teta.ind2] < epsilon, epsilon, p12[x$teta.ind2]) 
-if(length(theta) == 1) p12[x$teta.ind2] <- BiCDF(p1pdf1$p2[x$teta.ind2], p2[x$teta.ind2], nC2, theta, dof)              - BiCDF(mm(p1pdf1$p2[x$teta.ind2] - p1pdf1$pdf2[x$teta.ind2]), p2[x$teta.ind2], nC2, theta,              dof); p12[x$teta.ind2] <- ifelse(p12[x$teta.ind2] < epsilon, epsilon, p12[x$teta.ind2]) 
+if(length(theta) > 1)  p12[x$teta.ind2] <- mm(BiCDF(p1pdf1$p2[x$teta.ind2], p2[x$teta.ind2], nC2, theta[x$teta.ind2], dof), min.pr = min.pr, max.pr = max.pr  ) - mm(BiCDF(mm(p1pdf1$p2[x$teta.ind2] - p1pdf1$pdf2[x$teta.ind2], min.pr, max.pr), p2[x$teta.ind2], nC2, theta[x$teta.ind2], dof), min.pr = min.pr, max.pr = max.pr  ); p12[x$teta.ind2] <- ifelse(p12[x$teta.ind2] < min.pr, min.pr, p12[x$teta.ind2]) 
+if(length(theta) == 1) p12[x$teta.ind2] <- mm(BiCDF(p1pdf1$p2[x$teta.ind2], p2[x$teta.ind2], nC2, theta, dof), min.pr = min.pr, max.pr = max.pr  )              - mm(BiCDF(mm(p1pdf1$p2[x$teta.ind2] - p1pdf1$pdf2[x$teta.ind2], min.pr, max.pr), p2[x$teta.ind2], nC2, theta,              dof), min.pr = min.pr, max.pr = max.pr  ); p12[x$teta.ind2] <- ifelse(p12[x$teta.ind2] < min.pr, min.pr, p12[x$teta.ind2]) 
                           } 
                           
 if(cond == 1) p12 <- p12/p1pdf1$pdf2
@@ -202,25 +203,25 @@ if( length(x$teta1) != 0){
 
 if(length(theta) > 1){  
 
-  C11[x$teta.ind1] <- BiCDF(p1pdf1$p2[x$teta.ind1],                              p2pdf2$p2[x$teta.ind1],                              nC1, theta[x$teta.ind1], dof)
-  C01[x$teta.ind1] <- BiCDF(mm(p1pdf1$p2[x$teta.ind1]-p1pdf1$pdf2[x$teta.ind1]), p2pdf2$p2[x$teta.ind1],                              nC1, theta[x$teta.ind1], dof)
-  C10[x$teta.ind1] <- BiCDF(p1pdf1$p2[x$teta.ind1],                              mm(p2pdf2$p2[x$teta.ind1]-p2pdf2$pdf2[x$teta.ind1]), nC1, theta[x$teta.ind1], dof)
-  C00[x$teta.ind1] <- BiCDF(mm(p1pdf1$p2[x$teta.ind1]-p1pdf1$pdf2[x$teta.ind1]), mm(p2pdf2$p2[x$teta.ind1]-p2pdf2$pdf2[x$teta.ind1]), nC1, theta[x$teta.ind1], dof)
+  C11[x$teta.ind1] <- mm(BiCDF(p1pdf1$p2[x$teta.ind1],                              p2pdf2$p2[x$teta.ind1],                              nC1, theta[x$teta.ind1], dof), min.pr = min.pr, max.pr = max.pr  )
+  C01[x$teta.ind1] <- mm(BiCDF(mm(p1pdf1$p2[x$teta.ind1]-p1pdf1$pdf2[x$teta.ind1], min.pr, max.pr), p2pdf2$p2[x$teta.ind1],                              nC1, theta[x$teta.ind1], dof), min.pr = min.pr, max.pr = max.pr  )
+  C10[x$teta.ind1] <- mm(BiCDF(p1pdf1$p2[x$teta.ind1],                              mm(p2pdf2$p2[x$teta.ind1]-p2pdf2$pdf2[x$teta.ind1], min.pr, max.pr), nC1, theta[x$teta.ind1], dof), min.pr = min.pr, max.pr = max.pr  )
+  C00[x$teta.ind1] <- mm(BiCDF(mm(p1pdf1$p2[x$teta.ind1]-p1pdf1$pdf2[x$teta.ind1], min.pr, max.pr), mm(p2pdf2$p2[x$teta.ind1]-p2pdf2$pdf2[x$teta.ind1], min.pr, max.pr), nC1, theta[x$teta.ind1], dof), min.pr = min.pr, max.pr = max.pr  )
 
   p12[x$teta.ind1] <- C11[x$teta.ind1] - C01[x$teta.ind1] - C10[x$teta.ind1] + C00[x$teta.ind1]
-  p12[x$teta.ind1] <- ifelse(p12[x$teta.ind1] < epsilon, epsilon, p12[x$teta.ind1])
+  p12[x$teta.ind1] <- ifelse(p12[x$teta.ind1] < min.pr, min.pr, p12[x$teta.ind1])
                      }
 
 
 if(length(theta) == 1){  
 
-  C11[x$teta.ind1] <- BiCDF(p1pdf1$p2[x$teta.ind1],                              p2pdf2$p2[x$teta.ind1],                              nC1, theta, dof)
-  C01[x$teta.ind1] <- BiCDF(mm(p1pdf1$p2[x$teta.ind1]-p1pdf1$pdf2[x$teta.ind1]), p2pdf2$p2[x$teta.ind1],                              nC1, theta, dof)
-  C10[x$teta.ind1] <- BiCDF(p1pdf1$p2[x$teta.ind1],                              mm(p2pdf2$p2[x$teta.ind1]-p2pdf2$pdf2[x$teta.ind1]), nC1, theta, dof)
-  C00[x$teta.ind1] <- BiCDF(mm(p1pdf1$p2[x$teta.ind1]-p1pdf1$pdf2[x$teta.ind1]), mm(p2pdf2$p2[x$teta.ind1]-p2pdf2$pdf2[x$teta.ind1]), nC1, theta, dof)
+  C11[x$teta.ind1] <- mm(BiCDF(p1pdf1$p2[x$teta.ind1],                              p2pdf2$p2[x$teta.ind1],                              nC1, theta, dof), min.pr = min.pr, max.pr = max.pr  )
+  C01[x$teta.ind1] <- mm(BiCDF(mm(p1pdf1$p2[x$teta.ind1]-p1pdf1$pdf2[x$teta.ind1], min.pr, max.pr), p2pdf2$p2[x$teta.ind1],                              nC1, theta, dof), min.pr = min.pr, max.pr = max.pr  )
+  C10[x$teta.ind1] <- mm(BiCDF(p1pdf1$p2[x$teta.ind1],                              mm(p2pdf2$p2[x$teta.ind1]-p2pdf2$pdf2[x$teta.ind1], min.pr, max.pr), nC1, theta, dof), min.pr = min.pr, max.pr = max.pr  )
+  C00[x$teta.ind1] <- mm(BiCDF(mm(p1pdf1$p2[x$teta.ind1]-p1pdf1$pdf2[x$teta.ind1], min.pr, max.pr), mm(p2pdf2$p2[x$teta.ind1]-p2pdf2$pdf2[x$teta.ind1], min.pr, max.pr), nC1, theta, dof), min.pr = min.pr, max.pr = max.pr  )
 
   p12[x$teta.ind1] <- C11[x$teta.ind1] - C01[x$teta.ind1] - C10[x$teta.ind1] + C00[x$teta.ind1]
-  p12[x$teta.ind1] <- ifelse(p12[x$teta.ind1] < epsilon, epsilon, p12[x$teta.ind1])
+  p12[x$teta.ind1] <- ifelse(p12[x$teta.ind1] < min.pr, min.pr, p12[x$teta.ind1])
 
                      } 
                           }
@@ -229,25 +230,25 @@ if( length(x$teta2) != 0){
 
 if(length(theta) > 1){  
 
-  C11[x$teta.ind2] <- BiCDF(p1pdf1$p2[x$teta.ind2],                              p2pdf2$p2[x$teta.ind2],                              nC2, theta[x$teta.ind2], dof)
-  C01[x$teta.ind2] <- BiCDF(mm(p1pdf1$p2[x$teta.ind2]-p1pdf1$pdf2[x$teta.ind2]), p2pdf2$p2[x$teta.ind2],                              nC2, theta[x$teta.ind2], dof)
-  C10[x$teta.ind2] <- BiCDF(p1pdf1$p2[x$teta.ind2],                              mm(p2pdf2$p2[x$teta.ind2]-p2pdf2$pdf2[x$teta.ind2]), nC2, theta[x$teta.ind2], dof)
-  C00[x$teta.ind2] <- BiCDF(mm(p1pdf1$p2[x$teta.ind2]-p1pdf1$pdf2[x$teta.ind2]), mm(p2pdf2$p2[x$teta.ind2]-p2pdf2$pdf2[x$teta.ind2]), nC2, theta[x$teta.ind2], dof)
+  C11[x$teta.ind2] <- mm(BiCDF(p1pdf1$p2[x$teta.ind2],                              p2pdf2$p2[x$teta.ind2],                              nC2, theta[x$teta.ind2], dof), min.pr = min.pr, max.pr = max.pr  )
+  C01[x$teta.ind2] <- mm(BiCDF(mm(p1pdf1$p2[x$teta.ind2]-p1pdf1$pdf2[x$teta.ind2], min.pr, max.pr), p2pdf2$p2[x$teta.ind2],                              nC2, theta[x$teta.ind2], dof), min.pr = min.pr, max.pr = max.pr  )
+  C10[x$teta.ind2] <- mm(BiCDF(p1pdf1$p2[x$teta.ind2],                              mm(p2pdf2$p2[x$teta.ind2]-p2pdf2$pdf2[x$teta.ind2], min.pr, max.pr), nC2, theta[x$teta.ind2], dof), min.pr = min.pr, max.pr = max.pr  )
+  C00[x$teta.ind2] <- mm(BiCDF(mm(p1pdf1$p2[x$teta.ind2]-p1pdf1$pdf2[x$teta.ind2], min.pr, max.pr), mm(p2pdf2$p2[x$teta.ind2]-p2pdf2$pdf2[x$teta.ind2], min.pr, max.pr), nC2, theta[x$teta.ind2], dof), min.pr = min.pr, max.pr = max.pr  )
 
   p12[x$teta.ind2] <- C11[x$teta.ind2] - C01[x$teta.ind2] - C10[x$teta.ind2] + C00[x$teta.ind2]
-  p12[x$teta.ind2] <- ifelse(p12[x$teta.ind2] < epsilon, epsilon, p12[x$teta.ind2])
+  p12[x$teta.ind2] <- ifelse(p12[x$teta.ind2] < min.pr, min.pr, p12[x$teta.ind2])
 
                      }
 
 if(length(theta) == 1){  
 
-  C11[x$teta.ind2] <- BiCDF(p1pdf1$p2[x$teta.ind2],                              p2pdf2$p2[x$teta.ind2],                              nC2, theta, dof)
-  C01[x$teta.ind2] <- BiCDF(mm(p1pdf1$p2[x$teta.ind2]-p1pdf1$pdf2[x$teta.ind2]), p2pdf2$p2[x$teta.ind2],                              nC2, theta, dof)
-  C10[x$teta.ind2] <- BiCDF(p1pdf1$p2[x$teta.ind2],                              mm(p2pdf2$p2[x$teta.ind2]-p2pdf2$pdf2[x$teta.ind2]), nC2, theta, dof)
-  C00[x$teta.ind2] <- BiCDF(mm(p1pdf1$p2[x$teta.ind2]-p1pdf1$pdf2[x$teta.ind2]), mm(p2pdf2$p2[x$teta.ind2]-p2pdf2$pdf2[x$teta.ind2]), nC2, theta, dof)
+  C11[x$teta.ind2] <- mm(BiCDF(p1pdf1$p2[x$teta.ind2],                              p2pdf2$p2[x$teta.ind2],                              nC2, theta, dof), min.pr = min.pr, max.pr = max.pr  )
+  C01[x$teta.ind2] <- mm(BiCDF(mm(p1pdf1$p2[x$teta.ind2]-p1pdf1$pdf2[x$teta.ind2], min.pr, max.pr), p2pdf2$p2[x$teta.ind2],                              nC2, theta, dof), min.pr = min.pr, max.pr = max.pr  )
+  C10[x$teta.ind2] <- mm(BiCDF(p1pdf1$p2[x$teta.ind2],                              mm(p2pdf2$p2[x$teta.ind2]-p2pdf2$pdf2[x$teta.ind2], min.pr, max.pr), nC2, theta, dof), min.pr = min.pr, max.pr = max.pr  )
+  C00[x$teta.ind2] <- mm(BiCDF(mm(p1pdf1$p2[x$teta.ind2]-p1pdf1$pdf2[x$teta.ind2], min.pr, max.pr), mm(p2pdf2$p2[x$teta.ind2]-p2pdf2$pdf2[x$teta.ind2], min.pr, max.pr), nC2, theta, dof), min.pr = min.pr, max.pr = max.pr  )
 
   p12[x$teta.ind2] <- C11[x$teta.ind2] - C01[x$teta.ind2] - C10[x$teta.ind2] + C00[x$teta.ind2]
-  p12[x$teta.ind2] <- ifelse(p12[x$teta.ind2] < epsilon, epsilon, p12[x$teta.ind2])
+  p12[x$teta.ind2] <- ifelse(p12[x$teta.ind2] < min.pr, min.pr, p12[x$teta.ind2])
 
                      }                     
                           } 
@@ -266,14 +267,14 @@ if(cond == 2) p12 <- p12/p2pdf2$pdf2
 if(!(x$BivD %in% x$BivD2)){ ########## !BivD2 ##########
 
 
-if(x$margins[1] %in% c(x$VC$m2, x$VC$m3) && x$margins[2] %in% c(x$VC$m2, x$VC$m3))  p12 <- BiCDF(p1, p2, x$nC, theta, dof) #### CONT - CONT ####
+if(x$margins[1] %in% c(x$VC$m2, x$VC$m3) && x$margins[2] %in% c(x$VC$m2, x$VC$m3))  p12 <- mm(BiCDF(p1, p2, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr  ) #### CONT - CONT ####
 
 
 if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d) && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){ #### DISCR - CONT ####
 
-C1  <- BiCDF(p1pdf1$p2, p2, x$nC, theta, dof); C2  <- 0 
-if(cumul == "no") C2  <- BiCDF(mm(p1pdf1$p2 - p1pdf1$pdf2), p2, x$nC, theta, dof)  
-p12 <- ifelse(C1 - C2 < epsilon, epsilon, C1 - C2) 
+C1  <- mm(BiCDF(p1pdf1$p2, p2, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr  ); C2  <- 0 
+if(cumul == "no") C2  <- mm(BiCDF(mm(p1pdf1$p2 - p1pdf1$pdf2, min.pr, max.pr), p2, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr  )  
+p12 <- mm(C1 - C2, min.pr = min.pr, max.pr = max.pr  ) 
 
 if(cond == 1) p12 <- p12/p1pdf1$pdf2
 
@@ -283,13 +284,12 @@ if(cond == 1) p12 <- p12/p1pdf1$pdf2
 
 if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d) && x$margins[2] %in% c(x$VC$m1d, x$VC$m2d)){ #### DISCR - DISCR ####
 
-  C11 <- BiCDF(p1pdf1$p2,                 p2pdf2$p2,                 x$nC, theta, dof)
-  C01 <- BiCDF(mm(p1pdf1$p2-p1pdf1$pdf2), p2pdf2$p2,                 x$nC, theta, dof)
-  C10 <- BiCDF(p1pdf1$p2,                 mm(p2pdf2$p2-p2pdf2$pdf2), x$nC, theta, dof)
-  C00 <- BiCDF(mm(p1pdf1$p2-p1pdf1$pdf2), mm(p2pdf2$p2-p2pdf2$pdf2), x$nC, theta, dof)
+  C11 <- mm(BiCDF(p1pdf1$p2,                 p2pdf2$p2,                 x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr  )
+  C01 <- mm(BiCDF(mm(p1pdf1$p2-p1pdf1$pdf2, min.pr, max.pr), p2pdf2$p2,                 x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr  )
+  C10 <- mm(BiCDF(p1pdf1$p2,                 mm(p2pdf2$p2-p2pdf2$pdf2, min.pr, max.pr), x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr  )
+  C00 <- mm(BiCDF(mm(p1pdf1$p2-p1pdf1$pdf2, min.pr, max.pr), mm(p2pdf2$p2-p2pdf2$pdf2, min.pr, max.pr), x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr  )
 
-  p12 <- C11 - C01 - C10 + C00
-  p12 <- ifelse(p12 < epsilon, epsilon, p12)                                           
+  p12 <- mm(C11 - C01 - C10 + C00, min.pr, max.pr)
   
   if(cond == 1) p12 <- p12/p1pdf1$pdf2
   if(cond == 2) p12 <- p12/p2pdf2$pdf2
@@ -318,7 +318,7 @@ if(cond == 1){ ########### COND 1 ###########
 
 if(x$margins[1] %in% c(x$VC$m2, x$VC$m3) && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){ ##### CONT - CONT ####
 
-if(!(x$BivD %in% x$BivD2)) p12 <- copgHsCond(p1, p2, theta, dof = dof, x$BivD)$c.copula.be1
+if(!(x$BivD %in% x$BivD2)) p12 <- copgHsCond(p1, p2, theta, dof = dof, x$BivD , min.pr = min.pr, max.pr = max.pr)$c.copula.be1
 
 
 if(x$BivD %in% x$BivD2){
@@ -326,13 +326,13 @@ if(x$BivD %in% x$BivD2){
 p12 <- NA
  
 if( length(x$teta1) != 0){
-if(length(theta) > 1)  p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta[x$teta.ind1], dof = dof, x$Cop1)$c.copula.be1
-if(length(theta) == 1) p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta, dof = dof, x$Cop1)$c.copula.be1
+if(length(theta) > 1)  p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta[x$teta.ind1], dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
+if(length(theta) == 1) p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta, dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
                          }  
                           
 if( length(x$teta2) != 0){
-if(length(theta) > 1)  p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta[x$teta.ind2], dof = dof, x$Cop2)$c.copula.be1
-if(length(theta) == 1) p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta, dof = dof, x$Cop2)$c.copula.be1
+if(length(theta) > 1)  p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta[x$teta.ind2], dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
+if(length(theta) == 1) p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta, dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
                          }                            
                                                                            
                        }
@@ -356,7 +356,7 @@ if(cond == 2){#############
 if(x$margins[1] %in% c(x$VC$m2, x$VC$m3) && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){ # CONT - CONT
 
 
-if(!(x$BivD %in% x$BivD2)) p12 <- copgHsCond(p1, p2, theta, dof = dof, x$BivD)$c.copula.be2
+if(!(x$BivD %in% x$BivD2)) p12 <- copgHsCond(p1, p2, theta, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
 
 
 if(x$BivD %in% x$BivD2){
@@ -364,13 +364,13 @@ if(x$BivD %in% x$BivD2){
 p12 <- NA
  
 if( length(x$teta1) != 0){
-if(length(theta) > 1)  p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta[x$teta.ind1], dof = dof, x$Cop1)$c.copula.be2
-if(length(theta) == 1) p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta, dof = dof, x$Cop1)$c.copula.be2
+if(length(theta) > 1)  p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta[x$teta.ind1], dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if(length(theta) == 1) p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta, dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
                          }  
                           
 if( length(x$teta2) != 0){
-if(length(theta) > 1)  p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta[x$teta.ind2], dof = dof, x$Cop2)$c.copula.be2
-if(length(theta) == 1) p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta, dof = dof, x$Cop2)$c.copula.be2
+if(length(theta) > 1)  p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta[x$teta.ind2], dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if(length(theta) == 1) p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta, dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
                          }                            
                                                                            
                        }
@@ -395,32 +395,32 @@ if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d) && x$margins[2] %in% c(x$VC$m2, x$VC$
 p12h1 <- p12h2 <- NA
  
 if( length(x$teta1) != 0){
-if(length(theta) > 1)  p12h1[x$teta.ind1] <- copgHsCond(p1pdf1$p2[x$teta.ind1], p2[x$teta.ind1], theta[x$teta.ind1], dof = dof, x$Cop1)$c.copula.be2
-if(length(theta) == 1) p12h1[x$teta.ind1] <- copgHsCond(p1pdf1$p2[x$teta.ind1], p2[x$teta.ind1], theta,              dof = dof, x$Cop1)$c.copula.be2
+if(length(theta) > 1)  p12h1[x$teta.ind1] <- copgHsCond(p1pdf1$p2[x$teta.ind1], p2[x$teta.ind1], theta[x$teta.ind1], dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if(length(theta) == 1) p12h1[x$teta.ind1] <- copgHsCond(p1pdf1$p2[x$teta.ind1], p2[x$teta.ind1], theta,              dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
                          }  
                           
 if( length(x$teta2) != 0){
-if(length(theta) > 1)  p12h1[x$teta.ind2] <- copgHsCond(p1pdf1$p2[x$teta.ind2], p2[x$teta.ind2], theta[x$teta.ind2], dof = dof, x$Cop2)$c.copula.be2
-if(length(theta) == 1) p12h1[x$teta.ind2] <- copgHsCond(p1pdf1$p2[x$teta.ind2], p2[x$teta.ind2], theta,              dof = dof, x$Cop2)$c.copula.be2
+if(length(theta) > 1)  p12h1[x$teta.ind2] <- copgHsCond(p1pdf1$p2[x$teta.ind2], p2[x$teta.ind2], theta[x$teta.ind2], dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if(length(theta) == 1) p12h1[x$teta.ind2] <- copgHsCond(p1pdf1$p2[x$teta.ind2], p2[x$teta.ind2], theta,              dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
                          }                            
                                                                            
                        #} 
  
 
 if( length(x$teta1) != 0){
-if(length(theta) > 1)  p12h2[x$teta.ind1] <- copgHsCond(mm(p1pdf1$p2[x$teta.ind1] - p1pdf1$pdf2[x$teta.ind1]), p2[x$teta.ind1], theta[x$teta.ind1], dof = dof, x$Cop1)$c.copula.be2
-if(length(theta) == 1) p12h2[x$teta.ind1] <- copgHsCond(mm(p1pdf1$p2[x$teta.ind1] - p1pdf1$pdf2[x$teta.ind1]), p2[x$teta.ind1], theta,              dof = dof, x$Cop1)$c.copula.be2
+if(length(theta) > 1)  p12h2[x$teta.ind1] <- copgHsCond(mm(p1pdf1$p2[x$teta.ind1] - p1pdf1$pdf2[x$teta.ind1], min.pr, max.pr), p2[x$teta.ind1], theta[x$teta.ind1], dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if(length(theta) == 1) p12h2[x$teta.ind1] <- copgHsCond(mm(p1pdf1$p2[x$teta.ind1] - p1pdf1$pdf2[x$teta.ind1], min.pr, max.pr), p2[x$teta.ind1], theta,              dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
                          }  
                           
 if( length(x$teta2) != 0){
-if(length(theta) > 1)  p12h2[x$teta.ind2] <- copgHsCond(mm(p1pdf1$p2[x$teta.ind2] - p1pdf1$pdf2[x$teta.ind2]), p2[x$teta.ind2], theta[x$teta.ind2], dof = dof, x$Cop2)$c.copula.be2
-if(length(theta) == 1) p12h2[x$teta.ind2] <- copgHsCond(mm(p1pdf1$p2[x$teta.ind2] - p1pdf1$pdf2[x$teta.ind2]), p2[x$teta.ind2], theta,              dof = dof, x$Cop2)$c.copula.be2
+if(length(theta) > 1)  p12h2[x$teta.ind2] <- copgHsCond(mm(p1pdf1$p2[x$teta.ind2] - p1pdf1$pdf2[x$teta.ind2], min.pr, max.pr), p2[x$teta.ind2], theta[x$teta.ind2], dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if(length(theta) == 1) p12h2[x$teta.ind2] <- copgHsCond(mm(p1pdf1$p2[x$teta.ind2] - p1pdf1$pdf2[x$teta.ind2], min.pr, max.pr), p2[x$teta.ind2], theta,              dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
                          }                            
                                                                            
                        #} 
   
 diffh1.h2 <- p12h1 - p12h2 
-p12 <- ifelse(diffh1.h2 < epsilon, epsilon, diffh1.h2)  
+p12 <- ifelse(diffh1.h2 < min.pr, min.pr, diffh1.h2)  
 
   
 
@@ -437,11 +437,11 @@ if(!(x$BivD %in% x$BivD2)){ ########## !BivD2 ##########
 
 if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d) && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){ #### DISCR - CONT ####
 
-p12h1 <- copgHsCond(p1pdf1$p2,                   p2, theta, dof = dof, x$BivD)$c.copula.be2
-p12h2 <- copgHsCond(mm(p1pdf1$p2 - p1pdf1$pdf2), p2, theta, dof = dof, x$BivD)$c.copula.be2
+p12h1 <- copgHsCond(p1pdf1$p2,                   p2, theta, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+p12h2 <- copgHsCond(mm(p1pdf1$p2 - p1pdf1$pdf2, min.pr, max.pr), p2, theta, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
 
 diffh1.h2 <- p12h1 - p12h2 
-p12 <- ifelse(diffh1.h2 < epsilon, epsilon, diffh1.h2)                                  
+p12 <- ifelse(diffh1.h2 < min.pr, min.pr, diffh1.h2)                                  
 
 
                                                                                      } #### DISCR - CONT ####
@@ -721,8 +721,8 @@ if(x$VC$margins[1] %in% cont3par && x$VC$margins[2] %in% cont3par ){
   
                        }   
    
-nu1 <- esp.tr(nu1.st, x$VC$margins[1])$vrb   
-nu2 <- esp.tr(nu2.st, x$VC$margins[2])$vrb   
+nu1 <- enu.tr(nu1.st, x$VC$margins[1])$vrb   
+nu2 <- enu.tr(nu2.st, x$VC$margins[2])$vrb   
   
 } 
 
@@ -737,7 +737,7 @@ if(x$VC$margins[1] %in% cont2par && x$VC$margins[2] %in% cont3par ){
   
   if( !is.null(x$X3) ) nu2.st <- X5%*%t(bs[,(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2)]) 
   
-  nu2 <- esp.tr(nu2.st, x$VC$margins[2])$vrb   
+  nu2 <- enu.tr(nu2.st, x$VC$margins[2])$vrb   
 
 } 
 
@@ -753,7 +753,7 @@ if(x$VC$margins[1] %in% cont1par && x$VC$margins[2] %in% cont3par ){
   
   if( !is.null(x$X3) ) nu2.st <- X4%*%t(bs[,(x$X1.d2 + x$X2.d2 + x$X3.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)]) 
   
-  nu2 <- esp.tr(nu2.st, x$VC$margins[2])$vrb   
+  nu2 <- enu.tr(nu2.st, x$VC$margins[2])$vrb   
 
 }
 
@@ -771,7 +771,7 @@ if(x$VC$margins[1] %in% cont3par && x$VC$margins[2] %in% cont2par ){
   
   if( !is.null(x$X3) ) nu1.st <- X5%*%t(bs[,(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2)]) 
   
-  nu1 <- esp.tr(nu1.st, x$VC$margins[1])$vrb  
+  nu1 <- enu.tr(nu1.st, x$VC$margins[1])$vrb  
    
 }  
 
@@ -800,30 +800,30 @@ nu2      <- matrix(rep(nu2,      each = dim(eta1s)[1]), ncol = n.sim, byrow=FALS
 
 if(x$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$margins[2] %in% c(x$VC$m2,x$VC$m3)){
 
-p1s  <- matrix( distrHsAT(y1, eta1s, sigma21, nu1, x$margins[1])$p2, dim(eta1s)[1], n.sim)
-p2s  <- matrix( distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2])$p2, dim(eta1s)[1], n.sim)
+p1s  <- matrix( distrHsAT(y1, eta1s, sigma21, nu1, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2, dim(eta1s)[1], n.sim)
+p2s  <- matrix( distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2, dim(eta1s)[1], n.sim)
 
 }
 
 
 if(x$margins[1] %in% c(x$VC$m1d,x$VC$m2d) && x$margins[2] %in% c(x$VC$m2,x$VC$m3)){
 
-ppdf1 <- distrHsATDiscr(y1, eta1s, sigma21, nu = 1, x$margins[1], x$VC$y1m) 
+ppdf1 <- distrHsATDiscr(y1, eta1s, sigma21, nu = 1, x$margins[1], x$VC$y1m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr) 
 p1s   <- matrix( ppdf1$p2,   dim(eta1s)[1], n.sim)
 pdf1s <- matrix( ppdf1$pdf2, dim(eta1s)[1], n.sim)
 
-p2s  <- matrix( distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2])$p2 , dim(eta1s)[1], n.sim)
+p2s  <- matrix( distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2 , dim(eta1s)[1], n.sim)
 
 }
 
 
 if(x$margins[1] %in% c(x$VC$m1d,x$VC$m2d) && x$margins[2] %in% c(x$VC$m1d,x$VC$m2d)){
 
-ppdf1 <- distrHsATDiscr(y1, eta1s, sigma21, nu = 1, x$margins[1], x$VC$y1m) 
+ppdf1 <- distrHsATDiscr(y1, eta1s, sigma21, nu = 1, x$margins[1], x$VC$y1m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr) 
 p1s   <- matrix( ppdf1$p2 , dim(eta1s)[1], n.sim)
 pdf1s <- matrix( ppdf1$pdf2, dim(eta1s)[1], n.sim)
 
-ppdf2 <- distrHsATDiscr(y2, eta2s, sigma22, nu = 1, x$margins[2], x$VC$y2m) 
+ppdf2 <- distrHsATDiscr(y2, eta2s, sigma22, nu = 1, x$margins[2], x$VC$y2m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr) 
 p2s   <- matrix( ppdf2$p2 , dim(eta1s)[1], n.sim)
 pdf2s <- matrix( ppdf2$pdf2, dim(eta1s)[1], n.sim)
 
@@ -846,16 +846,16 @@ if(cond == 0 || (cond == 1 && x$margins[1] %in% c(x$VC$m1d, x$VC$m2d) && x$margi
 if(x$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$margins[2] %in% c(x$VC$m2,x$VC$m3)){ # CONT - CONT
 
 
-if(x$VC$BivD %in% c("N","T")) p12s <- matrix(BiCDF(p1s, p2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim) else{
+if(x$VC$BivD %in% c("N","T")) p12s <- matrix(mm(BiCDF(p1s, p2s, x$nC, est.RHOb, dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim) else{
 
-if(!(x$BivD %in% x$BivD2)) p12s <- matrix(BiCDF(p1s, p2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)) p12s <- matrix(mm(BiCDF(p1s, p2s, x$nC, est.RHOb, dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
 
 if(x$BivD %in% x$BivD2){
 
 p12s <- matrix(NA, ncol = n.sim, nrow = dim(eta1s)[1])
 
-if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- BiCDF(p1s[x$teta.ind1,], p2s[x$teta.ind1,], nC1,  est.RHOb[x$teta.ind1,])                  
-if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- BiCDF(p1s[x$teta.ind2,], p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,])
+if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- mm(BiCDF(p1s[x$teta.ind1,], p2s[x$teta.ind1,], nC1,  est.RHOb[x$teta.ind1,]), min.pr = min.pr, max.pr = max.pr  )                  
+if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- mm(BiCDF(p1s[x$teta.ind2,], p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,]), min.pr = min.pr, max.pr = max.pr  )
                       
                         }
 
@@ -868,9 +868,9 @@ if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- BiCDF(p1s[x$teta.ind2,], p2s[x$t
 if(x$margins[1] %in% c(x$VC$m1d,x$VC$m2d) && x$margins[2] %in% c(x$VC$m2,x$VC$m3)){ # DISCR - CONT
 
 
-if(x$VC$BivD %in% c("N","T")){ C1s <- matrix(BiCDF(p1s, p2s,       x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim); C2s <- 0 
-                               if(cumul == "no") C2s <- matrix(BiCDF(mm(p1s-pdf1s), p2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
-                               p12s <- ifelse(C1s - C2s < epsilon, epsilon, C1s - C2s)
+if(x$VC$BivD %in% c("N","T")){ C1s <- matrix(mm(BiCDF(p1s, p2s,       x$nC, est.RHOb, dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim); C2s <- 0 
+                               if(cumul == "no") C2s <- matrix(mm(BiCDF(mm(p1s-pdf1s, min.pr, max.pr), p2s, x$nC, est.RHOb, dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
+                               p12s <- ifelse(C1s - C2s < min.pr, min.pr, C1s - C2s)
 
                              }else{
 
@@ -881,17 +881,17 @@ p12s <- C1s <- C2s <- matrix(NA, ncol = n.sim, nrow = dim(eta1s)[1])
 
 if( length(x$teta1) != 0){
 
-C1s[x$teta.ind1,]  <- BiCDF(p1s[x$teta.ind1,],                     p2s[x$teta.ind1,], nC1, est.RHOb[x$teta.ind1,], dofs, test = FALSE)
-C2s[x$teta.ind1,]  <- BiCDF(p1s[x$teta.ind1,]-pdf1s[x$teta.ind1,], p2s[x$teta.ind1,], nC1, est.RHOb[x$teta.ind1,], dofs, test = FALSE)
-p12s[x$teta.ind1,] <- ifelse(C1s[x$teta.ind1,] - C2s[x$teta.ind1,] < epsilon, epsilon, C1s[x$teta.ind1,] - C2s[x$teta.ind1,])
+C1s[x$teta.ind1,]  <- mm(BiCDF(p1s[x$teta.ind1,],                     p2s[x$teta.ind1,], nC1, est.RHOb[x$teta.ind1,], dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
+C2s[x$teta.ind1,]  <- mm(BiCDF(p1s[x$teta.ind1,]-pdf1s[x$teta.ind1,], p2s[x$teta.ind1,], nC1, est.RHOb[x$teta.ind1,], dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
+p12s[x$teta.ind1,] <- ifelse(C1s[x$teta.ind1,] - C2s[x$teta.ind1,] < min.pr, min.pr, C1s[x$teta.ind1,] - C2s[x$teta.ind1,])
 
                          }                            
  
 if( length(x$teta2) != 0){
 
-C1s[x$teta.ind2,]  <- BiCDF(p1s[x$teta.ind2,],                     p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,], dofs, test = FALSE)
-C2s[x$teta.ind2,]  <- BiCDF(p1s[x$teta.ind2,]-pdf1s[x$teta.ind2,], p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,], dofs, test = FALSE)
-p12s[x$teta.ind2,] <- ifelse(C1s[x$teta.ind2,] - C2s[x$teta.ind2,] < epsilon, epsilon, C1s[x$teta.ind2,] - C2s[x$teta.ind2,])
+C1s[x$teta.ind2,]  <- mm(BiCDF(p1s[x$teta.ind2,],                     p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,], dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
+C2s[x$teta.ind2,]  <- mm(BiCDF(p1s[x$teta.ind2,]-pdf1s[x$teta.ind2,], p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,], dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
+p12s[x$teta.ind2,] <- ifelse(C1s[x$teta.ind2,] - C2s[x$teta.ind2,] < min.pr, min.pr, C1s[x$teta.ind2,] - C2s[x$teta.ind2,])
 
                          }  
                             
@@ -901,9 +901,9 @@ p12s[x$teta.ind2,] <- ifelse(C1s[x$teta.ind2,] - C2s[x$teta.ind2,] < epsilon, ep
 
 
 
-if(!(x$BivD %in% x$BivD2)){ C1s <- matrix(BiCDF(p1s,       p2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim); C2s <- 0
-                            if(cumul == "no") C2s <- matrix(BiCDF(p1s-pdf1s, p2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
-                            p12s <- ifelse(C1s - C2s < epsilon, epsilon, C1s - C2s)
+if(!(x$BivD %in% x$BivD2)){ C1s <- matrix(mm(BiCDF(p1s,       p2s, x$nC, est.RHOb, dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim); C2s <- 0
+                            if(cumul == "no") C2s <- matrix(mm(BiCDF(p1s-pdf1s, p2s, x$nC, est.RHOb, dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
+                            p12s <- ifelse(C1s - C2s < min.pr, min.pr, C1s - C2s)
                           }
 
                                    } # else
@@ -928,10 +928,10 @@ if(x$margins[1] %in% c(x$VC$m1d,x$VC$m2d) && x$margins[2] %in% c(x$VC$m1d,x$VC$m
 
 if(x$VC$BivD %in% c("N","T")){ 
 
-  C11s <- matrix(BiCDF(p1s,       p2s,       x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
-  C01s <- matrix(BiCDF(p1s-pdf1s, p2s,       x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
-  C10s <- matrix(BiCDF(p1s, p2s-pdf2s,       x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
-  C00s <- matrix(BiCDF(p1s-pdf1s, p2s-pdf2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
+  C11s <- matrix(mm(BiCDF(p1s,       p2s,       x$nC, est.RHOb, dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
+  C01s <- matrix(mm(BiCDF(mm(p1s-pdf1s, min.pr = min.pr, max.pr = max.pr), p2s,       x$nC, est.RHOb, dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
+  C10s <- matrix(mm(BiCDF(p1s, mm(p2s-pdf2s, min.pr = min.pr, max.pr = max.pr),       x$nC, est.RHOb, dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
+  C00s <- matrix(mm(BiCDF(mm(p1s-pdf1s, min.pr = min.pr, max.pr = max.pr), mm(p2s-pdf2s, min.pr = min.pr, max.pr = max.pr), x$nC, est.RHOb, dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
 
  p12s <- C11s - C01s - C10s + C00s
 
@@ -944,26 +944,26 @@ p12s <- C11s <- C01s <- C10s <- C00s <- matrix(NA, ncol = n.sim, nrow = dim(eta1
 
 if( length(x$teta1) != 0){
 
-  C11s[x$teta.ind1,] <- BiCDF(p1s[x$teta.ind1,],                     p2s[x$teta.ind1,],                     nC1, est.RHOb[x$teta.ind1,], dofs, test = FALSE)
-  C01s[x$teta.ind1,] <- BiCDF(p1s[x$teta.ind1,]-pdf1s[x$teta.ind1,], p2s[x$teta.ind1,],                     nC1, est.RHOb[x$teta.ind1,], dofs, test = FALSE)
-  C10s[x$teta.ind1,] <- BiCDF(p1s[x$teta.ind1,],                     p2s[x$teta.ind1,]-pdf2s[x$teta.ind1,], nC1, est.RHOb[x$teta.ind1,], dofs, test = FALSE)
-  C00s[x$teta.ind1,] <- BiCDF(p1s[x$teta.ind1,]-pdf1s[x$teta.ind1,], p2s[x$teta.ind1,]-pdf2s[x$teta.ind1,], nC1, est.RHOb[x$teta.ind1,], dofs, test = FALSE)
+  C11s[x$teta.ind1,] <- mm(BiCDF(p1s[x$teta.ind1,],                     p2s[x$teta.ind1,],                     nC1, est.RHOb[x$teta.ind1,], dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
+  C01s[x$teta.ind1,] <- mm(BiCDF(p1s[x$teta.ind1,]-pdf1s[x$teta.ind1,], p2s[x$teta.ind1,],                     nC1, est.RHOb[x$teta.ind1,], dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
+  C10s[x$teta.ind1,] <- mm(BiCDF(p1s[x$teta.ind1,],                     p2s[x$teta.ind1,]-pdf2s[x$teta.ind1,], nC1, est.RHOb[x$teta.ind1,], dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
+  C00s[x$teta.ind1,] <- mm(BiCDF(p1s[x$teta.ind1,]-pdf1s[x$teta.ind1,], p2s[x$teta.ind1,]-pdf2s[x$teta.ind1,], nC1, est.RHOb[x$teta.ind1,], dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
 
  p12s[x$teta.ind1,] <- C11s[x$teta.ind1,] - C01s[x$teta.ind1,] - C10s[x$teta.ind1,] + C00s[x$teta.ind1,]  
- p12s[x$teta.ind1,] <- ifelse(p12s[x$teta.ind1,] < epsilon, epsilon, p12s[x$teta.ind1,]) 
+ p12s[x$teta.ind1,] <- ifelse(p12s[x$teta.ind1,] < min.pr, min.pr, p12s[x$teta.ind1,]) 
 
                         }
 
 
 if( length(x$teta2) != 0){
 
-  C11s[x$teta.ind2,] <- BiCDF(p1s[x$teta.ind2,],                     p2s[x$teta.ind2,],                     nC2, -est.RHOb[x$teta.ind2,], dofs, test = FALSE)
-  C01s[x$teta.ind2,] <- BiCDF(p1s[x$teta.ind2,]-pdf1s[x$teta.ind2,], p2s[x$teta.ind2,],                     nC2, -est.RHOb[x$teta.ind2,], dofs, test = FALSE)
-  C10s[x$teta.ind2,] <- BiCDF(p1s[x$teta.ind2,],                     p2s[x$teta.ind2,]-pdf2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,], dofs, test = FALSE)
-  C00s[x$teta.ind2,] <- BiCDF(p1s[x$teta.ind2,]-pdf1s[x$teta.ind2,], p2s[x$teta.ind2,]-pdf2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,], dofs, test = FALSE)
+  C11s[x$teta.ind2,] <- mm(BiCDF(p1s[x$teta.ind2,],                     p2s[x$teta.ind2,],                     nC2, -est.RHOb[x$teta.ind2,], dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
+  C01s[x$teta.ind2,] <- mm(BiCDF(p1s[x$teta.ind2,]-pdf1s[x$teta.ind2,], p2s[x$teta.ind2,],                     nC2, -est.RHOb[x$teta.ind2,], dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
+  C10s[x$teta.ind2,] <- mm(BiCDF(p1s[x$teta.ind2,],                     p2s[x$teta.ind2,]-pdf2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,], dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
+  C00s[x$teta.ind2,] <- mm(BiCDF(p1s[x$teta.ind2,]-pdf1s[x$teta.ind2,], p2s[x$teta.ind2,]-pdf2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,], dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
 
  p12s[x$teta.ind2,] <- C11s[x$teta.ind2,] - C01s[x$teta.ind2,] - C10s[x$teta.ind2,] + C00s[x$teta.ind2,]  
- p12s[x$teta.ind2,] <- ifelse(p12s[x$teta.ind2,] < epsilon, epsilon, p12s[x$teta.ind2,]) 
+ p12s[x$teta.ind2,] <- ifelse(p12s[x$teta.ind2,] < min.pr, min.pr, p12s[x$teta.ind2,]) 
 
                          }
 
@@ -976,13 +976,13 @@ if( length(x$teta2) != 0){
 if(!(x$BivD %in% x$BivD2)){
 
                            
-  C11s <- matrix(BiCDF(p1s, p2s,             x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
-  C01s <- matrix(BiCDF(p1s-pdf1s, p2s,       x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
-  C10s <- matrix(BiCDF(p1s, p2s-pdf2s,       x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
-  C00s <- matrix(BiCDF(p1s-pdf1s, p2s-pdf2s, x$nC, est.RHOb, dofs, test = FALSE), dim(p1s)[1], n.sim)
+  C11s <- matrix(mm(BiCDF(p1s, p2s,             x$nC, est.RHOb, dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
+  C01s <- matrix(mm(BiCDF(p1s-pdf1s, p2s,       x$nC, est.RHOb, dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
+  C10s <- matrix(mm(BiCDF(p1s, p2s-pdf2s,       x$nC, est.RHOb, dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
+  C00s <- matrix(mm(BiCDF(p1s-pdf1s, p2s-pdf2s, x$nC, est.RHOb, dofs, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
 
  p12s <- C11s - C01s - C10s + C00s  
- p12s <- ifelse(p12s < epsilon, epsilon, p12s)  
+ p12s <- ifelse(p12s < min.pr, min.pr, p12s)  
 
 
                           }
@@ -1012,7 +1012,7 @@ if(cond == 1){ # only for CONT - CONT
 
 if(x$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$margins[2] %in% c(x$VC$m2,x$VC$m3)){
 
-if(!(x$BivD %in% x$BivD2)) p12s <- matrix(copgHsCond(p1s, p2s, est.RHOb, dof = dofs, x$BivD)$c.copula.be1, dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)) p12s <- matrix(copgHsCond(p1s, p2s, est.RHOb, dof = dofs, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be1, dim(p1s)[1], n.sim)
 
 if(x$BivD == "T") p12s <- matrix(p12s, dim(p1s)[1], n.sim)
 
@@ -1021,8 +1021,8 @@ if(x$BivD %in% x$BivD2){
 
 p12s <- matrix(NA, ncol = n.sim, nrow = dim(p1s)[1])
  
-if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- copgHsCond(p1s[x$teta.ind1,], p2s[x$teta.ind1,],  est.RHOb[x$teta.ind1,], dof = dofs, x$Cop1)$c.copula.be1                                               
-if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2s[x$teta.ind2,], -est.RHOb[x$teta.ind2,], dof = dofs, x$Cop2)$c.copula.be1
+if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- copgHsCond(p1s[x$teta.ind1,], p2s[x$teta.ind1,],  est.RHOb[x$teta.ind1,], dof = dofs, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be1                                               
+if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2s[x$teta.ind2,], -est.RHOb[x$teta.ind2,], dof = dofs, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
                                                                                                      
                        }
 
@@ -1039,7 +1039,7 @@ if(cond == 2){
 
 if(x$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$margins[2] %in% c(x$VC$m2,x$VC$m3)){ # CONT - CONT
 
-if(!(x$BivD %in% x$BivD2)) p12s <- matrix(copgHsCond(p1s, p2s, est.RHOb, dof = dofs, x$BivD)$c.copula.be2, dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)) p12s <- matrix(copgHsCond(p1s, p2s, est.RHOb, dof = dofs, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2, dim(p1s)[1], n.sim)
 
 if(x$BivD == "T") p12s <- matrix(p12s, dim(p1s)[1], n.sim)
 
@@ -1048,8 +1048,8 @@ if(x$BivD %in% x$BivD2){
 
 p12s <- matrix(NA, ncol = n.sim, nrow = dim(p1s)[1])
  
-if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- copgHsCond(p1s[x$teta.ind1,], p2s[x$teta.ind1,],  est.RHOb[x$teta.ind1,], dof = dofs, x$Cop1)$c.copula.be2                                               
-if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2s[x$teta.ind2,], -est.RHOb[x$teta.ind2,], dof = dofs, x$Cop2)$c.copula.be2
+if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- copgHsCond(p1s[x$teta.ind1,], p2s[x$teta.ind1,],  est.RHOb[x$teta.ind1,], dof = dofs, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2                                               
+if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2s[x$teta.ind2,], -est.RHOb[x$teta.ind2,], dof = dofs, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
                                                                                                      
                        }
 
@@ -1060,7 +1060,7 @@ if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2
 
 if(x$margins[1] %in% c(x$VC$m1d,x$VC$m2d) && x$margins[2] %in% c(x$VC$m2,x$VC$m3)){ # DISCR - CONT
 
-if(!(x$BivD %in% x$BivD2)) p12s <- matrix(   copgHsCond(p1s, p2s, est.RHOb, dof = dof, x$BivD)$c.copula.be2 - copgHsCond(p1s - pdf1s, p2s, est.RHOb, dof = dof, x$BivD)$c.copula.be2 , dim(p1s)[1], n.sim) 
+if(!(x$BivD %in% x$BivD2)) p12s <- matrix(   copgHsCond(p1s, p2s, est.RHOb, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2 - copgHsCond(p1s - pdf1s, p2s, est.RHOb, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2 , dim(p1s)[1], n.sim) 
 
 if(x$BivD == "T") p12s <- matrix(p12s, dim(p1s)[1], n.sim)
 
@@ -1069,12 +1069,12 @@ if(x$BivD %in% x$BivD2){
 
 p12s <- matrix(NA, ncol = n.sim, nrow = dim(p1s)[1])
  
-if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- copgHsCond(p1s[x$teta.ind1,], p2s[x$teta.ind1,],  est.RHOb[x$teta.ind1,], dof = dof, x$Cop1)$c.copula.be2 - copgHsCond((p1s - pdf1s)[x$teta.ind1,], p2s[x$teta.ind1,],  est.RHOb[x$teta.ind1,], dof = dof, x$Cop1)$c.copula.be2                                                
-if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2s[x$teta.ind2,], -est.RHOb[x$teta.ind2,], dof = dof, x$Cop2)$c.copula.be2 - copgHsCond((p1s - pdf1s)[x$teta.ind2,], p2s[x$teta.ind2,], -est.RHOb[x$teta.ind2,], dof = dof, x$Cop2)$c.copula.be2 
+if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- copgHsCond(p1s[x$teta.ind1,], p2s[x$teta.ind1,],  est.RHOb[x$teta.ind1,], dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2 - copgHsCond((p1s - pdf1s)[x$teta.ind1,], p2s[x$teta.ind1,],  est.RHOb[x$teta.ind1,], dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2                                                
+if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2s[x$teta.ind2,], -est.RHOb[x$teta.ind2,], dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2 - copgHsCond((p1s - pdf1s)[x$teta.ind2,], p2s[x$teta.ind2,], -est.RHOb[x$teta.ind2,], dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2 
                                                                                                      
                        }
                        
-p12s <- ifelse( p12s < epsilon, epsilon, p12s ) 
+p12s <- ifelse( p12s < min.pr, min.pr, p12s ) 
                        
 
                                                                                  } # DISCR - CONT
@@ -1174,8 +1174,8 @@ if(x$margins[1] %in% cont2par && x$margins[2] %in% cont2par){ eq.nu1 <- NA; eq.n
 if(x$margins[1] %in% cont2par && x$margins[2] %in% cont3par){ eq.nu1 <- NA; eq.nu2 <- 5  ; indn1 <- NA; indn2 <- (x$X2.d2 + x$X4.d2 + 1):(x$X2.d2 + x$X4.d2 + x$X5.d2)}
 if(x$margins[1] %in% cont3par && x$margins[2] %in% cont2par){ eq.nu1 <- 5;  eq.nu2 <- NA ; indn1 <- (x$X1.d2 + x$X3.d2 + 1):(x$X1.d2 + x$X3.d2 + x$X5.d2); indn2 <- NA}
 
-if(x$margins[1] %in% cont3par) nu1 <- esp.tr(predict.SemiParBIV(x, eq = eq.nu1, newdata = newdata, type = "lpmatrix")%*%x$gamlss1$coefficients[indn1], x$margins[1])$vrb
-if(x$margins[2] %in% cont3par) nu2 <- esp.tr(predict.SemiParBIV(x, eq = eq.nu2, newdata = newdata, type = "lpmatrix")%*%x$gamlss2$coefficients[indn2], x$margins[2])$vrb
+if(x$margins[1] %in% cont3par) nu1 <- enu.tr(predict.SemiParBIV(x, eq = eq.nu1, newdata = newdata, type = "lpmatrix")%*%x$gamlss1$coefficients[indn1], x$margins[1])$vrb
+if(x$margins[2] %in% cont3par) nu2 <- enu.tr(predict.SemiParBIV(x, eq = eq.nu2, newdata = newdata, type = "lpmatrix")%*%x$gamlss2$coefficients[indn2], x$margins[2])$vrb
 
 }
 
@@ -1212,15 +1212,15 @@ nu2 <- x$gamlss2$nu
 
 
 
-if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1 <- as.numeric(distrHsAT(y1, eta1, sigma21, nu1, x$margins[1])$p2) 
-if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p2 <- as.numeric(distrHsAT(y2, eta2, sigma22, nu2, x$margins[2])$p2) 
+if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1 <- as.numeric(distrHsAT(y1, eta1, sigma21, nu1, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2) 
+if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p2 <- as.numeric(distrHsAT(y2, eta2, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2) 
 
 if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d)){ 
-                                           p1pdf1 <- distrHsATDiscr(y1, eta1, sigma21, nu = 1, x$margins[1], x$VC$y1m)
+                                           p1pdf1 <- distrHsATDiscr(y1, eta1, sigma21, nu = 1, x$margins[1], x$VC$y1m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)
                                            p1     <- as.numeric(p1pdf1$pdf2) # as.numeric(p1pdf1$p2 - p1pdf1$pdf2)
                                            }
 if(x$margins[2] %in% c(x$VC$m1d, x$VC$m2d)){ 
-                                           p2pdf2 <- distrHsATDiscr(y2, eta2, sigma22, nu = 1, x$margins[2], x$VC$y2m)
+                                           p2pdf2 <- distrHsATDiscr(y2, eta2, sigma22, nu = 1, x$margins[2], x$VC$y2m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)
                                            p2     <- as.numeric(p2pdf2$pdf2) # as.numeric(p2pdf2$p2 - p2pdf2$pdf2)
                                            }  
 
@@ -1320,8 +1320,8 @@ if( missing(newdata)){ X5 <- x$X5; X6 <- x$X6}
        nu2.st <- X6%*%t(bs2[,(x$X2.d2 + x$X4.d2 + 1):(x$X2.d2 + x$X4.d2 + x$X6.d2)])
                        }   
    
-nu1 <- esp.tr(nu1.st, x$VC$margins[1])$vrb   
-nu2 <- esp.tr(nu2.st, x$VC$margins[2])$vrb   
+nu1 <- enu.tr(nu1.st, x$VC$margins[1])$vrb   
+nu2 <- enu.tr(nu2.st, x$VC$margins[2])$vrb   
   
 } 
 
@@ -1343,7 +1343,7 @@ if(x$VC$margins[1] %in% cont2par && x$VC$margins[2] %in% cont3par ){
                       }
   
   
-                       nu2    <- esp.tr(nu2.st, x$VC$margins[2])$vrb   
+                       nu2    <- enu.tr(nu2.st, x$VC$margins[2])$vrb   
 } 
 
 
@@ -1364,7 +1364,7 @@ if(x$VC$margins[1] %in% cont1par && x$VC$margins[2] %in% cont3par ){
   
                       }
   
-   nu2    <- esp.tr(nu2.st, x$VC$margins[2])$vrb   
+   nu2    <- enu.tr(nu2.st, x$VC$margins[2])$vrb   
 } 
 
 
@@ -1385,7 +1385,7 @@ if(x$VC$margins[1] %in% cont3par && x$VC$margins[2] %in% cont2par ){
   
                       }
   
-  nu1    <- esp.tr(nu1.st, x$VC$margins[1])$vrb    
+  nu1    <- enu.tr(nu1.st, x$VC$margins[1])$vrb    
 }  
 
 
@@ -1401,15 +1401,15 @@ nu2      <- matrix(rep(nu2, each = dim(eta1s)[1]), ncol = n.sim, byrow=FALSE)
 
 
 
-if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1s <- matrix( distrHsAT(y1, eta1s, sigma21, nu1, x$margins[1])$p2, dim(eta1s)[1], n.sim)
-if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p2s <- matrix( distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2])$p2, dim(eta1s)[1], n.sim)
+if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1s <- matrix( distrHsAT(y1, eta1s, sigma21, nu1, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2, dim(eta1s)[1], n.sim)
+if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p2s <- matrix( distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2, dim(eta1s)[1], n.sim)
 
 if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d)){ 
-                                           p1pdf1s <- distrHsATDiscr(y1, eta1s, sigma21, nu = 1, x$margins[1], x$VC$y1m)
+                                           p1pdf1s <- distrHsATDiscr(y1, eta1s, sigma21, nu = 1, x$margins[1], x$VC$y1m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)
                                            p1s     <- matrix( p1pdf1s$pdf2, dim(eta1s)[1], n.sim) # p1pdf1s$p2 - p1pdf1s$pdf2, dim(eta1s)[1], n.sim)
                                            }
 if(x$margins[2] %in% c(x$VC$m1d, x$VC$m2d)){ 
-                                           p2pdf2s <- distrHsATDiscr(y2, eta2s, sigma22, nu = 1, x$margins[2], x$VC$y2m)
+                                           p2pdf2s <- distrHsATDiscr(y2, eta2s, sigma22, nu = 1, x$margins[2], x$VC$y2m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)
                                            p2s     <- matrix( p2pdf2s$pdf2, dim(eta1s)[1], n.sim) # p2pdf2s$p2 - p2pdf2s$pdf2, dim(eta1s)[1], n.sim)
                                            }  
 

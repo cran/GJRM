@@ -44,14 +44,14 @@ sigma2.a <- mean(sigma2)
 
 if(VC$margins[2] %in% cont3par ){
 
-if(VC$margins[2] %in% c("DAGUM","SM","TW")){
+#if(VC$margins[2] %in% c("DAGUM","SM","TW")){
 
 sigma2 <- esp.tr(SemiParFit$fit$etas, VC$margins[2])$vrb 
-nu     <- esp.tr(SemiParFit$fit$etan, VC$margins[2])$vrb 
+nu     <- enu.tr(SemiParFit$fit$etan, VC$margins[2])$vrb 
 
 if( is.null(VC$X4) && is.null(VC$X5) ) {names(sigma2) <- "sigma"; names(nu) <- "nu"}
            
-                                      }                            
+#                                      }                            
   sigma2.a <- mean(sigma2)
   nu.a     <- mean(nu)
 
@@ -87,7 +87,7 @@ if(Model=="BSS"){
   SemiParFit$fit$eta2 <- VC$X2s%*%SemiParFit$fit$argument[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)]
   
   p1n <- predict.gam(GAM$gam1, type="response")
-  p2n <- probm(VC$X2s%*%GAM$gam2$coefficients, VC$margins[2])$pr
+  p2n <- probm(VC$X2s%*%GAM$gam2$coefficients, VC$margins[2], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$pr
  
 
 if(!is.null(VC$X3)) {
@@ -123,10 +123,10 @@ if(is.null(VC$X3)){
 
 if(Model=="BSS" || Model=="BPO" || Model=="BPO0"){
 
-  p1 <- probm(SemiParFit$fit$eta1, VC$margins[1])$pr 
-  p2 <- probm(SemiParFit$fit$eta2, VC$margins[2])$pr # eta2 modified above
+  p1 <- probm(SemiParFit$fit$eta1, VC$margins[1], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$pr 
+  p2 <- probm(SemiParFit$fit$eta2, VC$margins[2], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$pr # eta2 modified above
   
-   p11 <- BiCDF(p1, p2, VC$nC, theta, VC$dof)
+   p11 <- mm(BiCDF(p1, p2, VC$nC, theta, VC$dof), min.pr = VC$min.pr, max.pr = VC$max.pr  )
   
    SemiParFit$fit$p10 <- p1 - p11
    SemiParFit$fit$p11 <- p11

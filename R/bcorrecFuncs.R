@@ -1,16 +1,33 @@
-intB <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = FALSE, ym = NULL){ 
-                                   
- if(discr == FALSE) pdf <- distrHsAT(y, eta, sigma2, nu, margin)$pdf2
- if(discr == TRUE)  pdf <- distrHsDiscr(y, eta, sigma2, 1, 1, 1, margin, naive = TRUE, ym)$pdf2
+ifef <- function(dv){ # this will only work for ill-defined models that will result in convergence failure anyway
 
- log( 1 + exp( log( pdf ) + rc ) )
+ dv <- ifelse(is.na(dv)  , .Machine$double.eps, dv ) 
+ dv <- ifelse(dv == Inf  ,        8.218407e+20, dv )
+ dv <- ifelse(dv == -Inf ,       -8.218407e+20, dv )
+ dv
+
+}
+
+
+
+
+intB <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL){           
+                                       
+ if(discr == FALSE) pdf <- distrHsAT(y, eta, sigma2, nu, margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)$pdf2
+ if(discr == TRUE)  pdf <- distrHsDiscr(y, eta, sigma2, 1, 1, 1, margin, naive = TRUE, ym, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)$pdf2
+
+ log( 1 + exp( log( pdf ) + rc ) ) 
    
 }
 
-gradBbit1 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = FALSE, ym = NULL){ 
 
-       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE)
-       if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym)
+
+
+gradBbit1 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL){ 
+
+ 
+
+       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+       if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 
        pdf2            <- dHs$pdf2
        derpdf2.dereta2 <- dHs$derpdf2.dereta2 
@@ -20,14 +37,19 @@ gradBbit1 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = 
 
        dl.dbe <- derpdf2.dereta2/pdf2
 
-       comp2*dl.dbe
+      comp2*dl.dbe 
      
 }
 
-gradBbit2 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = FALSE, ym = NULL){ 
 
-       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE)
-       if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym)
+
+
+gradBbit2 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL){ 
+
+
+
+       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+       if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 
        pdf2                 <- dHs$pdf2
        derpdf2.dersigma2.st <- dHs$derpdf2.dersigma2.st  
@@ -37,13 +59,18 @@ gradBbit2 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = 
 
        dl.dsigma.st <- derpdf2.dersigma2.st/pdf2
 
-       comp2*dl.dsigma.st
+      comp2*dl.dsigma.st 
        
 }
 
-gradBbit3 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = FALSE, ym = NULL){ 
 
-       dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE)
+
+
+gradBbit3 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL){ 
+
+ 
+
+       dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 
        pdf2                 <- dHs$pdf2
        derpdf2.dernu.st     <- dHs$derpdf2.dernu.st  
@@ -53,14 +80,20 @@ gradBbit3 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = 
 
        dl.dnu.st <- derpdf2.dernu.st/pdf2
 
-       comp2*dl.dnu.st
+       comp2*dl.dnu.st 
        
        }
        
-hessBbit1 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = FALSE, ym = NULL){ 
+       
+       
+       
+       
+hessBbit1 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL){ 
 
-       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE)
-       if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym)
+
+
+       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+       if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 
         pdf2                         <- dHs$pdf2
         derpdf2.dereta2              <- dHs$derpdf2.dereta2
@@ -73,14 +106,19 @@ hessBbit1 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = 
         d2l.be.be <- (der2pdf2.dereta2 * pdf2 - (derpdf2.dereta2)^2)/pdf2^2
         dl.dbe    <- derpdf2.dereta2/pdf2
         
-        comp2*d2l.be.be + dl.dbe^2*comp3
+        comp2*d2l.be.be + dl.dbe^2*comp3 
 
 } 
 
-hessBbit2 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = FALSE, ym = NULL){ 
 
-       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE)
-       if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym)
+
+
+hessBbit2 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL){ 
+
+
+
+       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+       if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 
         pdf2                         <- dHs$pdf2
         derpdf2.dersigma2.st         <- dHs$derpdf2.dersigma2.st
@@ -93,14 +131,20 @@ hessBbit2 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = 
         d2l.sigma.sigma <- (der2pdf2.dersigma2.st2 * pdf2 - (derpdf2.dersigma2.st)^2)/pdf2^2
         dl.dsigma.st    <- derpdf2.dersigma2.st/pdf2
 
-        comp2*d2l.sigma.sigma + dl.dsigma.st^2*comp3
+        comp2*d2l.sigma.sigma + dl.dsigma.st^2*comp3 
+        
    
 }
 
-hessBbit3 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = FALSE, ym = NULL){ 
 
-       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE)
-       if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym)
+
+
+hessBbit3 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL){ 
+
+
+
+       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+       if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 
         pdf2                         <- dHs$pdf2
         derpdf2.dereta2              <- dHs$derpdf2.dereta2
@@ -116,13 +160,18 @@ hessBbit3 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = 
         dl.dbe       <- derpdf2.dereta2/pdf2
         dl.dsigma.st <- derpdf2.dersigma2.st/pdf2
 
-        comp2*d2l.be.sigma + dl.dbe*dl.dsigma.st*comp3
+       comp2*d2l.be.sigma + dl.dbe*dl.dsigma.st*comp3 
     
 }
 
-hessBbit4 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = FALSE, ym = NULL){ 
 
-        dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE)
+
+
+hessBbit4 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL){ 
+
+ 
+
+        dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 
         pdf2               <- dHs$pdf2
         derpdf2.dernu.st   <- dHs$derpdf2.dernu.st           
@@ -135,13 +184,18 @@ hessBbit4 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = 
         d2l.nu.nu <- (der2pdf2.dernu.st2*pdf2-(derpdf2.dernu.st)^2)/pdf2^2
         dl.dnu.st <- derpdf2.dernu.st/pdf2
 
-        comp2*d2l.nu.nu + dl.dnu.st^2*comp3
+        comp2*d2l.nu.nu + dl.dnu.st^2*comp3 
  
 }
 
-hessBbit5 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = FALSE, ym = NULL){ 
 
-        dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE)
+
+
+hessBbit5 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL){ 
+
+ 
+
+        dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 
         pdf2                     <- dHs$pdf2
         derpdf2.dereta2          <- dHs$derpdf2.dereta2
@@ -156,13 +210,18 @@ hessBbit5 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = 
         dl.dbe     <- derpdf2.dereta2/pdf2
         dl.dnu.st  <- derpdf2.dernu.st/pdf2
 
-        comp2*d2l.be.nu + dl.dbe*dl.dnu.st*comp3
+        comp2*d2l.be.nu + dl.dbe*dl.dnu.st*comp3 
 
 }
 
-hessBbit6 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = FALSE, ym = NULL){ 
 
-        dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE)
+
+
+hessBbit6 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL){ 
+
+
+
+        dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 
         pdf2                          <- dHs$pdf2
         derpdf2.dersigma2.st          <- dHs$derpdf2.dersigma2.st
@@ -186,17 +245,23 @@ hessBbit6 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, discr = 
 ###################################################################################################
 ###################################################################################################
 
-int1f <- function(y, eta, sigma2, nu, margin, rc){ 
-   pdf <- distrHsAT(y, eta, sigma2, nu, margin)$pdf2
+int1f <- function(y, eta, sigma2, nu, margin, rc, min.dn, min.pr, max.pr){ 
+
+
+
+   pdf <- distrHsAT(y, eta, sigma2, nu, margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)$pdf2
+   
    log( 1 + exp( log( pdf ) + rc ) )
+   
 }
 
 
 
 
-d.bpsi <- function(y, X1, X2, X3, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, j){ 
+d.bpsi <- function(y, X1, X2, X3, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, j, min.dn, min.pr, max.pr){ 
 
-       dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE)
+
+       dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 
        pdf2                 <- dHs$pdf2
        derpdf2.dereta2      <- dHs$derpdf2.dereta2 
@@ -212,7 +277,7 @@ d.bpsi <- function(y, X1, X2, X3, eta, sigma2, sigma2.st, nu, nu.st, margin, rc,
 
 
        if( margin %in% c("DAGUM","SM","TW") ) res <- cbind( comp2*as.numeric(dl.dbe)%*%t(X1), comp2*as.numeric(dl.dsigma.st)%*%t(X2), comp2*as.numeric(dl.dnu.st)%*%t(X3) ) else
-                                         res <- cbind( comp2*as.numeric(dl.dbe)%*%t(X1), comp2*as.numeric(dl.dsigma.st)%*%t(X2) )
+                                              res <- cbind( comp2*as.numeric(dl.dbe)%*%t(X1), comp2*as.numeric(dl.dsigma.st)%*%t(X2) )
       
        res[, j]
 }
@@ -220,7 +285,8 @@ d.bpsi <- function(y, X1, X2, X3, eta, sigma2, sigma2.st, nu, nu.st, margin, rc,
 
 
 
-gradF <- function(params, n, VC, margin, lB, uB, rc){
+gradF <- function(params, n, VC, margin, lB, uB, rc, min.dn, min.pr, max.pr){
+
 
   G <- matrix(NA, n, length(params))
 
@@ -247,7 +313,7 @@ for(i in 1:n){
   sigma2.st <- ss$vrb.st
   sigma2    <- ss$vrb
                                     
-  for(j in 1:length(params)) G[i, j] <- integrate(d.bpsi, lB, uB, X1, X2, X3, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, j)$value
+  for(j in 1:length(params)) G[i, j] <- integrate(d.bpsi, lB, uB, X1, X2, X3, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, j, min.dn, min.pr, max.pr)$value
 
              }
              

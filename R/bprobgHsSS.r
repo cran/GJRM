@@ -1,14 +1,14 @@
 bprobgHsSS <- function(params, respvec, VC, ps){
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
-  epsilon <- sqrt(.Machine$double.eps)
-  max.p   <- 0.9999999
+
   
   eta1 <- VC$X1%*%params[1:VC$X1.d2]
   eta2 <- VC$X2%*%params[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)]
   etad <- NULL ## New bit
 
-  pd1 <- probm(eta1, VC$margins[1], only.pr = FALSE)
-  pd2 <- probm(eta2, VC$margins[2], only.pr = FALSE)
+  pd1 <- probm(eta1, VC$margins[1], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  pd2 <- probm(eta2, VC$margins[2], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   p1 <- pd1$pr; d.n1 <- pd1$d.n 
   p2 <- pd2$pr; d.n2 <- pd2$d.n  
@@ -28,12 +28,12 @@ teta.st <- resT$teta.st
 teta    <- resT$teta
 
 
-  p11 <- BiCDF(p1[VC$inde], p2, VC$nC, teta, VC$dof)
+  p11 <- mm(BiCDF(p1[VC$inde], p2, VC$nC, teta, VC$dof), min.pr = VC$min.pr, max.pr = VC$max.pr  )
 
 ########################################################################################################
 
-  p10 <- pmax(p1[VC$inde] - p11, epsilon)
-  p0  <- pmax(1 - p1, epsilon)
+  p10 <- mm(p1[VC$inde] - p11, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p0  <- mm(1 - p1, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
 
   l.par1          <- respvec$cy1*log(p0) 
@@ -41,7 +41,7 @@ teta    <- resT$teta
   l.par           <- VC$weights*l.par1 
 
 
-dH <- copgHs(p1[VC$inde], p2, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, VC$dof)
+dH <- copgHs(p1[VC$inde], p2, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
 c.copula.be1   <- dH$c.copula.be1
 c.copula.be2   <- dH$c.copula.be2
@@ -123,13 +123,13 @@ se <- p10/p1[VC$inde]
 eta2a <- rep(0,length(eta1))
 eta2a[VC$inde] <- eta2
 
-p2r <- probm(eta2a, VC$margins[2], only.pr = FALSE)$pr
+p2r <- probm(eta2a, VC$margins[2], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$pr
 
-p11a <- BiCDF(p1, p2r, VC$nC, teta)
-p10a <- pmax(p1 - p11a, epsilon)
+p11a <- mm(BiCDF(p1, p2r, VC$nC, teta), min.pr = VC$min.pr, max.pr = VC$max.pr  )
+p10a <- mm(p1 - p11a, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
-c.copula.be1a  <- copgHs(p1, p2r, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD)$c.copula.be1
-c.copula2.be1a <- copgHs(p1, p2r, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD)$c.copula2.be1
+c.copula.be1a  <- copgHs(p1, p2r, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$c.copula.be1
+c.copula2.be1a <- copgHs(p1, p2r, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$c.copula2.be1
 
 bit1.b1b1a     <- c.copula2.be1a*d.n1^2 + c.copula.be1a*der2p1.dereta12 
 bit2.b1b1a     <- -c.copula2.be1a*d.n1^2  + (1-c.copula.be1a)*der2p1.dereta12
@@ -240,7 +240,10 @@ dl.drhot[VC$inde]  <- dl.drho	;dl.drho  <- dl.drhot
          list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l.par=l.par, ps = ps,
               p11=p11, p10=p10, p0=p0, eta1=eta1, eta2=eta2, etad=etad,
               dl.dbe1=dl.dbe1, dl.dbe2=dl.dbe2, dl.drho=dl.drho,
-              BivD=VC$BivD, p1=p1)     
+              BivD=VC$BivD, p1 = p1, p2 = p2, pdf1 = d.n1, pdf2 = d.n2,          
+	      	                    c.copula.be2 = c.copula.be2,
+	      	                    c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2)     
 
 }
 

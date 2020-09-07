@@ -25,7 +25,7 @@ regH <- function(H, type = 1){
   
   eH <- eigen(H, symmetric = TRUE)
   if(min(eH$values) < epsilon){ eH$values <- abs(eH$values); ds <- 1 }
-  if(min(eH$values) < epsilon){ eH$values[which(eH$values < epsilon)] <- sqrt(.Machine$double.eps); ds <- 1 }
+  if(min(eH$values) < epsilon){ eH$values[which(eH$values < epsilon)] <- epsilon; ds <- 1 }
   
   if(ds == 1) H <- eH$vectors%*%tcrossprod(diag(1/eH$values),eH$vectors)   
   

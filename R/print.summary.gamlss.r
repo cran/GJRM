@@ -61,7 +61,7 @@ print.summary.gamlss <- function(x, digits = max(3, getOption("digits") - 3),
 
   #if(x$robust == TRUE) warning("Interval(s) reported at the bottom of the summary output and\np-values for smooth functions (if present) should be used\nwith caution. See ?summary.gamlss for more details.", call. = FALSE) 
 
-  if(x$robust == TRUE) warning("P-values for smooth functions (if present) should be used\nwith caution. See ?summary.gamlss for more details.", call. = FALSE) 
+  #if(x$robust == TRUE) warning("P-values for smooth functions (if present) should be used\nwith caution. See ?summary.gamlss for more details.", call. = FALSE) 
 
 
 

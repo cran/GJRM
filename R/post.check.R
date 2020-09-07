@@ -44,7 +44,7 @@ if(x$surv.flex == TRUE && x$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$margins[2] %
 
 par(mfrow = c(2, 2))
 
-p1  <- distrHsAT(x$y1, x$eta1, x$sigma21, x$nu1, x$margins[1])$p2
+p1  <- distrHsAT(x$y1, x$eta1, x$sigma21, x$nu1, x$margins[1], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$p2
 qr1 <- qnorm(p1)
 hist(qr1, freq = FALSE, main = main, xlab = xlab, ylab = "Density", ...)
 lines(density(qr1, adjust = 2),lwd=2)
@@ -123,12 +123,16 @@ if(x$VC$ccss == "yes"){
 
 
 
-if(x$VC$margins[2] %in% c(x$VC$m2,x$VC$m3)){p <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2])$p2
+if(x$VC$margins[2] %in% c(x$VC$m2,x$VC$m3)){p <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$p2
+
+                                            if(x$VC$margins[2] %in% c("TW")) p[y2 == 0] <- runif(sum(y2 == 0), min = 0, max = p[y2 == 0]) 
+
+
                                             qr <- qnorm(p)
                                             } 
 
 if(x$VC$margins[2] %in% c(x$VC$m1d,x$VC$m2d,x$VC$m3d)){ 
-                                            pd <- distrHsATDiscr(y2, eta2, sigma2, nu, x$margins[2], y2m = y2m) 
+                                            pd <- distrHsATDiscr(y2, eta2, sigma2, nu, x$margins[2], y2m = y2m, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr) 
                                             p <- pd$p2
                                             d <- pd$pdf2  
                                             if(intervals == TRUE) set.seed(100)
@@ -224,10 +228,17 @@ if(x$VC$margins[2] %in% c("DGP","DGPII")){
 
 
 
-if(x$VC$margins[1] %in% c(x$VC$m2,x$VC$m3))   p1 <- distrHsAT(x$y1, x$eta1, x$sigma21, x$nu1, x$margins[1])$p2 
+if(x$VC$margins[1] %in% c(x$VC$m2,x$VC$m3)) {p1 <- distrHsAT(x$y1, x$eta1, x$sigma21, x$nu1, x$margins[1], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$p2 
+
+                                            if(x$VC$margins[1] %in% c("TW")) p1[x$y1 == 0] <- runif(sum(x$y1 == 0), min = 0, max = p1[x$y1 == 0]) 
+
+
+}
+
+
 if(x$VC$margins[1] %in% c(x$VC$m1d,x$VC$m2d,x$VC$m3d)){
 
-pd <- distrHsATDiscr(x$y1, x$eta1, x$sigma21, x$nu1, x$margins[1], y2m = y1m) 
+pd <- distrHsATDiscr(x$y1, x$eta1, x$sigma21, x$nu1, x$margins[1], y2m = y1m, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr) 
 p <- pd$p2
 d <- pd$pdf2   
 
@@ -238,10 +249,15 @@ p1 <- runif(y1, p - d, p)
 
 
 
-if(x$VC$margins[2] %in% c(x$VC$m2,x$VC$m3))   p2 <-      distrHsAT(x$y2, x$eta2, x$sigma22, x$nu2, x$margins[2])$p2 
+if(x$VC$margins[2] %in% c(x$VC$m2,x$VC$m3)){   p2 <-      distrHsAT(x$y2, x$eta2, x$sigma22, x$nu2, x$margins[2], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$p2 
+
+                                            if(x$VC$margins[2] %in% c("TW")) p2[x$y2 == 0] <- runif(sum(x$y2 == 0), min = 0, max = p2[x$y2 == 0]) 
+
+}
+
 if(x$VC$margins[2] %in% c(x$VC$m1d,x$VC$m2d,x$VC$m3d)){
 
-pd <- distrHsATDiscr(x$y2, x$eta2, x$sigma22, x$nu2, x$margins[2], y2m = y2m)
+pd <- distrHsATDiscr(x$y2, x$eta2, x$sigma22, x$nu2, x$margins[2], y2m = y2m, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)
 p <- pd$p2
 d <- pd$pdf2   
 
@@ -306,9 +322,12 @@ if(x$VC$margins[1] %in% c("ZTP")){
                                  
 
 
-if(x$VC$margins[1] %in% c(x$VC$m2,x$VC$m3)) p1 <- distrHsAT(x$y1, x$eta1, x$sigma2, x$nu, x$margins[1])$p2 
+if(x$VC$margins[1] %in% c(x$VC$m2,x$VC$m3)) p1 <- distrHsAT(x$y1, x$eta1, x$sigma2, x$nu, x$margins[1], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$p2 
+
+        if(x$VC$margins[1] %in% c("TW")) p1[x$y1 == 0] <- runif(sum(x$y1 == 0), min = 0, max = p1[x$y1 == 0])
+
 if(x$VC$margins[1] %in% c(x$VC$m1d,x$VC$m2d,x$VC$m3d)){
-      pd <- distrHsATDiscr(x$y1, x$eta1, x$sigma2, x$nu, x$margins[1], y2m = y1m) 
+      pd <- distrHsATDiscr(x$y1, x$eta1, x$sigma2, x$nu, x$margins[1], y2m = y1m, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr) 
       p <- pd$p2
       d <- pd$pdf2   
       p1 <- runif(y1, p - d, p) 

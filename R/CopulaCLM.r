@@ -4,7 +4,8 @@ CopulaCLM <- function(formula, data = list(), weights = NULL, subset = NULL,
                       fp = FALSE, hess = TRUE, infl.fac = 1, theta.fx = NULL, 
                       rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
                       gc.l = FALSE, parscale, extra.regI = "t", intf = FALSE, knots = NULL,
-                      drop.unused.levels = TRUE, ind.ord = FALSE){
+                      drop.unused.levels = TRUE, ind.ord = FALSE,
+                      min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999){
   
 
 ##########################################################################################
@@ -94,7 +95,9 @@ fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + "))
 environment(fake.formula) <- environment(formula[[1]])
 
 mf$formula <- fake.formula 
-mf$ordinal <- mf$knots <- mf$dof <- mf$intf <- mf$theta.fx <- mf$Model <- mf$BivD <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
+
+
+mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$ordinal <- mf$knots <- mf$dof <- mf$intf <- mf$theta.fx <- mf$Model <- mf$BivD <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
 mf$drop.unused.levels <- drop.unused.levels
 mf$ind.ord <- NULL
   
@@ -367,7 +370,7 @@ lsgam8 <- length(gam8$smooth)
 
 VC <- list(lsgam1 = lsgam1, robust = FALSE, sel = sel, sel.p = sel.p, sel.m = sel.m, sel.mm = sel.mm, sel.pm = sel.pm, c1 = c1, D11 = D11, D12 = D12, 
            lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
-           lsgam3 = lsgam3,
+           lsgam3 = lsgam3, 
            lsgam4 = lsgam4,
            lsgam5 = lsgam5,
            lsgam6 = lsgam6,
@@ -419,7 +422,9 @@ VC <- list(lsgam1 = lsgam1, robust = FALSE, sel = sel, sel.p = sel.p, sel.m = se
            X2s = X2s, X3s = X3s, triv = FALSE, y2m = y2m,
            theta.fx = theta.fx, i.rho = i.rho, 
            BivD2 = BivD2, cta = cta, ct = ct, zerov = -10, surv.flex = surv.flex, gp2.inf = NULL,
-           informative = "no", sp.fixed = NULL) # original n only needed in SemiParBIV.fit
+           informative = "no", sp.fixed = NULL,
+           zero.tol = 1e-02,
+           min.dn = min.dn, min.pr = min.pr, max.pr = max.pr) # original n only needed in SemiParBIV.fit
            
 if(gc.l == TRUE) gc()           
              

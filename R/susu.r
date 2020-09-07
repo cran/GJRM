@@ -87,16 +87,16 @@ if (!is.null(K1)) {
         
            for(i in index){
 
-             if(i==1) {mm <- object$VC$lsgam1; if(mm==0) next}
-             if(i==2) {mm <- object$VC$lsgam2; if(mm==0) next} 
-             if(i==3) {mm <- object$VC$lsgam3; if(mm==0) next} 
-             if(i==4) {mm <- object$VC$lsgam4; if(mm==0) next} 
-             if(i==5) {mm <- object$VC$lsgam5; if(mm==0) next} 
-             if(i==6) {mm <- object$VC$lsgam6; if(mm==0) next} 
-             if(i==7) {mm <- object$VC$lsgam7; if(mm==0) next}              
-             if(i==8) {mm <- object$VC$lsgam8; if(mm==0) break} 
+             if(i==1) {mmm <- object$VC$lsgam1; if(mmm==0) next}
+             if(i==2) {mmm <- object$VC$lsgam2; if(mmm==0) next} 
+             if(i==3) {mmm <- object$VC$lsgam3; if(mmm==0) next} 
+             if(i==4) {mmm <- object$VC$lsgam4; if(mmm==0) next} 
+             if(i==5) {mmm <- object$VC$lsgam5; if(mmm==0) next} 
+             if(i==6) {mmm <- object$VC$lsgam6; if(mmm==0) next} 
+             if(i==7) {mmm <- object$VC$lsgam7; if(mmm==0) next}              
+             if(i==8) {mmm <- object$VC$lsgam8; if(mmm==0) break} 
   
-		for(k in 1:mm){
+		for(k in 1:mmm){
 
                         if(i==1){ gam <- object$gam1; ind <-  gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para  + CLM.shift                               } 
                         if(i==2){ gam <- object$gam2; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2                } 

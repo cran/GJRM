@@ -1,9 +1,9 @@
 bcontSurvG <- function(params, respvec, VC, ps, AT = FALSE){
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
     monP <- monP1 <- k1 <- k2 <- 0; Veq1 <- Veq2 <- list()  
     monP2 <- matrix(0, length(params),length(params))
    
-    epsilon <- sqrt(.Machine$double.eps)
     rotConst <- 1
 
     params1 <- params[1:VC$X1.d2]
@@ -39,8 +39,8 @@ if( !is.null(VC$X3) ){
     indNeq1 <- as.numeric(Xd1P < 0)
     indNeq2 <- as.numeric(Xd2P < 0)
   
-    Xd1P <- ifelse(Xd1P < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), Xd1P ) 
-    Xd2P <- ifelse(Xd2P < sqrt(.Machine$double.eps), sqrt(.Machine$double.eps), Xd2P ) 
+    Xd1P <- ifelse(Xd1P < VC$min.dn, VC$min.dn, Xd1P ) 
+    Xd2P <- ifelse(Xd2P < VC$min.dn, VC$min.dn, Xd2P ) 
 
 ##################
 
@@ -134,8 +134,8 @@ nC2 <- VC$ct[which(VC$ct[,1] == Cop2),2]
 
 ##################
 
-  pd1 <- probmS(eta1, VC$margins[1]) 
-  pd2 <- probmS(eta2, VC$margins[2]) 
+  pd1 <- probmS(eta1, VC$margins[1], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
+  pd2 <- probmS(eta2, VC$margins[2], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
   
   p1 <- pd1$pr
   p2 <- pd2$pr 
@@ -151,8 +151,8 @@ nC2 <- VC$ct[which(VC$ct[,1] == Cop2),2]
 
 ##################
 
-  if( length(teta1) != 0) dH1 <- copgHs(p1[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof)
-  if( length(teta2) != 0) dH2 <- copgHs(p1[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof)
+  if( length(teta1) != 0) dH1 <- copgHs(p1[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  if( length(teta2) != 0) dH2 <- copgHs(p1[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   c.copula2.be1be2 <- c.copula.be1 <- c.copula.be2 <- p00 <- c.copula.theta <- c.copula.thet <- bit1.th2ATE <- NA
   
@@ -162,7 +162,7 @@ nC2 <- VC$ct[which(VC$ct[,1] == Cop2),2]
                            c.copula.theta[teta.ind1]   <- dH1$c.copula.theta
                            c.copula.thet[teta.ind1]    <- dH1$c.copula.thet 
                            bit1.th2ATE[teta.ind1]      <- dH1$bit1.th2ATE
-                           p00[teta.ind1] <- BiCDF(p1[teta.ind1], p2[teta.ind1], nC1, teta1, VC$dof) 
+                           p00[teta.ind1] <- mm(BiCDF(p1[teta.ind1], p2[teta.ind1], nC1, teta1, VC$dof), min.pr = VC$min.pr, max.pr = VC$max.pr  ) 
                          }
   
   if( length(teta2) != 0){ c.copula2.be1be2[teta.ind2] <- dH2$c.copula2.be1be2  
@@ -171,7 +171,7 @@ nC2 <- VC$ct[which(VC$ct[,1] == Cop2),2]
                            c.copula.theta[teta.ind2]   <- dH2$c.copula.theta
                            c.copula.thet[teta.ind2]    <- dH2$c.copula.thet
                            bit1.th2ATE[teta.ind2]      <- dH2$bit1.th2ATE
-                           p00[teta.ind2] <- BiCDF(p1[teta.ind2], p2[teta.ind2], nC2, teta2, VC$dof) 
+                           p00[teta.ind2] <- mm(BiCDF(p1[teta.ind2], p2[teta.ind2], nC2, teta2, VC$dof), min.pr = VC$min.pr, max.pr = VC$max.pr  ) 
                          }
  
 
@@ -563,7 +563,10 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
          list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, 
               l=S.res, l.ln = l.ln, l.par=l.par, ps = ps, 
               eta1=eta1, eta2=eta2, etad=etad, etas1 = 1, etas2 = 1, 
-              BivD=VC$BivD, p1 = p1, p2 = p2,
+              BivD=VC$BivD,               p1 = p1, p2 = p2, pdf1 = -dS1eta1, pdf2 = -dS2eta2,          
+              c.copula.be2 = c.copula.be2,
+              c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2, 
               dl.dbe1          = NULL,       
               dl.dbe2          = NULL,       
               dl.dteta.st      = NULL, 

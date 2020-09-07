@@ -1,17 +1,14 @@
 bprobgHsPO <- function(params, respvec, VC, ps){
 
-
-
-  epsilon <- sqrt(.Machine$double.eps)
-  max.p   <- 0.9999999
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
   eta1 <- VC$X1%*%params[1:VC$X1.d2]
   eta2 <- VC$X2%*%params[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)]
   etad <- NULL ## New bit
 
 
-  pd1 <- probm(eta1, VC$margins[1], only.pr = FALSE)
-  pd2 <- probm(eta2, VC$margins[2], only.pr = FALSE)
+  pd1 <- probm(eta1, VC$margins[1], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  pd2 <- probm(eta2, VC$margins[2], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   p1 <- pd1$pr; d.n1 <- pd1$d.n 
   p2 <- pd2$pr; d.n2 <- pd2$d.n  
@@ -27,16 +24,16 @@ teta.st <- resT$teta.st
 teta    <- resT$teta
 
 
-p11 <-  BiCDF(p1, p2, VC$nC, teta)
+p11 <-  mm(BiCDF(p1, p2, VC$nC, teta), min.pr = VC$min.pr, max.pr = VC$max.pr  )
 
 ########################################################################################################
 
-  cp11 <- pmax(1 - p11, epsilon)
+  cp11 <- mm(1 - p11, min.pr = VC$min.pr, max.pr = VC$max.pr)  
   
   l.par <- VC$weights*( respvec$y1*log(p11) + respvec$cy*log(cp11) )
 
 
-dH <- copgHs(p1,p2,eta1=NULL,eta2=NULL,teta,teta.st,VC$BivD)
+dH <- copgHs(p1,p2,eta1=NULL,eta2=NULL,teta,teta.st,VC$BivD, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
 c.copula.be1   <- dH$c.copula.be1
 c.copula.be2   <- dH$c.copula.be2
@@ -188,7 +185,10 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
               #d2l.be1.be1=d2l.be1.be1, d2l.be2.be2=d2l.be2.be2, 
               #d2l.be1.be2=d2l.be1.be2, d2l.be1.rho=d2l.be1.rho,
               #d2l.be2.rho=d2l.be2.rho, d2l.rho.rho=d2l.rho.rho, 
-              BivD=VC$BivD, p1=p1, p2=p2)      
+              BivD=VC$BivD, p1 = p1, p2 = p2, pdf1 = d.n1, pdf2 = d.n2,          
+	      	                    c.copula.be2 = c.copula.be2,
+	      	                    c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2)      
 
 }
 

@@ -1,5 +1,10 @@
+version 0.2-3
+- function for fitting linear models with positivity and sum-to-one constraints; see lmc().
+- generalized Pareto and discrete generalized Pareto distributions implemented.
+- robust gamlss implemented.
+
 version 0.2-2
-- copula models with ordinal and continuous resposnes implemented.
+- copula models with ordinal and continuous responses implemented.
 - univariate survival models with mixed censoring implemented. 
 
 version 0.2-1

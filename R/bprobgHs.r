@@ -1,15 +1,13 @@
 bprobgHs <- function(params, respvec, VC, ps, AT = FALSE){
 
- 
-  epsilon <- sqrt(.Machine$double.eps)
-  max.p   <- 0.9999999
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
   eta1 <- VC$X1%*%params[1:VC$X1.d2]
   eta2 <- VC$X2%*%params[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)]
   etad <- NULL 
   
-  pd1 <- probm(eta1, VC$margins[1], only.pr = FALSE)
-  pd2 <- probm(eta2, VC$margins[2], only.pr = FALSE)
+  pd1 <- probm(eta1, VC$margins[1], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  pd2 <- probm(eta2, VC$margins[2], only.pr = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
   
   p1 <- pd1$pr; d.n1 <- pd1$d.n 
   p2 <- pd2$pr; d.n2 <- pd2$d.n  
@@ -84,19 +82,27 @@ nC2 <- VC$ct[which(VC$ct[,1] == Cop2),2]
     
 ########################################################################################################
 
-
 p11 <- NA
 
-if( length(teta1) != 0) p11[teta.ind1] <- BiCDF(p1[teta.ind1], p2[teta.ind1], nC1, teta1, VC$dof)
-if( length(teta2) != 0) p11[teta.ind2] <- BiCDF(p1[teta.ind2], p2[teta.ind2], nC2, teta2, VC$dof)
-
+if( length(teta1) != 0) p11[teta.ind1] <- mm(BiCDF(p1[teta.ind1], p2[teta.ind1], nC1, teta1, VC$dof), min.pr = VC$min.pr, max.pr = VC$max.pr  )
+if( length(teta2) != 0) p11[teta.ind2] <- mm(BiCDF(p1[teta.ind2], p2[teta.ind2], nC2, teta2, VC$dof), min.pr = VC$min.pr, max.pr = VC$max.pr  )
 
 ########################################################################################################
 
-  p10 <- pmax(p1 - p11, epsilon)
-  p01 <- pmax(p2 - p11, epsilon)
-  p00 <- pmax(1 - p11 - p10 - p01, epsilon)
+  # stuff below is pretty much a consistency check which will only be useful for those
+  # odd model fits
 
+  p10 <- mm(p1 - p11, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p01 <- mm(p2 - p11, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  p00 <- mm(1 - p11 - p10 - p01, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  
+  sall.p <- rowSums(cbind(p11, p10, p01, p00))
+  
+  p11 <- p11/sall.p 
+  p10 <- p10/sall.p
+  p01 <- p01/sall.p
+  p00 <- p00/sall.p
+  
   l.par <- VC$weights*( respvec$y1.y2*log(p11) + respvec$y1.cy2*log(p10) + respvec$cy1.y2*log(p01) + respvec$cy1.cy2*log(p00) )
 
 ########################################################################################################
@@ -109,7 +115,7 @@ c.copula.be1 <- c.copula.be2 <- c.copula.theta <- c.copula2.be1 <- c.copula2.be2
 
 if( length(teta1) != 0){
 
-dH <- copgHs(p1[teta.ind1],p2[teta.ind1],eta1=NULL,eta2=NULL,teta1,teta.st1,Cop1, VC$dof)
+dH <- copgHs(p1[teta.ind1],p2[teta.ind1],eta1=NULL,eta2=NULL,teta1,teta.st1,Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
 c.copula.be1[teta.ind1]     <- dH$c.copula.be1
 c.copula.be2[teta.ind1]     <- dH$c.copula.be2
@@ -128,7 +134,7 @@ if(AT==TRUE) bit1.th2[teta.ind1] <- dH$bit1.th2ATE else bit1.th2[teta.ind1] <- d
 
 if( length(teta2) != 0){
 
-dH <- copgHs(p1[teta.ind2],p2[teta.ind2],eta1=NULL,eta2=NULL,teta2,teta.st2,Cop2, VC$dof)
+dH <- copgHs(p1[teta.ind2],p2[teta.ind2],eta1=NULL,eta2=NULL,teta2,teta.st2,Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
 c.copula.be1[teta.ind2]     <- dH$c.copula.be1
 c.copula.be2[teta.ind2]     <- dH$c.copula.be2
@@ -407,6 +413,10 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
               dl.dbe1=dl.dbe1, dl.dbe2=dl.dbe2, dl.drho=dl.drho,
               BivD=VC$BivD, p1=p1, p2=p2, theta.star = teta.st,
               teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,
+              p1 = p1, p2 = p2, pdf1 = d.n1, pdf2 = d.n2,          
+	                    c.copula.be2 = c.copula.be2,
+	                    c.copula.be1 = c.copula.be1,
+              c.copula2.be1be2 = c.copula2.be1be2, 
               Cop1 = Cop1, Cop2 = Cop2, teta1 = teta1, teta2 = teta2)      
 
 }

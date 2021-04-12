@@ -69,7 +69,7 @@ teta2 <- teta[teta.ind2]
  
 if(VC$BivD %in% VC$BivD2){
 
-if(VC$BivD %in% VC$BivD2[1:4])  teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov), TRUE, FALSE)
+if(VC$BivD %in% VC$BivD2[c(1:4,13:16)])  teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov), TRUE, FALSE)
 if(VC$BivD %in% VC$BivD2[5:12]) teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov) + 1, TRUE, FALSE) 
 teta.ind2 <- teta.ind1 == FALSE 
 
@@ -394,7 +394,7 @@ crossprod(VC$weights*VC$c10*c((-c.copula.be1^-2*c.copula2.be1be2*c.copula2.be1 +
 )
 
  
-if(VC$BivD %in% c("C180","J180","G180","C90","J90","G90","C270","J270","G270") ) rotConst <- -1
+if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
 if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
 
 

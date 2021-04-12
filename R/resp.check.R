@@ -67,7 +67,10 @@ if( margin %in% c("rGU") )              st.v <- c( mean(y) - 0.57722*sqrt(var(y)
 if( margin %in% c("WEI") )              st.v <- c( log( mean( exp(log(y) + 0.5772/(1.283/sqrt(var(log(y))))) )  ) , log( ( 1.283/sqrt(var(log(y))) )^2 ) ) 
 if( margin %in% c("GA") )               st.v <- c( log(mean((y + mean(y))/2)), log(var(y)/mean(y)^2)  ) # log( 1^2 )             
 if( margin %in% c("GAi") )              st.v <- c( mean((y + mean(y))/2), log(var(y)/mean(y)^2)  ) # log( 1^2 )
-if( margin %in% c("TW") )               st.v <- coef(gam(list(y ~ 1, ~ 1, ~ 1), family = twlss()))
+if( margin %in% c("TW") )              {st.v <- coef(gam(list(y ~ 1, ~ 1, ~ 1), family = twlss()))
+                                        st.vTW[2] <- st.v[3]; st.vTW[3] <- st.v[2]
+                                        st.v <- st.vTW 
+                                        }
 
 
 
@@ -147,7 +150,7 @@ if(margin == "LN") y <- exp(y)
 
 
 if(margin %in% m2)   pp <-      distrHsAT(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, 1, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
-if(margin %in% m3)   pp <-      distrHsAT(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, exp(univfit$argument[3]), margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+if(margin %in% m3)   pp <-      distrHsAT(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, enu.tr(univfit$argument[3], margin)$vrb, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 if(margin %in% m1d)  pp <- distrHsATDiscr(y, univfit$argument[1], 1, 1, margin2 = margin, y2m = y1m, robust = FALSE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 if(margin %in% m2d)  pp <- distrHsATDiscr(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, 1, margin2 = margin, y2m = y1m, robust = FALSE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
 

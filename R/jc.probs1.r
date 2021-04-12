@@ -1094,7 +1094,7 @@ BivDt <- x$VC$BivD
 
   if(x$BivD %in% x$BivD2){
   
-  if(x$BivD %in% x$BivD2[1:4]) { BivDt <- "C0"; nCa <- 3} 
+  if(x$BivD %in% x$BivD2[c(1:4,13:16)]) { BivDt <- "C0"; nCa <- 3} 
   if(x$BivD %in% x$BivD2[5:8]) { BivDt <- "J0"; nCa <- 6}
   if(x$BivD %in% x$BivD2[9:12]){ BivDt <- "G0"; nCa <- 4}
   

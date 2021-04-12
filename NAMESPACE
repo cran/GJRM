@@ -9,6 +9,7 @@ bprobgHsPO, bcorrec, bcorrecDiscr,  Xdpred, pred.mvt, pred.gp, inform.setup, cv.
 bprobgHsSS, intB, rob.int, resp.CLM, ggmtrust.path, Dpens, Dpens2, bdiscrcont23,
 bprobgHsContUniv, lmc, bcontSurvGunivMIXED_ExcessHazard, survExcInd,
 bcontSurvGunivL_ExcessHazard, bcontSurvGuniv_ExcessHazard, bcontSurvGunivI_ExcessHazard,bcontSurvGunivMIXED_LeftTruncation,
+bcontSurvGunivMIXED_ExcessHazard_LeftTruncation,
 copgHs, copgHs2, copgHs3, PosDefCor,
 logLik.SemiParBIV, logLik.ggmtrust, logLik.lmc, pTweed,
 LM.bpm, hazsurv.plot, approx.CLM,
@@ -65,7 +66,7 @@ importFrom(VGAM, pbinorm, dbinorm)
 importFrom(survival, survfit, Surv)
 import(mgcv)
 importFrom(psych, tetrachoric)
-importFrom(copula, tau, plackettCopula, iTau) 
+importFrom(copula, tau, plackettCopula, iTau, galambosCopula) 
 importFrom(VineCopula, BiCopHfunc1, BiCopHfunc2, BiCopHfuncDeriv, BiCopCDF, BiCopTau2Par, BiCopPar2Tau, BiCopPDF, BiCopDeriv, BiCopDeriv2, BiCopHfuncDeriv2)
 importFrom(matrixStats, rowQuantiles, colQuantiles, colWeightedMeans)
 importFrom(gamlss.dist, pNBI, dNBI, pNBII, dNBII, pPIG, dPIG, pDEL, dDEL, pSICHEL, dSICHEL, pPO, rNO,rGU,rRG,rLO,rLOGNO,rWEI,rIG,rGA,rGB2,rBE,rNBI,rNBII,rPIG,rPO)

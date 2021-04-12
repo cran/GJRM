@@ -272,24 +272,47 @@ aTW <- 1.001
 bTW <- 1.999
 
 mu2        <- exp(eta2)
-nu.stTW    <- log(nu)
-sigma.stTW <- log( (sigma - aTW) / (bTW - sigma) ) # sigma = (aTW + bTW*exp(sigma.stTW))/(1 + exp(sigma.stTW))
+
+#nu.stTW    <- log(nu)
+#sigma.stTW <- log( (sigma - aTW) / (bTW - sigma) ) # sigma = (aTW + bTW*exp(sigma.stTW))/(1 + exp(sigma.stTW))
+
+nu.stTW    <- log( (nu - aTW) / (bTW - nu) ) 
+sigma.stTW <- log(sigma)
 
 
-TWob <- ldTweedie(y2, mu = mu2, p = NA, phi = NA, rho = nu.stTW, theta = sigma.stTW, all.derivs = TRUE) 
+
+
+
+TWob <- ldTweedie(y2, mu = mu2, p = NA, phi = NA, rho = sigma.stTW, theta = nu.stTW, all.derivs = TRUE) 
 
 
 pdf2           <- exp(TWob[, 1])            
 derpdf2.dermu2 <- TWob[, 7]*pdf2
-derpdf2.sigma2 <- TWob[, 4]*pdf2 
-derpdf2.nu     <- TWob[, 2]*pdf2 
+#derpdf2.sigma2 <- TWob[, 4]*pdf2 
+#derpdf2.nu     <- TWob[, 2]*pdf2 
+
+derpdf2.sigma2 <- TWob[, 2]*pdf2 
+derpdf2.nu     <- TWob[, 4]*pdf2 
+
+
 
 der2pdf2.dermu2     <- pdf2*TWob[, 8] + derpdf2.dermu2^2/pdf2 
-der2pdf2.dersigma22 <- pdf2*TWob[, 5] + derpdf2.sigma2^2/pdf2 
-der2pdf2.dernu2     <- pdf2*TWob[, 3] +     derpdf2.nu^2/pdf2 
+#der2pdf2.dersigma22 <- pdf2*TWob[, 5] + derpdf2.sigma2^2/pdf2 
+#der2pdf2.dernu2     <- pdf2*TWob[, 3] +     derpdf2.nu^2/pdf2 
+
+der2pdf2.dersigma22 <- pdf2*TWob[, 3] + derpdf2.sigma2^2/pdf2 
+der2pdf2.dernu2     <- pdf2*TWob[, 5] +     derpdf2.nu^2/pdf2 
+
+
     
-der2pdf2.mu2dersigma2   <- pdf2*TWob[, 9]  + derpdf2.dermu2*derpdf2.sigma2/pdf2  
-der2pdf2.mu2dernu       <- pdf2*TWob[, 10] + derpdf2.dermu2*derpdf2.nu/pdf2  
+#der2pdf2.mu2dersigma2   <- pdf2*TWob[, 9]  + derpdf2.dermu2*derpdf2.sigma2/pdf2  
+#der2pdf2.mu2dernu       <- pdf2*TWob[, 10] + derpdf2.dermu2*derpdf2.nu/pdf2  
+
+
+der2pdf2.mu2dersigma2   <- pdf2*TWob[, 10]  + derpdf2.dermu2*derpdf2.sigma2/pdf2  
+der2pdf2.mu2dernu       <- pdf2*TWob[, 9] + derpdf2.dermu2*derpdf2.nu/pdf2  
+
+
 der2pdf2.dersigma2dernu <- pdf2*TWob[, 6]  + derpdf2.nu*derpdf2.sigma2/pdf2 
         
         
@@ -307,13 +330,25 @@ if(length(nu) == 1)    nu    <- rep(nu, length(mu2))
 dermu2.dereta2      <- 1
 der2mu2.dereta2eta2 <- 0   
   
-dersigma2.dersigma2.st  <- (bTW - (aTW + bTW * exp(sigma2.st))/(1 + exp(sigma2.st))) * exp(sigma2.st)/(1 + exp(sigma2.st))  
-dersigma2.dersigma2.st2 <- (bTW * (1 - exp(sigma2.st)/(1 + exp(sigma2.st))) - ((2 * bTW - 
-    2 * ((aTW + bTW * exp(sigma2.st))/(1 + exp(sigma2.st)))) * 
-    exp(sigma2.st) + aTW)/(1 + exp(sigma2.st))) * exp(sigma2.st)/(1 + 
-    exp(sigma2.st))   
+  
+#dersigma2.dersigma2.st  <- (bTW - (aTW + bTW * exp(sigma2.st))/(1 + exp(sigma2.st))) * exp(sigma2.st)/(1 + exp(sigma2.st))  
+#
+#dersigma2.dersigma2.st2 <- (bTW * (1 - exp(sigma2.st)/(1 + exp(sigma2.st))) - ((2 * bTW - 
+#    2 * ((aTW + bTW * exp(sigma2.st))/(1 + exp(sigma2.st)))) * 
+#    exp(sigma2.st) + aTW)/(1 + exp(sigma2.st))) * exp(sigma2.st)/(1 + 
+#    exp(sigma2.st))   
+# 
 
-dernu.dernu.st <- dernu.dernu.st2 <- exp(nu.st)  
+
+dernu.dernu.st  <- (bTW - (aTW + bTW * exp(nu.st))/(1 + exp(nu.st))) * exp(nu.st)/(1 + exp(nu.st))  
+
+dernu.dernu.st2 <- (bTW * (1 - exp(nu.st)/(1 + exp(nu.st))) - ((2 * bTW - 
+    2 * ((aTW + bTW * exp(nu.st))/(1 + exp(nu.st)))) * 
+    exp(nu.st) + aTW)/(1 + exp(nu.st))) * exp(nu.st)/(1 + 
+    exp(nu.st)) 
+
+
+dersigma2.dersigma2.st <- dersigma2.dersigma2.st2 <- exp(sigma2.st)  
 
 ###
 
@@ -324,29 +359,44 @@ p2 <- derp2.dermu2 <- derp2.dersigma2 <- derp2.dernu <- der2p2.dermu22 <- der2p2
  
 for(i in 1:length(mu2)){ 
  
-p2[i] <- pTweed(y = y2[i], mu = mu2[i], phi = nu[i], p = sigma[i])$d0 
+p2[i] <- pTweed(y = y2[i], mu = mu2[i], phi = sigma[i], p = nu[i])$d0 
 
-scTW <- pTweed(y = y2[i], mu = mu2[i], phi = nu[i], p = sigma[i], deriv = 1)$d1
-heTW <- pTweed(y = y2[i], mu = mu2[i], phi = nu[i], p = sigma[i], deriv = 2)$d2
+scTW <- pTweed(y = y2[i], mu = mu2[i], phi = sigma[i], p = nu[i], deriv = 1)$d1
+heTW <- pTweed(y = y2[i], mu = mu2[i], phi = sigma[i], p = nu[i], deriv = 2)$d2
 
 derp2.dermu2[i]    <- scTW[1]
 
-derp2.dersigma2[i] <- scTW[3]
-derp2.dernu[i]     <- scTW[2]
+#derp2.dersigma2[i] <- scTW[3]
+#derp2.dernu[i]     <- scTW[2]
+
+derp2.dersigma2[i] <- scTW[2]
+derp2.dernu[i]     <- scTW[3]
+
 
 der2p2.dermu22[i]    <- heTW[1, 1] 
-der2p2.dersigma22[i] <- heTW[3, 3]
-der2p2.dernu2[i]     <- heTW[2, 2]
+#der2p2.dersigma22[i] <- heTW[3, 3]
+#der2p2.dernu2[i]     <- heTW[2, 2]
+
+der2p2.dersigma22[i] <- heTW[2, 2]
+der2p2.dernu2[i]     <- heTW[3, 3]
+
+
     
 der2p2.dersigma2dernu[i]  <- heTW[3, 2] 
-der2p2.dermu2dernu[i]     <- heTW[2, 1]
-der2p2.derdermu2sigma2[i] <- heTW[3, 1]
+#der2p2.dermu2dernu[i]     <- heTW[2, 1]
+#der2p2.derdermu2sigma2[i] <- heTW[3, 1]
+
+der2p2.dermu2dernu[i]     <- heTW[3, 1]
+der2p2.derdermu2sigma2[i] <- heTW[2, 1]
+
+
 
 }
 
 
 
 # I attach link function parametrisation here (but need to do that for mu as done for the pdf)
+# stuff below should be left unaltered given the above changes
 
 
 derp2.dereta2                <- derp2.dermu2*dermu2.dereta2

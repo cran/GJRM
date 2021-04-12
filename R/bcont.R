@@ -66,8 +66,8 @@ teta2 <- teta[teta.ind2]
 if(VC$BivD %in% VC$BivD2){
 
 
-if(VC$BivD %in% VC$BivD2[1:4])  teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov), TRUE, FALSE)
-if(VC$BivD %in% VC$BivD2[5:12]) teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov) + 1, TRUE, FALSE) 
+if(VC$BivD %in% VC$BivD2[c(1:4,13:16)])  teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov), TRUE, FALSE)
+if(VC$BivD %in% VC$BivD2[5:12])       teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov) + 1, TRUE, FALSE) 
 teta.ind2 <- teta.ind1 == FALSE 
 
 VC$my.env$signind <- ifelse(teta.ind1 == TRUE,  1, -1) 

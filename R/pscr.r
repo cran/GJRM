@@ -94,7 +94,8 @@ if(!is.null(x$tableP3) && !is.null(x$tableP4) && !is.null(x$tableP5)  ){
   cat("\nEQUATION 3")
   #cat("\nLink function for sigma:","log","\n") 
   
-  if(!(x$margins[2] %in% c("TW"))) cat("\nLink function for sigma:","log","\n") else cat("\nLink function for sigma:","qlogis","\n")  
+  #if(!(x$margins[2] %in% c("TW"))) 
+  cat("\nLink function for sigma:","log","\n") #else cat("\nLink function for sigma:","qlogis","\n")  
 
   
   cat("Formula: "); print(x$formula[[3]])
@@ -110,7 +111,8 @@ if(!is.null(x$tableP3) && !is.null(x$tableP4) && !is.null(x$tableP5)  ){
     }  
     
   cat("\nEQUATION 4")
-  if(x$margins[2] %in% c("DAGUM","SM","TW")) cat("\nLink function for nu:","log","\n")  
+  if(x$margins[2] %in% c("DAGUM","SM")) cat("\nLink function for nu:","log","\n") 
+  if(x$margins[2] %in% c("TW")) cat("\nLink function for nu:","qlogis","\n") 
   cat("Formula: "); print(x$formula[[4]])
   cat("\n")
   cat("Parametric coefficients:\n")
@@ -673,7 +675,7 @@ if( x$margins[1] %in% cont2par && x$margins[2] %in% cont1par && x$surv.flex == T
 
 
   cat("\nEQUATION 3")
-  if(!(x$margins[1] %in% c("BE","TW"))) cat("\nLink function for sigma.1:","log","\n") else cat("\nLink function for sigma.1:","qlogis","\n") 
+  if(!(x$margins[1] %in% c("BE"))) cat("\nLink function for sigma.1:","log","\n") else cat("\nLink function for sigma.1:","qlogis","\n") 
   cat("Formula: "); print(x$formula[[3]]) 
   cat("\n")
     cat("Parametric coefficients:\n")
@@ -1234,7 +1236,7 @@ if(type == "gamls"){
   
   cat("\nEQUATION 2")
   
-  if( !(x$margins[1] %in%c("BE","TW")) ) cat("\nLink function for sigma:","log","\n") else cat("\nLink function for sigma:","qlogis","\n") 
+  if( !(x$margins[1] %in%c("BE")) ) cat("\nLink function for sigma:","log","\n") else cat("\nLink function for sigma:","qlogis","\n") 
   
   #if(x$margins[1] !="BE" && !(x$margins[1] %in% c("GP","DGP","DGPII"))) cat("\nLink function for sigma:","log","\n")
   
@@ -1266,7 +1268,7 @@ if( x$margins[1] %in% cont3par){
   
   #cat("\nLink function for sigma:","log","\n") 
   
-  if( !(x$margins[1] %in%c("BE","TW")) ) cat("\nLink function for sigma:","log","\n") else cat("\nLink function for sigma:","qlogis","\n") 
+  if( !(x$margins[1] %in%c("BE")) ) cat("\nLink function for sigma:","log","\n") else cat("\nLink function for sigma:","qlogis","\n") 
 
   
   
@@ -1285,7 +1287,11 @@ if( x$margins[1] %in% cont3par){
                       }
  
   cat("\nEQUATION 3")
-  cat("\nLink function for nu:","log","\n") 
+  
+  
+  if( !(x$margins[1] %in% c("TW")) ) cat("\nLink function for nu:","log","\n") else cat("\nLink function for nu:","qlogis","\n")  
+  
+  
   cat("Formula: "); print(x$formula[[3]])  
       cat("\n")
         cat("Parametric coefficients:\n")
@@ -1381,7 +1387,7 @@ if(!is.null(x$tableP3) && !is.null(x$tableP4) && is.null(x$tableP5)  ){
 
 
   cat("\nEQUATION 3")
-  if(!(x$margins[2]%in%c("BE","TW"))) cat("\nLink function for sigma:","log","\n") else cat("\nLink function for sigma:","qlogis","\n")
+  if(!(x$margins[2]%in%c("BE"))) cat("\nLink function for sigma:","log","\n") else cat("\nLink function for sigma:","qlogis","\n")
   cat("Formula: "); print(x$formula[[3]])
   cat("\n")
   cat("Parametric coefficients:\n")
@@ -1418,7 +1424,8 @@ if(!is.null(x$tableP3) && !is.null(x$tableP4) && !is.null(x$tableP5)  ){
   cat("\nEQUATION 3")
  # cat("\nLink function for sigma:","log","\n") 
   
-    if(!(x$margins[2] %in% c("TW"))) cat("\nLink function for sigma:","log","\n") else cat("\nLink function for sigma:","qlogis","\n")  
+    #if(!(x$margins[2] %in% c("TW"))) 
+    cat("\nLink function for sigma:","log","\n") #else cat("\nLink function for sigma:","qlogis","\n")  
 
   
   cat("Formula: "); print(x$formula[[3]])
@@ -1434,7 +1441,9 @@ if(!is.null(x$tableP3) && !is.null(x$tableP4) && !is.null(x$tableP5)  ){
     }  
     
   cat("\nEQUATION 4")
-  if(x$margins[2] %in% c("DAGUM","SM","TW")) cat("\nLink function for nu:","log","\n")  
+  if(x$margins[2] %in% c("DAGUM","SM")) cat("\nLink function for nu:","log","\n")  
+  if(x$margins[2] %in% c("TW"))         cat("\nLink function for nu:","qlogis","\n")  
+  
   cat("Formula: "); print(x$formula[[4]])
   cat("\n")
   cat("Parametric coefficients:\n")

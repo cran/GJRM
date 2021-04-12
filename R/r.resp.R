@@ -42,7 +42,7 @@ if(margin == "GAi")   y <- rGA(   rsim,    mu =     eta1,     sigma = esp.tr(eta
 
 if(margin == "TW"){
 
-    if(rsim == 1) y <- rTweedie(mu = exp(eta1), p = esp.tr(eta2, margin)$vrb, phi = exp(eta3))
+    if(rsim == 1) y <- rTweedie(mu = exp(eta1), phi = esp.tr(eta2, margin)$vrb, p = enu.tr(eta3, margin)$vrb)  # p is the power parameter
     if(rsim > 1){
 
       y <- NA
@@ -52,7 +52,7 @@ if(margin == "TW"){
       if(length(eta3) == 1) eta3 <- rep(eta3, rsim)
       
       for(i in 1:rsim){
-        y[i] <- rTweedie(mu = exp(eta1[i]), p = esp.tr(eta2[i], margin)$vrb, phi = exp(eta3[i]))
+        y[i] <- rTweedie( mu = exp(eta1[i]), phi = esp.tr(eta2[i], margin)$vrb, p = enu.tr(eta3[i], margin)$vrb )
                       }
                    }
 

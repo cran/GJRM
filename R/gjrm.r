@@ -12,8 +12,9 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
   if(missing(margins)) stop("You must choose the margins' values.")
   if(missing(Model)) stop("You must choose a Model type.")
   
-  
-  
+  if(dep.cens == TRUE) stop("The dependent censoring case is work in progress. \nGet in touch should you wish to get more info.")
+
+
   if(margins[1] == "PH" && surv == TRUE) margins[1] <- "cloglog"
   if(margins[1] == "PO" && surv == TRUE) margins[1] <- "logit" 
   
@@ -133,25 +134,31 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
   
   BivD2 <- c("C0C90","C0C270","C180C90","C180C270",
              "J0J90","J0J270","J180J90","J180J270",
-             "G0G90","G0G270","G180G90","G180G270")
+             "G0G90","G0G270","G180G90","G180G270",
+             "GAL0GAL90", "GAL0GAL270", "GAL180GAL90", "GAL180GAL270")
              
-  opc  <- c("N","C0","C90","C180","C270","J0","J90","J180","J270","G0","G90","G180","G270","F","AMH","FGM","T","PL","HO")
-  scc  <- c("C0", "C180", "J0", "J180", "G0", "G180", BivD2)
-  sccn <- c("C90", "C270", "J90", "J270", "G90", "G270")
+  opc  <- c("N","C0","C90","C180","C270","J0","J90","J180","J270","G0","G90","G180","G270","F","AMH","FGM","T","PL","HO","GAL0", "GAL90", "GAL180", "GAL270")
+  
+  scc  <- c("C0", "C180", "GAL0" , "GAL180", "J0", "J180", "G0", "G180", BivD2)
+  
+  sccn <- c("C90", "C270", "GAL90", "GAL270","J90", "J270", "G90", "G270")
+  
   m2   <- c("N","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP","GPII","GPo")
   m3   <- c("DAGUM","SM","TW")
   m1d  <- c("PO", "ZTP")
   m2d  <- c("NBI", "NBII","PIG","DGP","DGPII")
   m3d  <- c("DEL","SICHEL")
   
-  ct  <- data.frame( c(opc), c(1:14,55,56,57,60,61) )
-  cta <- data.frame( c(opc), c(1,3,23,13,33,6,26,16,36,4,24,14,34,5,55,56,2,60,61) )     
+  ct  <- data.frame( c(opc), c(1:14,55,56,57,60,61,62:65) )
+  cta <- data.frame( c(opc), c(1,3,23,13,33,6,26,16,36,4,24,14,34,5,55,56,2,60,61,62:65) )     
   
   
   if(BivD %in% BivD2){
   
   if(BivD %in% BivD2[1:4])  BivDt <- "C0" 
   if(BivD %in% BivD2[5:12]) BivDt <- "J0"
+  if(BivD %in% BivD2[13 :16]) BivDt <- "C0" # useful for ass dep function but we calculate it differently, so ok like this
+
   
   nC  <-  ct[which( ct[,1]==BivDt),2]
   nCa <- cta[which(cta[,1]==BivDt),2]     

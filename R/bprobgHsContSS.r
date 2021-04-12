@@ -300,7 +300,7 @@ dl.dteta.stt[VC$inde]  <- dl.dteta.st	;dl.dteta.st  <- dl.dteta.stt
  dHs  <- distrHsAT(exp(respvec$y2), eta2, sigma2, 1, margin2 = VC$margins[2], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
  pdf2 <- dHs$pdf2
  p2   <- dHs$p2 
- dH   <- copgHsAT(p1[VC$inde], p2, teta, VC$BivD, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+ dH   <- copgHsAT(p1[VC$inde], p2, teta, VC$BivD, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, par2 = VC$dof)
  h    <- dH$c.copula.be2  
  
  l.par1 <- log(p1)

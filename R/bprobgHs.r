@@ -25,7 +25,6 @@ p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- 
   
 resT    <- teta.tr(VC, teta.st)
 
-
 teta.st1 <- teta.st2 <- teta.st <- resT$teta.st
 teta1 <- teta2 <- teta <- resT$teta 
     
@@ -53,7 +52,7 @@ teta2 <- teta[teta.ind2]
  
 if(VC$BivD %in% VC$BivD2){
 
-if(VC$BivD %in% VC$BivD2[1:4])  teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov), TRUE, FALSE)
+if(VC$BivD %in% VC$BivD2[c(1:4,13:16)])  teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov), TRUE, FALSE)
 if(VC$BivD %in% VC$BivD2[5:12]) teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov) + 1, TRUE, FALSE) 
 teta.ind2 <- teta.ind1 == FALSE 
 
@@ -198,8 +197,8 @@ bit4.th2 <- bit1.th2
 add.b  <- 1
 if(AT==TRUE){
     if(VC$BivD %in% c("N") )                                    add.b <- 1/cosh(teta.st)^2
-    if(VC$BivD %in% c("C0", "C180","J0", "J180","G0", "G180") ) add.b <-  exp(teta.st)     
-    if(VC$BivD %in% c("C90","C270","J90","J270","G90","G270") ) add.b <- -exp(teta.st)        
+    if(VC$BivD %in% c("C0", "C180","GAL0", "GAL180","J0", "J180","G0", "G180") ) add.b <-  exp(teta.st)     
+    if(VC$BivD %in% c("C90","C270","GAL90","GAL270","J90","J270","G90","G270") ) add.b <- -exp(teta.st)        
 }
 
 

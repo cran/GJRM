@@ -9,17 +9,17 @@ c.copula.be2 <- c.copula2.be1be2 <- 1
 # Rotations
 ########################################################################################
 
-if(BivD %in% c("C90","J90","G90") ) {
+if(BivD %in% c("C90","J90","G90","GAL90") ) {
 p1 <- 1 - p1 
 teta <- -teta
 }  
 
-if(BivD %in% c("C180","J180","G180") ) {
+if(BivD %in% c("C180","J180","G180","GAL180") ) {
 p1 <- 1 - p1
 p2 <- 1 - p2
 }  
 
-if(BivD %in% c("C270","J270","G270") ) {
+if(BivD %in% c("C270","J270","G270","GAL270") ) {
 p2 <- 1 - p2 
 teta <- -teta 
 }   
@@ -107,6 +107,20 @@ c.copula.be2 <- (p1^(-teta) + p2^(-teta) - 1)^((-1/teta) - 1) * ((-1/teta) * (p2
 
 
 
+if(BivD %in% c("GAL0","GAL90","GAL180","GAL270") ){
+
+c.copula.be2 <- p1*(1-1/((-log(p2))^(1+teta)*(1/(-log(p1))^teta+
+1/(-log(p2))^teta)^(1+1/teta)))*exp((1/(-log(p1))^teta+
+1/(-log(p2))^teta)^-(1/teta))
+
+
+
+
+}
+
+
+
+
 if(BivD %in% c("G0","G90","G180","G270") ){
 
 c.copula.be2 <- (exp(-((-log(p2))^teta + (-log(p1))^teta)^((1/teta)))* (-log(p2))^(-1 + 
@@ -125,8 +139,8 @@ if(BivD %in% c("J0","J90","J180","J270") ){
 
 
 
-if(BivD %in% c("C90","J90","G90") )    c.copula.be2  <- 1 - c.copula.be2
-if(BivD %in% c("C180","J180","G180") ) c.copula.be2  <- 1 - c.copula.be2
+if(BivD %in% c("C90","J90","G90","GAL90") )     c.copula.be2  <- 1 - c.copula.be2
+if(BivD %in% c("C180","J180","G180","GAL180") ) c.copula.be2  <- 1 - c.copula.be2
 
 
 c.copula.be2 <- mm(c.copula.be2, min.pr = min.pr, max.pr = max.pr)
@@ -229,6 +243,22 @@ if(BivD %in% c("C0","C90","C180","C270") ){
 
 c.copula2.be1be2 <- p1^(-1 - teta)* p2^(-1 - teta)* (-1 + p1^-teta + p2^-teta)^(-2 - 1/
   teta) *(1 + teta)
+  
+}
+
+
+if(BivD %in% c("GAL0","GAL90","GAL180","GAL270") ){
+
+c.copula2.be1be2 <- (1+teta*(-log(p2))^(1+teta)*(1+1/teta)*
+(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1/teta)/((-log(p1))^(1+
+teta)*((-log(p2))^(1+teta)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+
+1/teta))^2)-((1-1/((-log(p2))^(1+teta)*(1/(-log(p1))^teta+
+1/(-log(p2))^teta)^(1+1/teta)))/((-log(p1))^(1+teta)*
+(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+1/teta))+1/((-log(p2))^(1+
+teta)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+1/teta))))*
+exp((1/(-log(p1))^teta+1/(-log(p2))^teta)^-(1/teta))
+
+
   
 }
 

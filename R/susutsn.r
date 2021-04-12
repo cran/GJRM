@@ -561,7 +561,7 @@ BivDt <- object$VC$BivD
 
   if(object$BivD %in% object$BivD2){
   
-  if(object$BivD %in% object$BivD2[1:4]){  BivDt <- "C0"; nCa <- 3} 
+  if(object$BivD %in% object$BivD2[c(1:4,13:16)]){  BivDt <- "C0"; nCa <- 3} 
   if(object$BivD %in% object$BivD2[5:8]){  BivDt <- "J0"; nCa <- 6}
   if(object$BivD %in% object$BivD2[9:12]){ BivDt <- "G0"; nCa <- 4}
   

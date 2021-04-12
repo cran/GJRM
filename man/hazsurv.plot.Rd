@@ -5,12 +5,11 @@
 
 \usage{
 
-hazsurv.plot(x, eq, newdata, type = "surv", t.range = NULL, intervals = TRUE, 
-             n.sim = 100, prob.lev = 0.05, 
-             shade = FALSE, ylim, ylab, xlab, ls = 100, baseline = FALSE, 
-             pop.name = NULL, pop.min = NULL,  pop.max = NULL, pop.bin = NULL, 
-             pop.build = FALSE, pop.grid = 200, 
-             min.dn = 1e-200, min.pr = 1e-200, max.pr = 1, ...)
+hazsurv.plot(x, eq, newdata, type = "surv", t.range = NULL, t.vec = NULL, 
+             intervals = TRUE, n.sim = 100, prob.lev = 0.05, shade = FALSE, 
+             bars = FALSE, ylim, ylab, xlab, pch, ls = 100, baseline = FALSE,
+             min.dn = 1e-200, min.pr = 1e-200, max.pr = 1, plot.out = TRUE, 
+             print.progress = TRUE, ...)
 
 
 
@@ -22,12 +21,17 @@ hazsurv.plot(x, eq, newdata, type = "surv", t.range = NULL, intervals = TRUE,
 
   \item{eq}{Equation number. This can be ignored for univariate models.}
 
-  \item{newdata}{A data frame or list containing the values of the model covariates at which predictions are required. 
-                 This must have one row and must be provided.}
-
-  \item{type}{The plot to produce, either \code{"surv"}, \code{"hazard"} or \code{"cumhaz"}.}
+  \item{newdata}{A data frame or list containing the values of the model covariates at which predictions are required. This must always be provided.
   
-  \item{t.range}{Time variable range to be considered for plotting. If \code{NULL} then it is determined automatically based on the observed data.}
+  For the individual survival/hazard/cumulative hazard function, the data frame must have one row containing the values of the model covariates corresponding to the individual of interest. 
+  
+  For the (sub-)population survival/hazard/cumulative hazard function, the data frame must have as many rows as there are individuals in the (sub-)population of interest. Each row must contain the values of the model covariates of the corresponding individual.}
+
+  \item{type}{The plot to produce, either \code{"surv"}, \code{"hazard"} or \code{"cumhaz"}. In the excess hazard setting these are, respectively, the net survival, the excess hazard and the cumulative excess hazard.}
+  
+  \item{t.range}{Time variable range to be considered for plotting. This must be a vector with only two elements: the minimum and maximum of the time range. If \code{NULL} then it is determined automatically based on the observed data.}
+  
+  \item{t.vec}{Vector of time values to be considered for plotting. This could also be a single time. Note you cannot provide both \code{t.range} and \code{t.vec} as they are two mutually exclusive ways of defining the time variable. If \code{NULL} then it is determined automatically based on the observed data. }
   
   \item{intervals}{If \code{TRUE} then intervals are also produced.}
 
@@ -37,35 +41,20 @@ hazsurv.plot(x, eq, newdata, type = "surv", t.range = NULL, intervals = TRUE,
   \item{prob.lev}{Overall probability of the left and right tails of the probabilities' distributions used for interval calculations.}  
    
   \item{shade}{If \code{TRUE} then it produces shaded regions as confidence bands.}
+  
+  \item{bars}{If \code{TRUE} then the confidence intervals are plotted as bars rather than continuous curves. If \code{t.vec} is used and only one time value is provided, this is the only possible plotting option for the confidence intervals. Note \code{shade} and \code{bars} are mutually exclusive.}
    
-  \item{ylim, ylab, xlab}{Usual plot arguments.}
+  \item{ylim, ylab, xlab, pch}{Usual plot arguments.}
   
   \item{ls}{Length of sequence to use for time variable.}
   
   \item{baseline}{If baseline is desired; this will set all covariate/smooth effects to zero.}
   
-  \item{pop.name}{Variable name with respect to which you want to stratify.}
-  
-  \item{pop.min}{Min. value of interval for the stratification variable. If you would like to use an open interval then do not specify a 
-                 value for \code{pop.max}; in this case you would have \code{pop.name} > \code{pop.min}.}
-  
-  \item{pop.max}{Max. value of interval for the stratification variable. For an open interval do not specify \code{pop.min} (\code{pop.name} < \code{pop.max}).}
-  
-  \item{pop.bin}{Either 0 or 1. This means \code{pop.name} is a binary variable and you want to stratify wrt either 0 or 1. Note that in 
-                 this case \code{pop.min} and \code{pop.max} need not be used as the choice of 0 or 1 takes the place of the range of values in a binary setting.}
-  
-  \item{pop.build}{The default is \code{FALSE}, which is the setting in which the user provides the data. When \code{TRUE} we are 
-                   assuming a setting in which the user provides a fixed set of features and would like the average net survival for
-                   an individual whith pop.name in a certain range. Note that \code{pop.bin} can not be used in this setting as it would not 
-                   make sense to do so (we would just have an individual net survival since it does not make sense to build a range
-                   of values for a binary variable).}
-  
-  \item{pop.grid}{Default values is 200 and it is only used if \code{pop.build == TRUE}. It represents the number
-                  of rows of the (internally built) dataset. In other terms it is the number of elements forming the sequence of
-                  extremities \code{pop.min} and \code{pop.max}.}
-  
   \item{min.dn, min.pr, max.pr}{Allowed minimum and maximum for estimated probabities and densities for survival, hazard and cumulative hazard calculations.}
 
+  \item{plot.out}{If \code{FALSE} then the function does not produce a plot. The default is \code{TRUE}.}
+
+  \item{print.progress}{If \code{FALSE} then the function does not print progress made. The default is \code{TRUE}.}
   
   \item{...}{Other arguments to pass to plot.}
 

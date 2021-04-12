@@ -1,20 +1,5 @@
 bcontSurvGunivMIXED_LeftTruncation <- function(params, respvec, VC, ps, AT = FALSE){
   
-  
-  
-  c1 <- VC$hrate
-  c2 <- exp(-VC$d.lchrate)
-  c3 <- exp(-VC$d.rchrate)  
-  
-  c2.td <- exp(-VC$d.lchrate.td)
-  c3.td <- exp(-VC$d.rchrate.td) 
-  
-  # C.i = VC$indvU*(-VC$d.lchrate) + VC$indvR*(-VC$d.lchrate)
-  # C.i.td = VC$indvUT*(-VC$d.chrate.td) + VC$indvRT*(-VC$d.lchrate.td)
-  
-  #################################################################################   
-  
-  
   monP <- monP1 <- monP2 <- k <- 0; V <- list()
 
   etad <- etas1 <- etas2 <- l.ln <- NULL
@@ -132,21 +117,21 @@ bcontSurvGunivMIXED_LeftTruncation <- function(params, respvec, VC, ps, AT = FAL
   
   l.par <- VC$weights*( 
     
-    VC$indvU*log( c1*p1 - dS1eta1*Xd1P ) + 
+    VC$indvU*log( - dS1eta1*Xd1P ) + 
       
       VC$indvR*log( p1 ) + 
       
-      VC$indvL*log( 1 - p1*c2 ) + 
+      VC$indvL*log( 1 - p1 ) + 
       
-      VC$indvI*log( mm(p1*c2 - p2*c3, min.pr = VC$min.pr, max.pr = VC$max.pr) ) +
+      VC$indvI*log( mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr) ) +
       
-      VC$indvUT*log( c1*p3^-1*p1 - p3^-1*dS1eta1*Xd1P ) +
+      VC$indvUT*log( - p3^-1*dS1eta1*Xd1P ) +
       
       VC$indvRT*log( p3^-1*p1 ) +
       
-      VC$indvLT*log( mm( 1 - p3^-1*p1*c2.td, min.pr = VC$min.pr, max.pr = VC$max.pr) ) +
+      VC$indvLT*log( mm( 1 - p3^-1*p1, min.pr = VC$min.pr, max.pr = VC$max.pr) ) +
       
-      VC$indvIT*log( mm(p3^-1*p1*c2.td - p3^-1*p2*c3.td, min.pr = VC$min.pr, max.pr = VC$max.pr) ) # +
+      VC$indvIT*log( mm(p3^-1*p1 - p3^-1*p2, min.pr = VC$min.pr, max.pr = VC$max.pr) ) # +
     
     # C.i + C.i.td
     
@@ -160,21 +145,21 @@ bcontSurvGunivMIXED_LeftTruncation <- function(params, respvec, VC, ps, AT = FAL
   dl.dbe1 <- -VC$weights*(   
     
     
-    VC$indvU*( c((c1*p1 - dS1eta1*Xd1P)^-1)*( c(c1*dS1eta1)*dereta1derb1 - c(d2S1eta1*Xd1P)*dereta1derb1 - c(dS1eta1)*der2eta1dery1b1 ) ) +
+    VC$indvU*( c(( - dS1eta1*Xd1P)^-1)*( - c(d2S1eta1*Xd1P)*dereta1derb1 - c(dS1eta1)*der2eta1dery1b1 ) ) +
       
       VC$indvR*c(p1^-1*dS1eta1)*dereta1derb1 +
       
-      VC$indvL*-c( ( 1 - p1*c2 )^-1*dS1eta1*c2 )*dereta1derb1 + # minus here in front from L censoring
+      VC$indvL*-c( ( 1 - p1 )^-1*dS1eta1 )*dereta1derb1 + # minus here in front from L censoring
       
-      VC$indvI*c( mm( p1*c2 - p2*c3, min.pr = VC$min.pr, max.pr = VC$max.pr ) )^-1*(c(dS1eta1*c2)*dereta1derb1 - c(dS2eta2*c3)*dereta2derb1) +
+      VC$indvI*c( mm( p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr ) )^-1*(c(dS1eta1)*dereta1derb1 - c(dS2eta2)*dereta2derb1) +
       
-      VC$indvUT*( c((c1*p1 - dS1eta1*Xd1P)^-1)*( c(c1*dS1eta1)*dereta1derb1 - c(d2S1eta1*Xd1P)*dereta1derb1 - c(dS1eta1)*der2eta1dery1b1 ) - c(p3^-1*dS3eta3)*dereta3derb1 ) +
+      VC$indvUT*( c((- dS1eta1*Xd1P)^-1)*( - c(d2S1eta1*Xd1P)*dereta1derb1 - c(dS1eta1)*der2eta1dery1b1 ) - c(p3^-1*dS3eta3)*dereta3derb1 ) +
       
       VC$indvRT*( c(p1^-1*dS1eta1)*dereta1derb1 - c(p3^-1*dS3eta3)*dereta3derb1 ) +
       
-      VC$indvLT*( -c( mm( p3 - p1*c2.td, min.pr = VC$min.pr, max.pr = VC$max.pr )^-1*dS1eta1*c2.td )*dereta1derb1 + c( mm( p3 - p1*c2.td, min.pr = VC$min.pr, max.pr = VC$max.pr )^-1*dS3eta3 - p3^-1*dS3eta3 )*dereta3derb1 ) +
+      VC$indvLT*( -c( mm( p3 - p1, min.pr = VC$min.pr, max.pr = VC$max.pr )^-1*dS1eta1 )*dereta1derb1 + c( mm( p3 - p1, min.pr = VC$min.pr, max.pr = VC$max.pr )^-1*dS3eta3 - p3^-1*dS3eta3 )*dereta3derb1 ) +
       
-      VC$indvIT*( c( mm( p1*c2.td - p2*c3.td, min.pr = VC$min.pr, max.pr = VC$max.pr ) )^-1*( c(dS1eta1*c2.td)*dereta1derb1 - c(dS2eta2*c3.td)*dereta2derb1 ) - c(p3^-1*dS3eta3)*dereta3derb1 )
+      VC$indvIT*( c( mm( p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr ) )^-1*( c(dS1eta1)*dereta1derb1 - c(dS2eta2)*dereta2derb1 ) - c(p3^-1*dS3eta3)*dereta3derb1 )
     
     
   )
@@ -187,39 +172,27 @@ bcontSurvGunivMIXED_LeftTruncation <- function(params, respvec, VC, ps, AT = FAL
   H <-  -(   
     
     # UNCENSORED CONTRIBUTION
-    crossprod(c(VC$weights*VC$indvU*( ( c1*p1 - dS1eta1*Xd1P )^-1*(c1*d2S1eta1) ))*dereta1derb1, dereta1derb1 ) +
+      crossprod(c(VC$weights*VC$indvU*(-( - dS1eta1*Xd1P )^-1*(d3S1eta1*Xd1P)  ))*dereta1derb1, dereta1derb1 ) +
       
-      crossprod(c(VC$weights*VC$indvU*(-( c1*p1 - dS1eta1*Xd1P )^-1*(d3S1eta1*Xd1P)  ))*dereta1derb1, dereta1derb1 ) +
+      crossprod(c(VC$weights*VC$indvU*(-( - dS1eta1*Xd1P )^-1*d2S1eta1 ))*dereta1derb1, der2eta1dery1b1 ) +
       
-      crossprod(c(VC$weights*VC$indvU*(-( c1*p1 - dS1eta1*Xd1P )^-1*d2S1eta1 ))*dereta1derb1, der2eta1dery1b1 ) +
-      
-      crossprod(c(VC$weights*VC$indvU*(-( c1*p1 - dS1eta1*Xd1P )^-1*d2S1eta1 ))*der2eta1dery1b1, dereta1derb1 ) +
+      crossprod(c(VC$weights*VC$indvU*(-( - dS1eta1*Xd1P )^-1*d2S1eta1 ))*der2eta1dery1b1, dereta1derb1 ) +
       
       
       
-      diag( colSums( t( t(c(VC$weights*VC$indvU*( c1*p1 - dS1eta1*Xd1P )^-1*(c1*dS1eta1) )*VC$X1)*der2.par1 ) ) ) +
+      diag( colSums( t( t(c(VC$weights*VC$indvU*-( - dS1eta1*Xd1P )^-1*(d2S1eta1*Xd1P) )*VC$X1)*der2.par1 ) ) ) +
       
-      diag( colSums( t( t(c(VC$weights*VC$indvU*-( c1*p1 - dS1eta1*Xd1P )^-1*(d2S1eta1*Xd1P) )*VC$X1)*der2.par1 ) ) ) +
-      
-      diag( colSums( t( t(c(VC$weights*VC$indvU*-( c1*p1 - dS1eta1*Xd1P )^-1*dS1eta1 )*VC$Xd1)*der2.par1 ) ) ) +
+      diag( colSums( t( t(c(VC$weights*VC$indvU*-( - dS1eta1*Xd1P )^-1*dS1eta1 )*VC$Xd1)*der2.par1 ) ) ) +
       
       
-      crossprod(c(VC$weights*VC$indvU*(-( c1*p1 - dS1eta1*Xd1P )^-2*(c1*dS1eta1)^2 ))*dereta1derb1, dereta1derb1) +
+      crossprod(c(VC$weights*VC$indvU*(-( - dS1eta1*Xd1P )^-2*(d2S1eta1*Xd1P)^2 ))*dereta1derb1, dereta1derb1) +
       
-      crossprod(c(VC$weights*VC$indvU*(-( c1*p1 - dS1eta1*Xd1P )^-2*(d2S1eta1*Xd1P)^2 ))*dereta1derb1, dereta1derb1) +
-      
-      crossprod(c(VC$weights*VC$indvU*(-( c1*p1 - dS1eta1*Xd1P )^-2*dS1eta1^2 ))*der2eta1dery1b1, der2eta1dery1b1) +
+      crossprod(c(VC$weights*VC$indvU*(-( - dS1eta1*Xd1P )^-2*dS1eta1^2 ))*der2eta1dery1b1, der2eta1dery1b1) +
       
       
-      crossprod(c(VC$weights*VC$indvU*(2*( c1*p1 - dS1eta1*Xd1P )^-2*( (c1*dS1eta1)*(d2S1eta1*Xd1P) ) ))*dereta1derb1, dereta1derb1) +
+      crossprod(c(VC$weights*VC$indvU*(-( - dS1eta1*Xd1P )^-2*( (d2S1eta1*Xd1P)*dS1eta1 ) ))*dereta1derb1, der2eta1dery1b1) +
       
-      crossprod(c(VC$weights*VC$indvU*( ( c1*p1 - dS1eta1*Xd1P )^-2*(c1*dS1eta1^2) ))*dereta1derb1, der2eta1dery1b1) +
-      
-      crossprod(c(VC$weights*VC$indvU*( ( c1*p1 - dS1eta1*Xd1P )^-2*(c1*dS1eta1^2) ))*der2eta1dery1b1, dereta1derb1 ) +
-      
-      crossprod(c(VC$weights*VC$indvU*(-( c1*p1 - dS1eta1*Xd1P )^-2*( (d2S1eta1*Xd1P)*dS1eta1 ) ))*dereta1derb1, der2eta1dery1b1) +
-      
-      crossprod(c(VC$weights*VC$indvU*(-( c1*p1 - dS1eta1*Xd1P )^-2*( (d2S1eta1*Xd1P)*dS1eta1 ) ))*der2eta1dery1b1, dereta1derb1) +
+      crossprod(c(VC$weights*VC$indvU*(-( - dS1eta1*Xd1P )^-2*( (d2S1eta1*Xd1P)*dS1eta1 ) ))*der2eta1dery1b1, dereta1derb1) +
       
       
       
@@ -232,70 +205,58 @@ bcontSurvGunivMIXED_LeftTruncation <- function(params, respvec, VC, ps, AT = FAL
       
       
       # LEFT CENSORED CONTRIBUTION
-      crossprod(c(VC$weights*VC$indvL*(( 1 - p1*c2 )^-2*(dS1eta1*c2)^2 +
-                                         ( 1 - p1*c2 )^-1*(d2S1eta1*c2) ))*dereta1derb1, dereta1derb1) -
+      crossprod(c(VC$weights*VC$indvL*(( 1 - p1 )^-2*(dS1eta1)^2 +
+                                         ( 1 - p1 )^-1*(d2S1eta1) ))*dereta1derb1, dereta1derb1) -
       
-      diag( colSums( t( t(c(VC$weights*VC$indvL*( 1 - p1*c2 )^-1*(dS1eta1*c2) )*VC$X1)*der2.par1 ) ) ) +
+      diag( colSums( t( t(c(VC$weights*VC$indvL*( 1 - p1 )^-1*(dS1eta1) )*VC$X1)*der2.par1 ) ) ) +
       
       
       
       
       # INTERVAL CENSORED CONTRIBUTION
-      crossprod(c(VC$weights*VC$indvI*(mm(p1*c2-p2*c3, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(d2S1eta1*c2) ))*dereta1derb1, dereta1derb1) +
+      crossprod(c(VC$weights*VC$indvI*(mm(p1-p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(d2S1eta1) ))*dereta1derb1, dereta1derb1) +
       
-      crossprod(c(VC$weights*VC$indvI*(-mm(p1*c2-p2*c3, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(d2S2eta2*c3) ))*dereta2derb1, dereta2derb1) +
-      
-      
-      diag( colSums( t( t(c(VC$weights*VC$indvI*mm(p1*c2-p2*c3, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(dS1eta1*c2) )*VC$X1)*der2.par1 ) ) ) +
-      
-      diag( colSums( t( t(c(VC$weights*VC$indvI*-mm(p1*c2-p2*c3, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(dS2eta2*c3) )*VC$X2)*der2.par1 ) ) ) +
+      crossprod(c(VC$weights*VC$indvI*(-mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(d2S2eta2) ))*dereta2derb1, dereta2derb1) +
       
       
-      crossprod(c(VC$weights*VC$indvI*(-mm(p1*c2-p2*c3, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS1eta1*c2)^2))*dereta1derb1, dereta1derb1) +
+      diag( colSums( t( t(c(VC$weights*VC$indvI*mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(dS1eta1) )*VC$X1)*der2.par1 ) ) ) +
       
-      crossprod(c(VC$weights*VC$indvI*(-mm(p1*c2-p2*c3, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS2eta2*c3)^2))*dereta2derb1, dereta2derb1) +
+      diag( colSums( t( t(c(VC$weights*VC$indvI*-mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(dS2eta2) )*VC$X2)*der2.par1 ) ) ) +
       
       
-      crossprod(c(VC$weights*VC$indvI*(mm(p1*c2-p2*c3, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS1eta1*c2)*(dS2eta2*c3) ))*dereta1derb1, dereta2derb1) +
+      crossprod(c(VC$weights*VC$indvI*(-mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS1eta1)^2))*dereta1derb1, dereta1derb1) +
       
-      crossprod(c(VC$weights*VC$indvI*(mm(p1*c2-p2*c3, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS1eta1*c2)*(dS2eta2*c3) ))*dereta2derb1, dereta1derb1) +
+      crossprod(c(VC$weights*VC$indvI*(-mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS2eta2)^2))*dereta2derb1, dereta2derb1) +
+      
+      
+      crossprod(c(VC$weights*VC$indvI*(mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS1eta1)*(dS2eta2) ))*dereta1derb1, dereta2derb1) +
+      
+      crossprod(c(VC$weights*VC$indvI*(mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS1eta1)*(dS2eta2) ))*dereta2derb1, dereta1derb1) +
       
       
       
       # UNCENSORED LEFT-TRUNCATED CONTRIBUTION
-      crossprod(c(VC$weights*VC$indvUT*( ( c1*p1 - dS1eta1*Xd1P )^-1*(c1*d2S1eta1) ))*dereta1derb1, dereta1derb1 ) +
+      crossprod(c(VC$weights*VC$indvUT*(-( - dS1eta1*Xd1P )^-1*(d3S1eta1*Xd1P)  ))*dereta1derb1, dereta1derb1 ) +
       
-      crossprod(c(VC$weights*VC$indvUT*(-( c1*p1 - dS1eta1*Xd1P )^-1*(d3S1eta1*Xd1P)  ))*dereta1derb1, dereta1derb1 ) +
+      crossprod(c(VC$weights*VC$indvUT*(-( - dS1eta1*Xd1P )^-1*d2S1eta1 ))*dereta1derb1, der2eta1dery1b1 ) +
       
-      crossprod(c(VC$weights*VC$indvUT*(-( c1*p1 - dS1eta1*Xd1P )^-1*d2S1eta1 ))*dereta1derb1, der2eta1dery1b1 ) +
-      
-      crossprod(c(VC$weights*VC$indvUT*(-( c1*p1 - dS1eta1*Xd1P )^-1*d2S1eta1 ))*der2eta1dery1b1, dereta1derb1 ) +
+      crossprod(c(VC$weights*VC$indvUT*(-( - dS1eta1*Xd1P )^-1*d2S1eta1 ))*der2eta1dery1b1, dereta1derb1 ) +
       
       
       
-      diag( colSums( t( t(c(VC$weights*VC$indvUT*( c1*p1 - dS1eta1*Xd1P )^-1*(c1*dS1eta1) )*VC$X1)*der2.par1 ) ) ) +
+      diag( colSums( t( t(c(VC$weights*VC$indvUT*-( - dS1eta1*Xd1P )^-1*(d2S1eta1*Xd1P) )*VC$X1)*der2.par1 ) ) ) +
       
-      diag( colSums( t( t(c(VC$weights*VC$indvUT*-( c1*p1 - dS1eta1*Xd1P )^-1*(d2S1eta1*Xd1P) )*VC$X1)*der2.par1 ) ) ) +
-      
-      diag( colSums( t( t(c(VC$weights*VC$indvUT*-( c1*p1 - dS1eta1*Xd1P )^-1*dS1eta1 )*VC$Xd1)*der2.par1 ) ) ) +
+      diag( colSums( t( t(c(VC$weights*VC$indvUT*-( - dS1eta1*Xd1P )^-1*dS1eta1 )*VC$Xd1)*der2.par1 ) ) ) +
       
       
-      crossprod(c(VC$weights*VC$indvUT*(-( c1*p1 - dS1eta1*Xd1P )^-2*(c1*dS1eta1)^2 ))*dereta1derb1, dereta1derb1) +
+      crossprod(c(VC$weights*VC$indvUT*(-( - dS1eta1*Xd1P )^-2*(d2S1eta1*Xd1P)^2 ))*dereta1derb1, dereta1derb1) +
       
-      crossprod(c(VC$weights*VC$indvUT*(-( c1*p1 - dS1eta1*Xd1P )^-2*(d2S1eta1*Xd1P)^2 ))*dereta1derb1, dereta1derb1) +
-      
-      crossprod(c(VC$weights*VC$indvUT*(-( c1*p1 - dS1eta1*Xd1P )^-2*dS1eta1^2 ))*der2eta1dery1b1, der2eta1dery1b1) +
+      crossprod(c(VC$weights*VC$indvUT*(-( - dS1eta1*Xd1P )^-2*dS1eta1^2 ))*der2eta1dery1b1, der2eta1dery1b1) +
       
       
-      crossprod(c(VC$weights*VC$indvUT*(2*( c1*p1 - dS1eta1*Xd1P )^-2*( (c1*dS1eta1)*(d2S1eta1*Xd1P) ) ))*dereta1derb1, dereta1derb1) +
+      crossprod(c(VC$weights*VC$indvUT*(-( - dS1eta1*Xd1P )^-2*( (d2S1eta1*Xd1P)*dS1eta1 ) ))*dereta1derb1, der2eta1dery1b1) +
       
-      crossprod(c(VC$weights*VC$indvUT*( ( c1*p1 - dS1eta1*Xd1P )^-2*(c1*dS1eta1^2) ))*dereta1derb1, der2eta1dery1b1) +
-      
-      crossprod(c(VC$weights*VC$indvUT*( ( c1*p1 - dS1eta1*Xd1P )^-2*(c1*dS1eta1^2) ))*der2eta1dery1b1, dereta1derb1 ) +
-      
-      crossprod(c(VC$weights*VC$indvUT*(-( c1*p1 - dS1eta1*Xd1P )^-2*( (d2S1eta1*Xd1P)*dS1eta1 ) ))*dereta1derb1, der2eta1dery1b1) +
-      
-      crossprod(c(VC$weights*VC$indvUT*(-( c1*p1 - dS1eta1*Xd1P )^-2*( (d2S1eta1*Xd1P)*dS1eta1 ) ))*der2eta1dery1b1, dereta1derb1) +
+      crossprod(c(VC$weights*VC$indvUT*(-( - dS1eta1*Xd1P )^-2*( (d2S1eta1*Xd1P)*dS1eta1 ) ))*der2eta1dery1b1, dereta1derb1) +
       
       
       crossprod(c(VC$weights*VC$indvUT*(-p3^-1*d2S3eta3 ))*dereta3derb1, dereta3derb1 ) +
@@ -319,40 +280,40 @@ bcontSurvGunivMIXED_LeftTruncation <- function(params, respvec, VC, ps, AT = FAL
       
       
       # LEFT CENSORED LEFT-TRUNCATED CONTRIBUTION
-      crossprod(c(VC$weights*VC$indvLT*( -mm(p3 - p1*c2.td, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS1eta1*c2.td)^2 - mm(p3 - p1*c2.td, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*d2S1eta1*c2.td ))*dereta1derb1, dereta1derb1) +
+      crossprod(c(VC$weights*VC$indvLT*( -mm(p3 - p1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS1eta1)^2 - mm(p3 - p1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*d2S1eta1 ))*dereta1derb1, dereta1derb1) +
       
-      crossprod(c(VC$weights*VC$indvLT*( (p3^-2 - mm(p3 - p1*c2.td, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2)*dS3eta3^2 - (p3^-1 - mm(p3 - p1*c2.td, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1)*d2S3eta3 ))*dereta3derb1, dereta3derb1) +
+      crossprod(c(VC$weights*VC$indvLT*( (p3^-2 - mm(p3 - p1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2)*dS3eta3^2 - (p3^-1 - mm(p3 - p1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1)*d2S3eta3 ))*dereta3derb1, dereta3derb1) +
       
-      crossprod(c(VC$weights*VC$indvLT*( mm(p3 - p1*c2.td, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*dS3eta3*dS1eta1*c2.td ))*dereta1derb1, dereta3derb1) +
+      crossprod(c(VC$weights*VC$indvLT*( mm(p3 - p1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*dS3eta3*dS1eta1 ))*dereta1derb1, dereta3derb1) +
       
-      crossprod(c(VC$weights*VC$indvLT*( mm(p3 - p1*c2.td, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*dS1eta1*dS3eta3*c2.td ))*dereta3derb1, dereta1derb1) +
+      crossprod(c(VC$weights*VC$indvLT*( mm(p3 - p1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*dS1eta1*dS3eta3 ))*dereta3derb1, dereta1derb1) +
       
       
-      diag( colSums( t( t(-c(VC$weights*VC$indvLT*mm( p3 - p1*c2.td, min.pr = VC$min.pr, max.pr = VC$max.pr )^-1*(dS1eta1*c2.td) )*VC$X1)*der2.par1 ) ) ) +
+      diag( colSums( t( t(-c(VC$weights*VC$indvLT*mm( p3 - p1, min.pr = VC$min.pr, max.pr = VC$max.pr )^-1*(dS1eta1) )*VC$X1)*der2.par1 ) ) ) +
       
-      diag( colSums( t( t(-c(VC$weights*VC$indvLT*( p3^-1 - mm( p3 - p1*c2.td, min.pr = VC$min.pr, max.pr = VC$max.pr )^-1 )*dS3eta3 )*VC$X3)*der2.par1 ) ) ) +
+      diag( colSums( t( t(-c(VC$weights*VC$indvLT*( p3^-1 - mm( p3 - p1, min.pr = VC$min.pr, max.pr = VC$max.pr )^-1 )*dS3eta3 )*VC$X3)*der2.par1 ) ) ) +
       
       
       
       # INTERVAL CENSORED LEFT-TRUNCATED CONTRIBUTION
-      crossprod(c(VC$weights*VC$indvIT*(mm(p1*c2.td-p2*c3.td, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(d2S1eta1*c2.td) ))*dereta1derb1, dereta1derb1) +
+      crossprod(c(VC$weights*VC$indvIT*(mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(d2S1eta1) ))*dereta1derb1, dereta1derb1) +
       
-      crossprod(c(VC$weights*VC$indvIT*(-mm(p1*c2.td-p2*c3.td, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(d2S2eta2*c3.td) ))*dereta2derb1, dereta2derb1) +
-      
-      
-      diag( colSums( t( t(c(VC$weights*VC$indvIT*mm(p1*c2.td-p2*c3.td, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(dS1eta1*c2.td) )*VC$X1)*der2.par1 ) ) ) +
-      
-      diag( colSums( t( t(c(VC$weights*VC$indvIT*-mm(p1*c2.td-p2*c3.td, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(dS2eta2*c3.td) )*VC$X2)*der2.par1 ) ) ) +
+      crossprod(c(VC$weights*VC$indvIT*(-mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(d2S2eta2) ))*dereta2derb1, dereta2derb1) +
       
       
-      crossprod(c(VC$weights*VC$indvIT*(-mm(p1*c2.td-p2*c3.td, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS1eta1*c2.td)^2))*dereta1derb1, dereta1derb1) +
+      diag( colSums( t( t(c(VC$weights*VC$indvIT*mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(dS1eta1) )*VC$X1)*der2.par1 ) ) ) +
       
-      crossprod(c(VC$weights*VC$indvIT*(-mm(p1*c2.td-p2*c3.td, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS2eta2*c3.td)^2))*dereta2derb1, dereta2derb1) +
+      diag( colSums( t( t(c(VC$weights*VC$indvIT*-mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(dS2eta2) )*VC$X2)*der2.par1 ) ) ) +
       
       
-      crossprod(c(VC$weights*VC$indvIT*(mm(p1*c2.td-p2*c3.td, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS1eta1*c2.td)*(dS2eta2*c3.td) ))*dereta1derb1, dereta2derb1) +
+      crossprod(c(VC$weights*VC$indvIT*(-mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS1eta1)^2))*dereta1derb1, dereta1derb1) +
       
-      crossprod(c(VC$weights*VC$indvIT*(mm(p1*c2.td-p2*c3.td, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS1eta1*c2.td)*(dS2eta2*c3.td) ))*dereta2derb1, dereta1derb1) +
+      crossprod(c(VC$weights*VC$indvIT*(-mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS2eta2)^2))*dereta2derb1, dereta2derb1) +
+      
+      
+      crossprod(c(VC$weights*VC$indvIT*(mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS1eta1)*(dS2eta2) ))*dereta1derb1, dereta2derb1) +
+      
+      crossprod(c(VC$weights*VC$indvIT*(mm(p1 - p2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(dS1eta1)*(dS2eta2) ))*dereta2derb1, dereta1derb1) +
       
       
       crossprod(c(VC$weights*VC$indvIT*( p3^-2*dS3eta3^2 - p3^-1*d2S3eta3 ))*dereta3derb1, dereta3derb1 ) +

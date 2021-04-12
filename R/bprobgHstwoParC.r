@@ -168,8 +168,8 @@ bit4.thdof <-  bit1.thdof
 add.b  <- 1
 if(AT==TRUE){
     if(VC$BivD %in% c("N") )                                    add.b <- 1/cosh(teta.st)^2
-    if(VC$BivD %in% c("C0", "C180","J0", "J180","G0", "G180") ) add.b <-  exp(teta.st)     
-    if(VC$BivD %in% c("C90","C270","J90","J270","G90","G270") ) add.b <- -exp(teta.st)        
+    if(VC$BivD %in% c("C0", "C180","GAL0", "GAL180","J0", "J180","G0", "G180") ) add.b <-  exp(teta.st)     
+    if(VC$BivD %in% c("C90","C270","GAL90","GAL270","J90","J270","G90","G270") ) add.b <- -exp(teta.st)        
 }
 ##########################################################################################
 

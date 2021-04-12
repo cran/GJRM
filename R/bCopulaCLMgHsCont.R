@@ -118,7 +118,7 @@ teta2 <- teta[teta.ind2]
 
 if(VC$BivD %in% VC$BivD2){
 
-if(VC$BivD %in% VC$BivD2[1 : 4 ]) teta.ind1 <- ifelse(VC$my.env$signind * teta > exp(VC$zerov)    , TRUE, FALSE)
+if(VC$BivD %in% VC$BivD2[c(1:4,13:16) ]) teta.ind1 <- ifelse(VC$my.env$signind * teta > exp(VC$zerov)    , TRUE, FALSE)
 if(VC$BivD %in% VC$BivD2[5 : 12]) teta.ind1 <- ifelse(VC$my.env$signind * teta > exp(VC$zerov) + 1, TRUE, FALSE) 
 teta.ind2 <- teta.ind1 == FALSE 
 
@@ -658,8 +658,11 @@ h.p <- h.m <- NA
 
 if(length(teta1) != 0){
 
-dH1.p <- copgHsAT(p1.p[teta.ind1], p2[teta.ind1], teta1, Cop1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
-dH1.m <- copgHsAT(p1.m[teta.ind1], p2[teta.ind1], teta1, Cop1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
+dH1.p <- copgHsAT(p1.p[teta.ind1], p2[teta.ind1], teta1, Cop1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, par2 = VC$dof) 
+dH1.m <- copgHsAT(p1.m[teta.ind1], p2[teta.ind1], teta1, Cop1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, par2 = VC$dof) 
+
+
+
 
 h.p[teta.ind1] <- dH1.p$c.copula.be2 ; h.m[teta.ind1] <- dH1.m$c.copula.be2
 
@@ -667,8 +670,8 @@ h.p[teta.ind1] <- dH1.p$c.copula.be2 ; h.m[teta.ind1] <- dH1.m$c.copula.be2
 
 if(length(teta2) != 0){
 
-dH2.p <- copgHsAT(p1.p[teta.ind2], p2[teta.ind2], teta2, Cop2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
-dH2.m <- copgHsAT(p1.m[teta.ind2], p2[teta.ind2], teta2, Cop2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+dH2.p <- copgHsAT(p1.p[teta.ind2], p2[teta.ind2], teta2, Cop2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, par2 = VC$dof) 
+dH2.m <- copgHsAT(p1.m[teta.ind2], p2[teta.ind2], teta2, Cop2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, par2 = VC$dof)
 
 h.p[teta.ind2] <- dH2.p$c.copula.be2 ; h.m[teta.ind2] <- dH2.m$c.copula.be2
 

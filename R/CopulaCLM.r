@@ -32,13 +32,17 @@ log.sig2 <- log.nu <- NULL
     
 BivD2 <- c("C0C90", "C0C270", "C180C90", "C180C270",
            "J0J90", "J0J270", "J180J90", "J180J270",
-           "G0G90", "G0G270", "G180G90", "G180G270" )  
+           "G0G90", "G0G270", "G180G90", "G180G270",
+           "GAL0GAL90", "GAL0GAL270", "GAL180GAL90", "GAL180GAL270")  # 13:16
   
 opc  <- c("N", "C0", "C90", "C180", "C270", 
                "J0", "J90", "J180", "J270",
-               "G0", "G90", "G180", "G270", "F", "AMH", "FGM", "T", "PL", "HO")
-scc  <- c("C0" , "C180", "J0" , "J180", "G0" , "G180", BivD2)
-sccn <- c("C90", "C270", "J90", "J270", "G90", "G270")
+               "G0", "G90", "G180", "G270", "F", "AMH", "FGM", "T", "PL", "HO","GAL0", "GAL90", "GAL180", "GAL270") # family for GAL is 62:65
+               
+scc  <- c("C0" , "C180","GAL0" , "GAL180", "J0" , "J180", "G0","G180",BivD2)
+
+sccn <- c("C90", "C270", "GAL90", "GAL270","J90", "J270", "G90", "G270")
+
 mb   <- c("B", "BSS", "BPO", "BPO0")
 m2   <- c("N", "GU", "rGU", "LO", "LN", "WEI", "iG", "GA", "BE", "FISK","GP","GPII","GPo")
 m3   <- c("DAGUM", "SM","TW")
@@ -50,13 +54,16 @@ M    <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, BivD = BivD,
              theta.fx = theta.fx, Model = Model, mb = mb, BivD2 = BivD2, dof = dof)  
 surv.flex <- FALSE
 
-ct  <- data.frame(c(opc), c(1:14,55,56,57,60,61))
-cta <- data.frame(c(opc), c(1,3,23,13,33,6,26,16,36,4,24,14,34,5,55,56,2,60,61))
+ct  <- data.frame(c(opc), c(1:14,55,56,57,60,61,62:65))
+
+cta <- data.frame(c(opc), c(1,3,23,13,33,6,26,16,36,4,24,14,34,5,55,56,2,60,61,62:65))
                    
 if(BivD %in% BivD2){
   
 if(BivD %in% BivD2[1 : 4 ]) BivDt <- "C0" 
 if(BivD %in% BivD2[5 : 12]) BivDt <- "J0"
+if(BivD %in% BivD2[13 :16]) BivDt <- "C0" # useful for ass dep function but we calculate it differently, so ok like this
+
   
 nC  <-  ct[which( ct[, 1] == BivDt), 2]
 nCa <- cta[which(cta[, 1] == BivDt), 2]     
@@ -69,6 +76,8 @@ nC  <-  ct[which( ct[, 1] == BivD), 2]
 nCa <- cta[which(cta[, 1] == BivD), 2]     
     
 }
+
+# nCa not important for GAL as we do not use VineCopula
 
 ################################################## 
   
@@ -260,8 +269,10 @@ if(margins[1] %in% bl && margins[2] %in% c(m2)){
 start.snR <- startsn(margins[2], y2)    
 log.sig2  <- start.snR$log.sig2.1; names(log.sig2) <- "sigma.star"
 
-#if(margins[2] %in% c(m3    )){ log.nu <- start.snR$log.nu.1; names(log.nu) <- "nu.star"}       
-if(margins[2] %in% c(m2))  start.v <- c(c1.ti, gam1$coefficients, gam2$coefficients, log.sig2,         i.rho)        
+#if(margins[2] %in% c(m3    )){ log.nu <- start.snR$log.nu.1; names(log.nu) <- "nu.star"}  
+
+if(margins[2] %in% c(m2))  start.v <- c(c1.ti, gam1$coefficients, gam2$coefficients, log.sig2, i.rho)    
+
 #if(margins[2] %in%   m3     )  start.v <- c(c1.ti, gam1$coefficients, gam2$coefficients, log.sig2, log.nu, i.rho)                                  
 
 } 
@@ -441,9 +452,11 @@ gamlss2 <- eval(substitute(gamlss(form.gamlR$formula.gamlss2, data = data, weigh
 
 
 # Updated starting values
+
+MM <- M; MM$BivD <- "N" # this is for T case, dof is never estimated...
   
 SP <- list(sp1 = sp1, sp2 = sp2, sp3 = sp3, sp4 = sp4, sp5 = sp5, sp6 = sp6, sp7 = sp7, sp8 = sp8)
-gamls.upsvR <- gamls.upsv(gamlss1 = NULL, gamlss2, margins, M, l.flist, nstv = NULL, VC, GAM, SP, type = "biv")
+gamls.upsvR <- gamls.upsv(gamlss1 = NULL, gamlss2, margins, MM, l.flist, nstv = NULL, VC, GAM, SP, type = "biv")
 sp <- gamls.upsvR$sp
 start.v <- c(c1.ti, gamls.upsvR$start.v) # cut points added
 

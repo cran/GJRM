@@ -1,14 +1,13 @@
 esp.tr <- function(vrb.st, margin){
  
  
-mub <- c("BE", "TW") 
+mub <- c("BE") 
  
 
-if(   !(margin %in% mub)    ){
+if( !(margin %in% mub) ){
  
    vrb.st <- ifelse( vrb.st > 20,   20, vrb.st )  # it was 28
    vrb.st <- ifelse( vrb.st < -13, -13, vrb.st )  # it was -17 
-   
    vrb    <- exp(vrb.st)
     
 }
@@ -24,23 +23,23 @@ if( margin %in% c("BE") ){
 
 
 
-if( margin %in% c("TW") ){
- 
- 
- 
-aTW <- 1.001  
-bTW <- 1.999
+#if( margin %in% c("TW") ){
+# 
+# 
+# 
+#aTW <- 1.001  
+#bTW <- 1.999
+#
+## sigma.stTW <- log( (sigma - aTW) / (bTW - sigma) ) # sigma = (aTW + bTW*exp(sigma.stTW))/(1 + exp(sigma.stTW))
+# 
+#   vrb.st <- ifelse( vrb.st >  15,  15, vrb.st )  
+#   vrb.st <- ifelse( vrb.st < -15, -15, vrb.st ) 
+#   vrb    <- (aTW + bTW*exp(vrb.st))/(1 + exp(vrb.st)) 
+#    
+#}
+#
 
-# sigma.stTW <- log( (sigma - aTW) / (bTW - sigma) ) # sigma = (aTW + bTW*exp(sigma.stTW))/(1 + exp(sigma.stTW))
- 
-   vrb.st <- ifelse( vrb.st >  15,  15, vrb.st )  
-   vrb.st <- ifelse( vrb.st < -15, -15, vrb.st ) 
-   vrb    <- (aTW + bTW*exp(vrb.st))/(1 + exp(vrb.st)) 
     
-}
-
-
-    
- list(vrb = vrb, vrb.st = vrb.st )  
+ list(vrb = vrb, vrb.st = vrb.st)  
  
 }    

@@ -79,6 +79,18 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
   l.flist <- length(formula)
   
   if(l.flist != 3 && margin == "TW") stop("You must specify three equations.")
+
+  if(margin == "TW"){
+  
+   formulamgcv <- formula
+   formulamgcv[[2]] <- formula[[3]]
+   formulamgcv[[3]] <- formula[[2]]
+  
+  }
+  
+  
+  
+  
   
   
   
@@ -286,7 +298,7 @@ if(surv == TRUE && margin2 %in% bl && informative == "yes"){
 
   if(margin == "TW"){
   
-  gam1TW <- eval(substitute(gam(formula, gamma = infl.fac, weights = weights, data = data, knots = knots, drop.unused.levels = drop.unused.levels, family = twlss()), list(weights = weights)))
+  gam1TW <- eval(substitute(gam(formulamgcv, gamma = infl.fac, weights = weights, data = data, knots = knots, drop.unused.levels = drop.unused.levels, family = twlss()), list(weights = weights)))
  
   # test below, Sl.sf can be set up directly or in pieces
   #if(sp.method != "perf"){ 
@@ -759,12 +771,6 @@ lsgam1 <- length(gam1$smooth)
  X1.d2 <- dim(X1)[2]
  
 
-
-
-if(margin == "TW") start.v1 <- coef(gam1TW) 
- 
- 
- 
  
  if(surv == TRUE && margin %in% bl && informative == "yes"){
  
@@ -912,19 +918,41 @@ if( l.flist > 1 && !(surv == TRUE && margin %in% bl) ){ # not used for flexible 
                       }
                       
     if(margin == "TW"){ 
-                        if(l.sp1 != 0){ sp1 <- gam1TW$sp[1:l.sp1];                                     names(sp1) <- names(gam1$sp)}
-                        if(l.sp2 != 0){ sp2 <- gam1TW$sp[(l.sp1 + 1):(l.sp1 + l.sp2)];                 names(sp2) <- names(gam2$sp)}
-                        if(l.sp3 != 0){ sp3 <- gam1TW$sp[(l.sp1 + l.sp2 + 1):(l.sp1 + l.sp2 + l.sp3)]; names(sp3) <- names(gam3$sp)}
+    
+    
+                        spmgcv <- gam1TW$sp
                         
+                        l.sp1mgcv <- l.sp1
+                        l.sp2mgcv <- l.sp3
+                        l.sp3mgcv <- l.sp2
+                        
+                        if(l.sp1 != 0){ sp1 <- spmgcv[1:l.sp1mgcv];                                                     names(sp1) <- names(gam1$sp)}
+                        if(l.sp2 != 0){ sp2 <- spmgcv[(l.sp1mgcv + l.sp2mgcv + 1):(l.sp1mgcv + l.sp2mgcv + l.sp3mgcv)]; names(sp2) <- names(gam2$sp)}
+                        if(l.sp3 != 0){ sp3 <- spmgcv[(l.sp1mgcv + 1):(l.sp1mgcv + l.sp2mgcv)];                         names(sp3) <- names(gam3$sp)}
+                        
+                        
+                        start.v1TW <- start.v1 <- coef(gam1TW) # but we need to swap sigma and nu 
+                                                               # I need dimensions of mgcv
+                                                               
+                        # X1.d2mgcv <- length(attributes(model.matrix(gam1TW))$lpi[[1]]) 
+                        # X2.d2mgcv <- length(attributes(model.matrix(gam1TW))$lpi[[2]])
+                        # X3.d2mgcv <- length(attributes(model.matrix(gam1TW))$lpi[[3]]) # to test
+                        
+                        
+                        X1.d2mgcv <- X1.d2 
+                        X2.d2mgcv <- X3.d2
+                        X3.d2mgcv <- X2.d2                       
+                                                                                       
+                        start.v1TW[(X1.d2 + 1):(X1.d2 + X2.d2)]                 <- start.v1[(X1.d2mgcv + X2.d2mgcv + 1):(X1.d2mgcv + X2.d2mgcv + X3.d2mgcv)] 
+                        start.v1TW[(X1.d2 + X2.d2 + 1):(X1.d2 + X2.d2 + X3.d2)] <- start.v1[(X1.d2mgcv + 1):(X1.d2mgcv + X2.d2mgcv)] 
+
+                        start.v1 <- start.v1TW  
+
                         names(start.v1) <- names(overall.svGR$start.v)
                         
                       }
     
-
 }
-
-
-
 
 
 ##########################################################
@@ -1238,10 +1266,12 @@ VC$margins <- c(margin, margin2)
   	if(margin %in% c(bl) && informative == "no" && type.cens == "I" && !is.null(hrate) )     func.opt1 <- bcontSurvGunivI_ExcessHazard
   	if(margin %in% c(bl) && informative == "no" && type.cens == "mixed" && !is.null(hrate) ) func.opt1 <- bcontSurvGunivMIXED_ExcessHazard
 
-      # NEW 16
-  	# Most general case possible: includes excess hazards and left-truncation, with previous functions being subcases
+    # NEW 16
+  	# LEFT TRUNCATION
+  	# Most general case possible: includes left-truncation and/or excess hazards, with previous functions being subcases
   	# (last condition which appears in if clause is temporary, needs more thought)
-  	if(margin %in% c(bl) && informative == "no" && type.cens == "mixed" && !is.null(hrate) && !is.null(truncation.time)) func.opt1 <- bcontSurvGunivMIXED_LeftTruncation
+  	if(margin %in% c(bl) && informative == "no" && type.cens == "mixed" &&  is.null(hrate) && !is.null(truncation.time)) func.opt1 <- bcontSurvGunivMIXED_LeftTruncation
+  	if(margin %in% c(bl) && informative == "no" && type.cens == "mixed" && !is.null(hrate) && !is.null(truncation.time)) func.opt1 <- bcontSurvGunivMIXED_ExcessHazard_LeftTruncation
 
   }
   

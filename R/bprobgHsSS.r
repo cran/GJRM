@@ -128,8 +128,8 @@ p2r <- probm(eta2a, VC$margins[2], only.pr = FALSE, min.dn = VC$min.dn, min.pr =
 p11a <- mm(BiCDF(p1, p2r, VC$nC, teta), min.pr = VC$min.pr, max.pr = VC$max.pr  )
 p10a <- mm(p1 - p11a, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
-c.copula.be1a  <- copgHs(p1, p2r, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$c.copula.be1
-c.copula2.be1a <- copgHs(p1, p2r, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)$c.copula2.be1
+c.copula.be1a  <- copgHs(p1, p2r, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, nu = VC$dof, nu.st = log(VC$dof - 2))$c.copula.be1
+c.copula2.be1a <- copgHs(p1, p2r, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, nu = VC$dof, nu.st = log(VC$dof - 2))$c.copula2.be1
 
 bit1.b1b1a     <- c.copula2.be1a*d.n1^2 + c.copula.be1a*der2p1.dereta12 
 bit2.b1b1a     <- -c.copula2.be1a*d.n1^2  + (1-c.copula.be1a)*der2p1.dereta12

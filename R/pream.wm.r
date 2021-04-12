@@ -3,6 +3,7 @@ pream.wm <- function(formula, margins, M, l.flist, type = "copR"){
   #if(margins[2] %in% c("GU", "rGU", "LO", "LN", "WEI","iG", "DAGUM", "SM", "BE", "FISK","TW") ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
   #scs <- c("WEI", "FISK", "LN", "LO", "N") # for survival models
   #if(M$robust == TRUE) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
+  #if(M$dep.cens == TRUE) stop("The dependent censoring case is work in progress. \nGet in touch should you wish to get more info.")
 
   
   scs <- c("WEI", "FISK") # for survival models
@@ -10,13 +11,8 @@ pream.wm <- function(formula, margins, M, l.flist, type = "copR"){
 
 
 
-
 if(type == "ord"){
 
-
-#############################################################
-#stop("Check next release for the ordinal version.") ####
-#############################################################
 
   if(M$BivD == "T" && (M$dof <=2 || M$dof > 249)) stop("dof must be a number greater than 2 and smaller than 249.")
 
@@ -26,7 +22,7 @@ if(type == "ord"){
   if(M$Model == "BSS") stop("A bivariate model for ordinal responses with non-random sample selection is not currently supported by GJRM.")
   if(M$Model %in% c("BPO", "BPO0")) stop("A bivariate model for ordinal responses with partial observability is not currently supported by GJRM.")  
   
-  if(!(M$BivD %in% c(M$opc,M$BivD2))) stop("Error in parameter BivD value. It should be one of:\nN, C0, C90, C180, C270, J0, J90, J180, J270, G0, G90, G180, G270, F, AMH, FGM, T, PL, HO,\nC0C90, C0C270, C180C90, C180C270, J0J90, J0J270, J180J90, J180J270,\nG0G90, G0G270, G180G90, G180G270.")
+  if(!(M$BivD %in% c(M$opc,M$BivD2))) stop("Error in parameter BivD value. It should be one of:\nN, C0, C90, C180, C270, GAL0, GAL90, GAL180, GAL270, J0, J90, J180, J270, G0, G90, G180, G270, F, AMH, FGM, T, PL, HO,\nC0C90, C0C270, C180C90, C180C270, GAL0GAL90, GAL0GAL270, GAL180GAL90, GAL180GAL270, J0J90, J0J270, J180J90, J180J270,\nG0G90, G0G270, G180G90, G180G270.")
   
   
   if(!(M$extra.regI %in% c("t","pC","sED"))) stop("Error in parameter extra.regI value. It should be one of:\nt, pC or sED.")
@@ -40,7 +36,6 @@ if(type == "ord"){
   if(margins[2] %in% c("TW") ) stop("Tweedie not yet allowed for. Get in touch for details.")   
   
     
-    
   if(l.flist > 2 && margins[2] %in% c(M$m2,M$m2d)){ if(l.flist!=4) stop("You need to specify four equations.") } 
   if(l.flist > 2 && margins[2] %in% M$m3         ){ if(l.flist!=5) stop("You need to specify five equations.") }  
   
@@ -53,9 +48,6 @@ if(type == "ord"){
 
   
 if(type == "biv"){ # binary - cont/discr models # 
-
-
-  if(margins[2] %in% c("TW") ) stop("Tweedie not yet allowed for. Get in touch for details.")   
 
 
   if(M$BivD == "T" && (M$dof <=2 || M$dof > 249)) stop("dof must be a number greater than 2 and smaller than 249.")
@@ -74,7 +66,7 @@ if(type == "biv"){ # binary - cont/discr models #
   if( M$Model == "BSS" && M$BivD %in% M$BivD2 ) stop("Mixed copulae can not be implemented for selection models.")
   
   
-  if(!(M$BivD %in% c(M$opc,M$BivD2))) stop("Error in parameter BivD value. It should be one of:\nN, C0, C90, C180, C270, J0, J90, J180, J270, G0, G90, G180, G270, F, AMH, FGM, T, PL, HO,\nC0C90, C0C270, C180C90, C180C270, J0J90, J0J270, J180J90, J180J270,\nG0G90, G0G270, G180G90, G180G270.")
+  if(!(M$BivD %in% c(M$opc,M$BivD2))) stop("Error in parameter BivD value. It should be one of:\nN, C0, C90, C180, C270, GAL0, GAL90, GAL180, GAL270, J0, J90, J180, J270, G0, G90, G180, G270, F, AMH, FGM, T, PL, HO,\nC0C90, C0C270, C180C90, C180C270, GAL0GAL90, GAL0GAL270, GAL180GAL90, GAL180GAL270, J0J90, J0J270, J180J90, J180J270,\nG0G90, G0G270, G180G90, G180G270.")
   
   
   if(!(M$extra.regI %in% c("t","pC","sED"))) stop("Error in parameter extra.regI value. It should be one of:\nt, pC or sED.")
@@ -178,7 +170,7 @@ if(M$surv == TRUE){
   if( margins[1] %in% c(M$m2d) && margins[2] %in% c(M$m1d) ) stop("Please swap the two equations (and hence margins' specification).\nThe second instead of the first margin has to be a two-parameter discrete distribution.")
   if( margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$m1d,M$m2d) ) stop("Please swap the two equations (and hence margins' specification).\nThe first instead of the second margin has to be discrete.")
 
-  if(!(M$BivD %in% c(M$opc,M$BivD2))) stop("Error in parameter BivD value. It should be one of:\nN, C0, C90, C180, C270, J0, J90, J180, J270, G0, G90, G180, G270, F, AMH, FGM, T, PL, HO, \nC0C90, C0C270, C180C90, C180C270, J0J90, J0J270, J180J90, J180J270,\nG0G90, G0G270, G180G90, G180G270.")
+  if(!(M$BivD %in% c(M$opc,M$BivD2))) stop("Error in parameter BivD value. It should be one of:\nN, C0, C90, C180, C270, GAL0, GAL90, GAL180, GAL270, J0, J90, J180, J270, G0, G90, G180, G270, F, AMH, FGM, T, PL, HO, \nC0C90, C0C270, C180C90, C180C270, GAL0GAL90, GAL0GAL270, GAL180GAL90, GAL180GAL270, J0J90, J0J270, J180J90, J180J270,\nG0G90, G0G270, G180G90, G180G270.")
  
   if(!(M$extra.regI %in% c("t","pC","sED"))) stop("Error in parameter extra.regI value. It should be one of:\nt, pC or sED.")
   
@@ -220,6 +212,9 @@ if(M$surv == TRUE){
 
 if( M$surv == TRUE && margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$bl) ) stop("Survival models with continuous and survival margins not ready yet.\nGet in touch to check progress.")
 
+if( margins[2] %in% c(M$m2,M$m3) && margins[1] %in% c(M$m1d,M$m2d) ) stop("The continuous - discrete margin case is not ready yet.\nGet in touch to check progress.")
+
+
 ################################################################################################################################################################################################## 
 
 
@@ -230,7 +225,7 @@ if(type == "copSS"){
 
   if(M$BivD == "T" && (M$dof <=2 || M$dof > 249)) stop("dof must be a number greater than 2 and smaller than 249.")
 
-  if(!(M$BivD %in% M$opc)) stop("Error in parameter BivD value. It should be one of: N, C0, C90, C180, C270, J0, J90, J180, J270, G0, G90, G180, G270, F, AMH, FGM, T, PL, HO.")
+  if(!(M$BivD %in% M$opc)) stop("Error in parameter BivD value. It should be one of: N, C0, C90, C180, C270, GAL0, GAL90, GAL180, GAL270, J0, J90, J180, J270, G0, G90, G180, G270, F, AMH, FGM, T, PL, HO.")
   if(!(M$extra.regI %in% c("t","pC","sED"))) stop("Error in parameter extra.regI value. It should be one of: t, pC or sED.")
   
   if(!(M$margins[1] %in% M$bl) ) stop("Error in first margin value. It should be one of:\nprobit, logit, cloglog.")

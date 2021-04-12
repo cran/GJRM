@@ -52,7 +52,7 @@ teta    <- resT$teta
   p1 <- dHs1$p2
   p2 <- dHs2$p2
   
-  dH <- copgHsAT(p1, p2, teta, VC$BivD, Ln = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  dH <- copgHsAT(p1, p2, teta, VC$BivD, Ln = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, par2 = VC$dof)
 
   c.copula2.be1be2 <- dH$c.copula2.be1be2
   
@@ -82,7 +82,7 @@ teta    <- resT$teta
  derp2.dersigma22.st          <- dHs2$derp2.dersigma.st 
  
  
- BITS <- copgHsCont(p1, p2, teta, teta.st, VC$BivD, Cont = TRUE)
+ BITS <- copgHsCont(p1, p2, teta, teta.st, VC$BivD, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2))
  
  
    der2h.derp1p1              <- BITS$der2h.derp1p1
@@ -291,7 +291,7 @@ if( VC$margins[1] == "LN" || VC$margins[2] == "LN"){
   p1 <- dHs1$p2
   p2 <- dHs2$p2
   
-  dH <- copgHsAT(p1, p2, teta, VC$BivD, Ln = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  dH <- copgHsAT(p1, p2, teta, VC$BivD, Ln = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, par2 = VC$dof)
 
   c.copula2.be1be2 <- dH$c.copula2.be1be2
   

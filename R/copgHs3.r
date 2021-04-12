@@ -9,23 +9,74 @@ copgHs3 <- function(p1, p2, eta1 = NULL, eta2 = NULL, teta, teta.st, BivD, par2 
 # Rotations
 ########################################################################################
 
-if(BivD %in% c("C90","J90","G90") ) {
+if(BivD %in% c("C90","J90","G90","GAL90") ) {
 p1 <- 1 - p1 
 teta <- -teta
 }  
 
-if(BivD %in% c("C180","J180","G180") ) {
+if(BivD %in% c("C180","J180","G180","GAL180") ) {
 p1 <- 1 - p1
 p2 <- 1 - p2
 }  
 
-if(BivD %in% c("C270","J270","G270") ) {
+if(BivD %in% c("C270","J270","G270","GAL270") ) {
 p2 <- 1 - p2 
 teta <- -teta 
 }   
    
 ########################################################################################   
 ########################################################################################
+
+
+
+if(BivD %in% c("GAL0","GAL90","GAL180","GAL270")){
+
+
+c.copula2.be2 <- p1*((teta*(1+1/teta)*(1/(-log(p1))^teta+
+1/(-log(p2))^teta)^(1/teta)-(-log(p2))^teta*(1+teta)*
+(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+1/teta))/((-log(p2))^(1+
+teta)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+1/teta))^2-
+(1-1/((-log(p2))^(1+teta)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+
+1/teta)))/((-log(p2))^(1+teta)*(1/(-log(p1))^teta+
+1/(-log(p2))^teta)^(1+1/teta)))*exp((1/(-log(p1))^teta+
+1/(-log(p2))^teta)^-(1/teta))/p2
+
+
+
+der2h.derp2p2 <- p1*(((-log(p2))^teta*(1+teta)*(1/(-log(p1))^teta+
+1/(-log(p2))^teta)^(1+1/teta)+teta*(((-log(p2))^(teta-
+1)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+1/teta)+
+(1+1/teta)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1/teta)/log(p2))*
+(1+teta)+((1/(-log(p1))^teta+1/(-log(p2))^teta)^(1/teta-
+1)/(-log(p2))^(1+teta)-(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1/teta))*
+(1+1/teta))-(2*((-log(p2))^(1+teta)*(1/(-log(p1))^teta+
+1/(-log(p2))^teta)^(1+1/teta)*(teta*(1+1/teta)*
+(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1/teta)-(-log(p2))^teta*
+(1+teta)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+
+1/teta))/((-log(p2))^(1+teta)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+
+1/teta))^2)+2/((-log(p2))^(1+teta)*(1/(-log(p1))^teta+
+1/(-log(p2))^teta)^(1+1/teta))-1)*(teta*(1+1/teta)*
+(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1/teta)-(-log(p2))^teta*
+(1+teta)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+
+1/teta)))/((-log(p2))^(1+teta)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+
+1/teta))^2+(1-1/((-log(p2))^(1+teta)*(1/(-log(p1))^teta+
+1/(-log(p2))^teta)^(1+1/teta)))/((-log(p2))^(1+teta)*
+(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+1/teta))-((teta*
+(1+1/teta)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1/teta)-
+(-log(p2))^teta*(1+teta)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+
+1/teta))/((-log(p2))^(1+teta)*(1/(-log(p1))^teta+
+1/(-log(p2))^teta)^(1+1/teta))^2-(1-1/((-log(p2))^(1+
+teta)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+1/teta)))/((-log(p2))^(1+
+teta)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+1/teta)))/((-log(p2))^(1+
+teta)*(1/(-log(p1))^teta+1/(-log(p2))^teta)^(1+1/teta)))*
+exp((1/(-log(p1))^teta+1/(-log(p2))^teta)^-(1/teta))/p2^2
+
+
+
+
+ 
+}
+
 
 
 
@@ -75,8 +126,6 @@ der2h.derp2p2 <- ((-log(p2))^(1/teta - 1) * ((-log(p1))^(1/teta) + (-log(p2))^(1
 
 
 
-
-
 if(BivD == "PL"){
 
 
@@ -86,6 +135,10 @@ if(BivD == "PL"){
     (teta - 1))) - 0.5 * ((2 * ((p1 + p2) * (teta - 1) + 1) - 
     4 * (p1 * teta))^2/(((p1 + p2) * (teta - 1) + 1)^2 - 4 * 
     (p1 * p2 * teta * (teta - 1)))^1.5)) * (teta - 1)/4) 
+
+
+
+# c.copula2.be2 wrt p2
 
 der2h.derp2p2 <- (0.5 * (2 - 1.5 * ((2 * ((p1 + p2) * (teta - 1) + 1) - 4 * (p1 * 
     teta))^2/(((p1 + p2) * (teta - 1) + 1)^2 - 4 * (p1 * p2 * 
@@ -115,7 +168,8 @@ c.copula2.be2 <- dnorm((qnorm(p1)-teta*qnorm(p2))/sqrt(1 - teta^2))  * sqrt(2*pi
 der2h.derp2p2 <-  -(teta * dnorm((qnorm(p1) - teta * qnorm(p2))/sqrt(1 - 
     teta^2)) * (qnorm(p2) + teta * (qnorm(p1) - teta * qnorm(p2))/(1 - 
     teta^2))/(dnorm(qnorm(p2))^2 * sqrt(1 - teta^2)))
-
+    
+    
 
 }
 
@@ -364,7 +418,7 @@ der2h.derp2p2 <- 0
 
 
 
-if(BivD %in% c("C90","J90","G90") ) {
+if(BivD %in% c("C90","J90","G90","GAL90") ) {
 
 
 
@@ -378,7 +432,7 @@ der2h.derp2p2  <- -der2h.derp2p2
 
 
 
-if(BivD %in% c("C180","J180","G180") ) {
+if(BivD %in% c("C180","J180","G180","GAL180") ) {
 
 der2h.derp2p2 <- -der2h.derp2p2
 
@@ -387,7 +441,7 @@ der2h.derp2p2 <- -der2h.derp2p2
 }  
 
 
-if(BivD %in% c("C270","J270","G270") ) {
+if(BivD %in% c("C270","J270","G270","GAL270") ) {
 
 
 c.copula2.be2  <- - c.copula2.be2

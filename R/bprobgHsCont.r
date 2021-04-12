@@ -76,7 +76,7 @@ teta2 <- teta[teta.ind2]
  
 if(VC$BivD %in% VC$BivD2){
 
-if(VC$BivD %in% VC$BivD2[1:4])  teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov), TRUE, FALSE)
+if(VC$BivD %in% VC$BivD2[c(1:4,13:16)])  teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov), TRUE, FALSE)
 if(VC$BivD %in% VC$BivD2[5:12]) teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov) + 1, TRUE, FALSE) 
 teta.ind2 <- teta.ind1 == FALSE 
 
@@ -319,8 +319,8 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
  p2   <- dHs$p2 
  
   
-  if( length(teta1) != 0) dH1 <- copgHsAT(p1[teta.ind1], p2[teta.ind1], teta1, Cop1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-  if( length(teta2) != 0) dH2 <- copgHsAT(p1[teta.ind2], p2[teta.ind2], teta2, Cop2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  if( length(teta1) != 0) dH1 <- copgHsAT(p1[teta.ind1], p2[teta.ind1], teta1, Cop1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, par2 = VC$dof)
+  if( length(teta2) != 0) dH2 <- copgHsAT(p1[teta.ind2], p2[teta.ind2], teta2, Cop2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, par2 = VC$dof)
    
   h <- NA
   if( length(teta1) != 0) h[teta.ind1] <- dH1$c.copula.be2 

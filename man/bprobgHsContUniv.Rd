@@ -11,6 +11,7 @@
 \alias{bcontSurvGuniv_ExcessHazard}
 \alias{bcontSurvGunivI_ExcessHazard}
 \alias{bcontSurvGunivMIXED_LeftTruncation}
+\alias{bcontSurvGunivMIXED_ExcessHazard_LeftTruncation}
 
 
 

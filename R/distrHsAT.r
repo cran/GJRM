@@ -216,10 +216,26 @@ aTW <- 1.001
 bTW <- 1.999
 
 mu         <- exp(eta2)
-nu.stTW    <- log(nu)
-sigma.stTW <- log( (sigma - aTW) / (bTW - sigma) ) 
+#nu.stTW    <- log(nu)
+#sigma.stTW <- log( (sigma - aTW) / (bTW - sigma) ) 
 
-TWob <- ldTweedie(y2, mu = mu, p = NA, phi = NA, rho = nu.stTW, theta = sigma.stTW, all.derivs = TRUE) 
+nu.stTW    <- log( (nu - aTW) / (bTW - nu) )
+sigma.stTW <- log(sigma) 
+
+
+
+
+
+
+
+
+
+#TWob <- ldTweedie(y2, mu = mu, p = NA, phi = NA, rho = nu.stTW, theta = sigma.stTW, all.derivs = TRUE) 
+
+
+TWob <- ldTweedie(y2, mu = mu, p = NA, phi = NA, rho = sigma.stTW, theta = nu.stTW, all.derivs = TRUE) 
+
+
 
 pdf2 <- exp(TWob[, 1])   
 
@@ -233,7 +249,7 @@ if(length(mu) == 1)    mu    <- rep(mu, length(y2))
 
 
  
-for(i in 1:length(y2)) p2[i] <- pTweed(y = y2[i], mu = mu[i], phi = nu[i], p = sigma[i])$d0 
+for(i in 1:length(y2)) p2[i] <- pTweed(y = y2[i], mu = mu[i], phi = sigma[i], p = nu[i])$d0 
 
 
     

@@ -65,7 +65,7 @@ teta2 <- teta[teta.ind2]
  
 if(VC$BivD %in% VC$BivD2){
 
-if(VC$BivD %in% VC$BivD2[1:4])  teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov), TRUE, FALSE)
+if(VC$BivD %in% VC$BivD2[c(1:4,13:16)])  teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov), TRUE, FALSE)
 if(VC$BivD %in% VC$BivD2[5:12]) teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov) + 1, TRUE, FALSE) 
 teta.ind2 <- teta.ind1 == FALSE 
 
@@ -431,7 +431,7 @@ if( length(teta2) != 0){der3C.derp1p1p1[teta.ind2]       <- BITS2$der3C.derp1p1p
 
 if( !(VC$BivD %in% VC$BivD2) ){ 
 
-if(VC$BivD %in% c("C90","C180","C270","J90","J180","J270","G90","G180","G270")){ 
+if(VC$BivD %in% c("GAL90","C90","GAL180","C180","GAL270","C270","J90","J180","J270","G90","G180","G270")){ 
 
     bit2rho <- VC$c10*( -(c.copula.be1)^-2 * c.copula2.be1th^2 + c.copula.be1^-1 * der3C.derp1tetateta *  derteta.derteta.st^2    - c.copula.be1^-1 * c.copula2.be1t * der2teta.derteta.stteta.st)    
     bit3rho <- VC$c01*( -(c.copula.be2)^-2 * c.copula2.be2th^2 + c.copula.be2^-1 * der2h.derteta.teta.st  *  derteta.derteta.st^2 - c.copula.be2^-1 * c.copula2.be2t * der2teta.derteta.stteta.st)
@@ -449,14 +449,14 @@ if( VC$BivD %in% VC$BivD2 ){
 
 bit2rho <- bit3rho <- NA
 
-if(Cop1 %in% c("C0","J0","G0")){ 
+if(Cop1 %in% c("GAL0","C0","J0","G0")){ 
                                                            
     bit2rho[teta.ind1] <- VC$c10[teta.ind1]*( -(c.copula.be1[teta.ind1])^-2 * c.copula2.be1th[teta.ind1]^2 + c.copula.be1[teta.ind1]^-1 * der3C.derp1tetateta[teta.ind1] *  derteta.derteta.st[teta.ind1]^2    + c.copula.be1[teta.ind1]^-1 * c.copula2.be1t[teta.ind1] * der2teta.derteta.stteta.st[teta.ind1])    
     bit3rho[teta.ind1] <- VC$c01[teta.ind1]*( -(c.copula.be2[teta.ind1])^-2 * c.copula2.be2th[teta.ind1]^2 + c.copula.be2[teta.ind1]^-1 * der2h.derteta.teta.st[teta.ind1]  *  derteta.derteta.st[teta.ind1]^2 + c.copula.be2[teta.ind1]^-1 * c.copula2.be2t[teta.ind1] * der2teta.derteta.stteta.st[teta.ind1])
                                                                                 
                                } 
 
-if(Cop1 %in% c("C180","J180","G180")){ 
+if(Cop1 %in% c("GAL180","C180","J180","G180")){ 
                                                                         
     bit2rho[teta.ind1] <- VC$c10[teta.ind1]*( -(c.copula.be1[teta.ind1])^-2 * c.copula2.be1th[teta.ind1]^2 + c.copula.be1[teta.ind1]^-1 * der3C.derp1tetateta[teta.ind1] *  derteta.derteta.st[teta.ind1]^2    - c.copula.be1[teta.ind1]^-1 * c.copula2.be1t[teta.ind1] * der2teta.derteta.stteta.st[teta.ind1])    
     bit3rho[teta.ind1] <- VC$c01[teta.ind1]*( -(c.copula.be2[teta.ind1])^-2 * c.copula2.be2th[teta.ind1]^2 + c.copula.be2[teta.ind1]^-1 * der2h.derteta.teta.st[teta.ind1]  *  derteta.derteta.st[teta.ind1]^2 - c.copula.be2[teta.ind1]^-1 * c.copula2.be2t[teta.ind1] * der2teta.derteta.stteta.st[teta.ind1])
@@ -464,7 +464,7 @@ if(Cop1 %in% c("C180","J180","G180")){
                                      } 
 
 
-if(Cop2 %in% c("C90","J90","G90","C270","J270","G270")){ 
+if(Cop2 %in% c("GAL90","C90","J90","G90","GAL270","C270","J270","G270")){ 
                                                            
     bit2rho[teta.ind2] <- VC$c10[teta.ind2]*( -(c.copula.be1[teta.ind2])^-2 * c.copula2.be1th[teta.ind2]^2 + c.copula.be1[teta.ind2]^-1 * der3C.derp1tetateta[teta.ind2] *  derteta.derteta.st[teta.ind2]^2    - c.copula.be1[teta.ind2]^-1 * c.copula2.be1t[teta.ind2] * der2teta.derteta.stteta.st[teta.ind2])    
     bit3rho[teta.ind2] <- VC$c01[teta.ind2]*( -(c.copula.be2[teta.ind2])^-2 * c.copula2.be2th[teta.ind2]^2 + c.copula.be2[teta.ind2]^-1 * der2h.derteta.teta.st[teta.ind2]  *  derteta.derteta.st[teta.ind2]^2 - c.copula.be2[teta.ind2]^-1 * c.copula2.be2t[teta.ind2] * der2teta.derteta.stteta.st[teta.ind2])
@@ -904,8 +904,8 @@ if( VC$margins[1] == "LN" || VC$margins[2] == "LN"){
   p2 <- dHs2$p2
  
  
-  if( length(teta1) != 0) dH1 <- copgHsAT(p1[teta.ind1], p2[teta.ind1], teta1, Cop1, Ln = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-  if( length(teta2) != 0) dH2 <- copgHsAT(p1[teta.ind2], p2[teta.ind2], teta2, Cop2, Ln = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  if( length(teta1) != 0) dH1 <- copgHsAT(p1[teta.ind1], p2[teta.ind1], teta1, Cop1, Ln = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, par2 = VC$dof)
+  if( length(teta2) != 0) dH2 <- copgHsAT(p1[teta.ind2], p2[teta.ind2], teta2, Cop2, Ln = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, par2 = VC$dof)
   c.copula2.be1be2 <- NA
   if( length(teta1) != 0) c.copula2.be1be2[teta.ind1] <- dH1$c.copula2.be1be2
   if( length(teta2) != 0) c.copula2.be1be2[teta.ind2] <- dH2$c.copula2.be1be2    

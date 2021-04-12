@@ -31,11 +31,11 @@ SemiParBIV <- function(formula, data = list(), weights = NULL, subset = NULL,
     
   BivD2 <- c("C0C90","C0C270","C180C90","C180C270",
              "J0J90","J0J270","J180J90","J180J270",
-             "G0G90","G0G270","G180G90","G180G270")  
+             "G0G90","G0G270","G180G90","G180G270","GAL0GAL90", "GAL0GAL270", "GAL180GAL90", "GAL180GAL270")  
   
-  opc  <- c("N","C0","C90","C180","C270","J0","J90","J180","J270","G0","G90","G180","G270","F","AMH","FGM","T","PL","HO")
-  scc  <- c("C0", "C180", "J0", "J180", "G0", "G180", BivD2)
-  sccn <- c("C90", "C270", "J90", "J270", "G90", "G270")
+  opc  <- c("N","C0","C90","C180","C270","J0","J90","J180","J270","G0","G90","G180","G270","F","AMH","FGM","T","PL","HO","GAL0", "GAL90", "GAL180", "GAL270")
+  scc  <- c("C0", "C180", "GAL0" , "GAL180","J0", "J180", "G0", "G180", BivD2)
+  sccn <- c("C90", "C270", "GAL90", "GAL270","J90", "J270", "G90", "G270")
   mb   <- c("B", "BSS", "BPO", "BPO0")
   m2   <- c("N","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP","GPII","GPo")
   m3   <- c("DAGUM","SM","TW")
@@ -49,15 +49,17 @@ SemiParBIV <- function(formula, data = list(), weights = NULL, subset = NULL,
 
   M$K1 <- NULL
   ct  <- data.frame( c(opc),
-                    c(1:14,55,56,57,60,61) 
+                    c(1:14,55,56,57,60,61,62:65) 
                      )
   cta <- data.frame( c(opc),
-                     c(1,3,23,13,33,6,26,16,36,4,24,14,34,5,55,56,2,60,61) 
+                     c(1,3,23,13,33,6,26,16,36,4,24,14,34,5,55,56,2,60,61,62:65) 
                      )                   
 if(BivD %in% BivD2){
   
   if(BivD %in% BivD2[1:4])  BivDt <- "C0" 
   if(BivD %in% BivD2[5:12]) BivDt <- "J0"
+  if(BivD %in% BivD2[13:16]) BivDt <- "C0" # useful for ass dep function but we calculate it differently, so ok like this
+
   
   nC  <-  ct[which( ct[,1]==BivDt),2]
   nCa <- cta[which(cta[,1]==BivDt),2]     
@@ -202,8 +204,14 @@ if(BivD %in% BivD2){
     
        
        if(margins[2] == "TW"){
+       
+       formulamgcv <- formula[-c(1,5)]
+       formulamgcv[[2]] <- formula[-c(1,5)][[3]]
+       formulamgcv[[3]] <- formula[-c(1,5)][[2]]
+       
+         
     
-         gam2TW <- eval(substitute(gam(formula[-c(1,5)], gamma = infl.fac, weights = weights, data = data, knots = knots, drop.unused.levels = drop.unused.levels, family = twlss()), list(weights = weights)))
+         gam2TW <- eval(substitute(gam(formulamgcv, gamma = infl.fac, weights = weights, data = data, knots = knots, drop.unused.levels = drop.unused.levels, family = twlss()), list(weights = weights)))
 
          y2b <- y2 > 0
     
@@ -359,16 +367,38 @@ vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2 = log.sig2, log.nu 
 
     if(margins[2] == "TW"){  
     
-          gamlssfit <- FALSE # no need since I already use start.v from gam2TW 
-    
-          nams <- names(start.v) 
-          start.v <- c(gam1$coefficients, gam2TW$coefficients, gam5$coefficients)
-          names(start.v) <- nams   
+      gamlssfit <- FALSE # no need since I already use start.v from gam2TW 
+      nams <- names(start.v) 
 
-          if(l.sp2 != 0){ sp2 <- gam2TW$sp[1:l.sp2];                                     names(sp2) <- names(gam2$sp)}    
-          if(l.sp3 != 0){ sp3 <- gam2TW$sp[(l.sp2 + 1):(l.sp2 + l.sp3)];                 names(sp3) <- names(gam3$sp)}
-          if(l.sp4 != 0){ sp4 <- gam2TW$sp[(l.sp2 + l.sp3 + 1):(l.sp2 + l.sp3 + l.sp4)]; names(sp4) <- names(gam4$sp)}
-                                                                                           
+    
+
+                        start.v1TW <- start.v1 <- gam2TW$coefficients 
+                                                                                       
+                        X2.d2mgcv <- X2.d2 
+                        X3.d2mgcv <- X4.d2
+                        X4.d2mgcv <- X3.d2                       
+                                 
+                        start.v1TW[1:X2.d2]                                     <- start.v1[1:X2.d2mgcv]         
+                        start.v1TW[(X2.d2 + 1):(X2.d2 + X3.d2)]                 <- start.v1[(X2.d2mgcv + X3.d2mgcv + 1):(X2.d2mgcv + X3.d2mgcv + X4.d2mgcv)] 
+                        start.v1TW[(X2.d2 + X3.d2 + 1):(X2.d2 + X3.d2 + X4.d2)] <- start.v1[(X2.d2mgcv + 1):(X2.d2mgcv + X3.d2mgcv)] 
+
+                        start.v1 <- start.v1TW  
+                        start.v <- c(gam1$coefficients, start.v1, gam5$coefficients)
+                        names(start.v) <- nams; rm(start.v1TW)  
+          
+          
+          
+                        spmgcv <- gam2TW$sp
+                        
+                        l.sp2mgcv <- l.sp2
+                        l.sp3mgcv <- l.sp4
+                        l.sp4mgcv <- l.sp3
+                        
+                        if(l.sp2 != 0){ sp2 <- spmgcv[1:l.sp2mgcv];                                                     names(sp2) <- names(gam2$sp)}
+                        if(l.sp3 != 0){ sp3 <- spmgcv[(l.sp2mgcv + l.sp3mgcv + 1):(l.sp2mgcv + l.sp3mgcv + l.sp4mgcv)]; names(sp3) <- names(gam3$sp)}
+                        if(l.sp4 != 0){ sp4 <- spmgcv[(l.sp2mgcv + 1):(l.sp2mgcv + l.sp3mgcv)];                         names(sp4) <- names(gam4$sp)}          
+          
+
                           }
 
 }  

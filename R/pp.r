@@ -19,6 +19,14 @@ if(x$univar.gamlss == TRUE) x$BivD <- "N"
   if(x$BivD=="C90")  {cop <- "90\u00B0 Clayton"   ;lind <- "log(- \u00B7)"}                 
   if(x$BivD=="C180") {cop <- "180\u00B0 Clayton"  ;lind <- "log"}                    
   if(x$BivD=="C270") {cop <- "270\u00B0 Clayton"  ;lind <- "log(- \u00B7)"}    
+
+  if(x$BivD=="GAL0")   {cop <- "Galambos"            ;lind <- "log"}   
+  if(x$BivD=="GAL90")  {cop <- "90\u00B0 Galambos"   ;lind <- "log(- \u00B7)"}                 
+  if(x$BivD=="GAL180") {cop <- "180\u00B0 Galambos"  ;lind <- "log"}                    
+  if(x$BivD=="GAL270") {cop <- "270\u00B0 Galambos"  ;lind <- "log(- \u00B7)"}    
+ 
+  
+  
   if(x$BivD=="J0")   {cop <- "Joe"                ;lind <- "log(\u00B7 - 1)"} 
   if(x$BivD=="J90")  {cop <- "90\u00B0 Joe"       ;lind <- "log(- \u00B7 - 1)"}
   if(x$BivD=="J180") {cop <- "180\u00B0 Joe"      ;lind <- "log(\u00B7 - 1)"} 
@@ -31,7 +39,15 @@ if(x$univar.gamlss == TRUE) x$BivD <- "N"
   if(x$BivD=="C0C90")    {cop <- "Clayton & 90\u00B0 Clayton"            ;lind <- "log & log(- \u00B7)"}   
   if(x$BivD=="C0C270")   {cop <- "Clayton & 270\u00B0 Clayton"           ;lind <- "log & log(- \u00B7)"}                 
   if(x$BivD=="C180C90")  {cop <- "180\u00B0 Clayton & 90\u00B0 Clayton"  ;lind <- "log & log(- \u00B7)"}                    
-  if(x$BivD=="C180C270") {cop <- "180\u00B0 Clayton & 270\u00B0 Clayton" ;lind <- "log & log(- \u00B7)"}  
+  if(x$BivD=="C180C270") {cop <- "180\u00B0 Clayton & 270\u00B0 Clayton" ;lind <- "log & log(- \u00B7)"} 
+  
+  
+  if(x$BivD=="GAL0GAL90")    {cop <- "Galambos & 90\u00B0 Galambos"            ;lind <- "log & log(- \u00B7)"}   
+  if(x$BivD=="GAL0GAL270")   {cop <- "Galambos & 270\u00B0 Galambos"           ;lind <- "log & log(- \u00B7)"}                 
+  if(x$BivD=="GAL180GAL90")  {cop <- "180\u00B0 Galambos & 90\u00B0 Galambos"  ;lind <- "log & log(- \u00B7)"}                    
+  if(x$BivD=="GAL180GAL270") {cop <- "180\u00B0 Galambos & 270\u00B0 Galambos" ;lind <- "log & log(- \u00B7)"}    
+  
+  
  
   if(x$BivD=="J0J90")    {cop <- "Joe & 90\u00B0 Joe"            ;lind <- "log(\u00B7 - 1) & log(- \u00B7 - 1)"}   
   if(x$BivD=="J0J270")   {cop <- "Joe & 270\u00B0 Joe"           ;lind <- "log(\u00B7 - 1) & log(- \u00B7 - 1)"}                 

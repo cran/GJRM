@@ -90,13 +90,15 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
 \item{gamlssfit}{If \code{gamlssfit = TRUE} then gamlss univariate models are also fitted. This is useful for obtaining 
                  starting values, for instance.}               
 
-\item{BivD}{Type of bivariate error distribution employed. Possible choices are "N", "C0", "C90", "C180", "C270", "J0", "J90", "J180", "J270", 
+\item{BivD}{Type of bivariate error distribution employed. Possible choices are "N", "C0", "C90", "C180", "C270", "GAL0", "GAL90", "GAL180", "GAL270", "J0", "J90", "J180", "J270", 
             "G0", "G90", "G180", "G270", "F", "AMH", "FGM", "T", "PL", "HO" which stand for bivariate normal, Clayton, rotated Clayton (90 degrees), 
             survival Clayton,
-             rotated Clayton (270 degrees), Joe, rotated Joe (90 degrees), survival Joe, rotated Joe (270 degrees),
+             rotated Clayton (270 degrees), Galambos, rotated Galambos (90 degrees), 
+            survival Galambos,
+             rotated Galambos (270 degrees), Joe, rotated Joe (90 degrees), survival Joe, rotated Joe (270 degrees),
              Gumbel, rotated Gumbel (90 degrees), survival Gumbel, rotated Gumbel (270 degrees), Frank, Ali-Mikhail-Haq,
-             Farlie-Gumbel-Morgenstern, Student-t with \code{dof}, Plackett, Hougaard. Each of the Clayton, Joe and Gumbel copulae is allowed to be mixed with a rotated version of the same
-family. The options are: "C0C90", "C0C270", "C180C90", "C180C270", "G0G90", "G0G270", "G180G90",
+             Farlie-Gumbel-Morgenstern, Student-t with \code{dof}, Plackett, Hougaard. Each of the Clayton, Galambos, Joe and Gumbel copulae is allowed to be mixed with a rotated version of the same
+family. The options are: "C0C90", "C0C270", "C180C90", "C180C270",  "GAL0GAL90", "GAL0GAL270", "GAL180GAL90", "GAL180GAL270", "G0G90", "G0G270", "G180G90",
 "G180G270", "J0J90", "J0J270", "J180J90" and "J180J270". This allows the user to model negative and positive tail dependencies.}            
 
 \item{fp}{If \code{TRUE} then a fully parametric model with unpenalised regression splines if fitted. See the Example 2 below.}              

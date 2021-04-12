@@ -6,17 +6,17 @@ copgHsCond <- function(p1, p2, teta, dof = 3, BivD, min.pr, max.pr){
 # Rotations
 ########################################################################################
 
-if(BivD %in% c("C90","J90","G90") ) {
+if(BivD %in% c("C90","J90","G90","GAL90") ) {
 p1 <- 1 - p1 
 teta <- -teta
 }  
 
-if(BivD %in% c("C180","J180","G180") ) {
+if(BivD %in% c("C180","J180","G180","GAL180") ) {
 p1 <- 1 - p1
 p2 <- 1 - p2
 }  
 
-if(BivD %in% c("C270","J270","G270") ) {
+if(BivD %in% c("C270","J270","G270","GAL270") ) {
 p2 <- 1 - p2 
 teta <- -teta 
 }   
@@ -105,6 +105,20 @@ c.copula.be2 <- (p1^(-teta) + p2^(-teta) - 1)^((-1/teta) - 1) * ((-1/teta) * (p2
 }
 
 
+if(BivD %in% c("GAL0","GAL90","GAL180","GAL270")){
+
+c.copula.be1 <- p2*(1-1/((-log(p1))^(1+teta)*(1/(-log(p1))^teta+
+1/(-log(p2))^teta)^(1+1/teta)))*exp((1/(-log(p1))^teta+
+1/(-log(p2))^teta)^-(1/teta))
+
+c.copula.be2 <- p1*(1-1/((-log(p2))^(1+teta)*(1/(-log(p1))^teta+
+1/(-log(p2))^teta)^(1+1/teta)))*exp((1/(-log(p1))^teta+
+1/(-log(p2))^teta)^-(1/teta))
+  
+      
+}
+
+
 
 
 
@@ -178,7 +192,7 @@ if(BivD == "FGM"){
 
 
 
-if(BivD %in% c("C90","J90","G90") ) {
+if(BivD %in% c("C90","J90","G90","GAL90") ) {
 
 c.copula.be2     <- 1 - c.copula.be2
 
@@ -186,7 +200,7 @@ c.copula.be2     <- 1 - c.copula.be2
 
 
 
-if(BivD %in% c("C180","J180","G180") ) {
+if(BivD %in% c("C180","J180","G180","GAL180") ) {
 
 c.copula.be1     <- 1 - c.copula.be1 
 c.copula.be2     <- 1 - c.copula.be2
@@ -194,7 +208,7 @@ c.copula.be2     <- 1 - c.copula.be2
 }  
 
 
-if(BivD %in% c("C270","J270","G270") ) {
+if(BivD %in% c("C270","J270","G270","GAL270") ) {
 
 c.copula.be1     <- 1 - c.copula.be1
 

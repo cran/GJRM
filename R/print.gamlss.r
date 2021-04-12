@@ -50,13 +50,15 @@ if( x$margins[1] %in% cont3par){
      
   cat("\nEQUATION 2")
   
-  if(!(x$margins[1] %in% c("TW"))) cat("\nLink function for sigma:","log","\n") else cat("\nLink function for sigma:","qlogis","\n")  
+  #if(!(x$margins[1] %in% c("TW"))) 
+  cat("\nLink function for sigma:","log","\n") #else cat("\nLink function for sigma:","qlogis","\n")  
   
   cat("Formula: "); print(x$formula[[2]]) 
   
   
   cat("\nEQUATION 3")
-  cat("\nLink function for nu:","log","\n") 
+  if(!(x$margins[1] %in% c("TW"))) cat("\nLink function for nu:","log","\n") 
+  if(  x$margins[1] %in% c("TW"))  cat("\nLink function for nu:","qlogis","\n") 
   cat("Formula: "); print(x$formula[[3]]) 
      
      }

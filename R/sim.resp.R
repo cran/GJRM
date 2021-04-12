@@ -43,13 +43,13 @@ if(margin == "GAi")   y <- rGA(   rsim,    mu =     eta,     sigma = sigma2)
 if(margin == "TW"){    
 
 
-     if(rsim == 1) y <- rTweedie(mu = exp(eta), p = sigma2, phi = nu)
+     if(rsim == 1) y <- rTweedie(mu = exp(eta), phi = sigma2, p = nu)
      
      if(rsim > 1){
            y <- NA
            if(length(sigma2) == 1) sigma2 <- rep(sigma2, rsim) 
            if(length(nu)     == 1) nu     <- rep(nu, rsim) 
-           for(i in 1:rsim) y[i] <- rTweedie(mu = exp(eta[i]), p = sigma2[i], phi = nu[i])                
+           for(i in 1:rsim) y[i] <- rTweedie(mu = exp(eta[i]), phi = sigma2[i], p = nu[i])                
                  }     
      
 }

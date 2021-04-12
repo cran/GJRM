@@ -55,18 +55,19 @@ selection is also possible via the use of shrinakge smoothers and/or information
 
 \author{
 
-Giampiero Marra (University College London, Department of Statistical Science) and Rosalba Radice (Cass Business School, City, University of London)
+Giampiero Marra (University College London, Department of Statistical Science) and Rosalba Radice (Business School, City, University of London)
 
 with contributions from Panagiota Filippou (specifically on the trivariate binary models), Francesco Donat (on the bivariate models with ordinal and 
 continuous margins), Matteo Fasiolo (for the implementation of the pdf and cdf, and related 
-derivatives, of the Tweedie distribution), and Alessia Eletti (on survival models with mixed censoring and excess hazards).
+derivatives, of the Tweedie distribution), Alessia Eletti (on survival models with mixed censoring and excess hazards), Kiron Das
+(for help with the implementation of the Galambos copula), and Eva Cantoni and William Aeberhard (for help with the implementation of the robust gamlss).
 
-Thanks to: Bear Braumoeller for suggesting the implementation of 
+Thanks to Bear Braumoeller for suggesting the implementation of 
 bivariate models with partial observability, and Carmen Cadarso for suggesting the inclusion of various modelling extensions.
 
 Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
-Part funded by EPSRC: EP/J006742/1
+Part funded by EPSRC: EP/J006742/1 and EP/T033061/1
 
 }
 
@@ -75,7 +76,9 @@ Part funded by EPSRC: EP/J006742/1
 
 Key methodological references:
 
-Dettoni R., Marra G., Radice R. (in press), Generalized Link-Based Additive Survival Models with Informative Censoring. \emph{Journal of Computational and Graphical Statistics}.
+Aeberhard W.H., Cantoni E., Marra G., Radice R. (2021), Robust Fitting for Generalized Additive Models for Location, Scale and Shape. \emph{Statistics and Computing}, 31(11), 1-16.
+
+Dettoni R., Marra G., Radice R. (2020), Generalized Link-Based Additive Survival Models with Informative Censoring. \emph{Journal of Computational and Graphical Statistics}, 29(3), 503-512.
 
 Filippou P., Kneib T., Marra G., Radice R. (2019), A Trivariate Additive Regression Model with Arbitrary Link Functions and Varying Correlation Matrix. \emph{Journal of Statistical Planning and Inference}, 199, 236-248.
 
@@ -84,6 +87,8 @@ Filippou P., Marra G., Radice R. (2017), Penalized Likelihood Estimation of a Tr
 Gomes M., Radice R., Camarena-Brenes J., Marra G. (2019), Copula Selection Models for Non-Gaussian Outcomes that Are Missing Not at Random. \emph{Statistics in Medicine}, 38(3), 480-496.
 
 Klein N., Kneib T., Marra G., Radice R., Rokicki S., McGovern M.E. (2019), Mixed Binary-Continuous Copula Regression Models with Application to Adverse Birth Outcomes. \emph{Statistics in Medicine}, 38(3), 413-436.
+
+Marra G., Farcomeni A., Radice R. (2021), Link-Based Survival Additive Models under Mixed Censoring to Assess Risks of Hospital-Acquired Infections. \emph{Computational Statistics and Data Analysis}, 155, 107092.
 
 Marra G., Radice R. (2011), Estimation of a Semiparametric Recursive Bivariate Probit in the Presence of Endogeneity. \emph{Canadian Journal of Statistics}, 39(2), 259-279.
 
@@ -99,7 +104,7 @@ Marra G., Radice R., Barnighausen T., Wood S.N., McGovern M.E. (2017), A Simulta
 
 Marra G., Radice R., Filippou P. (2017), Testing the Hypothesis of Exogeneity in Regression Spline Bivariate Probit Models. \emph{Communications in Statistics - Simulation and Computation}, 46(3), 2283-2298.
 
-Marra G., Radice R., Zimmer D. (in press), Estimating the Binary Endogenous Effect of Insurance on Doctor Visits by Copula-Based Regression Additive Models. \emph{Journal of the Royal Statistical Society Series C}.
+Marra G., Radice R., Zimmer D. (2020), Estimating the Binary Endogenous Effect of Insurance on Doctor Visits by Copula-Based Regression Additive Models. \emph{Journal of the Royal Statistical Society Series C}, 69(4), 953-971.
 
 Marra G., Wyszynski K. (2016), Semi-Parametric Copula Sample Selection Models for Count Responses. \emph{Computational Statistics and Data Analysis}, 104, 110-129.
 

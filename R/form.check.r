@@ -1,4 +1,4 @@
-form.check <- function(formula, l.flist, gamlss = FALSE){
+form.check <- function(formula, l.flist, gamlss = FALSE, ROY = FALSE){
  
     if(l.flist > 1 && gamlss == TRUE){
     
@@ -11,8 +11,13 @@ form.check <- function(formula, l.flist, gamlss = FALSE){
  
     if(l.flist > 2){
     
+    
+    if(ROY == FALSE){
+    
     f3t <- try(formula[[3]][[3]], silent = TRUE)  
     if(class(f3t)!="try-error") stop("The third equation does not require a response.")
+    
+    }
     
     	if(l.flist > 3){
     	
@@ -41,7 +46,14 @@ form.check <- function(formula, l.flist, gamlss = FALSE){
     f8t <- try(formula[[8]][[3]], silent = TRUE)  
     if(class(f8t)!="try-error") stop("The eighth equation does not require a response.")   
     			
-    		}  			
+    		  
+    		
+              		      if(l.flist > 8){
+        			
+    f9t <- try(formula[[9]][[3]], silent = TRUE)  
+    if(class(f9t)!="try-error") stop("The ninth equation does not require a response.")   
+    			
+    		}  		
     			
     			
     			
@@ -52,6 +64,8 @@ form.check <- function(formula, l.flist, gamlss = FALSE){
     					}
     				}    				
                             }
+
+}
 
 
 }

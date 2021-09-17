@@ -48,7 +48,8 @@ gamlss(formula, data = list(), weights = NULL, subset = NULL,
                generelised Pareto II ("GPII") where the shape parameter is forced to be > -0.5, 
                generelised Pareto (with orthogonal parametrisation) ("GPo") where the shape parameter is forced to be > -0.5,
                discrete generelised Pareto ("DGP"),
-               discrete generelised Pareto II ("DGPII") where the shape parameter is forced to be positive, logistic ("LO"), Weibull ("WEI"), inverse Gaussian ("iG"), gamma ("GA"), Dagum ("DAGUM"), 
+               discrete generelised Pareto II ("DGPII") where the shape parameter is forced to be positive, discrete generelised Pareto derived
+               under the scenario in which shape = 0 ("DGP0"), logistic ("LO"), Weibull ("WEI"), inverse Gaussian ("iG"), gamma ("GA"), Dagum ("DAGUM"), 
                Singh-Maddala ("SM"), beta ("BE"), Fisk ("FISK", also known as log-logistic distribution), Poisson ("PO"), zero truncated 
                Poisson ("ZTP"), negative binomial - type I ("NBI"), negative 
                binomial - type II ("NBII"), Poisson inverse Gaussian ("PIG"), generalised extreme value link function ("GEVlink", this 
@@ -99,7 +100,7 @@ documentation of \code{trust} for more details.}
       
 \item{chunk.size}{This is used for discrete robust models.}  
 
-\item{k.tvc}{Only used for tvc ps smoothers when using survival models.}  
+\item{k.tvc}{Experimental. Only used for tvc ps smoothers when using survival models.}  
 
 \item{knots}{Optional list containing user specified knot values to be used for basis construction.}
   
@@ -194,11 +195,13 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 \references{
 
-Marra G. and Radice R. (2017), Bivariate Copula Additive Models for Location, Scale and Shape. \emph{Computational Statistics and Data Analysis}, 112, 99-113.
+Marra G., Farcomeni A., Radice R. (2021), Link-Based Survival Additive Models under Mixed Censoring to Assess Risks of Hospital-Acquired Infections. \emph{Computational Statistics and Data Analysis}, 155, 107092.
 
-Rigby R.A. and Stasinopoulos D.M. (2005). Generalized additive models for location, scale and shape (with discussion). \emph{Journal of the Royal Statistical Society, Series C}, 54(3), 507-554.
+Marra G., Radice R. (2017), Bivariate Copula Additive Models for Location, Scale and Shape. \emph{Computational Statistics and Data Analysis}, 112, 99-113.
 
-Calabrese R., Marra G. and Osmetti SA (2016), Bankruptcy Prediction of Small and Medium Enterprises Using a Flexible Binary Generalized Extreme Value Model. \emph{Journal of the Operational Research Society}, 67(4), 604-615.
+Rigby R.A., Stasinopoulos D.M. (2005). Generalized additive models for location, scale and shape (with discussion). \emph{Journal of the Royal Statistical Society, Series C}, 54(3), 507-554.
+
+Calabrese R., Marra G., Osmetti SA (2016), Bankruptcy Prediction of Small and Medium Enterprises Using a Flexible Binary Generalized Extreme Value Model. \emph{Journal of the Operational Research Society}, 67(4), 604-615.
 
 Marincioni V., Marra G., Altamirano-Medina H. (2018), Development of Predictive Models for the Probabilistic Moisture Risk Assessment of Internal Wall Insulation. \emph{Building and Environment}, 137, 5257-267. 
 

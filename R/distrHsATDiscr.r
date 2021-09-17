@@ -32,7 +32,7 @@ if( margin2 %in% c("DGP","DGPII") ){
 
 
 if( margin2 == "DGP" )   mu2 <- c(eta2)
-if( margin2 == "DGPII" ) mu2 <- c(eta2^2)
+if( margin2 == "DGPII" ) mu2 <- c(exp(eta2)) # mu2 <- c(eta2^2)
 
 
 
@@ -163,9 +163,39 @@ pdf2     <- as.numeric( pdf2FUNC2(y2, mu2) )
 if(robust == FALSE) p2  <- rowSums( matrix(as.numeric( pdf2FUNC2(y2m, mu2)),dim(y2m)[1],dim(y2m)[2]), na.rm = TRUE ) 
 
 
+}
+
+
+
+if(margin2 == "DGP0"){
+
+
+mu2 <- c(exp(eta2))
+     
+if(max(y2) > 170){
+
+prec <- pmax(53, getPrec(mu2), getPrec(y2))
+        
+mu2 <- mpfr(mu2, prec)
+y2  <- mpfr( y2, prec)        
+        
+} 
+
+
+pdf2FUNC2 <- function(y2, mu2) exp(-y2/mu2) - exp(-(y2+1)/mu2) 
+pdf2     <- as.numeric( pdf2FUNC2(y2, mu2) ) 
+
+if(robust == FALSE) p2  <- rowSums( matrix(as.numeric( pdf2FUNC2(y2m, mu2)),dim(y2m)[1],dim(y2m)[2]), na.rm = TRUE ) 
 
 
 }
+
+
+
+
+
+
+
 
 
 

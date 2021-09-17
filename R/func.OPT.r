@@ -1,6 +1,23 @@
 func.OPT <- function(margins, M, type = "copR"){
   
+if(type == "ROY"){
+
+  if(margins[2] %in% M$m1d && margins[3] %in% M$m1d) func.opt <- bprobgHsDiscr1ROY
+  if(margins[2] %in% M$m2d && margins[3] %in% M$m2d) func.opt <- bprobgHsDiscr2ROY
   
+  if(margins[2] %in% M$m2  && margins[3] %in% M$m2 ) func.opt <- bprobgHsCont2ROY
+  if(margins[2] %in% M$m3  && margins[3] %in% M$m3 ) func.opt <- bprobgHsCont3ROY
+  
+  if(margins[2] %in% M$bl  && margins[3] %in% M$bl ) func.opt <- bprobgHsBinROY  
+
+  
+  # mixed cases like m1 and m2 not done at the moment as they may not be plausible empirically
+    
+  
+}  
+  
+  
+
 if(type == "biv"){
 
   if(M$Model=="B" && margins[2] %in% M$bl  &&  is.null(M$theta.fx)) func.opt <- bprobgHs   
@@ -57,6 +74,19 @@ if(type == "copR"){
   
   if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE && M$dep.cens == FALSE)  func.opt <- bcontSurvG
   
+  
+  # *** NEW ***
+  # New function - includes all types of censoring ***
+
+  if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE && M$dep.cens == FALSE 
+     && M$type.cens1 == 'mixed' && M$type.cens2 == 'mixed')  func.opt <- bcontSurvG_extended
+  
+  # **************************************************  
+  
+  
+  
+  
+  
    if(margins[1] %in% M$m2 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont2Surv # not really used
   #if(margins[1] %in% M$m3 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont3Surv # not really used
   
@@ -70,12 +100,13 @@ if(type == "copR"){
 if(type == "copSS"){
 
 
-  if(margins[2] %in% M$m2  ) func.opt <- bprobgHsContSS    
-  if(margins[2] %in% M$m3  ) func.opt <- bprobgHsCont3SS  
+  if(margins[2] %in% M$m2    ) func.opt <- bprobgHsContSS    
+  if(margins[2] %in% M$m3    ) func.opt <- bprobgHsCont3SS  
   
-  if(margins[2] %in% M$m1d  ) func.opt <- bprobgHsDiscr1SS
-  if(margins[2] %in% M$m2d  ) func.opt <- bprobgHsDiscr2SS  
-
+  if(margins[2] %in% M$m1d   ) func.opt <- bprobgHsDiscr1SS
+  if(margins[2] %in% M$m2d   ) func.opt <- bprobgHsDiscr2SS  
+  if(margins[2] %in% c("TW") ) func.opt <- bprobgHsCont3binTWSS  
+  
 
 }
   

@@ -15,8 +15,8 @@ SemiParBIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   
   y00 <- y10 <- y0p <- y1p <- gam2TW <- NULL # for binary - tweedie margins 
   
-  end <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- i.rho <- 0
-  gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- gamlss2 <- dof.st <- NULL
+  end <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- l.sp9 <- i.rho <- 0
+  gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- gam9 <- gamlss2 <- dof.st <- NULL
   gamlss2 <- NULL
   sp1 <- sp2 <- c.gam2 <-  X2s <- X3s <- NULL
   sp3 <- gp3 <- gam3 <- X3 <- NULL  
@@ -39,7 +39,7 @@ SemiParBIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   mb   <- c("B", "BSS", "BPO", "BPO0")
   m2   <- c("N","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP","GPII","GPo")
   m3   <- c("DAGUM","SM","TW")
-  m1d  <- c("PO", "ZTP") 
+  m1d  <- c("PO", "ZTP","DGP0") 
   m2d  <- c("NBI", "NBII", "PIG","DGP","DGPII") 
   bl   <- c("probit", "logit", "cloglog") # , "cauchit")   
   M    <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, BivD = BivD, 
@@ -240,7 +240,7 @@ if(BivD %in% BivD2){
 # TEST
 ######
 X2s <- try(predict.gam(gam2, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
-if(any(class(X2s)=="try-error")) stop("Check that the numbers of factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?SemiParBIV for more information.") 
+if(any(class(X2s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
 ######  
   
   X2.d2 <- length(gam2$coefficients)
@@ -345,7 +345,7 @@ if(l.flist > 2){
 if(margins[2] == "TW") log.nu <- log.sig2 <- 0.1
 
  
-vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2 = log.sig2, log.nu = log.nu, n = n, drop.unused.levels = drop.unused.levels)  
+    vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2 = log.sig2, log.nu = log.nu, n = n, drop.unused.levels = drop.unused.levels)  # for TW
   
     overall.svGR <- overall.svG(formula, data, ngc = 2, margins, M, vo, gam1, gam2, type = "biv", inde = inde, c.gam2 = c.gam2, knots = knots)
     
@@ -409,16 +409,17 @@ vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2 = log.sig2, log.nu 
 ##########################################################
   
 GAM <- list(gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, 
-            gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8)   
+            gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8, gam9 = gam9)   
 
 
 if( (l.sp1!=0 || l.sp2!=0 || l.sp3!=0 || l.sp4!=0 || l.sp5!=0 || l.sp6!=0 || l.sp7!=0 || l.sp8!=0) && fp==FALSE ){ 
 
 L.GAM <- list(l.gam1 = length(gam1$coefficients), l.gam2 = length(gam2$coefficients), l.gam3 = length(gam3$coefficients), l.gam4 = length(gam4$coefficients),
-              l.gam5 = length(gam5$coefficients), l.gam6 = length(gam6$coefficients), l.gam7 = length(gam7$coefficients), l.gam8 = length(gam8$coefficients))
+              l.gam5 = length(gam5$coefficients), l.gam6 = length(gam6$coefficients), l.gam7 = length(gam7$coefficients), l.gam8 = length(gam8$coefficients),
+              l.gam9 = 0)
 
 L.SP <- list(l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, l.sp4 = l.sp4, 
-             l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8)
+             l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8, l.sp9 = l.sp9)
 
                  sp <- c(sp1, sp2, sp3, sp4, sp5, sp6, sp7, sp8)
                  qu.mag <- S.m(GAM, L.SP, L.GAM)                             
@@ -450,6 +451,8 @@ if(missing(parscale)) parscale <- 1
   lsgam6 <- length(gam6$smooth)
   lsgam7 <- length(gam7$smooth)
   lsgam8 <- length(gam8$smooth)
+  lsgam9 <- length(gam9$smooth)
+
 
   VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL,K1 = NULL,
              lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
@@ -458,7 +461,7 @@ if(missing(parscale)) parscale <- 1
              lsgam5 = lsgam5,
              lsgam6 = lsgam6,
              lsgam7 = lsgam7,
-             lsgam8 = lsgam8, 
+             lsgam8 = lsgam8, lsgam9 = lsgam9, 
              X1 = X1, inde = inde,my.env=my.env,
              X2 = X2, 
              X3 = X3,
@@ -491,6 +494,7 @@ if(missing(parscale)) parscale <- 1
              l.sp6 = l.sp6,    
              l.sp7 = l.sp7,
              l.sp8 = l.sp8, 
+             l.sp9 = 0,
              infl.fac = infl.fac,
              weights = weights,
              fp = fp, univ.gamls = FALSE,
@@ -609,13 +613,13 @@ environment(formula.aux[[2]]) <- environment(formula[[2]])
 
 L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, SemiParFit = SemiParFit, mice.formula = formula.aux,
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, robust = FALSE,
-          gam7 = gam7, gam8 = gam8, gam2TW = gam2TW,
+          gam7 = gam7, gam8 = gam8, gam9 = gam9, gam2TW = gam2TW,
           coefficients = SemiParFit$fit$argument, coef.t = NULL, iterlimsp = iterlimsp,
           weights = weights, 
           sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, 
           l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, 
           l.sp4 = l.sp4, l.sp5 = l.sp5, l.sp6 = l.sp6,
-          l.sp7 = l.sp7, l.sp8 = l.sp8, bl = bl,
+          l.sp7 = l.sp7, l.sp8 = l.sp8, l.sp9 = l.sp9, bl = bl,
           fp = fp,  
           iter.if = SemiParFit$iter.if, iter.inner = SemiParFit$iter.inner,
           theta = SemiParFit.p$theta, 

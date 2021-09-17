@@ -16,8 +16,8 @@ der2p2.dernu.st2            = 1
 der2p2.dereta2dernu.st      = 1
 der2p2.dersigma2.stdernu.st = 1
 
-cont1par <- c("PO","ZTP")
-cont2par <- c("NBI","NBII","NBIa","NBIIa","PIG","PO","ZTP","DGP","DGPII")
+cont1par <- c("PO","ZTP","DGP0")
+cont2par <- c("NBI","NBII","NBIa","NBIIa","PIG","PO","ZTP","DGP","DGPII","DGP0")
 cont3par <- c("DEL","SICHEL")
 
 # library(Deriv); library(numDeriv)
@@ -169,6 +169,72 @@ der2p2.derdermu2sigma2 <- 0
 
 
 ####
+####
+
+
+if(margin2 == "DGP0"){
+
+mu2 <- exp(eta2) # this is sigma in the notation of the distribution
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2)
+
+dersigma2.dersigma2.st  <- 0  
+dersigma2.dersigma2.st2 <- 0
+
+
+if(max(y2) > 170){
+
+prec <- pmax(53, getPrec(mu2), getPrec(y2))
+        
+mu2 <- mpfr(mu2, prec)
+y2  <- mpfr( y2, prec)        
+        
+}        
+     
+     
+pdf2FUNCdgp0 <- function(y2, mu2) exp(-y2/mu2) - exp(-(y2+1)/mu2)  
+pdf2        <- as.numeric( pdf2FUNCdgp0(y2, mu2) )      
+     
+     
+derpdf2.dermu2FUNCdgp0 <- function(y2, mu2) (y2 * exp(-(y2/mu2)) - (1 + y2) * exp(-((1 + y2)/mu2)))/mu2^2 
+derpdf2.dermu2       <- as.numeric( derpdf2.dermu2FUNCdgp0(y2, mu2) )
+    
+der2pdf2.dermu2FUNCdgp0 <- function(y2, mu2) ((y2^2 * exp(-(y2/mu2)) - (1 + y2)^2 * exp(-((1 + y2)/mu2)))/mu2 - 2 * (y2 * exp(-(y2/mu2)) - (1 + y2) * exp(-((1 + y2)/mu2))))/mu2^3  
+der2pdf2.dermu2       <- as.numeric( der2pdf2.dermu2FUNCdgp0(y2, mu2) )
+    
+derpdf2.sigma2        <- 0
+der2pdf2.dersigma22   <- 0
+der2pdf2.mu2dersigma2 <- 0
+
+
+
+if(naive == FALSE){   # needs y2m 
+ 
+mu2 <- c(mu2) 
+
+p2  <- rowSums( matrix(as.numeric(pdf2FUNCdgp0(y2m, mu2)),dim(y2m)[1],dim(y2m)[2]), na.rm = TRUE )
+
+derp2.dermu2           <- rowSums( matrix(as.numeric(derpdf2.dermu2FUNCdgp0(y2m, mu2)), dim(y2m)[1],dim(y2m)[2]), na.rm = TRUE ) 
+derp2.dersigma2        <- 0
+der2p2.dermu22         <- rowSums( matrix(as.numeric(der2pdf2.dermu2FUNCdgp0(y2m, mu2)),dim(y2m)[1],dim(y2m)[2]), na.rm = TRUE ) 
+der2p2.dersigma22      <- 0
+der2p2.derdermu2sigma2 <- 0
+
+
+                      
+    
+                   }
+
+}
+
+
+
+
+
+###
+###
+
+
 
 
 # 11 oct 2018, decided to use all numerical, balancing several things
@@ -366,9 +432,13 @@ der2mu2.dereta2eta2     <- 0
 
 if(margin2 == "DGPII"){
 
-                   mu2  <- eta2^2 # exi
-dermu2.dereta2          <- 2*eta2
-der2mu2.dereta2eta2     <- 2 
+#                   mu2  <- eta2^2 # exi
+#dermu2.dereta2          <- 2*eta2
+#der2mu2.dereta2eta2     <- 2 
+
+                   mu2  <- exp(eta2) # exi
+dermu2.dereta2          <- exp(eta2)
+der2mu2.dereta2eta2     <- exp(eta2)
 
 }
 

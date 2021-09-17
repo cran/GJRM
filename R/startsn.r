@@ -27,7 +27,7 @@ log.nu.1 <- NULL
 		if( margins %in% c("GA","GAi") )          log.sig2.1 <- log( sqrt( var(y1)/mean(y1)^2 )                          )
         	if( margins %in% c("DAGUM","SM","FISK") ) log.sig2.1 <- log( sqrt(2)                                      )  # log(0.01) #  log(sqrt(2))       # 0.1  
         	if( margins %in% c("BE"))                 log.sig2.1 <- qlogis( sqrt( var(y1)/( mean(y1)*(1-mean(y1)) ) )         ) 
-        	if( margins %in% c("DGP","DGPII", "GP","GPII","GPo"))          log.sig2.1 <- log(    mean((y1 + mean(y1))/2)^2                 )      
+        	if( margins %in% c("DGP","DGPII", "GP","GPII","GPo")) log.sig2.1 <- log(    mean((y1 + mean(y1))/2)^2                 )      
         	
         	
         	

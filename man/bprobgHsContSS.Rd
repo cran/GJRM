@@ -1,6 +1,7 @@
 \name{bprobgHsContSS}
 \alias{bprobgHsContSS}
 \alias{bprobgHsCont3SS}
+\alias{bprobgHsCont3binTWSS}
 
 \title{Internal Function}
 

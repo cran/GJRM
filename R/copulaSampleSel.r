@@ -17,17 +17,20 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   # stop("check next release")
   
   i.rho <- sp <- qu.mag <- qu.mag1 <- qu.mag2 <- n.sel <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- inde <- y2m <- NULL  
-  end <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- 0
+  end <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- l.sp9 <- 0
   ngc <- 2
-  gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- NULL
+  gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- gam9 <- gam2AUX <- NULL
   sp1 <- sp2 <- NULL
   sp3 <- gp3 <- gam3 <- X3 <- NULL  
   sp4 <- gp4 <- gam4 <- X4 <- NULL  
   sp5 <- gp5 <- gam5 <- X5 <- NULL   
   sp6 <- gp6 <- gam6 <- X6 <- NULL  
   sp7 <- gp7 <- gam7 <- X7 <- NULL
-  sp8 <- gp8 <- gam8 <- X8 <- NULL     
+  sp8 <- gp8 <- gam8 <- X8 <- NULL  
+  gamlssfit <- FALSE  
+
   dataset <- gamlss <- NULL
+  y10 <- y1p <- NULL
   
   Sl.sf <- NULL
   sp.method <- "perf"
@@ -46,7 +49,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   sccn <- c("C90", "C270", "GAL90", "GAL270", "J90", "J270", "G90", "G270")
   m2   <- c("N","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP","GPII","GPo")
   m3   <- c("DAGUM","SM","TW")
-  m1d  <- c("PO", "ZTP")
+  m1d  <- c("PO", "ZTP","DGP0")
   m2d  <- c("NBI","NBII","PIG","DGP", "DGPII")
   m3d  <- NULL
   bl   <- c("probit", "logit", "cloglog")
@@ -183,12 +186,37 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
     cy <- 1 - y1  
     
     y2 <- y2.test 
-    # y2 <- y2[inde] 
     if( margins[2] %in% c("LN") ) y2 <- log(y2) 
-  
-#######################################################################
-# Starting values for dependence parameter and main coefficients
-#######################################################################
+ 
+
+    if(margins[2] == "TW"){
+       
+       formulaTW         <- formula[-c(1,5)]
+
+         gam2TW <- eval(substitute(gamlss(formulaTW, margin = "TW", infl.fac = infl.fac, weights = weights, data = data, subset=inde, knots = knots, drop.unused.levels = drop.unused.levels), list(weights = weights, inde = inde)))
+    
+         y10 <- y2 == 0 
+         y1p <- y2  > 0     
+    
+    }
+    
+    if(margins[2] != "TW"){
+       
+      if(l.flist == 2) formulaAUX <- formula[-c(1)] else formulaAUX <- formula[-c(1, l.flist)] 
+
+         gam2AUX <- eval(substitute(gamlss(formulaAUX, margin = margins[2], infl.fac = infl.fac, weights = weights, data = data, subset=inde, knots = knots, drop.unused.levels = drop.unused.levels), list(weights = weights, inde = inde)))
+         if(l.sp2 != 0) sp2 <- gam2AUX$sp[1:l.sp2]     
+    
+    }    
+
+
+ 
+ 
+ 
+ 
+#############################################################################################################
+# Starting values for dependence parameter and main coefficients (the latter is descarded however, 14/9/2021)
+#############################################################################################################
 
   form.eq2imr <- update.formula(formula.eq2, ~. + imrGUANN) 
   p.g1 <- predict.gam(gam1)
@@ -211,31 +239,68 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
 # Starting values for whole parameter vector
 ##############################################################
  
+
+if(margins[2] != "TW"){  
+
+ 
 log.nu.2 <- log.sig2.2 <- NULL
 
+
+#if( !(margins[2] %in% c(m1d)) ){
+#
+#start.snR <- startsn(margins[2], y2)
+#    
+#log.sig2.2 <- start.snR$log.sig2.1; names(log.sig2.2) <- "sigma.star"
+#if( margins[2] %in% c(m3) ){ log.nu.2 <- start.snR$log.nu.1; names(log.nu.2)   <- "nu.star"}     
+#
+#                               }
+                                                         
+#*** ALTERNATIVE ***# this is naive but it takes into account covariates at least
+
 if( !(margins[2] %in% c(m1d)) ){
-
-start.snR <- startsn(margins[2], y2)
     
-log.sig2.2 <- start.snR$log.sig2.1; names(log.sig2.2) <- "sigma.star"
-if( margins[2] %in% c(m3) ){ log.nu.2 <- start.snR$log.nu.1; names(log.nu.2)   <- "nu.star"}     
+log.sig2.2 <- mean(gam2AUX$fit$sigma2.st); names(log.sig2.2) <- "sigma.star"
+if( margins[2] %in% c(m3) ){ log.nu.2 <- mean(gam2AUX$fit$nu.st); names(log.nu.2) <- "nu.star"}     
 
-}
-
+                               }
+                               
+c.gam2 <- coef(gam2AUX)[1:X2.d2]  # this replaces the c.gam2 above as it is mostly problematic for DAGUM and similar distrs
+                                  # however it does not account for SS but it should be ok 
+ 
+#*** ALTERNATIVE ***#
+                                                           
 vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2.2 = log.sig2.2, 
            log.nu.2 = log.nu.2, log.nu.1 = NULL, log.sig2.1 = NULL, dof.st = NULL, n = n, drop.unused.levels = drop.unused.levels)
+           
+           
 start.v <- overall.sv(margins, M, vo, type = "copSS", c.gam2 = c.gam2)
- 
+
+} 
  
 ##############################################################  
 # starting values for case of predictors on all parameters
 ##############################################################  
   
-    if(l.flist > 2){
+if(l.flist > 2){
     
+    if(margins[2] == "TW"){
+    
+          start.v1 <- gam2TW$coefficients 
+
+          log.sig2.2 <- log(mean(gam2TW$sigma))  
+          log.nu.2   <- log( (mean(gam2TW$nu) - 1.001)/(1.999 - mean(gam2TW$nu)) )      
+
+    }
+    
+
+    # for TW
+    vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2.2 = log.sig2.2, 
+           log.nu.2 = log.nu.2, log.nu.1 = NULL, log.sig2.1 = NULL, dof.st = NULL, n = n, drop.unused.levels = drop.unused.levels) 
+    
+
     overall.svGR <- overall.svG(formula, data, ngc = 2, margins, M, vo, gam1, gam2, type = "copSS", inde = inde, c.gam2 = c.gam2, knots = knots)
     
-    start.v = overall.svGR$start.v 
+    start.v = overall.svGR$start.v; nams <- names(start.v) 
     X3 = overall.svGR$X3; X4 = overall.svGR$X4; X5 = overall.svGR$X5
     X3s = overall.svGR$X3s; X4s = overall.svGR$X4s; X5s = overall.svGR$X5s
     X6 = overall.svGR$X6; X7 = overall.svGR$X7; X8 = overall.svGR$X8
@@ -249,22 +314,44 @@ start.v <- overall.sv(margins, M, vo, type = "copSS", c.gam2 = c.gam2)
     l.sp6 = overall.svGR$l.sp6; l.sp7 = overall.svGR$l.sp7; l.sp8 = overall.svGR$l.sp8
     sp3 = overall.svGR$sp3; sp4 = overall.svGR$sp4; sp5 = overall.svGR$sp5
     sp6 = overall.svGR$sp6; sp7 = overall.svGR$sp7; sp8 = overall.svGR$sp8
+ 
+ 
+ 
+ 
+
+    if(margins[2] == "TW"){  
     
+ 
+                        start.v <- c(gam1$coefficients, start.v1, gam5$coefficients) 
+                        
+                        #start.v <- c(gam1$coefficients, c.gam2, gam3$coefficients, gam4$coefficients, gam5$coefficients) # this should benefit from cgam2
+                        #names(start.v) <- nams
+
+                        spm <- gam2TW$sp
+                                              
+                        if(l.sp2 != 0){ sp2 <- spm[1:l.sp2];                                     names(sp2) <- names(gam2$sp)}
+                        if(l.sp3 != 0){ sp3 <- spm[(l.sp2 + 1):(l.sp2 + l.sp3)];                 names(sp3) <- names(gam3$sp)}
+                        if(l.sp4 != 0){ sp4 <- spm[(l.sp2 + l.sp3 + 1):(l.sp2 + l.sp3 + l.sp4)]; names(sp4) <- names(gam4$sp)}          
+          
+
+                          } 
+ 
     }
 
 ##########################################################
   
 GAM <- list(gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, 
-            gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8, K1 = NULL)   
+            gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8, gam9 = gam9, K1 = NULL)   
 
 
-if( (l.sp1!=0 || l.sp2!=0 || l.sp3!=0 || l.sp4!=0 || l.sp5!=0 || l.sp6!=0 || l.sp7!=0 || l.sp8!=0) && fp==FALSE ){ 
+if( (l.sp1!=0 || l.sp2!=0 || l.sp3!=0 || l.sp4!=0 || l.sp5!=0 || l.sp6!=0 || l.sp7!=0 || l.sp8!=0 || l.sp9!=0) && fp==FALSE ){ 
 
 L.GAM <- list(l.gam1 = length(gam1$coefficients), l.gam2 = length(gam2$coefficients), l.gam3 = length(gam3$coefficients), l.gam4 = length(gam4$coefficients),
-              l.gam5 = length(gam5$coefficients), l.gam6 = length(gam6$coefficients), l.gam7 = length(gam7$coefficients), l.gam8 = length(gam8$coefficients))
+              l.gam5 = length(gam5$coefficients), l.gam6 = length(gam6$coefficients), l.gam7 = length(gam7$coefficients), l.gam8 = length(gam8$coefficients),
+              l.gam9 = 0)
 
 L.SP <- list(l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, l.sp4 = l.sp4, 
-             l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8)
+             l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8, l.sp9 = l.sp9)
 
                  sp <- c(sp1, sp2, sp3, sp4, sp5, sp6, sp7, sp8)
                  qu.mag <- S.m(GAM, L.SP, L.GAM)                             
@@ -285,8 +372,8 @@ if(missing(parscale)) parscale <- 1
                   cy1.y2 = cy1.y2, 
                   cy1.cy2 = cy1.cy2, 
                   cy1 = cy1,
-                  cy = cy, univ = 0)
-
+                  cy = cy, univ = 0, y10 = y10, y1p = y1p)
+				     
   lsgam1 <- length(gam1$smooth)
   lsgam2 <- length(gam2$smooth)
   lsgam3 <- length(gam3$smooth)
@@ -295,6 +382,8 @@ if(missing(parscale)) parscale <- 1
   lsgam6 <- length(gam6$smooth)
   lsgam7 <- length(gam7$smooth)
   lsgam8 <- length(gam8$smooth)
+  lsgam9 <- length(gam9$smooth)
+
 
   VC <- list(lsgam1 = lsgam1, robust = FALSE, K1 = NULL,
              lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
@@ -303,7 +392,7 @@ if(missing(parscale)) parscale <- 1
              lsgam5 = lsgam5,
              lsgam6 = lsgam6,
              lsgam7 = lsgam7,
-             lsgam8 = lsgam8,
+             lsgam8 = lsgam8, lsgam9 = lsgam9,
              X1 = X1, 
              X2 = X2, 
              X3 = X3,
@@ -337,6 +426,7 @@ if(missing(parscale)) parscale <- 1
              l.sp6 = l.sp6,    
              l.sp7 = l.sp7, 
              l.sp8 = l.sp8, 
+             l.sp9 = 0,
              infl.fac = infl.fac,
              weights = weights,
              fp = fp,
@@ -352,7 +442,7 @@ if(missing(parscale)) parscale <- 1
              BivD2 = BivD2, cta = cta, ct = ct, surv.flex = surv.flex, gp2.inf = NULL,
              informative = "no", sp.fixed = NULL,
              zero.tol = 1e-02,
-             min.dn = min.dn, min.pr = min.pr, max.pr = max.pr) 
+             min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, y10 = y10, y1p = y1p) 
              
   if(gc.l == TRUE) gc()           
              
@@ -367,7 +457,7 @@ if(missing(parscale)) parscale <- 1
                          rinit = rinit, rmax = rmax, iterlim = 100, iterlimsp = iterlimsp, tolsp = tolsp,
                          respvec = respvec, VC = VC, sp = sp, qu.mag = qu.mag) 
    
-    if(BivD %in% BivD2) rm(signind, envir = .GlobalEnv)
+  if(BivD %in% BivD2) rm(signind, envir = .GlobalEnv)
  
   ##########################################################################################################################
   # post estimation
@@ -414,7 +504,7 @@ L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, mice.formu
           sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, 
           l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, 
           l.sp4 = l.sp4, l.sp5 = l.sp5, l.sp6 = l.sp6,
-          l.sp7 = l.sp7, l.sp8 = l.sp8, bl = bl,
+          l.sp7 = l.sp7, l.sp8 = l.sp8, bl = bl, l.sp9 = l.sp9, gam9 = gam9,
           fp = fp,  
           iter.if = SemiParFit$iter.if, iter.inner = SemiParFit$iter.inner,Vb.t = SemiParFit.p$Vb.t,
           theta = SemiParFit.p$theta, 
@@ -459,7 +549,7 @@ L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, mice.formu
           VC = VC, Model = NULL, magpp = SemiParFit$magpp,
           gamlss = gamlss, Cont = "NO", tau = SemiParFit.p$tau, tau.a = SemiParFit.p$tau.a, 
           l.flist = l.flist, v1 = v1, v2 = v2, triv = FALSE, univar.gamlss = FALSE, BivD2 = BivD2, dof = dof, dof.a = dof, call = cl,
-          surv = FALSE, surv.flex = surv.flex)
+          surv = FALSE, surv.flex = surv.flex, gam2AUX = gam2AUX)
 
 class(L) <- c("copulaSampleSel", "SemiParBIV","gjrm")
 

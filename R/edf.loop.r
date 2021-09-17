@@ -13,13 +13,13 @@ if (!is.null(VC$K1)) {
 
 
 edf <- edf1 <- NULL
-na1 <- na2 <- na3 <- na4 <- na5 <- na6 <- na7 <- na8 <- NA
+na1 <- na2 <- na3 <- na4 <- na5 <- na6 <- na7 <- na8 <- na9 <- NA
 
-if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || VC$l.sp6!=0 || VC$l.sp7!=0 || VC$l.sp8!=0) ){
+if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || VC$l.sp6!=0 || VC$l.sp7!=0 || VC$l.sp8!=0 || VC$l.sp9!=0) ){
 
-  edf <- edf1 <- list(0, 0, 0, 0, 0, 0, 0, 0)
+  edf <- edf1 <- list(0, 0, 0, 0, 0, 0, 0, 0, 0)
         
-     for(i in 1:8){
+     for(i in 1:9){
 
        if(i==1) {mmm <- VC$lsgam1; if(mmm==0) next}
        if(i==2) {mmm <- VC$lsgam2; if(mmm==0) next} 
@@ -27,8 +27,9 @@ if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || 
        if(i==4) {mmm <- VC$lsgam4; if(mmm==0) next} 
        if(i==5) {mmm <- VC$lsgam5; if(mmm==0) next}        
        if(i==6) {mmm <- VC$lsgam6; if(mmm==0) next} 
-       if(i==7) {mmm <- VC$lsgam7; if(mmm==0) next}        
-       if(i==8) {mmm <- VC$lsgam8; if(mmm==0) break}        
+       if(i==7) {mmm <- VC$lsgam7; if(mmm==0) next}  
+       if(i==8) {mmm <- VC$lsgam8; if(mmm==0) next}  
+       if(i==9) {mmm <- VC$lsgam9; if(mmm==0) break}        
 
           for(k in 1:mmm){
 
@@ -40,6 +41,7 @@ if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || 
               if(i==6){ gam <- GAM$gam6; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 } 
               if(i==7){ gam <- GAM$gam7; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 } 
               if(i==8){ gam <- GAM$gam8; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 } 
+              if(i==9){ gam <- GAM$gam9; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 + VC$X8.d2 } 
               
               
 	      edf[[i]][k]  <-  sum(diag(F)[ind])
@@ -55,6 +57,8 @@ if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || 
   if(VC$l.sp6!=0){ for(j in 1:VC$lsgam6) na6[j] <- GAM$gam6$smooth[[j]]$label; names(edf[[6]]) <- names(edf1[[6]]) <- na6 }
   if(VC$l.sp7!=0){ for(j in 1:VC$lsgam7) na7[j] <- GAM$gam7$smooth[[j]]$label; names(edf[[7]]) <- names(edf1[[7]]) <- na7 } 
   if(VC$l.sp8!=0){ for(j in 1:VC$lsgam8) na8[j] <- GAM$gam8$smooth[[j]]$label; names(edf[[8]]) <- names(edf1[[8]]) <- na8 }
+  if(VC$l.sp9!=0){ for(j in 1:VC$lsgam9) na9[j] <- GAM$gam9$smooth[[j]]$label; names(edf[[9]]) <- names(edf1[[9]]) <- na9 }
+
   
 }
 

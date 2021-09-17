@@ -13,8 +13,9 @@ effects, copula and marginal distributions.
 
 \usage{
 gjrm(formula, data = list(), weights = NULL, subset = NULL,  
-     BivD = "N", margins, Model, dof = 3, ordinal = FALSE,  
+     BivD = "N", BivD2 = "N", margins, Model, dof = 3, dof2 = 3, ordinal = FALSE,  
      surv = FALSE, cens1 = NULL, cens2 = NULL, cens3 = NULL, dep.cens = FALSE,
+     upperBt1 = NULL, upperBt2 = NULL,   
      gamlssfit = FALSE, fp = FALSE, infl.fac = 1, 
      rinit = 1, rmax = 100, 
      iterlimsp = 50, tolsp = 1e-07,
@@ -49,13 +50,26 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
 
 \item{subset}{Optional vector specifying a subset of observations to be used in the fitting process.}
 
+\item{BivD}{Type of bivariate error distribution employed. Possible choices are "N", "C0", "C90", "C180", "C270", "GAL0", "GAL90", "GAL180", "GAL270", "J0", "J90", "J180", "J270", 
+            "G0", "G90", "G180", "G270", "F", "AMH", "FGM", "T", "PL", "HO" which stand for bivariate normal, Clayton, rotated Clayton (90 degrees), 
+            survival Clayton,
+             rotated Clayton (270 degrees), Galambos, rotated Galambos (90 degrees), 
+            survival Galambos,
+             rotated Galambos (270 degrees), Joe, rotated Joe (90 degrees), survival Joe, rotated Joe (270 degrees),
+             Gumbel, rotated Gumbel (90 degrees), survival Gumbel, rotated Gumbel (270 degrees), Frank, Ali-Mikhail-Haq,
+             Farlie-Gumbel-Morgenstern, Student-t with \code{dof}, Plackett, Hougaard. Each of the Clayton, Galambos, Joe and Gumbel copulae is allowed to be mixed with a rotated version of the same
+family. The options are: "C0C90", "C0C270", "C180C90", "C180C270",  "GAL0GAL90", "GAL0GAL270", "GAL180GAL90", "GAL180GAL270", "G0G90", "G0G270", "G180G90",
+"G180G270", "J0J90", "J0J270", "J180J90" and "J180J270". This allows the user to model negative and positive tail dependencies.}  
+
+\item{BivD2}{As above but used only for Roy models.}
 
 \item{margins}{It indicates the distributions used for the two or three margins. Possible distributions are normal ("N"),  
                log-normal ("LN"), Gumbel ("GU"), reverse Gumbel ("rGU"), generelised Pareto ("GP"), 
                generelised Pareto II ("GPII") where the shape parameter is forced to be > -0.5,
                generelised Pareto (with orthogonal parametrisation) ("GPo") where the shape parameter is forced to be > -0.5,
                discrete generelised Pareto ("DGP"), 
-               discrete generelised Pareto II ("DGPII") where the shape parameter is forced to be positive, logistic ("LO"), Weibull ("WEI"), inverse Gaussian ("iG"), gamma ("GA"), Dagum ("DAGUM"), 
+               discrete generelised Pareto II ("DGPII") where the shape parameter is forced to be positive, discrete generelised Pareto derived
+               under the scenario in which shape = 0 ("DGP0"), logistic ("LO"), Weibull ("WEI"), inverse Gaussian ("iG"), gamma ("GA"), Dagum ("DAGUM"), 
                Singh-Maddala ("SM"), beta ("BE"), Fisk ("FISK", also known as log-logistic distribution), Poisson ("PO"), zero truncated 
                Poisson ("ZTP"), negative binomial - type I ("NBI"), negative 
                binomial - type II ("NBII"), Poisson inverse Gaussian ("PIG"). If the responses are binary then
@@ -72,34 +86,31 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
              } 
   
 \item{dof}{If \code{BivD = "T"} then the degrees of freedom can be set to a value greater than 2 and smaller than 249. Only for continuous margins,
-           this will be taken as a starting value and the dof estimated from the data.}   
+                 this will be taken as a starting value and the dof estimated from the data.}   
+                 
+\item{dof2}{As above but used only for Roy models.} 
  
 \item{ordinal}{If \code{TRUE} then the ordinal model is employed.}    
  
  
 \item{surv}{If \code{TRUE} then a bivariate survival model is fitted.}    
 
-\item{cens1}{Binary censoring indicator 1. This is required when \code{surv = TRUE}. This variable has to be equal to 1 if the event occurred and 0 otherwise.}
+\item{cens1}{Censoring indicator for the first equation. This is required when \code{surv = TRUE}. For the case of right censored data only, this variable can be equal to 1 if the event occurred 
+            and 0 otherwise. However, if there are several censoring mechanisms then \code{cens} will have to be specified as a factor 
+            variable made up of four possible categories: \code{I} for interval, \code{L} for left, \code{R} for right, and \code{U} for uncensored.}
 
-\item{cens2}{Binary censoring indicator 2. This is required when \code{surv = TRUE}.}
+\item{cens2}{Same as above but for the second equation.}
+
 
 \item{cens3}{Binary censoring indicator employed only when \code{surv = TRUE}, \code{dep.cens = TRUE} and administrative censoring is present.}
 
 \item{dep.cens}{If TRUE then the dependence censored model is employed.} 
 
+\item{upperBt1, upperBt2}{Variable names of right/upper bounds when interval censoring is present.}
+
 \item{gamlssfit}{If \code{gamlssfit = TRUE} then gamlss univariate models are also fitted. This is useful for obtaining 
                  starting values, for instance.}               
 
-\item{BivD}{Type of bivariate error distribution employed. Possible choices are "N", "C0", "C90", "C180", "C270", "GAL0", "GAL90", "GAL180", "GAL270", "J0", "J90", "J180", "J270", 
-            "G0", "G90", "G180", "G270", "F", "AMH", "FGM", "T", "PL", "HO" which stand for bivariate normal, Clayton, rotated Clayton (90 degrees), 
-            survival Clayton,
-             rotated Clayton (270 degrees), Galambos, rotated Galambos (90 degrees), 
-            survival Galambos,
-             rotated Galambos (270 degrees), Joe, rotated Joe (90 degrees), survival Joe, rotated Joe (270 degrees),
-             Gumbel, rotated Gumbel (90 degrees), survival Gumbel, rotated Gumbel (270 degrees), Frank, Ali-Mikhail-Haq,
-             Farlie-Gumbel-Morgenstern, Student-t with \code{dof}, Plackett, Hougaard. Each of the Clayton, Galambos, Joe and Gumbel copulae is allowed to be mixed with a rotated version of the same
-family. The options are: "C0C90", "C0C270", "C180C90", "C180C270",  "GAL0GAL90", "GAL0GAL270", "GAL180GAL90", "GAL180GAL270", "G0G90", "G0G270", "G180G90",
-"G180G270", "J0J90", "J0J270", "J180J90" and "J180J270". This allows the user to model negative and positive tail dependencies.}            
 
 \item{fp}{If \code{TRUE} then a fully parametric model with unpenalised regression splines if fitted. See the Example 2 below.}              
 
@@ -128,7 +139,7 @@ documentation of \code{trust} for more details.}
                   If different from "t" then extra regularization is applied via the options "pC" (pivoted Choleski - this
                   will only work when the information matrix is semi-positive or positive definite) and "sED" (symmetric eigen-decomposition).}  
      
-\item{k1.tvc, k2.tvc}{Only used for tvc ps smoothers when using survival models.}  
+\item{k1.tvc, k2.tvc}{Experimental. Only used for tvc ps smoothers when using survival models.}  
  
 \item{knots}{Optional list containing user specified knot values to be used for basis construction.}
   

@@ -12,6 +12,8 @@ l.sp5 <- VC$l.sp5
 l.sp6 <- VC$l.sp6 
 l.sp7 <- VC$l.sp7 
 l.sp8 <- VC$l.sp8 
+l.sp9 <- VC$l.sp9 
+
 
 score.hist <- rp <- D <- L <- Sl.sfTemp <- St <- NULL
 
@@ -19,13 +21,13 @@ score.hist <- rp <- D <- L <- Sl.sfTemp <- St <- NULL
 
 l.splist <- list( l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, 
                   l.sp4 = l.sp4, l.sp5 = l.sp5, l.sp6 = l.sp6, 
-                  l.sp7 = l.sp7, l.sp8 = l.sp8 )
+                  l.sp7 = l.sp7, l.sp8 = l.sp8, l.sp9 = l.sp9 )
 
 
 if(!is.null(VC$sp.fixed)) sp <- VC$sp.fixed  
 
 
-if( ( l.sp1==0 && l.sp2==0 && l.sp3==0 && l.sp4==0 && l.sp5==0 && l.sp6==0 && l.sp7==0 && l.sp8==0 ) || VC$fp==TRUE) ps <- ps1 <- list(S.h = 0, S.h1 = 0, S.h2 = 0, qu.mag = NULL) else ps <- ps1 <- pen(qu.mag, sp, VC, univ = respvec$univ, l.splist)
+if( ( l.sp1==0 && l.sp2==0 && l.sp3==0 && l.sp4==0 && l.sp5==0 && l.sp6==0 && l.sp7==0 && l.sp8==0 && l.sp9==0) || VC$fp==TRUE) ps <- ps1 <- list(S.h = 0, S.h1 = 0, S.h2 = 0, qu.mag = NULL) else ps <- ps1 <- pen(qu.mag, sp, VC, univ = respvec$univ, l.splist)
 
 
 
@@ -92,7 +94,7 @@ if((class(fit) == "try-error" || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop
   
   
   
-    if((VC$fp==FALSE && is.null(VC$sp.fixed) && (l.sp1!=0 || l.sp2!=0 || l.sp3!=0 || l.sp4!=0 || l.sp5!=0 || l.sp6!=0 || l.sp7!=0 || l.sp8!=0)) ){
+    if((VC$fp==FALSE && is.null(VC$sp.fixed) && (l.sp1!=0 || l.sp2!=0 || l.sp3!=0 || l.sp4!=0 || l.sp5!=0 || l.sp6!=0 || l.sp7!=0 || l.sp8!=0 || l.sp9!=0)) ){
 
 
 

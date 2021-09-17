@@ -184,7 +184,7 @@ t.edf <- sum(edf)
 
 
 L <- list(coefficients = fit$argument, c.coefficients = c.coefficients, fit = fit, hess = TRUE,
-          fp = FALSE, l.sp1 = 0, l.sp2 = 0, l.sp3 = 0, l.sp4 = 0, l.sp5 = 0, l.sp6 = 0, l.sp7 = 0, l.sp8 = 0,
+          fp = FALSE, l.sp1 = 0, l.sp2 = 0, l.sp3 = 0, l.sp4 = 0, l.sp5 = 0, l.sp6 = 0, l.sp7 = 0, l.sp8 = 0, l.sp9 = 0,
           iter.if = fit$iterations, logLik = fit$value, n = n, t.edf = t.edf, edf = edf)
 
 class(L) <- c("lmc")

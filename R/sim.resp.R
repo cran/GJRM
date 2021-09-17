@@ -3,7 +3,7 @@ sim.resp <- function(margin, rsim, eta, sigma2, nu, setseed = TRUE){
 
 if(margin == "ZTP") rZTP <- function(n, mu) qpois(runif(n, dpois(0, mu), 1), mu)
 
-if(margin %in% c("DGP","DGPII")){
+if(margin %in% c("DGP","DGPII","DGP0")){
 
        rDGP <- function(n, mu, sigma, margin){ # mu is eta here
 
@@ -15,7 +15,12 @@ if(margin %in% c("DGP","DGPII")){
                 
 
                 if(margin == "DGP")   q <- ifelse(indv == TRUE, 0, ceiling( sigma/mu*(     (1 - p)^(-mu)   - 1   )) - 1 )
-                if(margin == "DGPII") q <- ifelse(indv == TRUE, 0, ceiling( sigma/(mu^2)*( (1 - p)^(-mu^2) - 1   )) - 1 )
+                if(margin == "DGPII") q <- ifelse(indv == TRUE, 0, ceiling( sigma/(exp(mu))*( (1 - p)^(-exp(mu)) - 1   )) - 1 )
+                
+                if(margin == "DGP0")  q <- ifelse(indv == TRUE, 0, ceiling(-exp(mu)*log(1-p)) - 1 )                 
+                
+                
+                
                 
                 q
                 
@@ -91,7 +96,14 @@ if(margin == "PIG")   y <- rPIG(  rsim,    mu = exp(eta),    sigma = sigma2)
 if(margin == "PO")    y <- rPO(   rsim,    mu = exp(eta)) 
 if(margin == "ZTP")   y <- rZTP(  rsim,    mu = exp(eta)) 
 
-if(margin %in% c("DGP", "DGPII"))   y <- rDGP(  rsim,    mu = eta,         sigma = sigma2, margin = margin) # in dgpII eta^2 is done internally
+if(margin %in% c("DGP", "DGPII", "DGP0")){
+
+    if(margin %in% c("DGP0")) sigma2 <- NULL
+
+y <- rDGP(rsim, mu = eta, sigma = sigma2, margin = margin) # 
+
+
+}
 
 if(margin %in% c("probit", "logit", "cloglog"))  y <- rbinom(rsim, 1, prob = probm(eta, margin, min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999)$pr )
                                                 

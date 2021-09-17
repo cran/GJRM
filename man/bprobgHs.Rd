@@ -1,6 +1,7 @@
 \name{bprobgHs}
 \alias{bprobgHs}
 \alias{bprobgHstwoParC}
+\alias{bprobgHsBinROY}
 
 \title{Internal Function}
 

@@ -42,10 +42,12 @@
 \alias{Dpens2}
 \alias{survExcInd}
 \alias{pTweed}
+\alias{pream.wm}
 
 \title{Internal Function}
 
-\description{This and other similar internal functions map certain key quantities into a feasible parameter space.}
+\description{This and other similar internal functions map certain key quantities into a feasible parameter space. Some functions carry out 
+some general consistency checks.}
 
 
 \author{

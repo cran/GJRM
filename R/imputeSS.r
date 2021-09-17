@@ -11,7 +11,7 @@ margin   <- x$margins[2]
 if(margin %in% c("TW") ) stop("Tweedie not tested. Get in touch for details.") 
 
 
-#if(margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog","DGP","DGPII") ) stop("Check next release for the tested versions of these develoments.")
+#if(margin %in% c("PO","DGP0","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog","DGP","DGPII") ) stop("Check next release for the tested versions of these develoments.")
 
 
 # tw not tested, sqrt would be better
@@ -186,7 +186,7 @@ if( margin %in% c("DGP","DGPII")){
 
 
 if( margin == "DGP")   mu2    <- c(eta2)
-if( margin == "DGPII") mu2    <- c(eta2^2)
+if( margin == "DGPII") mu2    <- c( exp(eta2) ) # c(eta2^2)
 
 
 sigma2 <- c(sigma2)
@@ -314,7 +314,7 @@ if( margin %in% c("probit","logit","cloglog") ){
                                                 } 
  
 
-if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP","DGPII") ){
+if( margin %in% c("PO","DGP0","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP","DGPII") ){
    
    
    test.oD <- NA
@@ -331,7 +331,7 @@ if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP","DGPII") ){
 
 
 
-if(!(margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog","DGP","DGPII")) ){
+if(!(margin %in% c("PO","DGP0","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog","DGP","DGPII")) ){
    
    f.g      <- obj.grad.hess(y2.st, out.beta)$value
    M.value  <- try(trust(obj.grad.hess, parinit = yst.aver, rinit = 1, rmax = 100, minimize = F, out.beta = out.beta)$value); if ('try-error' %in% class(M.value)) next

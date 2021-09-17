@@ -23,6 +23,12 @@ cont3par <- c("DAGUM", "SM", "TW")
 # remember that eta2 will have to disappear if we change default link on mu2
 # this only applies to cases in which mu2 must be positive
 # otherwise things are fine # library(Deriv); library(numDeriv)
+#der2p2.dermu2dernu[i]     <- heTW[2, 1]
+#der2p2.derdermu2sigma2[i] <- heTW[3, 1]
+#der2p2.dersigma22[i] <- heTW[3, 3]
+#der2p2.dernu2[i]     <- heTW[2, 2]
+#derp2.dersigma2[i] <- scTW[3]
+#derp2.dernu[i]     <- scTW[2]
 ############################################################################
 
 
@@ -357,41 +363,71 @@ dersigma2.dersigma2.st <- dersigma2.dersigma2.st2 <- exp(sigma2.st)
 p2 <- derp2.dermu2 <- derp2.dersigma2 <- derp2.dernu <- der2p2.dermu22 <- der2p2.dersigma22 <- der2p2.dernu2 <- der2p2.dersigma2dernu <- der2p2.dermu2dernu <- der2p2.derdermu2sigma2 <- NA 
   
  
+ 
+#system.time( 
+
 for(i in 1:length(mu2)){ 
  
-p2[i] <- pTweed(y = y2[i], mu = mu2[i], phi = sigma[i], p = nu[i])$d0 
-
-scTW <- pTweed(y = y2[i], mu = mu2[i], phi = sigma[i], p = nu[i], deriv = 1)$d1
-heTW <- pTweed(y = y2[i], mu = mu2[i], phi = sigma[i], p = nu[i], deriv = 2)$d2
-
-derp2.dermu2[i]    <- scTW[1]
-
-#derp2.dersigma2[i] <- scTW[3]
-#derp2.dernu[i]     <- scTW[2]
-
-derp2.dersigma2[i] <- scTW[2]
-derp2.dernu[i]     <- scTW[3]
-
-
-der2p2.dermu22[i]    <- heTW[1, 1] 
-#der2p2.dersigma22[i] <- heTW[3, 3]
-#der2p2.dernu2[i]     <- heTW[2, 2]
-
-der2p2.dersigma22[i] <- heTW[2, 2]
-der2p2.dernu2[i]     <- heTW[3, 3]
-
-
-    
-der2p2.dersigma2dernu[i]  <- heTW[3, 2] 
-#der2p2.dermu2dernu[i]     <- heTW[2, 1]
-#der2p2.derdermu2sigma2[i] <- heTW[3, 1]
-
+ppp  <- pTweed(y = y2[i], mu = mu2[i], phi = sigma[i], p = nu[i], deriv = 2)  
+scTW <- ppp$d1
+heTW <- ppp$d2 
+ 
+p2[i]                     <- ppp$d0 
+derp2.dermu2[i]           <- scTW[1]
+derp2.dersigma2[i]        <- scTW[2]
+derp2.dernu[i]            <- scTW[3]
+der2p2.dermu22[i]         <- heTW[1, 1] 
+der2p2.dersigma22[i]      <- heTW[2, 2]
+der2p2.dernu2[i]          <- heTW[3, 3]
 der2p2.dermu2dernu[i]     <- heTW[3, 1]
 der2p2.derdermu2sigma2[i] <- heTW[2, 1]
-
+der2p2.dersigma2dernu[i]  <- heTW[3, 2] 
 
 
 }
+
+#)
+
+
+
+
+
+#derP.dermuFUNC <- function(func, y2, mu2, sigma, nu) numgh(func, mu2)
+#derP.sigmaFUNC <- function(func, y2, mu2, sigma, nu) numgh(func, sigma)  
+#derP.nuFUNC    <- function(func, y2, mu2, sigma, nu) numgh(func, nu)  
+#
+#
+#der2P.dermu.dersigmaFUNC <- function(func, y2, mu2, sigma, nu) numch(func, mu2,   sigma)
+#der2P.dermu.dernuFUNC    <- function(func, y2, mu2, sigma, nu) numch(func, mu2,   nu)
+#der2P.dernu.dersigmaFUNC <- function(func, y2, mu2, sigma, nu) numch(func, sigma, nu)
+#
+#
+#
+#
+#for(i in 1:length(mu2)) p2[i] <- pTweed(y = y2[i], mu = mu2[i], phi = sigma[i], p = nu[i], deriv = 0)$d0
+#
+#
+#derp2.dermu2F  <- derP.dermuFUNC(function(mu2){ for(i in 1:length(mu2)) p2[i] <- pTweed(y = y2[i], mu = mu2[i], phi = sigma[i], p = nu[i], deriv = 0)$d0; as.numeric(p2)}, y2, mu2, sigma, nu)
+#
+#derp2.dermu2   <- derp2.dermu2F$fi
+#der2p2.dermu22 <- derp2.dermu2F$se
+#
+#derp2.dersigma2F <- derP.sigmaFUNC(function(sigma){ for(i in 1:length(mu2)) p2[i] <- pTweed(y = y2[i], mu = mu2[i], phi = sigma[i], p = nu[i], deriv = 0)$d0; as.numeric(p2)}, y2, mu2, sigma, nu) 
+#
+#derp2.dersigma2  <- derp2.dersigma2F$fi 
+#der2p2.dersigma22<- derp2.dersigma2F$se 
+#
+#derp2.dernu2F <- derP.nuFUNC(function(nu){ for(i in 1:length(mu2)) p2[i] <- pTweed(y = y2[i], mu = mu2[i], phi = sigma[i], p = nu[i], deriv = 0)$d0; as.numeric(p2)}, y2, mu2, sigma, nu) 
+#
+#derp2.dernu  <- derp2.dernu2F$fi 
+#der2p2.dernu2<- derp2.dernu2F$se # some more discrepancy here...
+#der2p2.derdermu2sigma2 <- der2P.dermu.dersigmaFUNC(function(mu2, sigma){ for(i in 1:length(mu2)) p2[i] <- pTweed(y = y2[i], mu = mu2[i], phi = sigma[i], p = nu[i], deriv = 0)$d0; as.numeric(p2)}, y2, mu2, sigma, nu) 
+#der2p2.dermu2dernu     <-    der2P.dermu.dernuFUNC(function(mu2, nu){ for(i in 1:length(mu2)) p2[i] <- pTweed(y = y2[i], mu = mu2[i], phi = sigma[i], p = nu[i], deriv = 0)$d0; as.numeric(p2)}, y2, mu2, sigma, nu)    
+#der2p2.dersigma2dernu  <- der2P.dernu.dersigmaFUNC(function(sigma, nu){ for(i in 1:length(mu2)) p2[i] <- pTweed(y = y2[i], mu = mu2[i], phi = sigma[i], p = nu[i], deriv = 0)$d0; as.numeric(p2)}, y2, mu2, sigma, nu)
+
+
+
+
 
 
 

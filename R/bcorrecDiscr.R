@@ -1,6 +1,6 @@
 bcorrecDiscr <- function(VC, params){
 
-m1d  <- c("PO", "ZTP")
+m1d  <- c("PO", "ZTP","DGP0")
 m2d  <- c("NBI", "NBII","PIG","DGP","DGPII")
 
 # below there are operations that can be 

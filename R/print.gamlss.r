@@ -17,7 +17,11 @@ print.gamlss <- function(x, ...){
   if(x$robust == TRUE) cat("\nROBUST Fit")
 
   cat("\n\nEQUATION 1")
-  if(x$surv.flex == FALSE) cat("\nLink function for mu:",m1l,"\n")
+  if(x$surv.flex == FALSE && x$margins[1] !="DGP0") cat("\nLink function for mu:",m1l,"\n")
+  
+  if(x$surv.flex == FALSE && x$margins[1] =="DGP0") cat("\nLink function for sigma:",m1l,"\n")
+
+  
   if(x$surv.flex == TRUE)  cat("\n")
   
   cat("Formula: "); print(x$gam1$formula) 

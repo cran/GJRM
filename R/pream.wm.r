@@ -9,6 +9,87 @@ pream.wm <- function(formula, margins, M, l.flist, type = "copR"){
   scs <- c("WEI", "FISK") # for survival models
 
 
+###################################################################################################################################################### 
+
+if(type == "ROY") stop("Work in progress.")  
+
+###################################################################################################################################################### 
+
+
+if(type == "ROY"){ # binary - binary/cont/discr models  
+
+  if(length(margins) != 3) stop("You have to choose three margins.")
+
+
+  if(M$BivD1 == "T" && (M$dof1 <=2 || M$dof1 > 249)) stop("dof1 must be a number greater than 2 and smaller than 249.")
+  if(M$BivD2 == "T" && (M$dof2 <=2 || M$dof2 > 249)) stop("dof2 must be a number greater than 2 and smaller than 249.")
+  
+  if(!(M$BivD1 %in% c(M$opc))) stop("Error in parameter BivD1 value. It should be one of:\nN, C0, C90, C180, C270, GAL0, GAL90, GAL180, GAL270, J0, J90, J180, J270, G0, G90, G180, G270, F, AMH, FGM, T, PL, HO.")
+  if(!(M$BivD2 %in% c(M$opc))) stop("Error in parameter BivD2 value. It should be one of:\nN, C0, C90, C180, C270, GAL0, GAL90, GAL180, GAL270, J0, J90, J180, J270, G0, G90, G180, G270, F, AMH, FGM, T, PL, HO.")
+  
+  if(!(M$extra.regI %in% c("t","pC","sED"))) stop("Error in parameter extra.regI value. It should be one of:\nt, pC or sED.")
+  
+  if(!(margins[1] %in% M$bl) ) stop("Error in first margin value. It should be one of:\nprobit, logit, cloglog.")
+
+  if(!(margins[2] %in% c(M$bl,M$m2,M$m3,M$m1d,M$m2d)) ) stop("Error in second margin value. It should be one of:\nprobit, logit, cloglog, N, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, PO, GP (and its versions), DGP (and its versions), ZTP, NBI, NBII, PIG.")  
+  if(!(margins[3] %in% c(M$bl,M$m2,M$m3,M$m1d,M$m2d)) ) stop("Error in third margin value.  It should be one of:\nprobit, logit, cloglog, N, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, PO, GP (and its versions), DGP (and its versions), ZTP, NBI, NBII, PIG.")  
+
+  if(  margins[2] %in% c(M$bl)  && !(margins[3] %in% c(M$bl)) ) stop("The second and third margins must be of the same type (e.g., both binary).") 
+  if(!(margins[2] %in% c(M$bl)) &&   margins[3] %in% c(M$bl)  ) stop("The second and third margins must be of the same type (e.g., both binary).") 
+  
+  
+  if(  margins[2] %in% c(M$m2,M$m3)  && !(margins[3] %in% c(M$m2,M$m3)) ) stop("The second and third margins must be of the same type (e.g., both continuous).")
+  if(!(margins[2] %in% c(M$m2,M$m3)) &&   margins[3] %in% c(M$m2,M$m3)  ) stop("The second and third margins must be of the same type (e.g., both continuous).")
+  
+  
+  if(  margins[2] %in% c(M$m1d,M$m2d)  && !(margins[3] %in% c(M$m1d,M$m2d)) ) stop("The second and third margins must be of the same type (e.g., both discrete).")
+  if(!(margins[2] %in% c(M$m1d,M$m2d)) &&   margins[3] %in% c(M$m1d,M$m2d)  ) stop("The second and third margins must be of the same type (e.g., both discrete).")
+
+
+  
+  # this is because it is very unlikely that different distributions are required for equations 2 and 3, although it could be easily relaxed.
+  
+  if(  margins[2] %in% c(M$m2)  &&   margins[3] %in% c(M$m3)  ) stop("The second and third margins must have the same number of distributional parameters.")
+  if(  margins[2] %in% c(M$m3)  &&   margins[3] %in% c(M$m2)  ) stop("The second and third margins must have the same number of distributional parameters.")
+
+  if(  margins[2] %in% c(M$m1d)  &&   margins[3] %in% c(M$m2d)  ) stop("The second and third margins must have the same number of distributional parameters.")
+  if(  margins[2] %in% c(M$m2d)  &&   margins[3] %in% c(M$m1d)  ) stop("The second and third margins must have the same number of distributional parameters.")
+
+
+  
+  
+  if(l.flist > 3 && margins[2] %in% c(M$bl)  && margins[3] %in% c(M$bl) ){ if(l.flist!=5) stop("You need to specify five equations.") } 
+  if(l.flist > 3 && margins[2] %in% c(M$m1d) && margins[3] %in% c(M$m1d)){ if(l.flist!=5) stop("You need to specify five equations.") } 
+  if(l.flist > 3 && margins[2] %in% c(M$m2d) && margins[3] %in% c(M$m1d)){ if(l.flist!=6) stop("You need to specify six equations.") } 
+  if(l.flist > 3 && margins[2] %in% c(M$m1d) && margins[3] %in% c(M$m2d)){ if(l.flist!=6) stop("You need to specify six equations.") } 
+  if(l.flist > 3 && margins[2] %in% c(M$m2d) && margins[3] %in% c(M$m2d)){ if(l.flist!=7) stop("You need to specify seven equations.") } 
+  
+  if(l.flist > 3 && margins[2] %in% c(M$m2) && margins[3] %in% c(M$m2)){ if(l.flist!=7) stop("You need to specify seven equations.") } 
+  if(l.flist > 3 && margins[2] %in% c(M$m2) && margins[3] %in% c(M$m3)){ if(l.flist!=8) stop("You need to specify eight equations.") } 
+  if(l.flist > 3 && margins[2] %in% c(M$m3) && margins[3] %in% c(M$m2)){ if(l.flist!=8) stop("You need to specify eight equations.") } 
+  if(l.flist > 3 && margins[2] %in% c(M$m3) && margins[3] %in% c(M$m3)){ if(l.flist!=9) stop("You need to specify nine equations.") } 
+
+  
+  if(margins[2] %in% c("GP", "GPII","GPo","DGP","DGPII", "DGP0")) stop("GP, GPII, GPo, DGP, DGPII not done yet.\nGet in touch for details.")
+  if(margins[3] %in% c("GP", "GPII","GPo","DGP","DGPII", "DGP0")) stop("GP, GPII, GPo, DGP, DGPII not done yet.\nGet in touch for details.")
+
+  if(margins[2] %in% c("TW") || margins[3] %in% c("TW")) stop("TW case not implemented yet.\nGet in touch for more info.")
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 if(type == "ord"){
@@ -73,7 +154,7 @@ if(type == "biv"){ # binary - cont/discr models #
   
   if(!(margins[1] %in% M$bl) ) stop("Error in first margin value. It should be one of:\nprobit, logit, cloglog.")
   if(!(margins[2] %in% c(M$bl,M$m2,M$m3)) && M$intf == FALSE ) stop("Error in second margin value. It should be one of:\nprobit, logit, cloglog.")  
-  if(!(margins[2] %in% c(M$bl,M$m2,M$m3,M$m1d,M$m2d)) && M$intf == TRUE ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, PO, ZTP, NBI, NBII, PIG.")  
+  if(!(margins[2] %in% c(M$bl,M$m2,M$m3,M$m1d,M$m2d)) && M$intf == TRUE ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, PO, GP (and its versions), DGP (and its versions), ZTP, NBI, NBII, PIG.")  
 
   if(margins[2] %in% c(M$m2,M$m3,M$m1d,M$m2d) && (M$Model == "BPO" || M$Model == "BPO0") ) stop("For continuous/discrete responses, partial observability models\nare not allowed for.")   
   
@@ -86,7 +167,7 @@ if(type == "biv"){ # binary - cont/discr models #
   if( l.flist > 2  && M$Model == "B" && !is.null(M$theta.fx)) stop("You only need to specify two equations.\nThe chosen model is not allowed to estimate the theta parameter.")
   
   
-  if(margins[2] %in% c("GP", "GPII","GPo","DGP","DGPII")) stop("GP, GPII, GPo, DGP, DGPII checks not finalised yet.\nGet in touch to check progress.")
+  if(margins[2] %in% c("GP", "GPII","GPo","DGP","DGPII")) stop("GP, GPII, GPo, DGP, DGPII not done yet.\nGet in touch for details.")
 
   
 
@@ -174,8 +255,8 @@ if(M$surv == TRUE){
  
   if(!(M$extra.regI %in% c("t","pC","sED"))) stop("Error in parameter extra.regI value. It should be one of:\nt, pC or sED.")
   
-  if(!(margins[1] %in% c(M$m2,M$m3,M$m1d,M$m2d,M$bl)) ) stop("Error in first margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, PO, ZTP\nor probit, logit, cloglog for survival models.")  
-  if(!(margins[2] %in% c(M$m2,M$m3,M$m1d,M$m2d,M$bl)) ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, PO, ZTP\nor probit, logit, cloglog for survival models.")  
+  if(!(margins[1] %in% c(M$m2,M$m3,M$m1d,M$m2d,M$bl)) ) stop("Error in first margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, PO, GP (and its versions), DGP (and its versions), ZTP\nor probit, logit, cloglog for survival models.")  
+  if(!(margins[2] %in% c(M$m2,M$m3,M$m1d,M$m2d,M$bl)) ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, PO, GP (and its versions), DGP (and its versions), ZTP\nor probit, logit, cloglog for survival models.")  
   
 
   
@@ -204,16 +285,14 @@ if(M$surv == TRUE){
   
   }
  
-   if(margins[1] %in% c("GP","GPII","GPo","DGP","DGPII") || margins[2] %in% c("GP","GPII","GPo","DGP", "DGPII")) stop("GP, GPII, GPo, DGP, DGPII checks not finalised yet.\nGet in touch to check progress.")
+   if(margins[1] %in% c("GP","GPII","GPo","DGP","DGPII") || margins[2] %in% c("GP","GPII","GPo","DGP", "DGPII")) stop("GP, GPII, GPo, DGP, DGPII not done yet.\nGet in touch for details.")
 
  
  
 ################################################################################################################################################################################################## 
 
 if( M$surv == TRUE && margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$bl) ) stop("Survival models with continuous and survival margins not ready yet.\nGet in touch to check progress.")
-
 if( margins[2] %in% c(M$m2,M$m3) && margins[1] %in% c(M$m1d,M$m2d) ) stop("The continuous - discrete margin case is not ready yet.\nGet in touch to check progress.")
-
 
 ################################################################################################################################################################################################## 
 
@@ -229,15 +308,22 @@ if(type == "copSS"){
   if(!(M$extra.regI %in% c("t","pC","sED"))) stop("Error in parameter extra.regI value. It should be one of: t, pC or sED.")
   
   if(!(M$margins[1] %in% M$bl) ) stop("Error in first margin value. It should be one of:\nprobit, logit, cloglog.")
-  if(!(M$margins[2] %in% c(M$m2,M$m3,M$m1d,M$m2d)) ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, PO, ZTP, NBI, NBII, PIG.")  
+  if(!(M$margins[2] %in% c(M$m2,M$m3,M$m1d,M$m2d)) ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, PO, GP (and its versions), DGP (and its versions), ZTP, NBI, NBII, PIG.")  
   
-  if(M$margins[2] %in% c("TW") ) stop("Tweedie not yet allowed for. Get in touch for details.")   
+  ###########################################
   
-  if(l.flist > 2 && M$margins[2] %in% c(M$m1d))   { if(l.flist!=3) stop("You need to specify three equations.") } 
-  if(l.flist > 2 && M$margins[2] %in% c(M$m2,M$m2d)){ if(l.flist!=4) stop("You need to specify four equations.") } 
-  if(l.flist > 2 && M$margins[2] %in% M$m3       ){ if(l.flist!=5) stop("You need to specify five equations.") }  
+if(M$margins[2] %in% c("TW") ) stop("Tweedie not yet allowed for. Get in touch for details.")   
+  
+  ###########################################
+  
+  
+  if(l.flist > 2 && M$margins[2] %in% c(M$m1d)     ){ if(l.flist!=3) stop("You need to specify three equations.") } 
+  if(l.flist > 2 && M$margins[2] %in% c(M$m2,M$m2d)){ if(l.flist!=4) stop("You need to specify four equations.")  } 
+  if(l.flist > 2 && M$margins[2] %in% M$m3         ){ if(l.flist!=5) stop("You need to specify five equations.")  }  
+  if(M$margins[2] %in% c("TW")                     ){ if(l.flist!=5) stop("You need to specify five equations.")  }  
+
  
-  if(M$margins[2] %in% c("GP", "GPII", "GPo", "DGP","DGPII") ) stop("GP, GPII, GPo, DGP, DGPII checks not finalised yet.\nGet in touch to check progress.")
+  if(M$margins[2] %in% c("GP", "GPII", "GPo", "DGP","DGPII") ) stop("GP, GPII, GPo, DGP, DGPII not done yet.\nGet in touch for details.")
 
 
 }
@@ -278,10 +364,13 @@ if(M$surv == TRUE){
   if(M$surv == TRUE && M$robust == TRUE) stop("It is not currently possible to fit robust survival models.")
 
   if(!(M$extra.regI %in% c("t","pC","sED"))) stop("Error in parameter extra.regI value. It should be one of:\nt, pC or sED.")
-  if(!(M$margin %in% c(M$m2,M$m3,M$m1d,M$m2d, M$bl)) ) stop("Error in margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, GP, GPII, GPo, DGP, DGPII, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, PO, ZTP, GEVlink.")  
+  if(!(M$margin %in% c(M$m2,M$m3,M$m1d,M$m2d, M$bl)) ) stop("Error in margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, GP, GPII, GPo, DGP, DGPII, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, PO, GP (and its versions), DGP (and its versions), ZTP, GEVlink.")  
   if(l.flist > 1 && M$margin %in% c(M$m1d)    )                   stop("You need to specify one equation.")  
   if(l.flist > 1 && M$margin %in% c(M$m2,M$m2d) ){ if(l.flist!=2) stop("You need to specify two equations.")   } 
   if(l.flist > 1 && M$margin %in% c(M$m3,M$m3d) ){ if(l.flist!=3) stop("You need to specify three equations.") } 
+  
+  if(l.flist !=3 && M$margin %in% c("TW") ) stop("You need to specify three equations.")  
+
   
   if(M$surv == TRUE && M$margin %in% M$bl && M$informative == "yes" && l.flist != 2 ) stop("You need to specify two equations.")
   if(M$surv == TRUE && M$margin %in% M$bl && M$informative == "yes" && is.null(M$list.inf.cov)) stop("You need to specify a set of informative covariates otherwise use the non-informative model.")

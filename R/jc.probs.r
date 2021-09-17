@@ -5,6 +5,7 @@ jc.probs <- function(x, y1, y2, y3 = NULL, newdata, type = "joint", cond = 0, in
 # preliminary checks
 ######################################################################################################
 
+if(x$VC$Model == "ROY") stop("This function is not designed for the type of model chosen for modelling. Get in touch for more info.")
 
 is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) abs(x - round(x)) < tol
 

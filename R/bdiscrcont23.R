@@ -119,7 +119,7 @@ Cop2 <- Cop1Cop2R$Cop2
   if( length(teta2) != 0) h2[teta.ind2] <- dH22$c.copula.be2       
   
   diffh1.h2 <- h1 - h2 
-  diffh1.h2 <- mm(diffh1.h2, min.pr = VC$min.pr, max.pr = VC$max.pr)  
+  #diffh1.h2 <- mm(diffh1.h2, min.pr = VC$min.pr, max.pr = VC$max.pr)  
 
   
   l.par <- VC$weights*( log(pdf2) + log(diffh1.h2) ) 

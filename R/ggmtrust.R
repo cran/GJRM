@@ -143,7 +143,7 @@ gc()
 
 L <- list(coefficients = est.par, fit = fit, omega = omega, edf = edf, t.edf = t.edf, Vb = Vb, Ve = Ve, logLik = logLik, n = n, p = p,
           hess = TRUE, countPD = fCount, idx = idx,
-          l.sp1 = 0, l.sp2 = 0, l.sp3 = 0, l.sp4 = 0, l.sp5 = 0, l.sp6 = 0, l.sp7 = 0, fp = FALSE,
+          l.sp1 = 0, l.sp2 = 0, l.sp3 = 0, l.sp4 = 0, l.sp5 = 0, l.sp6 = 0, l.sp7 = 0, l.sp8 = 0, l.sp9 = 0, fp = FALSE,
           iter.if = iters)
 
 class(L) <- c("ggmtrust")

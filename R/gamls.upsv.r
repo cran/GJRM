@@ -8,6 +8,148 @@ sp5 <- SP$sp5
 sp6 <- SP$sp6
 sp7 <- SP$sp7
 sp8 <- SP$sp8
+sp9 <- SP$sp9
+
+
+if(type == "ROY"){
+
+   
+      if(margins[2] %in% c(M$m1d) && margins[2] %in% c(M$m1d)){
+    
+        b2 <- gamlss1$coefficients[1:VC$X2.d2] # this is actually gamlss2, done to avoid changing arguments of the function
+        b3 <- gamlss2$coefficients[1:VC$X3.d2] # this is actually gamlss3
+ 
+        start.v <- c(b2, b3)
+  
+        if( VC$l.sp2 != 0 ) sp2 <- gamlss1$sp
+        if( VC$l.sp3 != 0 ) sp3 <- gamlss2$sp
+                                                              }
+                                                                  
+                                                           
+      if(margins[2] %in% c(M$m2d,M$m2) && margins[2] %in% c(M$m2d,M$m2)){
+    
+        b2.1 <- gamlss1$coefficients[1:VC$X2.d2] 
+        b2.2 <- gamlss1$coefficients[(VC$X2.d2 + 1):(VC$X2.d2 + VC$X4.d2)]
+        
+        b3.1 <- gamlss2$coefficients[1:VC$X3.d2]
+        b3.2 <- gamlss2$coefficients[(VC$X3.d2 + 1):(VC$X3.d2 + VC$X5.d2)]
+ 
+        start.v <- c(b2.1, b3.1, b2.2, b3.2)
+  
+        if( VC$l.sp2 != 0 ) sp2 <- gamlss1$sp[1:VC$l.sp2]
+        if( VC$l.sp3 != 0 ) sp3 <- gamlss2$sp[1:VC$l.sp3]
+        if( VC$l.sp4 != 0 ) sp4 <- gamlss1$sp[(VC$l.sp2 + 1):(VC$l.sp2 + VC$l.sp4)]
+        if( VC$l.sp5 != 0 ) sp5 <- gamlss2$sp[(VC$l.sp3 + 1):(VC$l.sp3 + VC$l.sp5)]        
+    
+                                                                         }   
+                                                                         
+                                                                         
+      if(margins[2] %in% c(M$m3) && margins[2] %in% c(M$m3)){
+    
+        b2.1 <- gamlss1$coefficients[1:VC$X2.d2] 
+        b2.2 <- gamlss1$coefficients[(VC$X2.d2 + 1):(VC$X2.d2 + VC$X4.d2)]
+        b2.3 <- gamlss1$coefficients[(VC$X2.d2 + VC$X4.d2 + 1):(VC$X2.d2 + VC$X4.d2 + VC$X6.d2)]
+        
+        
+        b3.1 <- gamlss2$coefficients[1:VC$X3.d2]
+        b3.2 <- gamlss2$coefficients[(VC$X3.d2 + 1):(VC$X3.d2 + VC$X5.d2)]
+        b3.3 <- gamlss2$coefficients[(VC$X3.d2 + VC$X5.d2 + 1):(VC$X3.d2 + VC$X5.d2 + VC$X7.d2)]
+        
+ 
+        start.v <- c(b2.1, b3.1, b2.2, b3.2, b2.3, b3.3)
+  
+        if( VC$l.sp2 != 0 ) sp2 <- gamlss1$sp[1:VC$l.sp2]
+        if( VC$l.sp3 != 0 ) sp3 <- gamlss2$sp[1:VC$l.sp3]
+        if( VC$l.sp4 != 0 ) sp4 <- gamlss1$sp[(VC$l.sp2 + 1):(VC$l.sp2 + VC$l.sp4)]
+        if( VC$l.sp5 != 0 ) sp5 <- gamlss2$sp[(VC$l.sp3 + 1):(VC$l.sp3 + VC$l.sp5)]     
+        if( VC$l.sp6 != 0 ) sp6 <- gamlss1$sp[(VC$l.sp2 + VC$l.sp4 + 1):(VC$l.sp2 + VC$l.sp4 + VC$l.sp6)]        
+        if( VC$l.sp7 != 0 ) sp7 <- gamlss2$sp[(VC$l.sp3 + VC$l.sp5 + 1):(VC$l.sp3 + VC$l.sp5 + VC$l.sp7)]        
+
+                                                             }  
+                                                             
+                                                             
+      if(margins[2] %in% c(M$m2) && margins[2] %in% c(M$m3)){
+    
+        b2.1 <- gamlss1$coefficients[1:VC$X2.d2] 
+        b2.2 <- gamlss1$coefficients[(VC$X2.d2 + 1):(VC$X2.d2 + VC$X4.d2)]
+        
+        
+        b3.1 <- gamlss2$coefficients[1:VC$X3.d2]
+        b3.2 <- gamlss2$coefficients[(VC$X3.d2 + 1):(VC$X3.d2 + VC$X5.d2)]
+        b3.3 <- gamlss2$coefficients[(VC$X3.d2 + VC$X5.d2 + 1):(VC$X3.d2 + VC$X5.d2 + VC$X6.d2)]
+        
+ 
+        start.v <- c(b2.1, b3.1, b2.2, b3.2, b3.3)
+  
+        if( VC$l.sp2 != 0 ) sp2 <- gamlss1$sp[1:VC$l.sp2]
+        if( VC$l.sp3 != 0 ) sp3 <- gamlss2$sp[1:VC$l.sp3]
+        if( VC$l.sp4 != 0 ) sp4 <- gamlss1$sp[(VC$l.sp2 + 1):(VC$l.sp2 + VC$l.sp4)]
+        if( VC$l.sp5 != 0 ) sp5 <- gamlss2$sp[(VC$l.sp3 + 1):(VC$l.sp3 + VC$l.sp5)]     
+        if( VC$l.sp6 != 0 ) sp6 <- gamlss2$sp[(VC$l.sp3 + VC$l.sp5 + 1):(VC$l.sp3 + VC$l.sp5 + VC$l.sp6)]        
+
+                                                             }                                                               
+                                                             
+
+      if(margins[2] %in% c(M$m3) && margins[2] %in% c(M$m2)){
+    
+        b2.1 <- gamlss1$coefficients[1:VC$X2.d2] 
+        b2.2 <- gamlss1$coefficients[(VC$X2.d2 + 1):(VC$X2.d2 + VC$X4.d2)]
+        b2.3 <- gamlss1$coefficients[(VC$X2.d2 + VC$X4.d2 + 1):(VC$X2.d2 + VC$X4.d2 + VC$X6.d2)]
+        
+        
+        b3.1 <- gamlss2$coefficients[1:VC$X3.d2]
+        b3.2 <- gamlss2$coefficients[(VC$X3.d2 + 1):(VC$X3.d2 + VC$X5.d2)]
+        
+ 
+        start.v <- c(b2.1, b3.1, b2.2, b3.2, b2.3)
+  
+        if( VC$l.sp2 != 0 ) sp2 <- gamlss1$sp[1:VC$l.sp2]
+        if( VC$l.sp3 != 0 ) sp3 <- gamlss2$sp[1:VC$l.sp3]
+        if( VC$l.sp4 != 0 ) sp4 <- gamlss1$sp[(VC$l.sp2 + 1):(VC$l.sp2 + VC$l.sp4)]
+        if( VC$l.sp5 != 0 ) sp5 <- gamlss2$sp[(VC$l.sp3 + 1):(VC$l.sp3 + VC$l.sp5)]     
+        if( VC$l.sp6 != 0 ) sp6 <- gamlss1$sp[(VC$l.sp2 + VC$l.sp4 + 1):(VC$l.sp2 + VC$l.sp4 + VC$l.sp6)]        
+
+                                                             }                                                              
+                                                                         
+
+      if(margins[2] %in% c(M$m1d) && margins[2] %in% c(M$m2d)){
+    
+        b2.1 <- gamlss1$coefficients 
+        
+        b3.1 <- gamlss2$coefficients[1:VC$X3.d2]
+        b3.2 <- gamlss2$coefficients[(VC$X3.d2 + 1):(VC$X3.d2 + VC$X4.d2)]
+ 
+        start.v <- c(b2.1, b3.1, b3.2)
+  
+        if( VC$l.sp2 != 0 ) sp2 <- gamlss1$sp
+        if( VC$l.sp3 != 0 ) sp3 <- gamlss2$sp[1:VC$l.sp3]
+        if( VC$l.sp4 != 0 ) sp4 <- gamlss2$sp[(VC$l.sp3 + 1):(VC$l.sp3 + VC$l.sp4)]
+    
+                                                               } 
+
+
+      if(margins[2] %in% c(M$m2d) && margins[2] %in% c(M$m1d)){
+    
+        b2.1 <- gamlss1$coefficients[1:VC$X2.d2] 
+        b2.2 <- gamlss1$coefficients[(VC$X2.d2 + 1):(VC$X2.d2 + VC$X4.d2)]
+        
+        b3.1 <- gamlss2$coefficients
+ 
+        start.v <- c(b2.1, b3.1, b2.2)
+  
+        if( VC$l.sp2 != 0 ) sp2 <- gamlss1$sp[1:VC$l.sp2]
+        if( VC$l.sp3 != 0 ) sp3 <- gamlss2$sp
+        if( VC$l.sp4 != 0 ) sp4 <- gamlss1$sp[(VC$l.sp2 + 1):(VC$l.sp2 + VC$l.sp4)]
+    
+                                                                         } 
+
+
+}
+
+
+
+
+
 
 
 
@@ -564,7 +706,7 @@ if(type == "copR"){
   #
   #
   
-sp <- c(sp1, sp2, sp3, sp4, sp5, sp6, sp7, sp8)  
+sp <- c(sp1, sp2, sp3, sp4, sp5, sp6, sp7, sp8, sp9)  
 
 list(start.v = start.v, sp = sp)
   

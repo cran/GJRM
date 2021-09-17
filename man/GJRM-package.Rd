@@ -86,6 +86,8 @@ Filippou P., Marra G., Radice R. (2017), Penalized Likelihood Estimation of a Tr
 
 Gomes M., Radice R., Camarena-Brenes J., Marra G. (2019), Copula Selection Models for Non-Gaussian Outcomes that Are Missing Not at Random. \emph{Statistics in Medicine}, 38(3), 480-496.
 
+Hohberg M., Donat F., Marra G., Kneib T. (in press), Beyond Unidimensional Poverty Analysis Using Distributional Copula Models for Mixed Ordered-Continuous Outcomes. \emph{Journal of the Royal Statistical Society Series C}.
+
 Klein N., Kneib T., Marra G., Radice R., Rokicki S., McGovern M.E. (2019), Mixed Binary-Continuous Copula Regression Models with Application to Adverse Birth Outcomes. \emph{Statistics in Medicine}, 38(3), 413-436.
 
 Marra G., Farcomeni A., Radice R. (2021), Link-Based Survival Additive Models under Mixed Censoring to Assess Risks of Hospital-Acquired Infections. \emph{Computational Statistics and Data Analysis}, 155, 107092.
@@ -114,6 +116,25 @@ Wojtys M., Marra G., Radice R. (2018), Copula Based Generalized Additive Models 
 
 
 For applied case studies see \url{https://www.homepages.ucl.ac.uk/~ucakgm0/pubs.htm}.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

@@ -72,7 +72,7 @@ bcorR <- list(b = 0, bp = 0, bs = 0)
 
 VC$y <- respvec$y1  # do I need this?
 
-if(VC$margins[1] %in% c("NBI", "NBII","NBIa", "NBIIa","PIG","PO","ZTP","DGP","DGPII") ) bcorR <- bcorrecDiscr(VC, params) else{
+if(VC$margins[1] %in% c("NBI", "NBII","NBIa", "NBIIa","PIG","PO","ZTP","DGP","DGPII","DGP0") ) bcorR <- bcorrecDiscr(VC, params) else{
 
 
 

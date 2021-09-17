@@ -396,7 +396,7 @@ if( margin %in% c("probit","logit","cloglog") ){
  
 
 
-if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP","DGPII") ){
+if( margin %in% c("PO","DGP0","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP","DGPII") ){
    
    
    test.oD <- NA
@@ -413,7 +413,7 @@ if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP","DGPII") ){
 
 
 
-if(!(margin %in% c("DGP","DGPII","PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog")) ){
+if(!(margin %in% c("DGP","DGPII","PO","DGP0","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog")) ){
    
    f.g      <- obj.grad.hess(y2.st, out.beta, zo = 1)$value
    M.value  <- try(trust(obj.grad.hess, parinit = yst.aver, rinit = 1, rmax = 100, minimize = F, out.beta = out.beta, zo = 1)$value); if ('try-error' %in% class(M.value)) next
@@ -472,7 +472,7 @@ if( margin %in% c("probit","logit","cloglog") ){
  
 
 
-if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP","DGPII") ){
+if( margin %in% c("PO","DGP0","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP","DGPII") ){
    
    
    test.oD <- NA
@@ -489,7 +489,7 @@ if( margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","DGP","DGPII") ){
 
 
 
-if(!(margin %in% c("PO","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog","DGP","DGPII")) ){
+if(!(margin %in% c("PO","DGP0","ZTP","NBI","NBII","NBIa","NBIIa","PIG","probit","logit","cloglog","DGP","DGPII")) ){
    
    f.g      <- obj.grad.hess(y2.st, out.beta, zo = 0)$value
    M.value  <- try(trust(obj.grad.hess, parinit = yst.aver, rinit = 1, rmax = 100, minimize = F, out.beta = out.beta, zo = 0)$value); if ('try-error' %in% class(M.value)) next

@@ -23,7 +23,7 @@ pred.mvt <- function(x, eq, fun = "mean", n.sim = 100, prob.lev = 0.05, smooth.n
  if(eq == 1) mar <- x$margins[1]
  if(eq == 2) mar <- x$margins[2] 
  
- if( mar %in% c("GP","GPII","GPo","DGP","DGPII","TW") ) stop("Function not ready yet for the chosen distribution(s).")
+ if( mar %in% c("GP","GPII","GPo","DGP","DGPII","TW","DGP0") ) stop("Function not ready yet for the chosen distribution(s).")
 
  
  

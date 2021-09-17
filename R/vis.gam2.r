@@ -126,7 +126,7 @@ type <- "response"
     #                      }      
 
 
- if(mar %in% c("TW","GP","GPII","GPo","DGP","DGPII")) stop("Not ready for the chosen distribution(s).")
+ if(mar %in% c("TW","GP","GPII","GPo","DGP","DGPII","DGP0")) stop("Not ready for the chosen distribution(s).")
 
 
  if(mar %in% c("SM")){

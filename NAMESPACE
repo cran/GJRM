@@ -7,13 +7,14 @@ bprobgHs,bprobgHstwoParC, mb, H.tri, g.tri, triprobgHs, H.triSS, g.triSS, tripro
 H.triESS, g.triESS, triprobgHsESS, pp, SS, bcontSurvGunivInform, rIC, bCopulaCLMgHsCont, pen,
 bprobgHsPO, bcorrec, bcorrecDiscr,  Xdpred, pred.mvt, pred.gp, inform.setup, cv.inform, PDef, ggm.Deriv, ggmtrust, ggm.DerivOPT1, ggm.DerivOPT2,
 bprobgHsSS, intB, rob.int, resp.CLM, ggmtrust.path, Dpens, Dpens2, bdiscrcont23,
-bprobgHsContUniv, lmc, bcontSurvGunivMIXED_ExcessHazard, survExcInd,
-bcontSurvGunivL_ExcessHazard, bcontSurvGuniv_ExcessHazard, bcontSurvGunivI_ExcessHazard,bcontSurvGunivMIXED_LeftTruncation,
-bcontSurvGunivMIXED_ExcessHazard_LeftTruncation,
+bprobgHsContUniv, lmc, bcontSurvGunivMIXED_ExcessHazard, survExcInd, pream.wm,
+bcontSurvGunivL_ExcessHazard, bcontSurvGuniv_ExcessHazard, bcontSurvGunivI_ExcessHazard, bcontSurvGunivMIXED_LeftTruncation,
+bcontSurvGunivMIXED_ExcessHazard_LeftTruncation, bprobgHsCont3binTWSS, 
 copgHs, copgHs2, copgHs3, PosDefCor,
-logLik.SemiParBIV, logLik.ggmtrust, logLik.lmc, pTweed,
+logLik.SemiParBIV, logLik.ggmtrust, logLik.lmc, pTweed, bcontSurvG_extended,
 LM.bpm, hazsurv.plot, approx.CLM,
 VuongClarke,
+bprobgHsBinROY, bprobgHsCont2ROY, bprobgHsCont3ROY, bprobgHsDiscr2ROY, bprobgHsDiscr1ROY,
 plot.SemiParBIV, vis.gjrm,
 predict.SemiParBIV,
 predict.CopulaCLM,
@@ -34,9 +35,11 @@ S.m,
 conv.check,
 SemiParBIV.fit.post,
 SemiParTRIV.fit.post,
+SemiParROY.fit.post,
 SemiParBIV.fit,
 SemiParBIV,
 SemiParTRIV,
+SemiParROY,
 gamlss,
 gamlss.fit.post,
 copulaReg.fit.post,
@@ -70,7 +73,6 @@ importFrom(copula, tau, plackettCopula, iTau, galambosCopula)
 importFrom(VineCopula, BiCopHfunc1, BiCopHfunc2, BiCopHfuncDeriv, BiCopCDF, BiCopTau2Par, BiCopPar2Tau, BiCopPDF, BiCopDeriv, BiCopDeriv2, BiCopHfuncDeriv2)
 importFrom(matrixStats, rowQuantiles, colQuantiles, colWeightedMeans)
 importFrom(gamlss.dist, pNBI, dNBI, pNBII, dNBII, pPIG, dPIG, pDEL, dDEL, pSICHEL, dSICHEL, pPO, rNO,rGU,rRG,rLO,rLOGNO,rWEI,rIG,rGA,rGB2,rBE,rNBI,rNBII,rPIG,rPO)
-importFrom(matrixcalc, duplication.matrix)
 
 importFrom(distrEx, distrExIntegrate)
 

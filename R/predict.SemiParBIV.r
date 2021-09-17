@@ -34,7 +34,10 @@ if(eq > object$l.flist) stop("The fitted model has a smaller number of equations
  if(eq==8){ ss.pred <- object$gam8
             ind <- (object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2+object$X6.d2+object$X7.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2+object$X6.d2+object$X7.d2+object$X8.d2) }             
                                              
-                                   
+ if(eq==9){ ss.pred <- object$gam9
+            ind <- (object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2+object$X6.d2+object$X7.d2+object$X8.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2+object$X6.d2+object$X7.d2+object$X8.d2+object$X9.d2) }             
+                  
+  
            ss.pred$coefficients   <- object$coefficients[ind]
            ss.pred$coefficients.t <- object$coef.t[ind]
            ss.pred$Vp   <- object$Vb[ind,ind]

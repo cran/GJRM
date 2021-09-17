@@ -1,6 +1,6 @@
 susu <- function(object, SE, Vb, informative = "no", K1 = NULL){
 
-  tableN <- table <- list(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+  tableN <- table <- list(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
 
   testStat <- getFromNamespace("testStat", "mgcv")
   liu2   <- getFromNamespace("liu2", "mgcv") 
@@ -21,7 +21,7 @@ if (!is.null(K1)) {
   
   ind1 <- 1:object$gp1
   ind2 <- object$X1.d2 + (1:object$gp2) + CLM.shift2
-  ind3 <- ind4 <- ind5 <- ind6 <- ind7 <- ind8 <- NULL 
+  ind3 <- ind4 <- ind5 <- ind6 <- ind7 <- ind8 <- ind9 <- NULL 
   
   if(informative == "yes"){ index <- 1; ind2 <- NULL }
   
@@ -55,6 +55,11 @@ if (!is.null(K1)) {
        if(!is.null(object$X8) ) {
        ind8 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + (1:object$gp8) + CLM.shift2
        index <- 1:8  
+       }  
+       
+       if(!is.null(object$X9) ) {
+       ind9 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + object$X8.d2 + (1:object$gp9) + CLM.shift2
+       index <- 1:9 
        }         
                             
   }
@@ -66,7 +71,8 @@ if (!is.null(K1)) {
                ind5 = ind5,
                ind6 = ind6,
                ind7 = ind7,
-               ind8 = ind8)
+               ind8 = ind8,
+               ind9 = ind9)
                 
 
   for(i in index){
@@ -80,7 +86,7 @@ if (!is.null(K1)) {
   
 
   
-  if( object$l.sp1!=0 || object$l.sp2!=0 || object$l.sp3!=0 || object$l.sp4!=0 || object$l.sp5!=0 || object$l.sp6!=0 || object$l.sp7!=0 || object$l.sp8!=0){
+  if( object$l.sp1!=0 || object$l.sp2!=0 || object$l.sp3!=0 || object$l.sp4!=0 || object$l.sp5!=0 || object$l.sp6!=0 || object$l.sp7!=0 || object$l.sp8!=0 || object$l.sp9!=0){
 
   	pTerms.df <- pTerms.chi.sq <- pTerms.pv <- tableN <- list(0, 0, 0, 0, 0, 0, 0, 0)
         XX <- object$R # this should be ok for monotonic effects as well but I may come back to this
@@ -93,8 +99,9 @@ if (!is.null(K1)) {
              if(i==4) {mmm <- object$VC$lsgam4; if(mmm==0) next} 
              if(i==5) {mmm <- object$VC$lsgam5; if(mmm==0) next} 
              if(i==6) {mmm <- object$VC$lsgam6; if(mmm==0) next} 
-             if(i==7) {mmm <- object$VC$lsgam7; if(mmm==0) next}              
-             if(i==8) {mmm <- object$VC$lsgam8; if(mmm==0) break} 
+             if(i==7) {mmm <- object$VC$lsgam7; if(mmm==0) next}   
+             if(i==8) {mmm <- object$VC$lsgam8; if(mmm==0) next}                           
+             if(i==9) {mmm <- object$VC$lsgam9; if(mmm==0) break} 
   
 		for(k in 1:mmm){
 
@@ -106,6 +113,7 @@ if (!is.null(K1)) {
                         if(i==6){ gam <- object$gam6; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 }
                         if(i==7){ gam <- object$gam7; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 }
                         if(i==8){ gam <- object$gam8; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 }
+                        if(i==9){ gam <- object$gam9; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + object$X8.d2}
                           
                           
                         gam$sig2            <- 1

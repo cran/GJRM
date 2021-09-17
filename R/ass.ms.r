@@ -1,7 +1,7 @@
 ass.ms <- function(BivD, nCa, theta){
 
 
-if(BivD %in% c("J0","J180","J90","J270")) theta <- ifelse(abs(theta) > 50, 50, abs(theta))
+if(BivD %in% c("J0","J180","J90","J270")) theta <- ifelse(abs(theta) > 30, 30, abs(theta)) # changed from 50 to 30 - 05/08/2021, due to BiCopPar2Tau
 if(BivD %in% c("J90","J270"))             theta <- -theta 
 
 if(BivD %in% c("F")){ signs <- sign(theta) 

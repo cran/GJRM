@@ -13,9 +13,9 @@ SemiParTRIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   ##########################################################################################################################
   
   i.rho <- sp <- qu.mag <- qu.mag1 <- qu.mag2 <- n.sel <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- gamlss <- inde <- spgamlss <- n.sel1 <- n.sel2 <- NULL  
-  end <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- 0
+  end <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- l.sp9 <- 0
   ngc <- 2; hess <- TRUE
-  gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- NULL
+  gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- gam9 <- NULL
   opc  <- scc <- sccn <- m2 <- m2d <- m3 <- m3d <- bl <- NULL  
    
   fp <- FALSE
@@ -79,7 +79,13 @@ SemiParTRIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   mf$formula <- fake.formula 
   mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$ordinal <- mf$knots <- mf$Chol <- mf$margins <- mf$infl.fac <- mf$rinit <- mf$approx <- mf$gamma <- mf$w.alasso <- mf$rmax <- mf$Model <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$penCor <- mf$sp.penCor <- NULL                           
   mf$drop.unused.levels <- drop.unused.levels 
-  if(Model=="TSS") mf$na.action <- na.pass
+  
+  #if(Model=="TSS") mf$na.action <- na.pass
+  
+  if(Model %in% c("TSS","TESS")) mf$na.action <- na.pass
+  
+  
+  
   mf[[1]] <- as.name("model.frame")
   data <- eval(mf, parent.frame())
   
@@ -124,6 +130,7 @@ if(Model=="TESS"){
                         data$weights <- weights
                         names(data)[length(names(data))] <- "(weights)"} else weights <- data[,"(weights)"]    
   
+  
   formula.eq1 <- formula[[1]]
   formula.eq2 <- formula[[2]] 
   formula.eq3 <- formula[[3]]  
@@ -155,7 +162,7 @@ if(Model=="TESS"){
   if(Model %in% c("TSS","TESS")){
   
   X2s <- try(predict.gam(gam2, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
-  if(any(class(X2s)=="try-error")) stop("Check that the numbers of factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?SemiParTRIV for more information.")    
+  if(any(class(X2s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.")    
   
   }
   
@@ -177,7 +184,7 @@ if(Model=="TESS"){
   if(Model %in% c("TSS","TESS")){
   
   X3s <- try(predict.gam(gam3, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
-  if(any(class(X3s)=="try-error")) stop("Check that the numbers of factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?SemiParTRIV for more information.")    
+  if(any(class(X3s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.")    
     
   }  
     
@@ -223,6 +230,8 @@ if(Model == "TSS"){
     y1.y2.cy3  <- y1[inde]*y2*(1-y3)  
     y1.cy2.cy3 <- y1[inde]*(1-y2)*(1-y3)
     y1.cy2.y3  <- y1[inde]*(1-y2)*y3 
+    
+    n.sel1 <- table(inde)[2]
     
   }
 
@@ -332,16 +341,17 @@ if(Model == "TESS") func.opt <- triprobgHsESS
   
 
 GAM <- list(gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, 
-            gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8)   
+            gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8, gam9 = gam9)   
 
 
 if( (l.sp1!=0 || l.sp2!=0 || l.sp3!=0 || l.sp4!=0 || l.sp5!=0 || l.sp6!=0 || l.sp7!=0 || l.sp8!=0) && fp==FALSE ){ 
 
 L.GAM <- list(l.gam1 = length(gam1$coefficients), l.gam2 = length(gam2$coefficients), l.gam3 = length(gam3$coefficients), l.gam4 = length(gam4$coefficients),
-              l.gam5 = length(gam5$coefficients), l.gam6 = length(gam6$coefficients), l.gam7 = length(gam7$coefficients), l.gam8 = length(gam8$coefficients))
+              l.gam5 = length(gam5$coefficients), l.gam6 = length(gam6$coefficients), l.gam7 = length(gam7$coefficients), l.gam8 = length(gam8$coefficients),
+              l.gam9 = 0)
 
 L.SP <- list(l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, l.sp4 = l.sp4, 
-             l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8)
+             l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8, l.sp9 = l.sp9)
 
                  sp <- c(sp1, sp2, sp3, sp4, sp5, sp6, sp7, sp8)
                  qu.mag <- S.m(GAM, L.SP, L.GAM)                             
@@ -395,6 +405,8 @@ if(missing(parscale)) parscale <- 1
   lsgam6 <- length(gam6$smooth)
   lsgam7 <- length(gam7$smooth)
   lsgam8 <- length(gam8$smooth)
+  lsgam9 <- length(gam9$smooth)
+
    
   VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL,
              lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
@@ -403,7 +415,7 @@ if(missing(parscale)) parscale <- 1
              lsgam5 = lsgam5,
              lsgam6 = lsgam6,
              lsgam7 = lsgam7, K1 = NULL,
-             lsgam8 = lsgam8, 
+             lsgam8 = lsgam8, lsgam9 = lsgam9,  
              X1 = X1, inde = inde, inde1 = inde1, inde2 = inde2, inde2.1 = inde2.1,
              X2 = X2, 
              X3 = X3,
@@ -436,6 +448,7 @@ if(missing(parscale)) parscale <- 1
              l.sp6 = l.sp6,  
              l.sp7 = l.sp7,
              l.sp8 = l.sp8,
+             l.sp9 = 0,
              infl.fac = infl.fac,
              weights = weights, univ.gamls = FALSE,
              fp = fp,
@@ -488,7 +501,7 @@ L <- list(fit = SemiParFit$fit, formula = formula, Model = Model, robust = FALSE
           sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, 
           l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, 
           l.sp4 = l.sp4, l.sp5 = l.sp5, l.sp6 = l.sp6,
-          l.sp7 = l.sp7, l.sp8 = l.sp8, bl = bl,
+          l.sp7 = l.sp7, l.sp8 = l.sp8, l.sp9 = l.sp9, gam9 = gam9, bl = bl,
           fp = fp,  
           iter.if = SemiParFit$iter.if, iter.inner = SemiParFit$iter.inner,
           theta12   = SemiParFit.p$theta12, 

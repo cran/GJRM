@@ -40,9 +40,9 @@ pen <- function(qu.mag, sp, VC, univ, l.splist){
                             
 ##############################################################
     
-if(!is.null(VC$gp3)){ # this starts after first two equations
+if(!is.null(VC$gp3)){ # this starts after first two equations, for ROY this will always be executed
 
- EQ4P <- EQ5P <- EQ6P <- EQ7P <- EQ8P <- NULL 
+ EQ4P <- EQ5P <- EQ6P <- EQ7P <- EQ8P <- EQ9P <- NULL 
 
     ma3 <- matrix(0,VC$gp3,VC$gp3) 
     if(l.splist$l.sp3 == 0) EQ3P <- adiag(ma3)    
@@ -141,14 +141,35 @@ if(!is.null(VC$gp3)){ # this starts after first two equations
 	    S8 <- do.call(adiag, lapply(S8, unlist))
 	    EQ8P <- adiag(ma8, S8)
 	                     }               
-                                }                                  
+                                } 
+                                
+                                
+            if(!is.null(VC$gp9)){
+	    
+	    ma9 <- matrix(0,VC$gp9,VC$gp9) 
+	    if(l.splist$l.sp9 == 0) EQ9P <- adiag(ma9)    
+	    
+	    if(l.splist$l.sp9 != 0){
+	    ind <- (l.splist$l.sp1 + l.splist$l.sp2 + l.splist$l.sp3 + l.splist$l.sp4 + l.splist$l.sp5 + l.splist$l.sp6 + l.splist$l.sp7 + l.splist$l.sp8 + 1):(l.splist$l.sp1 + l.splist$l.sp2 + l.splist$l.sp3 + l.splist$l.sp4 + l.splist$l.sp5 + l.splist$l.sp6 + l.splist$l.sp7 + l.splist$l.sp8 + l.splist$l.sp9)
+            offtemp <- as.numeric(as.factor( qu.mag$off[ind] ))    
+	    S9 <- mapply("*", qu.mag$Ss[ind], sp[ind], SIMPLIFY = FALSE)
+
+            if( length(unique(offtemp)) != length(offtemp) ) S9 <- SS(offtemp, S9)    
+	    
+	    S9 <- do.call(adiag, lapply(S9, unlist))
+	    EQ9P <- adiag(ma9, S9)
+	                     }               
+                                }                                
+                                
                                 
                                 
 }else{
 
 
+if(VC$Model != "ROY"){### Model != ROY
 
-if(VC$univ.gamls == FALSE){
+
+if(VC$univ.gamls == FALSE){ ### gamls FALSE
             
    
    if(VC$margins[1] %in% c(VC$m2,VC$m3) && VC$margins[2] %in% c(VC$m2,VC$m3) && VC$BivD == "T"){
@@ -159,6 +180,10 @@ if(VC$univ.gamls == FALSE){
        if(VC$margins[1] %in% VC$m3 && VC$margins[2] %in% VC$m2 ) {EQ3P <- 0; EQ4P <- 0; EQ5P <- 0; EQ6P <- 0; EQ7P <- 0; EQ8P <- NULL  }  
        
    }else{
+   
+   
+   
+   
    
     if(VC$margins[1] %in% c(VC$bl)        && VC$Model != "BPO0")                 {EQ3P <- 0; EQ4P <- NULL; EQ5P <- NULL; EQ6P <- EQ7P <- EQ8P <- NULL  }
     
@@ -183,14 +208,21 @@ if(VC$univ.gamls == FALSE){
     if(VC$Model == "B" && !is.null(VC$theta.fx)) {EQ3P <- EQ4P <- EQ5P <- EQ6P <- EQ7P <- EQ8P <- NULL                 }
     if(VC$Model == "BPO0")                                                       {EQ3P <- EQ4P <- EQ5P <- EQ6P <- EQ7P <- EQ8P <- NULL                 }
     # BPO0 put here below to avoid conflict with bl bl second line above
+    
+    
+    
+    
     }
 
 
     # maybe not that efficient, it could be done above but done here for the moment
 
 
-}
+} ### gamls FALSE
 
+
+
+} ### model != ROY
 
 }  
     
@@ -199,7 +231,7 @@ if(VC$univ.gamls == FALSE){
     
     
     
-if(VC$triv == FALSE){    ### TRIV
+if(VC$triv == FALSE && VC$Model != "ROY"){    ### TRIV
     
     
     if(univ == 0) S.h <- adiag(EQ1P, EQ2P, EQ3P, EQ4P, EQ5P, EQ6P, EQ7P, EQ8P)
@@ -250,6 +282,41 @@ if(VC$penCor %in% c("ridge")){
 } 
 
 ####################################################################################################        
+
+
+if(VC$Model == "ROY"){ 
+
+  if(VC$l.flist == 3){
+  
+  if( VC$margins[2] %in% c(VC$bl) && VC$margins[3] %in% c(VC$bl) )    EQ4P <- EQ5P <- 0   
+  
+  if( VC$margins[2] %in% c(VC$m1d) && VC$margins[3] %in% c(VC$m1d) )  EQ4P <- EQ5P <- 0
+  if( VC$margins[2] %in% c(VC$m2d) && VC$margins[3] %in% c(VC$m1d) )  EQ4P <- EQ5P <- EQ6P <- 0
+  if( VC$margins[2] %in% c(VC$m1d) && VC$margins[3] %in% c(VC$m2d) )  EQ4P <- EQ5P <- EQ6P <- 0
+  
+  if( VC$margins[2] %in% c(VC$m3) && VC$margins[3] %in% c(VC$m3) )    EQ4P <- EQ5P <- EQ6P <- EQ7P <- EQ8P <- EQ9P <- 0 
+  if( VC$margins[2] %in% c(VC$m2) && VC$margins[3] %in% c(VC$m3) )    EQ4P <- EQ5P <- EQ6P <- EQ7P <- EQ8P <- 0 
+  if( VC$margins[2] %in% c(VC$m3) && VC$margins[3] %in% c(VC$m2) )    EQ4P <- EQ5P <- EQ6P <- EQ7P <- EQ8P <- 0 
+  
+  }
+  
+  
+  
+  
+  
+  #if(l.flist == 5) EQ6P <- EQ7P <- EQ8P <- EQ9P <- NULL # these lines are a repeat of what we have above and are not needed
+  #if(l.flist == 6) EQ7P <- EQ8P <- EQ9P <- NULL
+  #if(l.flist == 7) EQ8P <- EQ9P <- NULL
+  #if(l.flist == 8) EQ9P <- NULL
+
+
+  S.h <- adiag(EQ1P, EQ2P, EQ3P, EQ4P, EQ5P, EQ6P, EQ7P, EQ8P, EQ9P)
+
+
+}
+
+
+
 
         
 list(S.h = S.h, qu.mag = qu.mag)

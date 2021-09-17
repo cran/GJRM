@@ -3,9 +3,9 @@ eta.tr <- function(vrb.st, margin, zero.tol = 1e-02){
 
 
 
-mupos  <- c("LN","WEI","GO","iG","GA","GA2","GGA","DAGUM","SM","FISK","TW","NBI","NBII","PO","ZTP","PIG")
+mupos  <- c("LN","WEI","GO","iG","GA","GA2","GGA","DAGUM","SM","FISK","TW","NBI","NBII","PO","ZTP","PIG","DGP0")
 mub    <- c("BE","logit")
-muNpos <- c("GP","DGP") # nothing done here for now
+# muNpos <- c("GP","DGP") # nothing done here for now
 
 
 if(margin %in% mupos){
@@ -17,6 +17,10 @@ if(margin %in% mupos){
 if(margin %in% mub){
    vrb.st <- ifelse( vrb.st >  16,  16, vrb.st )  
    vrb.st <- ifelse( vrb.st < -18, -18, vrb.st ) 
+}
+
+if(margin %in% c("DGPII")){
+   vrb.st <- ifelse( vrb.st < -745.2, -745.2, vrb.st ) # to include 0
 }
 
 

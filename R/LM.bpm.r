@@ -103,13 +103,13 @@ if( l.sp1!=0 || l.sp2!=0){
   
  sp <- c(sp1, sp2)
  GAM <- list(gam1 = gam1, gam2 = gam2, gam3 = NULL, gam4 = NULL, 
-             gam5 = NULL, gam6 = NULL, gam7 = NULL, gam8 = NULL)  
+             gam5 = NULL, gam6 = NULL, gam7 = NULL, gam8 = NULL, gam9 = NULL)  
              
  L.SP <- list(l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = 0, l.sp4 = 0, 
-             l.sp5 = 0, l.sp6 = 0, l.sp7 = 0, l.sp8 = 0)    
+             l.sp5 = 0, l.sp6 = 0, l.sp7 = 0, l.sp8 = 0, l.sp9 = 0)    
              
  L.GAM <- list(l.gam1 = length(gam1$coefficients), l.gam2 = 0, l.gam3 = 0, l.gam4 = 0,
-              l.gam5 = 0, l.gam6 = 0, l.gam7 = 0, l.gam8 = 0)             
+              l.gam5 = 0, l.gam6 = 0, l.gam7 = 0, l.gam8 = 0, l.gam9 = 0)             
  
  qu.mag <- S.m(GAM, L.SP, L.GAM)               
                 
@@ -147,7 +147,7 @@ params <- c(gam1$coefficients, gam2$coefficients,0)
 
 l.splist <- list( l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = 0, 
                   l.sp4 = 0, l.sp5 = 0, l.sp6 = 0, 
-                  l.sp7 = 0, l.sp8 = 0 )
+                  l.sp7 = 0, l.sp8 = 0 , l.sp9 = 0)
 
 
 if( l.sp1==0 && l.sp2==0 ) ps <- list(S.h = 0, S.h1 = 0, S.h2 = 0) else ps <- pen(qu.mag, sp, VC, univ = 0, l.splist)

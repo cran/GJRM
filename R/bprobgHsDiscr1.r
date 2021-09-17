@@ -162,7 +162,7 @@ if( length(teta1) != 0){
   derp1.dereta1   <- pd1$derp1.dereta1    # -dnorm(-eta1) 
   
   
-  Cc <- mm(c.copula.be1.C1 - c.copula.be1.C2, min.pr = VC$min.pr, max.pr = VC$max.pr) 
+  Cc <- c.copula.be1.C1 - c.copula.be1.C2 # mm(c.copula.be1.C1 - c.copula.be1.C2, min.pr = VC$min.pr, max.pr = VC$max.pr) 
   C  <- Cc*derp1.dereta1
   
   Cs    <- c.copula.theta.C1  - c.copula.theta.C2

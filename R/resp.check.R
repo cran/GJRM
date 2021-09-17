@@ -9,14 +9,14 @@ resp.check <- function(y, margin = "N",
 m2 <- c("N","GU","rGU","LO","LN","WEI","iG","GA","GAi","BE","FISK","GP","GPII","GPo")
 m3 <- c("DAGUM","SM","TW")
 nu <- NULL
-m1d  <- c("PO","ZTP")
+m1d  <- c("PO","ZTP","DGP0")
 m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG","DGP","DGPII")
 m3d  <- c("DEL","SICHEL")
 
 y1m <- NA
 y <- as.numeric( na.omit(y) )
 
-if(!(margin %in% c(m2,m3,m1d,m2d)) ) stop("Error in margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, PO, ZTP, GP, GPII, GPo, DGP, DGPII.") 
+if(!(margin %in% c(m2,m3,m1d,m2d)) ) stop("Error in margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, PO, ZTP, GP, GPII, GPo, DGP, DGPII, DGP0.") 
 
 if(margin %in% c("LN","WEI","iG","GA","GAi","DAGUM","SM","FISK") && min(y, na.rm = TRUE) <= 0) stop("The response must be positive.")
 if(margin %in% c("TW") && min(y, na.rm = TRUE) < 0) stop("The response must be > = 0.")
@@ -43,7 +43,7 @@ margins <- c(margin, margin) # not important to chance probit here
 VC <- list(X1 = matrix(1, nrow = length(y), ncol = 1), X1.d2 = 1,
            X2 = NULL, X2.d2 = 1,
            X3 = NULL, X3.d2 = 1, robust = FALSE,
-           l.sp1 = 0, l.sp2 = 0, l.sp3 = 0, l.sp4 = 0, l.sp5 = 0, l.sp6 = 0, l.sp7 = 0, l.sp8 = 0, 
+           l.sp1 = 0, l.sp2 = 0, l.sp3 = 0, l.sp4 = 0, l.sp5 = 0, l.sp6 = 0, l.sp7 = 0, l.sp8 = 0, l.sp9 = 0, 
            weights = 1, m2 = m2, m3 = m3, m1d = m1d, m2d = m2d, m3d = m3d, 
            margins = margins, fp = TRUE,
            extra.regI = "t", Cont = "NO", ccss = "no", triv = FALSE, surv = FALSE, zero.tol = 1e-02, 
@@ -82,7 +82,7 @@ if( margin %in% c("TW") )              {st.v <- coef(gam(list(y ~ 1, ~ 1, ~ 1), 
 
 
 
-if( margin %in% c("GP","GPII","GPo","DGP","DGPII") ){
+if( margin %in% c("GP","GPII","GPo","DGP","DGPII","DGP0") ){
 
  est.ob <- try(  gpd.fit(y, threshold = 0, siglink = exp, show = FALSE), silent = TRUE) 
  
@@ -93,7 +93,9 @@ if( margin %in% c("GP","GPII","GPo","DGP","DGPII") ){
  if( margin %in% c("GPo","GPII","DGPII") ) { if(st.v[1] < 0) st.v[1] <- 0.001  }
 
  if( margin %in% c("GPII","GPo") ) st.v[1] <- log(st.v[1] + 0.5) 
- if( margin %in% c("DGPII") )      st.v[1] <- sqrt(st.v[1])
+ if( margin %in% c("DGPII") )      st.v[1] <- log(st.v[1]) # sqrt(st.v[1])
+ if( margin %in% c("DGP0") )       st.v    <- st.v[2]
+ 
  
 
 }                                                              
@@ -133,7 +135,7 @@ if(plots == TRUE){ ##
 if(margin == "LN") y <- exp(y)
 
 
-    if(margin %in% c("ZTP","DGP","DGPII")){
+    if(margin %in% c("ZTP","DGP","DGPII","DGP0")){
      
     ly1 <- length(y)
     y1m <- list()

@@ -30,8 +30,8 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
 
   r.type <- "a"  
   i.rho <- sp <- qu.mag <- qu.mag1 <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- spgamlss1 <- indexT <- test.sv.inf <- fgam <- NULL  
-  end <- X2.d2 <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- 0
-  gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- y1m <- y2m <- Xi <- X1ni <- X2ni <- gam1TW <- NULL
+  end <- X2.d2 <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- l.sp9 <- 0
+  gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- gam9 <- y1m <- y2m <- Xi <- X1ni <- X2ni <- gam1TW <- NULL
   gp2 <- gp3 <- 1
   sp1 <- sp2 <- gam2 <- X2 <- sp3 <- gam3 <- X3 <- sp4 <- gp4 <- gam4 <- X4 <- sp5 <- gp5 <- gam5 <- X5 <- inde.inf2 <- inde.inf1 <- infsetupR <- NULL   
   sp6 <- gp6 <- gam6 <- X6 <- sp7 <- gp7 <- gam7 <- X7 <- sp8 <- gp8 <- gam8 <- X8 <- NULL
@@ -54,7 +54,7 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
 
   m2  <- c("N","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP","GPII","GPo")
   m3  <- c("DAGUM","SM","TW")
-  m1d <- c("PO", "ZTP", "GEVlink")
+  m1d <- c("PO", "ZTP", "GEVlink","DGP0")
   m2d <- c("NBI", "NBII","PIG","DGP","DGPII")
   m3d <- c("DEL","SICHEL")
   
@@ -131,9 +131,10 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
   # NEW 4: include new excess hazard constants and truncation time
   mf$d.lchrate.td <- mf$d.rchrate.td <- mf$truncation.time <- NULL	  
   mf$drop.unused.levels <- drop.unused.levels
+
   
-  #########
-  if( surv == TRUE && type.cens %in% c("I","mixed") ) mf$na.action <- na.pass # this might be a bit weak
+  ######### moved this check here because requires cens vector to have been defined
+  if( surv == TRUE && type.cens %in% c("I","mixed") ) mf$na.action <- na.pass # this might be a bit weak - should be stronger now - no need for stronger condition
   #########
   
   mf[[1]] <- as.name("model.frame")
@@ -141,21 +142,81 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
   
   if(gc.l == TRUE) gc()  
   
-
-          
-  if(!("(weights)" %in% names(data))) {weights <- rep(1,dim(data)[1]) 
-                        data$weights <- weights
-                        names(data)[length(names(data))] <- "(weights)"} else weights <- data[,"(weights)"]  
+  # if(!("(weights)" %in% names(data))) {weights <- rep(1,dim(data)[1])
+  #                       data$weights <- weights
+  #                       names(data)[length(names(data))] <- "(weights)"} else weights <- data[,"(weights)"]
   
-  
-  if(surv == TRUE && !("(cens)" %in% names(data)) ) stop("You must provide the binary censoring indicator.")
-       
+  #####
+  if(surv == TRUE && !("(cens)" %in% names(data)) ) stop("You must provide the censoring indicator.")
+      
+      
+  # Check whether user accidentally provided upperB (and not needed)
+  if(surv == TRUE && !any(data[,"(cens)"] %in% c('I', 'IT')) && !is.null(upperB) ) stop('Argument upperB is not needed when there are no interval censored \n and/or interval censored left-truncated observations.')
+  # Check whether used accidentally provided truncation.time (and not needed)
+  if(surv == TRUE && !any(data[,"(cens)"] %in% c('UT', 'RT', 'LT', 'IT')) && !is.null(truncation.time) ) stop('Argument truncation.time is not needed when there are no left-truncated observations.')
         
+           
   if(!("(cens)" %in% names(data))) {cens <- rep(1,dim(data)[1]) 
                         data$cens <- cens
                         names(data)[length(names(data))] <- "(cens)"} else cens <- data[,"(cens)"]                         
+  #####
   
-  # NEW 5: added new variables to M
+  if( surv == TRUE && type.cens %in% c("I") ){
+    
+    data[cens == 1, v.rB] <- data[cens == 1, v1[1] ]    
+    
+    # actual NAs (for cens variable)
+    actual.NAs = as.numeric(which(apply(apply(data, 1, is.na), 2, any)))
+    
+    # Once all are fixed, the remaining NA are just actually missing data
+    data <- na.omit(data)  
+    
+    # Clean cens variable defined above as well
+    if(length(actual.NAs) > 0) cens = cens[-actual.NAs]
+    
+  }  
+  
+  # NEW 6: same as following if clause. Note: has to be before the next if clause (if not the na.omit(data) command will cancel the truncated observations  
+  #if( surv == TRUE && type.cens %in% c("mixed") && !is.null(truncation.time) ) data[!(cens %in% c("UT", "LT", "RT", "IT")), v.td] <- data[!(cens %in% c("UT", "LT", "RT", "IT")), v1[1] ] 
+  #
+  #if( surv == TRUE && type.cens %in% c("mixed") && any(unique(cens) %in% c("I", "IT")) ){
+  #
+  #   data[!(cens %in% c("I", "IT")), v.rB] <- data[!(cens %in% c("I", "IT")), v1[1] ]    
+  #   data <- na.omit(data)  
+  #             
+  #} 
+  #
+  ## data <- na.omit(data) # do we need one more here?  
+  
+  if( surv == TRUE && type.cens %in% c("mixed") ){ 
+    
+    # fix the v.td for those who do not have it
+    if( !is.null(truncation.time) ) data[!(cens %in% c("UT", "LT", "RT", "IT")), v.td] <- data[!(cens %in% c("UT", "LT", "RT", "IT")), v1[1] ] 
+    
+    # fix the v.rB for those who do not have it
+    if(any(unique(cens) %in% c("I", "IT")) ) data[!(cens %in% c("I", "IT")), v.rB] <- data[!(cens %in% c("I", "IT")), v1[1] ]    
+    
+    # actual NAs (needed for cens variable)
+    actual.NAs = as.numeric(which(apply(apply(data, 1, is.na), 2, any)))
+    
+    # Once all are fixed, the remaining NA are just actually missing data
+    data <- na.omit(data)  
+    
+    # Clean cens variable defined above as well
+    if(length(actual.NAs) > 0) cens = cens[-actual.NAs]
+  } 
+  
+  
+  # Now that NAs have been cleaned, create weights vector from clean and final dataset
+  # (cannot do the same for cens because needed for the checks themselves so two steps needed)
+  if(!("(weights)" %in% names(data))) {weights <- rep(1,dim(data)[1])
+  data$weights <- weights
+  names(data)[length(names(data))] <- "(weights)"} else weights <- data[,"(weights)"]
+  
+
+  
+  
+  # NEW 5: added new variables to M (moved after NEW 6 because need to wait for updated cens vector)
   M <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, m3d = m3d, robust = robust, extra.regI = extra.regI, margin = margin,
             surv = surv, cens = cens, bl = bl, informative = informative, list.inf.cov = inform.cov, sp.method = sp.method,
             type.cens = type.cens, v.rB = v.rB, v.td = v.td)  
@@ -164,23 +225,38 @@ gamlss <- function(formula, data = list(), weights = NULL, subset = NULL,
   
   
   
-  if( surv == TRUE && type.cens %in% c("I") ){
-  
-     data[cens == 1, v.rB] <- data[cens == 1, v1[1] ]    
-     data <- na.omit(data)  
-  
-  }  
- 
-  # NEW 6: same as following if clause. Note: has to be before the next if clause (if not the na.omit(data) command will cancel the truncated observations)
-  if( surv == TRUE && type.cens %in% c("mixed") && !is.null(truncation.time) ) data[!(cens %in% c("UT", "LT", "RT", "IT")), v.td] <- data[!(cens %in% c("UT", "LT", "RT", "IT")), v1[1] ] 
+  # if( surv == TRUE && type.cens %in% c("I") ){
+  # 
+  #    data[cens == 1, v.rB] <- data[cens == 1, v1[1] ]    
+  #    data <- na.omit(data)  
+  # 
+  # }  
+  # 
+  # # NEW 6: same as following if clause. Note: has to be before the next if clause (if not the na.omit(data) command will cancel the truncated observations  
+  # #if( surv == TRUE && type.cens %in% c("mixed") && !is.null(truncation.time) ) data[!(cens %in% c("UT", "LT", "RT", "IT")), v.td] <- data[!(cens %in% c("UT", "LT", "RT", "IT")), v1[1] ] 
+  # #
+  # #if( surv == TRUE && type.cens %in% c("mixed") && any(unique(cens) %in% c("I", "IT")) ){
+  # #
+  # #   data[!(cens %in% c("I", "IT")), v.rB] <- data[!(cens %in% c("I", "IT")), v1[1] ]    
+  # #   data <- na.omit(data)  
+  # #             
+  # #} 
+  # #
+  # ## data <- na.omit(data) # do we need one more here?  
+  # 
+  # if( surv == TRUE && type.cens %in% c("mixed") ){ 
+  #   
+  #     # fix the v.td for those who do not have it
+  #     if( !is.null(truncation.time) ) data[!(cens %in% c("UT", "LT", "RT", "IT")), v.td] <- data[!(cens %in% c("UT", "LT", "RT", "IT")), v1[1] ] 
+  #     
+  #     # fix the v.rB for those who do not have it
+  #     if(any(unique(cens) %in% c("I", "IT")) ) data[!(cens %in% c("I", "IT")), v.rB] <- data[!(cens %in% c("I", "IT")), v1[1] ]    
+  #    
+  #     # Once all are fixed, the remaining NA are just actually missing data
+  #     data <- na.omit(data)  
+  #              
+  # } 
 
-  if( surv == TRUE && type.cens %in% c("mixed") && any(unique(cens) %in% c("I", "IT")) ){
-
-     data[!(cens %in% c("I", "IT")), v.rB] <- data[!(cens %in% c("I", "IT")), v1[1] ]    
-     data <- na.omit(data)  
-               
-  } 
- 
 
 
   # NEW 7: rangeSurv should include also truncation time
@@ -253,7 +329,7 @@ if(surv == TRUE && margin2 %in% bl && informative == "yes"){
    if(esres[1] < 0) esres[1] <- 0.001
  
    if( margin %in% c("GPII","GPo") ) esres[1] <- log(esres[1] + 0.5) 
-   if( margin %in% c("DGPII") )      esres[1] <- sqrt(esres[1])
+   if( margin %in% c("DGPII") )      esres[1] <- log(esres[1]) #sqrt(esres[1])
    
    if( !is.null(siginit) ) esres[2] <- siginit 
    if( !is.null(shinit) )  esres[1] <- shinit  
@@ -984,7 +1060,7 @@ for(i in 1:length(fgam$smooth)) pfgam[i] <- fgam$smooth[[i]]$first.para
 
 spgamlss1 <- c(sp1, sp2, sp3)
 GAM <- list(gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, 
-            gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8, K1 = NULL) 
+            gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8, gam9 = gam9, K1 = NULL) 
             
             
 if(l.sp1 !=0 || l.sp2 !=0 || l.sp3 !=0) { ## this will always work with informative case as there is always a smooth
@@ -992,10 +1068,10 @@ if(l.sp1 !=0 || l.sp2 !=0 || l.sp3 !=0) { ## this will always work with informat
 
 	L.GAM <- list(l.gam1 = length(gam1$coefficients), l.gam2 = length(gam2$coefficients), 
 	              l.gam3 = length(gam3$coefficients), l.gam4 = 0, l.gam5 = 0, 
-	              l.gam6 = 0, l.gam7 = 0, l.gam8 = 0)                                 
+	              l.gam6 = 0, l.gam7 = 0, l.gam8 = 0, l.gam9 = 0)                                 
   
 	L.SP <- list(l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, l.sp4 = 0, 
-	             l.sp5 = 0, l.sp6 = 0, l.sp7 = 0, l.sp8 = 0)                               
+	             l.sp5 = 0, l.sp6 = 0, l.sp7 = 0, l.sp8 = 0, l.sp9 = 0)                               
 
                 
 	qu.mag1 <- S.m(GAM, L.SP, L.GAM)  
@@ -1036,6 +1112,8 @@ respvec2 <- list(y1 = y1, univ = 2)
   lsgam6 <- length(gam6$smooth)
   lsgam7 <- length(gam7$smooth)
   lsgam8 <- length(gam8$smooth)
+  lsgam9 <- length(gam9$smooth)
+
 
 
 
@@ -1157,7 +1235,7 @@ if( LSl.sf3 != 0 ){
              lsgam5 = lsgam5,
              lsgam6 = lsgam6,
              lsgam7 = lsgam7,
-             lsgam8 = lsgam8, fgam = fgam, ad.ind = FALSE,
+             lsgam8 = lsgam8, lsgam9 = lsgam9, fgam = fgam, ad.ind = FALSE,
              X1 = X1, 
              X2 = X2, 
              X3 = X3,
@@ -1190,6 +1268,7 @@ if( LSl.sf3 != 0 ){
              l.sp6 = l.sp6, 
              l.sp7 = l.sp7, 
              l.sp8 = l.sp8, 
+             l.sp9 = 0,
              infl.fac = infl.fac,
              weights = weights,
              fp = fp, 
@@ -1324,7 +1403,7 @@ L <- list(fit = SemiParFit$fit, dataset = NULL, n = n, formula = formula, robust
           sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, 
           l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, 
           l.sp4 = l.sp4, l.sp5 = l.sp5, l.sp6 = l.sp6, 
-          l.sp7 = l.sp7, l.sp8 = l.sp8,
+          l.sp7 = l.sp7, l.sp8 = l.sp8, l.sp9 = l.sp9, gam9 = gam9,
           fp = fp,  
           iter.if = SemiParFit$iter.if, iter.inner = SemiParFit$iter.inner,  
           sigma2 = SemiParFit.p$sigma2, sigma = SemiParFit.p$sigma2,  

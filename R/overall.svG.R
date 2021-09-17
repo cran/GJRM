@@ -1,17 +1,410 @@
 overall.svG <- function(formula, data, ngc, margins, M, vo, gam1, gam2, type = "copR", inde = NULL, c.gam2 = NULL, gam3 = NULL, knots = NULL){
   
-X3 = X4 = X5 = X6 = X7 = X8 = X3.d2 = X4.d2 = X5.d2 = X6.d2 = X7.d2 = X8.d2 = NULL
-gp3 = gp4 = gp5 = gp6 = gp7 = gp8 = NULL
-gam4 = gam5 = gam6 = gam7 = gam8 = NULL
-l.sp3 = l.sp4 = l.sp5 = l.sp6 = l.sp7 = l.sp8 = 0  
-sp3 = sp4 = sp5 = sp6 = sp7 = sp8 = NULL  
-X3s = X4s = X5s = NULL
+X3 <- X4 <- X5 <- X6 <- X7 <- X8 <- X9 <- NULL
+
+X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- X9.d2 <- NULL
+
+gp3 <- gp4 <- gp5 <- gp6 <- gp7 <- gp8 <- gp9 <- NULL
+
+gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- gam9 <- NULL
+
+l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- l.sp9 <- 0  
+
+sp3 <- sp4 <- sp5 <- sp6 <- sp7 <- sp8 <- sp9 <- NULL  
+
+X3s <- X4s <- X5s <- X6s <- X7s <- X8s <- X9s <- NULL
+
 Sl.sf2 <- Sl.sf3 <- NULL
   
+  
+  
+  
+  
+  
+if(type == "ROY"){
+
+
+  if( margins[2] %in% c(M$bl,M$m1d) && margins[3] %in% c(M$bl,M$m1d) ){
+  
+  
+      formula.eq4 <- formula[[4]] 
+      nad <- "theta1" 
+      formula.eq4 <- as.formula( paste(nad,"~",formula.eq4[2],sep="") )
+      
+      set.seed(1)
+      theta1 <- rnorm(vo$n, vo$i.rho1, 0.001)    
+      rm(list=".Random.seed", envir=globalenv()) 
+      
+      gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+      
+      formula.eq5 <- formula[[5]] 
+      nad <- "theta2" 
+      formula.eq5 <- as.formula( paste(nad,"~",formula.eq5[2],sep="") )
+      
+      set.seed(1)
+      theta2 <- rnorm(vo$n, vo$i.rho2, 0.001)    
+      rm(list=".Random.seed", envir=globalenv()) 
+      
+      gam5 <- gam(formula.eq5, data = data, gamma = ngc, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels)       
+        
+      l.sp4 <- length(gam4$sp)    
+      l.sp5 <- length(gam5$sp)    
+ 
+      if(l.sp4 != 0){
+      ngc <- 2
+      while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
+                     } 
+                     
+      if(l.sp5 != 0){
+      ngc <- 2
+      while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
+                     }
+                      
+      X4 <- model.matrix(gam4)
+      X4.d2 <- dim(X4)[2]
+      X5 <- model.matrix(gam5)
+      X5.d2 <- dim(X5)[2]    
+
+      if(l.sp4 != 0) sp4 <- gam4$sp 
+      environment(gam4$formula) <- environment(gam2$formula)
+      gp4 <- gam4$nsdf 
+      
+      if(l.sp5 != 0) sp5 <- gam5$sp 
+      environment(gam5$formula) <- environment(gam2$formula)
+      gp5 <- gam5$nsdf   
+            
+      X4s <- try(predict.gam(gam4, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
+      if(any(class(X4s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the second margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
+    
+      X5s <- try(predict.gam(gam5, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
+      if(any(class(X5s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the third margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
+    
+      start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients)
+  
+  }
+  
+  
+  
+  
+  
+  if( margins[2] %in% c(M$m2d,M$m2) && margins[3] %in% c(M$m2d,M$m2) ){
+  
+      formula.eq4 <- formula[[4]] 
+      nad <- "sigma1" 
+      formula.eq4 <- as.formula( paste(nad,"~",formula.eq4[2],sep="") )
+      
+      set.seed(1)
+      sigma1 <- rnorm(vo$n, vo$log.sig1, 0.001)    
+      rm(list=".Random.seed", envir=globalenv()) 
+      
+      gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+      
+      formula.eq5 <- formula[[5]] 
+      nad <- "sigma2" 
+      formula.eq5 <- as.formula( paste(nad,"~",formula.eq5[2],sep="") )
+      
+      set.seed(1)
+      sigma2 <- rnorm(vo$n, vo$log.sig2, 0.001)    
+      rm(list=".Random.seed", envir=globalenv()) 
+      
+      gam5 <- gam(formula.eq5, data = data, gamma = ngc, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels)       
+         
+      formula.eq6 <- formula[[6]] 
+      nad <- "theta1" 
+      formula.eq6 <- as.formula( paste(nad,"~",formula.eq6[2],sep="") )
+      
+      set.seed(1)
+      theta1 <- rnorm(vo$n, vo$i.rho1, 0.001)    
+      rm(list=".Random.seed", envir=globalenv()) 
+      
+      gam6 <- gam(formula.eq6, data = data, gamma = ngc, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels)      
+                
+      formula.eq7 <- formula[[7]] 
+      nad <- "theta2" 
+      formula.eq7 <- as.formula( paste(nad,"~",formula.eq7[2],sep="") )
+      
+      set.seed(1)
+      theta2 <- rnorm(vo$n, vo$i.rho2, 0.001)    
+      rm(list=".Random.seed", envir=globalenv()) 
+      
+      gam7 <- gam(formula.eq7, data = data, gamma = ngc, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels)          
+        
+
+      l.sp4 <- length(gam4$sp)    
+      l.sp5 <- length(gam5$sp) 
+      l.sp6 <- length(gam6$sp)  
+      l.sp7 <- length(gam7$sp)  
+ 
+      if(l.sp4 != 0){
+      ngc <- 2
+      while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
+                     } 
+                     
+      if(l.sp5 != 0){
+      ngc <- 2
+      while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
+                     }
+                     
+      if(l.sp6 != 0){
+      ngc <- 2
+      while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
+                     }
+                     
+      if(l.sp7 != 0){
+      ngc <- 2
+      while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
+                     }
+                     
+                      
+      X4 <- model.matrix(gam4)
+      X4.d2 <- dim(X4)[2]
+      X5 <- model.matrix(gam5)
+      X5.d2 <- dim(X5)[2]  
+      X6 <- model.matrix(gam6)
+      X6.d2 <- dim(X6)[2]   
+      X7 <- model.matrix(gam7)
+      X7.d2 <- dim(X7)[2]         
+      
+
+      if(l.sp4 != 0) sp4 <- gam4$sp 
+      environment(gam4$formula) <- environment(gam2$formula)
+      gp4 <- gam4$nsdf 
+      
+      if(l.sp5 != 0) sp5 <- gam5$sp 
+      environment(gam5$formula) <- environment(gam2$formula)
+      gp5 <- gam5$nsdf   
+      
+      if(l.sp6 != 0) sp6 <- gam6$sp 
+      environment(gam6$formula) <- environment(gam2$formula)
+      gp6 <- gam6$nsdf 
+      
+      if(l.sp7 != 0) sp7 <- gam7$sp 
+      environment(gam7$formula) <- environment(gam2$formula)
+      gp7 <- gam7$nsdf       
+            
+      X4s <- try(predict.gam(gam4, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
+      if(any(class(X4s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the second margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
+    
+      X5s <- try(predict.gam(gam5, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
+      if(any(class(X5s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the third margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
+
+      X6s <- try(predict.gam(gam6, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
+      if(any(class(X6s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the second margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
+    
+      X7s <- try(predict.gam(gam7, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
+      if(any(class(X7s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the third margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
+        
+      start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients, gam6$coefficients, gam7$coefficients)  
+  
+
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  if( margins[2] %in% c(M$m3) && margins[3] %in% c(M$m3) ){
+  
+  
+  
+  
+        formula.eq4 <- formula[[4]] 
+        nad <- "sigma1" 
+        formula.eq4 <- as.formula( paste(nad,"~",formula.eq4[2],sep="") )
+        
+        set.seed(1)
+        sigma1 <- rnorm(vo$n, vo$log.sig1, 0.001)    
+        rm(list=".Random.seed", envir=globalenv()) 
+        
+        gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+        
+        formula.eq5 <- formula[[5]] 
+        nad <- "sigma2" 
+        formula.eq5 <- as.formula( paste(nad,"~",formula.eq5[2],sep="") )
+        
+        set.seed(1)
+        sigma2 <- rnorm(vo$n, vo$log.sig2, 0.001)    
+        rm(list=".Random.seed", envir=globalenv()) 
+        
+        gam5 <- gam(formula.eq5, data = data, gamma = ngc, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels)       
+           
+        formula.eq6 <- formula[[6]] 
+        nad <- "nu1" 
+        formula.eq6 <- as.formula( paste(nad,"~",formula.eq6[2],sep="") )
+        
+        set.seed(1)
+        nu1 <- rnorm(vo$n, vo$log.nu1, 0.001)    
+        rm(list=".Random.seed", envir=globalenv()) 
+        
+        gam6 <- gam(formula.eq6, data = data, gamma = ngc, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
+        
+        formula.eq7 <- formula[[7]] 
+        nad <- "nu2" 
+        formula.eq7 <- as.formula( paste(nad,"~",formula.eq7[2],sep="") )
+        
+        set.seed(1)
+        nu2 <- rnorm(vo$n, vo$log.nu2, 0.001)    
+        rm(list=".Random.seed", envir=globalenv()) 
+        
+        gam7 <- gam(formula.eq7, data = data, gamma = ngc, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels)       
+            
+        formula.eq8 <- formula[[8]] 
+        nad <- "theta1" 
+        formula.eq8 <- as.formula( paste(nad,"~",formula.eq8[2],sep="") )
+        
+        set.seed(1)
+        theta1 <- rnorm(vo$n, vo$i.rho1, 0.001)    
+        rm(list=".Random.seed", envir=globalenv()) 
+        
+        gam8 <- gam(formula.eq8, data = data, gamma = ngc, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels)      
+                  
+                  
+        formula.eq9 <- formula[[9]] 
+        nad <- "theta2" 
+        formula.eq9 <- as.formula( paste(nad,"~",formula.eq9[2],sep="") )
+        
+        set.seed(1)
+        theta2 <- rnorm(vo$n, vo$i.rho2, 0.001)    
+        rm(list=".Random.seed", envir=globalenv()) 
+        
+        gam9 <- gam(formula.eq9, data = data, gamma = ngc, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels)          
+          
+  
+        l.sp4 <- length(gam4$sp)    
+        l.sp5 <- length(gam5$sp) 
+        l.sp6 <- length(gam6$sp)  
+        l.sp7 <- length(gam7$sp)  
+        l.sp8 <- length(gam8$sp) 
+        l.sp9 <- length(gam9$sp) 
+   
+        if(l.sp4 != 0){
+        ngc <- 2
+        while( any(round(summary(gam4)$edf, 1) > 1) ) {gam4 <- gam(formula.eq4, data = data, gamma = ngc + 1, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
+                       } 
+                       
+        if(l.sp5 != 0){
+        ngc <- 2
+        while( any(round(summary(gam5)$edf, 1) > 1) ) {gam5 <- gam(formula.eq5, data = data, gamma = ngc + 1, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
+                       }
+                       
+        if(l.sp6 != 0){
+        ngc <- 2
+        while( any(round(summary(gam6)$edf, 1) > 1) ) {gam6 <- gam(formula.eq6, data = data, gamma = ngc + 1, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
+                       }
+                       
+        if(l.sp7 != 0){
+        ngc <- 2
+        while( any(round(summary(gam7)$edf, 1) > 1) ) {gam7 <- gam(formula.eq7, data = data, gamma = ngc + 1, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
+                       }
+ 
+        if(l.sp8 != 0){
+        ngc <- 2
+        while( any(round(summary(gam8)$edf, 1) > 1) ) {gam8 <- gam(formula.eq8, data = data, gamma = ngc + 1, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
+                       }
+                       
+        if(l.sp9 != 0){
+        ngc <- 2
+        while( any(round(summary(gam9)$edf, 1) > 1) ) {gam9 <- gam(formula.eq9, data = data, gamma = ngc + 1, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels); ngc <- ngc + 1; if(ngc > 5) break}  
+                       } 
+                        
+        X4 <- model.matrix(gam4)
+        X4.d2 <- dim(X4)[2]
+        X5 <- model.matrix(gam5)
+        X5.d2 <- dim(X5)[2]  
+        X6 <- model.matrix(gam6)
+        X6.d2 <- dim(X6)[2]   
+        X7 <- model.matrix(gam7)
+        X7.d2 <- dim(X7)[2]         
+        X8 <- model.matrix(gam8)
+        X8.d2 <- dim(X8)[2] 
+        X9 <- model.matrix(gam9)
+        X9.d2 <- dim(X9)[2]         
+  
+        if(l.sp4 != 0) sp4 <- gam4$sp 
+        environment(gam4$formula) <- environment(gam2$formula)
+        gp4 <- gam4$nsdf 
+        
+        if(l.sp5 != 0) sp5 <- gam5$sp 
+        environment(gam5$formula) <- environment(gam2$formula)
+        gp5 <- gam5$nsdf   
+        
+        if(l.sp6 != 0) sp6 <- gam6$sp 
+        environment(gam6$formula) <- environment(gam2$formula)
+        gp6 <- gam6$nsdf 
+        
+        if(l.sp7 != 0) sp7 <- gam7$sp 
+        environment(gam7$formula) <- environment(gam2$formula)
+        gp7 <- gam7$nsdf    
+        
+        if(l.sp8 != 0) sp8 <- gam8$sp 
+        environment(gam8$formula) <- environment(gam2$formula)
+        gp8 <- gam8$nsdf  
+        
+        if(l.sp9 != 0) sp9 <- gam9$sp 
+        environment(gam9$formula) <- environment(gam2$formula)
+        gp9 <- gam9$nsdf  
+        
+              
+        X4s <- try(predict.gam(gam4, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
+        if(any(class(X4s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the second margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
+      
+        X5s <- try(predict.gam(gam5, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
+        if(any(class(X5s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the third margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
+  
+        X6s <- try(predict.gam(gam6, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
+        if(any(class(X6s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the second margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
+      
+        X7s <- try(predict.gam(gam7, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
+        if(any(class(X7s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the third margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
+ 
+        X8s <- try(predict.gam(gam8, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
+        if(any(class(X8s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the second margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
+       
+        X9s <- try(predict.gam(gam9, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
+        if(any(class(X9s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the third margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
+          
+ 
+ 
+        start.v  <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, gam4$coefficients, gam5$coefficients, gam6$coefficients, gam7$coefficients, gam8$coefficients, gam9$coefficients)  
+  
+  
+  
+  }
+    
+    
+    
+    
+   
+    
+    
+}    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 if(type != "triv") gam3 <- NULL    
-  
-  
-  
   
 if(type == "triv"){
 
@@ -1806,11 +2199,16 @@ if(M$l.flist == 3){
 
 
 L <- list(start.v = start.v,
-X3 = X3, X4 = X4, X5 = X5, X6 = X6, X7 = X7, X8 = X8, X3.d2 = X3.d2, X4.d2 = X4.d2, X5.d2 = X5.d2, X6.d2 = X6.d2,
-X7.d2 =	X7.d2, X8.d2 =	X8.d2, gp3 = gp3, gp4 = gp4, gp5 = gp5, gp6 = gp6, gp7 = gp7, gp8 = gp8,
-gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8,
-l.sp3 = l.sp3, l.sp4 = l.sp4, l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8,
-sp3 = sp3, sp4 = sp4, sp5 = sp5, sp6 = sp6, sp7 = sp7, sp8 = sp8, X3s = X3s, X4s = X4s, X5s = X5s,  Sl.sf2 =  Sl.sf2,  Sl.sf3= Sl.sf3)
+X3 = X3, X4 = X4, X5 = X5, X6 = X6, X7 = X7, X8 = X8, X9 = X9, 
+X3.d2 = X3.d2, X4.d2 = X4.d2, X5.d2 = X5.d2, X6.d2 = X6.d2,
+X7.d2 =	X7.d2, X8.d2 =	X8.d2, X9.d2 =	X9.d2, 
+gp3 = gp3, gp4 = gp4, gp5 = gp5, gp6 = gp6, gp7 = gp7, gp8 = gp8, gp9 = gp9,
+gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8, gam9 = gam9,
+l.sp3 = l.sp3, l.sp4 = l.sp4, l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8, l.sp9 = l.sp9,
+sp3 = sp3, sp4 = sp4, sp5 = sp5, sp6 = sp6, sp7 = sp7, sp8 = sp8, sp9 = sp9, 
+X3s = X3s, X4s = X4s, X5s = X5s, 
+X6s = X6s, X7s = X7s, X8s = X8s, X9s = X9s, 
+Sl.sf2 =  Sl.sf2,  Sl.sf3= Sl.sf3)
 
 
 if(type == "gaml") {L$X2 <- X2; L$X2.d2 <- X2.d2; L$gp2 <- gp2; L$gam2 <- gam2; L$l.sp2 <- l.sp2; L$sp2 <- sp2}     

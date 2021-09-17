@@ -398,7 +398,7 @@ if(type == "gamls"){
           mu  <- object$X1%*%object$coefficients[1:object$X1.d2] 
           mus <- object$X1%*%t(bs[,1:object$X1.d2]) 
           
-          if(object$VC$margins[1] == "DGPII"){mu <- mu^2; mus <- mus^2 }  
+          if(object$VC$margins[1] == "DGPII"){mu <- exp(mu); mus <- exp(mus) } # {mu <- mu^2; mus <- mus^2 }  
           
           if(object$VC$margins[1] %in% c("GPII","GPo")){mu <- exp(mu) - 0.5; mus <- exp(mus) - 0.5 }  
           

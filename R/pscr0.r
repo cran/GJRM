@@ -8,7 +8,9 @@ if(type == "copR"){
   if(x$margins[1]=="GPII")                cat("\nMARGIN 1: generalised Pareto II")    
   if(x$margins[1]=="GPo")                 cat("\nMARGIN 1: generalised Pareto (Orthogonal Parameterisation)")    
   if(x$margins[1]=="DGP")                 cat("\nMARGIN 1: discrete generalised Pareto")    
-  if(x$margins[1]=="DGPII")               cat("\nMARGIN 1: discrete generalised Pareto II")    
+  if(x$margins[1]=="DGPII")               cat("\nMARGIN 1: discrete generalised Pareto II")  
+  if(x$margins[1]=="DGP0")                cat("\nMARGIN 1: discrete generalised Pareto (shape = 0)")    
+
   
   
   if(x$margins[1]=="rGU")                 cat("\nMARGIN 1: reverse Gumbel")  
@@ -48,6 +50,8 @@ if(x$surv.flex == FALSE){
   
 
   if(x$margins[2]=="DGP")                 cat("\nMARGIN 2: discrete generalised Pareto")    
+  if(x$margins[2]=="DGP0")                cat("\nMARGIN 2: discrete generalised Pareto (shape = 0)")    
+  
   if(x$margins[2]=="DGPII")               cat("\nMARGIN 2: discrete generalised Pareto II")    
   if(x$margins[2]=="GU")     		  cat("\nMARGIN 2: Gumbel")    
   if(x$margins[2]=="rGU")    		  cat("\nMARGIN 2: reverse Gumbel")  
@@ -104,6 +108,8 @@ if(type == "gamlss"){
 
   if(x$margins[1]=="DGP")              cat("\nDistribution: discrete generalised Pareto")  
   if(x$margins[1]=="DGPII")            cat("\nDistribution: discrete generalised Pareto II")  
+  if(x$margins[1]=="DGP0")            cat("\nDistribution: discrete generalised Pareto (shape = 0)")  
+  
   
   if(x$margins[1]%in%c("N","N2"))      cat("\nDistribution: Gaussian")  
   if(x$margins[1]=="GU")               cat("\nDistribution: Gumbel")    
@@ -156,6 +162,8 @@ if(x$margins[2]=="GPo")              cat("\nMARGIN 2: generalised Pareto (Orthog
 
 if(x$margins[2]=="DGP")              cat("\nMARGIN 2: discrete generalised Pareto")  
 if(x$margins[2]=="DGPII")            cat("\nMARGIN 2: discrete generalised Pareto II")  
+if(x$margins[2]=="DGP0")            cat("\nMARGIN 2: discrete generalised Pareto (shape = 0)")  
+
 
 
 if(x$margins[2]=="GU")                 cat("\nMARGIN 2: Gumbel")    

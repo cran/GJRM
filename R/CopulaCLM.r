@@ -15,8 +15,8 @@ CopulaCLM <- function(formula, data = list(), weights = NULL, subset = NULL,
 ##### Model set up #####
 
 i.rho <- sp <- qu.mag <- n.sel <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- inde <- y2m <- K1 <- NULL  
-end <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- i.rho <- 0
-gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- gamlss2 <- dof.st <- NULL
+end <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- l.sp9 <- i.rho <- 0
+gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- gam9 <- gamlss2 <- dof.st <- NULL
 gamlss2 <- NULL
 Sl.sf <- NULL
 sp.method <- "perf"
@@ -46,7 +46,7 @@ sccn <- c("C90", "C270", "GAL90", "GAL270","J90", "J270", "G90", "G270")
 mb   <- c("B", "BSS", "BPO", "BPO0")
 m2   <- c("N", "GU", "rGU", "LO", "LN", "WEI", "iG", "GA", "BE", "FISK","GP","GPII","GPo")
 m3   <- c("DAGUM", "SM","TW")
-m1d  <- c("PO", "ZTP") 
+m1d  <- c("PO", "ZTP","DGP0") 
 m2d  <- c("NBI", "NBII", "PIG","DGP","DGPII") 
 bl   <- c("probit", "logit", "cloglog") # , "cauchit")   
 M    <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, BivD = BivD, 
@@ -305,17 +305,18 @@ X3s = overall.svGR$X3s; X4s = overall.svGR$X4s
 ################################################## 
 
 GAM <- list(gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, 
-            gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8)   
+            gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8, gam9 = NULL)   
 
 
 if((l.sp1 != 0 || l.sp2 != 0 || l.sp3 != 0 || l.sp4 != 0 || 
     l.sp5 != 0 || l.sp6 != 0 || l.sp7 != 0 || l.sp8 != 0   ) && fp == FALSE){ 
 
 L.GAM <- list(l.gam1 = length(gam1$coefficients), l.gam2 = length(gam2$coefficients), l.gam3 = length(gam3$coefficients), l.gam4 = length(gam4$coefficients),
-              l.gam5 = length(gam5$coefficients), l.gam6 = length(gam6$coefficients), l.gam7 = length(gam7$coefficients), l.gam8 = length(gam8$coefficients) )
+              l.gam5 = length(gam5$coefficients), l.gam6 = length(gam6$coefficients), l.gam7 = length(gam7$coefficients), l.gam8 = length(gam8$coefficients),
+              l.gam9 = 0)
 
 L.SP <- list(l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, l.sp4 = l.sp4, 
-             l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8 )
+             l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8, l.sp9 = l.sp9 )
 
 sp <- c(sp1, sp2, sp3, sp4, sp5, sp6, sp7, sp8)
 qu.mag <- S.m(GAM, L.SP, L.GAM, K1 = K1) 
@@ -378,6 +379,8 @@ lsgam5 <- length(gam5$smooth)
 lsgam6 <- length(gam6$smooth)
 lsgam7 <- length(gam7$smooth)
 lsgam8 <- length(gam8$smooth)
+lsgam9 <- length(gam9$smooth)
+
 
 VC <- list(lsgam1 = lsgam1, robust = FALSE, sel = sel, sel.p = sel.p, sel.m = sel.m, sel.mm = sel.mm, sel.pm = sel.pm, c1 = c1, D11 = D11, D12 = D12, 
            lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
@@ -386,7 +389,7 @@ VC <- list(lsgam1 = lsgam1, robust = FALSE, sel = sel, sel.p = sel.p, sel.m = se
            lsgam5 = lsgam5,
            lsgam6 = lsgam6,
            lsgam7 = lsgam7, 
-           lsgam8 = lsgam8, 
+           lsgam8 = lsgam8, lsgam9 = lsgam9, 
            K1 = K1, # added for CopulaCLM
            X1 = X1, inde = inde, my.env = my.env,
            X2 = X2, 
@@ -420,6 +423,7 @@ VC <- list(lsgam1 = lsgam1, robust = FALSE, sel = sel, sel.p = sel.p, sel.m = se
            l.sp6 = l.sp6,    
            l.sp7 = l.sp7,
            l.sp8 = l.sp8, 
+           l.sp9 = 0,
            infl.fac = infl.fac,
            weights = weights,
            fp = fp, univ.gamls = FALSE,
@@ -574,7 +578,7 @@ L <- list(fit = CopulaCLMFit$fit, dataset = dataset, formula = formula, CopulaCL
           sp = CopulaCLMFit.p$sp, iter.sp = CopulaCLMFit$iter.sp,
           l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3,
           l.sp4 = l.sp4, l.sp5 = l.sp5, l.sp6 = l.sp6,
-          l.sp7 = l.sp7, l.sp8 = l.sp8, bl = bl,
+          l.sp7 = l.sp7, l.sp8 = l.sp8, bl = bl,l.sp9 = l.sp9, gam9 = gam9,
           fp = fp,
           iter.if = CopulaCLMFit$iter.if, iter.inner = CopulaCLMFit$iter.inner,
           theta = CopulaCLMFit.p$theta,

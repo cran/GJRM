@@ -19,7 +19,7 @@ He <- HeSh <- SemiParFit$fit$hessian
     Vb <- Vb1 <- (Vb + t(Vb) ) / 2 
     
                                      
-if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || VC$l.sp6!=0 || VC$l.sp7!=0 || VC$l.sp8!=0) && VC$fp==FALSE){
+if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || VC$l.sp6!=0 || VC$l.sp7!=0 || VC$l.sp8!=0 || VC$l.sp9!=0) && VC$fp==FALSE){
 
     HeSh <- He - SemiParFit$fit$S.h
     

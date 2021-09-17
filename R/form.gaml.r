@@ -1,6 +1,6 @@
 form.gaml <- function(formula, l.flist, M, type = "copR"){
   
-formula.gamlss1 <- formula.gamlss2 <- NULL
+formula.gamlss1 <- formula.gamlss2 <- formula.gamlss3 <- NULL
 
 
 
@@ -110,7 +110,88 @@ formula.gamlss2 <- list(formula[[2]],formula[[4]])
 }
 
 
-list(formula.gamlss1 = formula.gamlss1, formula.gamlss2 = formula.gamlss2)
+
+
+
+
+
+
+
+if(type == "ROY"){
+
+
+if(l.flist == 3){
+
+     formula.gamlss2 <- list(formula[[2]])
+     formula.gamlss3 <- list(formula[[3]])
+
+}
+
+
+
+if(l.flist > 3){##
+
+
+      if(M$margins[2] %in% c(M$m1d) && M$margins[2] %in% c(M$m1d)){
+    
+        formula.gamlss2 <- list(formula[[2]])
+        formula.gamlss3 <- list(formula[[3]])
+    
+                                                                  }
+                                                                  
+      if(M$margins[2] %in% c(M$m2d,M$m2) && M$margins[2] %in% c(M$m2d,M$m2)){
+    
+        formula.gamlss2 <- list(formula[[2]],formula[[4]])
+        formula.gamlss3 <- list(formula[[3]],formula[[5]])
+    
+                                                                            }       
+                                                                            
+      if(M$margins[2] %in% c(M$m1d) && M$margins[2] %in% c(M$m2d)){
+    
+        formula.gamlss2 <- list(formula[[2]])
+        formula.gamlss3 <- list(formula[[3]],formula[[4]])
+    
+                                                                   }    
+                                                                   
+                                                                            
+      if(M$margins[2] %in% c(M$m2d) && M$margins[2] %in% c(M$m1d)){
+    
+        formula.gamlss2 <- list(formula[[2]],formula[[4]])
+        formula.gamlss3 <- list(formula[[3]])
+    
+                                                                   }                                                                     
+ 
+      if(M$margins[2] %in% c(M$m3) && M$margins[2] %in% c(M$m3)){
+    
+        formula.gamlss2 <- list(formula[[2]],formula[[4]],formula[[6]])
+        formula.gamlss3 <- list(formula[[3]],formula[[5]],formula[[7]])
+    
+                                                                }    
+ 
+      if(M$margins[2] %in% c(M$m2) && M$margins[2] %in% c(M$m3)){
+    
+        formula.gamlss2 <- list(formula[[2]],formula[[4]])
+        formula.gamlss3 <- list(formula[[3]],formula[[5]],formula[[6]])
+    
+                                                                }   
+  
+      if(M$margins[2] %in% c(M$m3) && M$margins[2] %in% c(M$m2)){
+    
+        formula.gamlss2 <- list(formula[[2]],formula[[4]],formula[[6]])
+        formula.gamlss3 <- list(formula[[3]],formula[[5]])
+    
+                                                                }   
+  
+  
+} ##
+
+
+
+}
+
+
+
+list(formula.gamlss1 = formula.gamlss1, formula.gamlss2 = formula.gamlss2, formula.gamlss3 = formula.gamlss3)
 
 
 

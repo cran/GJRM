@@ -68,7 +68,7 @@ p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- 
    
    derp1.dereta1   <- pd1$derp1.dereta1    
    
-   Cc <- mm(c.copula.be1.C1 - c.copula.be1.C2, min.pr = VC$min.pr, max.pr = VC$max.pr) 
+   Cc <- c.copula.be1.C1 - c.copula.be1.C2 # mm(c.copula.be1.C1 - c.copula.be1.C2, min.pr = VC$min.pr, max.pr = VC$max.pr) 
    C  <- Cc*derp1.dereta1[VC$inde] 
    
    Cs    <- c.copula.theta.C1  - c.copula.theta.C2

@@ -1,7 +1,7 @@
 int.postcheck <- function(mo, margin, n.rep = 50, prob.lev = 0.05, y2m, eq = 1){
 
 cont <- c("N", "GU", "rGU", "LO", "LN", "WEI","iG", "GA", "DAGUM", "SM", "BE", "FISK","GP","GPII","GPo","TW")
-disc <- c("NBI", "NBII", "PIG", "PO", "ZTP","DGP","DGPII") 
+disc <- c("NBI", "NBII", "PIG", "PO","DGP0" ,"ZTP","DGP","DGPII") 
 
 n   <- mo$n
 
@@ -84,7 +84,7 @@ p22s <- distrHsAT(y2s, eta2, sigma2, nu, margin, min.dn = mo$VC$min.dn, min.pr =
 
 if(margin %in% c("TW")) p22s[y2s == 0] <- runif(sum(y2s == 0), min = 0, max = p22s[y2s == 0]) 
 
-qrs[,i] <- sort(  qnorm( p22s  )  )
+qrs[,i] <- sort(  qnorm( mm(p22s, min.pr = 1e-300, max.pr = 0.9999999999999999)  )  )     
 
 
 
@@ -93,14 +93,14 @@ qrs[,i] <- sort(  qnorm( p22s  )  )
 
 if(margin %in% disc){
 
-if(margin %in% c("ZTP","DGP","DGPII")){
+if(margin %in% c("ZTP","DGP","DGPII","DGP0")){
     ly2 <- length(y2s)
     y2ms <- list()
     my2s <- max(y2s)
     
     
     
-    if(margin %in% c("DGP","DGPII")) for(j in 1:ly2){ y2ms[[j]] <- seq(0, y2s[j]); length(y2ms[[j]]) <- my2s+1} 
+    if(margin %in% c("DGP","DGPII","DGP0")) for(j in 1:ly2){ y2ms[[j]] <- seq(0, y2s[j]); length(y2ms[[j]]) <- my2s+1} 
     if(margin %in% c("ZTP"))  for(j in 1:ly2){ y2ms[[j]] <- seq(1, y2s[j]); length(y2ms[[j]]) <- my2s} 
     
     y2ms <- do.call(rbind, y2ms) 
@@ -113,10 +113,12 @@ if(margin %in% c("ZTP","DGP","DGPII")){
 tmp  <- distrHsATDiscr(y2s, eta2, sigma2, nu, margin, y2m = y2ms, min.dn = mo$VC$min.dn, min.pr = mo$VC$min.pr, max.pr = mo$VC$max.pr)
 tmpp <- tmp$p2
 tmpd <- tmp$pdf2   
-qrs[,i] <- sort( qnorm( runif(y2s, tmpp - tmpd, tmpp) )  )
+qrs[,i] <- sort( qnorm( mm(runif(y2s, tmpp - tmpd, tmpp), min.pr = 1e-300, max.pr = 0.9999999999999999) )  )
                     }
                     
-                    
+  
+  
+  
                     
 if(mo$VC$ccss == "yes") qrs[,i] <- qrs[,i] - mean(qrs[,i]) 
                     

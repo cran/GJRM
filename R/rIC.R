@@ -5,7 +5,7 @@ if(obj$robust == FALSE) stop("This function allows only for robust model objects
 
 
 fit <- obj
-m1d  <- c("PO", "ZTP")
+m1d  <- c("PO", "ZTP","DGP0")
 m2d  <- c("NBI", "NBII","NBIa", "NBIIa","PIG","DGP","DGPII")
 
 n       <- fit$VC$n

@@ -97,7 +97,7 @@ if(x$VC$margins[2] %in% c("ZTP")){
                                  
                                  
                                  
-if(x$VC$margins[2] %in% c("DGP","DGPII")){
+if(x$VC$margins[2] %in% c("DGP","DGPII","DGP0")){
     ly2 <- length(y2)
     y2m <- list()
     my2 <- max(y2)
@@ -191,7 +191,7 @@ if(x$VC$margins[2] %in% c("ZTP")){
 
 
 
-if(x$VC$margins[1] %in% c("DGP","DGPII")){
+if(x$VC$margins[1] %in% c("DGP","DGPII","DGP0")){
      
     ly1 <- length(y1)
     y1m <- list()
@@ -202,7 +202,7 @@ if(x$VC$margins[1] %in% c("DGP","DGPII")){
 }
 
 
-if(x$VC$margins[2] %in% c("DGP","DGPII")){
+if(x$VC$margins[2] %in% c("DGP","DGPII","DGP0")){
      
     ly2 <- length(y2)
     y2m <- list()
@@ -303,7 +303,7 @@ if(x$VC$margins[1] %in% c("GEVlink") ) stop("It does not make much sense to chec
 
 y1 <- x$y1
 
-if(x$VC$margins[1] %in% c("DGP","DGPII")){    
+if(x$VC$margins[1] %in% c("DGP","DGPII","DGP0")){    
     ly1 <- length(y1)
     y1m <- list()
     my1 <- max(y1)

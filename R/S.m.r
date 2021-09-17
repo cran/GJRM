@@ -2,8 +2,8 @@ S.m <- function(GAM, L.SP, L.GAM, K1 = NULL){
 
   Ss <- list()
   off <- rank <- 0 
-  i1 <- i2 <- i3 <- i4 <- i5 <- i6 <- i7 <- i8 <- 1
-  k1 <- k2 <- k3 <- k4 <- k5 <- k6 <- k7 <- k8 <- 1
+  i1 <- i2 <- i3 <- i4 <- i5 <- i6 <- i7 <- i8 <- i9 <- 1
+  k1 <- k2 <- k3 <- k4 <- k5 <- k6 <- k7 <- k8 <- k9 <- 1
 
 if (!is.null(K1)) {
   
@@ -17,7 +17,7 @@ if (!is.null(K1)) {
 
 
   
-	for( j in 1:(L.SP$l.sp1 + L.SP$l.sp2 + L.SP$l.sp3 + L.SP$l.sp4 + L.SP$l.sp5 + L.SP$l.sp6 + L.SP$l.sp7 + L.SP$l.sp8) ){
+	for( j in 1:(L.SP$l.sp1 + L.SP$l.sp2 + L.SP$l.sp3 + L.SP$l.sp4 + L.SP$l.sp5 + L.SP$l.sp6 + L.SP$l.sp7 + L.SP$l.sp8 + L.SP$l.sp9) ){
 	
 	
 		if(j <= L.SP$l.sp1){     
@@ -247,7 +247,34 @@ if (!is.null(K1)) {
                 if(llg >  1 && llg != k8)                k8 <- k8 + 1
                 
                 
-                }    
+                } 
+                
+                
+                if(j >  (L.SP$l.sp1 + L.SP$l.sp2 + L.SP$l.sp3 + L.SP$l.sp4 + L.SP$l.sp5 + L.SP$l.sp6 + L.SP$l.sp7 + L.SP$l.sp8) && j <= (L.SP$l.sp1 + L.SP$l.sp2 + L.SP$l.sp3 + L.SP$l.sp4 + L.SP$l.sp5 + L.SP$l.sp6 + L.SP$l.sp7 + L.SP$l.sp8 + L.SP$l.sp9)  ){        
+                
+                llg <- length(GAM$gam9$smooth[[i9]]$S) 
+                     	     
+                     	     if(llg == 1){
+                     	     Ss[[j]] <- GAM$gam9$smooth[[i9]]$S[[1]]  
+                             off[j]  <- L.GAM$l.gam1 + L.GAM$l.gam2 + L.GAM$l.gam3 + L.GAM$l.gam4 + L.GAM$l.gam5 + L.GAM$l.gam6 + L.GAM$l.gam7 + L.GAM$l.gam8 + GAM$gam9$smooth[[i9]]$first.para + CLM.shift2
+                             rank[j] <- GAM$gam9$smooth[[i9]]$rank
+                             }
+                             
+	                             if(llg >  1){
+
+                     	     Ss[[j]] <- GAM$gam9$smooth[[i9]]$S[[k9]]  
+                             off[j]  <- L.GAM$l.gam1 + L.GAM$l.gam2 + L.GAM$l.gam3 + L.GAM$l.gam4 + L.GAM$l.gam5 + L.GAM$l.gam6 + L.GAM$l.gam7 + L.GAM$l.gam8 + GAM$gam9$smooth[[i9]]$first.para + CLM.shift2
+                             rank[j] <- GAM$gam9$smooth[[i9]]$rank[k9]
+
+		                                 }                               
+                             
+                             
+                if(llg == 1)               i9 <- i9 + 1
+                if(llg >  1 && llg == k9){ i9 <- i9 + 1; k9 <-      1; next} 
+                if(llg >  1 && llg != k9)                k9 <- k9 + 1
+                
+                
+                }                
                 
                 
              

@@ -3,6 +3,7 @@
 \alias{copulaReg.fit.post}
 \alias{copulaSampleSel.fit.post}
 \alias{SemiParTRIV.fit.post}
+\alias{SemiParROY.fit.post}
 \alias{gamlss.fit.post}
 \alias{postVb}
 \alias{ass.ms}

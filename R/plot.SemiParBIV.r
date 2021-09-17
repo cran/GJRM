@@ -43,6 +43,8 @@ if (!is.null(x$VC$K1)) {
  if(eq==8){ ss.plot <- x$gam8
             ind <- (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2 + x$X7.d2 + 1 + CLM.shift2):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2 + x$X7.d2 + x$X8.d2 + CLM.shift2) }             
  
+ if(eq==9){ ss.plot <- x$gam9
+            ind <- (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2 + x$X7.d2 + x$X8.d2 + 1 + CLM.shift2):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2 + x$X7.d2 + x$X8.d2 + x$X9.d2 + CLM.shift2) }   
  
  if(any(names(ss.plot$coefficients) == "(Intercept)")  &&  length(ss.plot$coefficients) == 1) stop("There is nothing to plot.")
  

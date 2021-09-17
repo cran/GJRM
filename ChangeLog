@@ -1,3 +1,6 @@
+version 0.2-5
+- DGP0 distribution introduced.
+
 version 0.2-4
 - excess survival models implemented.
 - Tweedie distribution allowed for.

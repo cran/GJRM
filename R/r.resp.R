@@ -3,7 +3,7 @@ r.resp <- function(margin, rsim, eta1, eta2, eta3){
 
 if(margin == "ZTP") rZTP <- function(n, mu) qpois(runif(n, dpois(0, mu), 1), mu)
 
-if(margin %in% c("DGP","DGPII")){
+if(margin %in% c("DGP","DGPII","DGP0")){
 
        rDGP <- function(n, eta1, eta2, margin){  
 
@@ -13,16 +13,12 @@ if(margin %in% c("DGP","DGPII")){
 
                 indv <- p <= minp
                 
-
-                # old, then corrected following Eva suggestion on pre.gp
-                #if(margin == "DGP")   q <- ifelse(indv == TRUE, 0, ceiling( esp.tr(eta2, margin)$vrb/eta1*( (1 - p)^(-eta1) - 1   ) - 1 ))
-                #if(margin == "DGPII") q <- ifelse(indv == TRUE, 0, ceiling( esp.tr(eta2, margin)$vrb/(eta1^2)*( (1 - p)^(-eta1^2) - 1   ) - 1 )) 
-                
                 if(margin == "DGP")   q <- ifelse(indv == TRUE, 0, ceiling(     esp.tr(eta2, margin)$vrb/eta1*( (1 - p)^(-eta1  ) - 1   )) - 1 )
-                if(margin == "DGPII") q <- ifelse(indv == TRUE, 0, ceiling( esp.tr(eta2, margin)$vrb/(eta1^2)*( (1 - p)^(-eta1^2) - 1   )) - 1 )                 
+                if(margin == "DGPII") q <- ifelse(indv == TRUE, 0, ceiling( esp.tr(eta2, margin)$vrb/(exp(eta1))*( (1 - p)^(-exp(eta1)) - 1   )) - 1 )                 
+                if(margin == "DGP0")  q <- ifelse(indv == TRUE, 0, ceiling(-exp(eta1)*log(1-p)) - 1 )     
                 
                 
-                
+
                 q
                 
                                       }
@@ -101,7 +97,14 @@ if(margin == "PIG")   y <- rPIG(  rsim,    mu = exp(eta1),    sigma = esp.tr(eta
 if(margin == "PO")    y <- rPO(   rsim,    mu = exp(eta1)) 
 if(margin == "ZTP")   y <- rZTP(  rsim,    mu = exp(eta1)) 
 
-if(margin %in% c("DGP", "DGPII"))   y <- rDGP(rsim, eta1, eta2, margin) 
+if(margin %in% c("DGP", "DGPII", "DGP0")){
+
+        if(margin %in% c("DGP0")) eta2 <- NULL  
+        
+        y <- rDGP(rsim, eta1, eta2, margin) 
+
+}
+
 
 if(margin %in% c("probit", "logit", "cloglog"))  y <- rbinom(rsim, 1, prob = probm(eta1, margin, min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999)$pr )
                                                 

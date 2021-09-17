@@ -1,6 +1,10 @@
 \name{bprobgHsDiscr1}
 \alias{bprobgHsDiscr1}
 \alias{bprobgHsDiscr2}
+\alias{bprobgHsDiscr1ROY}
+\alias{bprobgHsDiscr2ROY}
+
+
 
 \title{Internal Function}
 

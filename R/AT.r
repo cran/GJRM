@@ -4,6 +4,320 @@ AT <- function(x, nm.end, eq = NULL, E = TRUE, treat = TRUE, type = "joint", ind
    xlab = "Simulated Average Effects", ...){
 
 
+
+
+
+
+
+if(x$Model == "ROY"){
+
+
+    bs <- rMVN(n.sim, mean = x$coefficients, sigma = x$Vb)
+
+  if(x$margins[2] %in% c(x$VC$bl,x$VC$m1d,x$VC$m2d) && x$margins[3] %in% c(x$VC$bl,x$VC$m1d,x$VC$m2d)){
+
+    eta2   <- x$X2s %*% x$coefficients[(x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)] 
+    eta3   <- x$X3s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)]
+    eta2s  <- x$X2s %*% t(bs[, (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)]) 
+    eta3s  <- x$X3s %*% t(bs[, (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)])  
+  
+    if(x$margins[2] %in% c(x$VC$bl) && x$margins[3] %in% c(x$VC$bl)){
+      p0  <- probm(eta2,  x$margins[2], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
+      p1  <- probm(eta3,  x$margins[3], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
+      p0s <- probm(eta2s, x$margins[2], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
+      p1s <- probm(eta3s, x$margins[3], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr     
+                                                                     }
+                                                                     
+    if(x$margins[2] %in% c(x$VC$m1d,x$VC$m2d) && x$margins[3] %in% c(x$VC$m1d,x$VC$m2d)){
+    
+      den1.ztp <- den1.ztps <- den2.ztp <- den2.ztps <- 1 
+    
+      if(x$margins[2] %in% c("ZTP")){ den1.ztp <- 1 - exp(-exp( eta.tr(eta2,  x$margins[2]) )); den1.ztps <- 1 - exp(-exp( eta.tr(eta2s,  x$margins[2]) )) } 
+      if(x$margins[3] %in% c("ZTP")){ den2.ztp <- 1 - exp(-exp( eta.tr(eta3,  x$margins[3]) )); den2.ztps <- 1 - exp(-exp( eta.tr(eta3s,  x$margins[3]) )) } 
+      
+      p0  <- exp(eta.tr(eta2,  x$margins[2]))/den1.ztp 
+      p1  <- exp(eta.tr(eta3,  x$margins[3]))/den2.ztp  
+      p0s <- exp(eta.tr(eta2s, x$margins[2]))/den1.ztps 
+      p1s <- exp(eta.tr(eta3s, x$margins[3]))/den2.ztps    
+       
+                                                                                         }  
+    }
+    
+    
+    
+    
+    
+    
+    
+  
+  
+  if( x$margins[2] %in% c(x$VC$m2,x$VC$m3) && x$margins[3] %in% c(x$VC$m2,x$VC$m3) ){
+
+    
+    if(x$margins[2] %in% c("N", "LO") ){  p0   <- x$X2s %*% x$coefficients[(x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)]
+                                          p0s  <- x$X2s %*%         t(bs[, (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)])
+                                       }   
+                                       
+    if(x$margins[3] %in% c("N", "LO") ){  p1   <- x$X3s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)]
+                                          p1s  <- x$X3s %*%         t(bs[, (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)])
+                                       }    
+
+
+
+    if(x$margins[2] %in% c("iG", "GA") ){ p0   <- exp(eta.tr(x$X2s %*% x$coefficients[(x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)],   x$margins[2]))
+                                          p0s  <- exp(eta.tr(x$X2s %*%         t(bs[, (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)]),  x$margins[2]))
+                                       }   
+                                       
+    if(x$margins[3] %in% c("iG", "GA") ){ p1   <- exp(eta.tr(x$X3s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)],   x$margins[3]))
+                                          p1s  <- exp(eta.tr(x$X3s %*%         t(bs[, (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)]),  x$margins[3]))
+                                       } 
+    
+    
+    
+    if(x$margins[2] %in% c("rGU", "GU")){ p0.0 <- x$X2s %*% x$coefficients[(x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)]
+                                          p0.1 <- 0.57722*esp.tr(x$X4s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)],   x$margins[2])$vrb
+                                          if(x$margins[2] %in% c("GU")) p0 <- p0.0 - p0.1 else p0 <- p0.0 + p0.1  
+    
+                                          p0.0s <- x$X2s %*% t(bs[, (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)])
+                                          p0.1s <- 0.57722*esp.tr(x$X4s %*% t(bs[,        (x$X1.d2 + x$X2.d2 + x$X3.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)]),  x$margins[2])$vrb
+                                          if(x$margins[2] %in% c("GU")) p0s <- p0.0s - p0.1s else p0s <- p0.0s + p0.1s 
+                                          
+                                       }       
+
+    if(x$margins[3] %in% c("rGU", "GU")){ p1.0 <- x$X3s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)]
+                                          p1.1 <- 0.57722*esp.tr(x$X5s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2)],  x$margins[3])$vrb
+                                          if(x$margins[3] %in% c("GU")) p1 <- p1.0 - p1.1 else p1 <- p1.0 + p1.1 
+    
+                                          p1.0s <- x$X3s %*% t(bs[, (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)])
+                                          p1.1s <- 0.57722*esp.tr(x$X5s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2)]),        x$margins[3])$vrb
+                                          if(x$margins[3] %in% c("GU")) p1s <- p1.0s - p1.1s else p1s <- p1.0s + p1.1s 
+                                          
+                                       }
+           
+    
+    
+           
+    if(x$margins[2] %in% c("LN")){        p0.0 <- exp(eta.tr(x$X2s %*% x$coefficients[(x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)],                                           x$margins[2]))
+                                          p0.1 <-     esp.tr(x$X4s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)],   x$margins[2])$vrb
+                                          p0   <- p0.0*sqrt( exp(p0.1^2) )   
+    
+                                          p0.0s <- exp(eta.tr(x$X2s %*% t(bs[, (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)]),                                                 x$margins[2]))
+                                          p0.1s <-     esp.tr(x$X4s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)]),         x$margins[2])$vrb
+                                          p0s   <- p0.0s*sqrt( exp(p0.1s^2) )  
+                                          
+                                       }
+  
+    if(x$margins[3] %in% c("LN")){        p1.0 <- exp(eta.tr(x$X3s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)],                                           x$margins[3]))
+                                          p1.1 <-     esp.tr(x$X5s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2)],   x$margins[3])$vrb
+                                          p1   <- p1.0*sqrt( exp(p1.1^2) )   
+    
+                                          p1.0s <- exp(eta.tr(x$X3s %*% t(bs[, (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)]),                                                 x$margins[3]))
+                                          p1.1s <-     esp.tr(x$X5s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2)]),         x$margins[3])$vrb
+                                          p1s   <- p1.0s*sqrt( exp(p1.1s^2) )  
+                                          
+                                       }                                          
+    
+    
+    
+    if(x$margins[2] %in% c("WEI")){       p0.0 <- exp(eta.tr(x$X2s %*% x$coefficients[(x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)],                                           x$margins[2]))
+                                          p0.1 <-     esp.tr(x$X4s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)],   x$margins[2])$vrb
+                                          p0   <- p0.0*gamma(1 + 1/p0.1)   
+    
+                                          p0.0s <- exp(eta.tr(x$X2s %*% t(bs[, (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)]),                                                 x$margins[2]))
+                                          p0.1s <-     esp.tr(x$X4s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)]),         x$margins[2])$vrb
+                                          p0s   <- p0.0s*gamma(1 + 1/p0.1s)   
+                                          
+                                       }    
+    
+    if(x$margins[3] %in% c("WEI")){       p1.0 <- exp(eta.tr(x$X3s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)],                                           x$margins[3]))
+                                          p1.1 <-     esp.tr(x$X5s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2)],   x$margins[3])$vrb
+                                          p1   <- p1.0*gamma(1 + 1/p1.1)    
+    
+                                          p1.0s <- exp(eta.tr(x$X3s %*% t(bs[, (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)]),                                                 x$margins[3]))
+                                          p1.1s <-     esp.tr(x$X5s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2)]),         x$margins[3])$vrb
+                                          p1s   <- p1.0s*gamma(1 + 1/p1.1s)  
+                                          
+                                       }   
+
+
+
+
+    if(x$margins[2] %in% c("BE") ){       p0   <- plogis(eta.tr(x$X2s %*% x$coefficients[(x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)],  x$margins[2]))
+                                          p0s  <- plogis(eta.tr(x$X2s %*%         t(bs[, (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)]), x$margins[2]))
+                                       }   
+                                       
+    if(x$margins[3] %in% c("BE") ){       p1   <- plogis(eta.tr(x$X3s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)],  x$margins[3]))
+                                          p1s  <- plogis(eta.tr(x$X3s %*%         t(bs[, (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)]), x$margins[3]))
+                                       }
+
+
+
+
+
+
+    if(x$margins[2] %in% c("FISK")){      p0.0 <- exp(eta.tr(x$X2s %*% x$coefficients[(x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)],                                           x$margins[2]))
+                                          p0.1 <-     esp.tr(x$X4s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)],   x$margins[2])$vrb
+                                          
+                                          if(any(p0.1 <= 1) == TRUE) stop("The mean of the Fisk distribution is not defined for sigma.1 <= 1")
+                                          
+                                          p0   <- p0.0*pi/p0.1/sin(pi/p0.1)   
+    
+    
+                                          p0.0s <- exp(eta.tr(x$X2s %*% t(bs[, (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)]),                                                 x$margins[2]))
+                                          p0.1s <-     esp.tr(x$X4s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)]),         x$margins[2])$vrb
+                                          
+                                          p0.1s <- ifelse(p0.1s <= 1, 1.0000001, p0.1s) 
+                                          
+                                          p0s   <- p0.0s*pi/p0.1s/sin(pi/p0.1s)   
+                                          
+                                       }  
+
+
+    if(x$margins[3] %in% c("FISK")){      p1.0 <- exp(eta.tr(x$X3s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)],                                           x$margins[3]))
+                                          p1.1 <-     esp.tr(x$X5s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2)],   x$margins[3])$vrb
+                                          
+                                          if(any(p1.1 <= 1) == TRUE) stop("The mean of the Fisk distribution is not defined for sigma.2 <= 1")
+                                          
+                                          p1   <- p1.0*pi/p1.1/sin(pi/p1.1)     
+    
+                                          p1.0s <- exp(eta.tr(x$X3s %*% t(bs[, (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)]),                                                 x$margins[3]))
+                                          p1.1s <-     esp.tr(x$X5s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2)]),         x$margins[3])$vrb
+                                          
+                                          p1.1s <- ifelse(p1.1s <= 1, 1.0000001, p1.1s) 
+
+                                          
+                                          p1s   <- p1.0s*pi/p1.1s/sin(pi/p1.1s)  
+                                          
+                                       }  
+
+
+
+
+
+
+    if(x$margins[2] %in% c("DAGUM")){     p0.0 <- exp(eta.tr(x$X2s %*% x$coefficients[(x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)],                                                                                   x$margins[2]))
+                                          p0.1 <-     esp.tr(x$X4s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)],                                           x$margins[2])$vrb
+                                          p0.2 <-     enu.tr(x$X6s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2)],   x$margins[2])$vrb
+                                          
+                                          if(any(p0.1 <= 1) == TRUE) stop("The mean of the Dagum distribution is not defined for sigma.1 <= 1")
+                                          
+                                          p0   <- -(p0.0/p0.1)*gamma(-1/p0.1)*gamma(1/p0.1 + p0.2)/gamma(p0.2)   
+ 
+                                          p0.0s <- exp(eta.tr(x$X2s %*% t(bs[, (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)]),                                                                                         x$margins[2]))
+                                          p0.1s <-     esp.tr(x$X4s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)]),                                                 x$margins[2])$vrb
+                                          p0.2s <-     enu.tr(x$X4s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2)]),         x$margins[2])$vrb
+                                          
+                                          p0.1s <- ifelse(p0.1s <= 1, 1.0000001, p0.1s) 
+                                          
+                                          p0s   <- -(p0.0s/p0.1s)*gamma(-1/p0.1s)*gamma(1/p0.1s + p0.2s)/gamma(p0.2s)   
+                                          
+                                       } 
+                                       
+
+                                       
+    if(x$margins[3] %in% c("DAGUM")){     p1.0 <- exp(eta.tr(x$X3s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)],                                                                                    x$margins[3]))
+                                          p1.1 <-     esp.tr(x$X5s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2)],                                            x$margins[3])$vrb
+                                          p1.2 <-     enu.tr(x$X7s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2 + x$X7.d2)],   x$margins[3])$vrb
+                                          
+                                          if(any(p1.1 <= 1) == TRUE) stop("The mean of the Dagum distribution is not defined for sigma.2 <= 1")
+                                          
+                                          p1   <- -(p1.0/p1.1)*gamma(-1/p1.1)*gamma(1/p1.1 + p1.2)/gamma(p1.2)     
+    
+                                          p1.0s <- exp(eta.tr(x$X3s %*% t(bs[, (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)]),                                                                                          x$margins[3]))
+                                          p1.1s <-     esp.tr(x$X5s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2)]),                                                  x$margins[3])$vrb
+                                          p1.2s <-     enu.tr(x$X7s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2 + x$X7.d2)]),         x$margins[3])$vrb
+                                          
+                                          p1.1s <- ifelse(p1.1s <= 1, 1.0000001, p1.1s) 
+
+                                          
+                                          p1s   <- -(p1.0s/p1.1s)*gamma(-1/p1.1s)*gamma(1/p1.1s + p1.2s)/gamma(p1.2s)  
+                                          
+                                       }                                       
+
+
+
+
+
+
+    if(x$margins[2] %in% c("SM")){        p0.0 <- exp(eta.tr(x$X2s %*% x$coefficients[(x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)],                                                                                   x$margins[2]))
+                                          p0.1 <-     esp.tr(x$X4s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)],                                           x$margins[2])$vrb
+                                          p0.2 <-     enu.tr(x$X6s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2)],   x$margins[2])$vrb
+                                          
+                                          if(any(p0.1*p0.2 <= 1) == TRUE) stop("The mean of the Singh-Maddala distribution is not defined for sigma.1*nu.1 <= 1")
+                                          
+                                          p0   <- p0.0/gamma(p0.2)*gamma( 1 + 1/p0.1 )*gamma( -1/p0.1 + p0.2 )     
+ 
+                                          p0.0s <- exp(eta.tr(x$X2s %*% t(bs[, (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)]),                                                                                         x$margins[2]))
+                                          p0.1s <-     esp.tr(x$X4s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)]),                                                 x$margins[2])$vrb
+                                          p0.2s <-     enu.tr(x$X4s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2)]),         x$margins[2])$vrb
+                                                                                    
+                                          p0s   <- p0.0s/gamma(p0.2s)*gamma( 1 + 1/p0.1s )*gamma( -1/p0.1s + p0.2s )   
+                                          
+                                       } 
+
+
+    if(x$margins[3] %in% c("SM")){        p1.0 <- exp(eta.tr(x$X3s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)],                                                                                    x$margins[3]))
+                                          p1.1 <-     esp.tr(x$X5s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2)],                                            x$margins[3])$vrb
+                                          p1.2 <-     enu.tr(x$X7s %*% x$coefficients[(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2 + x$X7.d2)],   x$margins[3])$vrb
+                                          
+                                          if(any(p1.1*p1.2 <= 1) == TRUE) stop("The mean of the Singh-Maddala distribution is not defined for sigma.2*nu.2 <= 1")
+                                          
+                                          p1   <- p1.0/gamma(p1.2)*gamma( 1 + 1/p1.1 )*gamma( -1/p1.1 + p1.2 )     
+    
+                                          p1.0s <- exp(eta.tr(x$X3s %*% t(bs[, (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)]),                                                                                           x$margins[3]))
+                                          p1.1s <-     esp.tr(x$X5s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2)]),                                                   x$margins[3])$vrb
+                                          p1.2s <-     enu.tr(x$X7s %*% t(bs[, (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2 + x$X7.d2)]),          x$margins[3])$vrb
+
+                                          p1s   <- p1.0s/gamma(p1.2s)*gamma( 1 + 1/p1.1s )*gamma( -1/p1.1s + p1.2s )  
+                                          
+                                       } 
+
+
+  }  
+  
+
+
+
+
+
+  
+  #* general for all cases *#  
+  
+  est.AT  <- mean(p1, na.rm = TRUE) - mean(p0, na.rm = TRUE)
+  est.ATs <- colMeans(p1s, na.rm = TRUE) - colMeans(p0s, na.rm = TRUE) 
+  CIs     <- as.numeric(quantile(est.ATs, c(prob.lev/2, 1 - prob.lev/2), na.rm = TRUE))
+ 
+    if(hd.plot == TRUE){
+      mult <- 1 
+      hist(est.ATs*mult, freq = FALSE, main = main, xlab = xlab, 
+           ylim = c(0, max(density(est.ATs*mult)$y, hist(est.ATs*mult, plot = FALSE)$density)), ...)
+      lines(density(est.ATs*mult))
+                        }  
+   
+  res <- c(CIs[1], est.AT, CIs[2])
+
+  out <- list(res = res, prob.lev = prob.lev, sim.AT = est.ATs, type = "notype", 
+              eq = 10, bl = "nolink", mar2 = x$margins[2], triv = x$triv, Model = x$Model) # bl and mar2 = x$margins[2] just to make print work but they are useless
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+if(x$Model != "ROY"){
+
+
+
 #if(x$Cont == "YES") stop("This function is not suitable for bivariate models with continuous/discrete margins.")
 if(x$triv == TRUE && x$Model == "TSS") stop("This function is not suitable for trivariate probit models with double sample selection.")
 if(x$Cont == "NO" && x$VC$ccss == "yes" && !(x$margins[2] %in% c("GA", "GU"))) stop("Check distribution of response or get in touch for details.")
@@ -87,7 +401,7 @@ if(type == "joint")  {bs <- rMVN(n.sim, mean = x$coefficients, sigma=x$Vb)
 res <- c(CIs[1], est.AT, CIs[2])
 
 
-out <- list(res=res, prob.lev=prob.lev, sim.AT=est.ATb, type = type, eq = eq, triv = x$triv)
+out <- list(res=res, prob.lev=prob.lev, sim.AT=est.ATb, type = type, eq = eq, triv = x$triv, Model = x$Model)
 
 
 }
@@ -555,11 +869,17 @@ res <- c(CIs[1], est.AT, CIs[2])
 
 
 out <- list(res=res, prob.lev=prob.lev, sim.AT=est.ATb, mar2=x$margins[2], type = type, 
-            Effects = Effects, treat = y2, eq = eq, bl = x$VC$bl, triv = x$triv)
+            Effects = Effects, treat = y2, eq = eq, bl = x$VC$bl, triv = x$triv, Model = x$Model)
  							 
 }#### triv   
 
 
+
+
+
+
+
+}
 
 
  

@@ -89,12 +89,10 @@ print.SemiParBIV <- function(x, ...){
   
   
   
-  if(x$Model %in% c("B","BPO") && x$margins[2] %in% bin.link) cat("n = ",x$n,cp,format(as.p, digits=3),"  total edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
+  if(x$Model %in% c("B","BPO") && x$margins[2] %in% cont1par) cat("n = ",x$n,cp,format(as.p, digits=3),"  total edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
   if(x$Model == "BPO0")                                       cat("n = ",x$n,"  total edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
-  if(x$Model=="BSS")                                          cat("n = ",x$n,"  n.sel = ",x$n.sel,cp,format(as.p, digits=3),"\ntotal edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
+  if(x$Model == "BSS")                                        cat("n = ",x$n,"  n.sel = ",x$n.sel,cp,format(as.p, digits=3),"\ntotal edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
     
-  
-  if(x$Model=="B" && x$margins[2] %in% cont1par ) cat("n = ",x$n, cp, format(as.p, digits=3),"\ntotal edf = ",format(x$t.edf, digits=3),"\n\n", sep="") 
   if(x$Model=="B" && x$margins[2] %in% cont2par ) cat("n = ",x$n,"  sigma = ",x$sigma2.a, cp, format(as.p, digits=3),"\ntotal edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
   if(x$Model=="B" && x$margins[2] %in% cont3par ) cat("n = ",x$n,"  sigma = ",x$sigma2.a, "  nu = ",x$nu.a, "\ntheta = ", format(as.p, digits=3),"  total edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
 

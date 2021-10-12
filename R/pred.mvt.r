@@ -331,8 +331,8 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
 
  if(mar %in% c("BE")){
  
-    if(fun == "mean")     {fit <- exp(fit1);             fitSim <- exp(fit1Sim)                } 
-    if(fun == "variance") {fit <- exp(fit1)*(1-exp(fit1))*exp(fit2)^2; fitSim <- exp(fit1Sim)*(1-exp(fit1Sim))*exp(fit2Sim)^2 }
+    if(fun == "mean")     {fit <- plogis(fit1);             fitSim <- plogis(fit1Sim)                } 
+    if(fun == "variance") {fit <- plogis(fit1)*(1-plogis(fit1))*plogis(fit2)^2; fitSim <- plogis(fit1Sim)*(1-plogis(fit1Sim))*plogis(fit2Sim)^2 }
                                      
  } 
  

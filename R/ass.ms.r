@@ -5,7 +5,7 @@ if(BivD %in% c("J0","J180","J90","J270")) theta <- ifelse(abs(theta) > 30, 30, a
 if(BivD %in% c("J90","J270"))             theta <- -theta 
 
 if(BivD %in% c("F")){ signs <- sign(theta) 
-                      theta <- ifelse(abs(theta) > 100, 100, abs(theta))
+                      theta <- ifelse(abs(theta) > 35, 35, abs(theta)) # changed from 100 - 17/09/2021, due to BiCopPar2Tau
                       theta <- theta*signs }
 
 # if(BivD %in% c("PL")) theta <- ifelse(abs(theta) > 100, 100, abs(theta))

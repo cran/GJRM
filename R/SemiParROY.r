@@ -44,8 +44,8 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
   sp7 <- gp7 <- X7 <- NULL  
   sp8 <- gp8 <- X8 <- NULL  
   sp9 <- gp9 <- X9 <- NULL  
-
   
+
   log.sig1 <- log.sig2 <- log.nu1 <- log.nu2 <- NULL
   
   opc  <- c("N","C0","C90","C180","C270","J0","J90","J180","J270","G0","G90","G180","G270","F","AMH","FGM","T","PL","HO","GAL0", "GAL90", "GAL180", "GAL270")
@@ -57,6 +57,13 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
   m1d  <- c("PO", "ZTP","DGP0") 
   m2d  <- c("NBI", "NBII", "PIG","DGP","DGPII") 
   bl   <- c("probit", "logit", "cloglog")   
+  
+  
+  if(margins[2] %in% c(bl,m1d) && margins[3] %in% c(bl,m1d))  gp4 <- gp5 <- gp6 <- gp7 <- gp8 <- gp9 <- 0  
+  if(margins[2] %in% c(m2,m2d) && margins[3] %in% c(m2,m2d)){ gp4 <- gp5 <- gp6 <- gp7 <- 1; gp8 <- gp9 <- 0}  
+  if(margins[2] %in% c(m3)     && margins[3] %in% c(m3)    ){ gp4 <- gp5 <- gp6 <- gp7 <- gp8 <- gp9 <- 1}  
+  
+  
   
   M    <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, BivD1 = BivD1, BivD2 = BivD2, 
                opc = opc, extra.regI = extra.regI, margins = margins, bl = bl, intf = intf,
@@ -256,7 +263,7 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
   
   
   
-X4 <- X5 <- X6 <- X7 <- X8 <- X9 <- matrix(1, n, 1)  
+X4 <- X5 <- X6 <- X7 <- X8 <- X9 <- X4s <- X5s <- X6s <- X7s <- X8s <- X9s <- matrix(1, n, 1)  
 X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- X9.d2 <- 1 
 
 
@@ -308,7 +315,10 @@ if( margins[2] %in% c(m3) && margins[3] %in% c(m2) ){
   X6 <- as.matrix(X6[inde0,])
   X7 <- as.matrix(X7[inde0,])  
   X8 <- as.matrix(X8[inde1,]) 
-}  
+} 
+
+
+
 
 
 
@@ -548,6 +558,14 @@ if(missing(parscale)) parscale <- 1
              X7 = X7, 
              X8 = X8, 
              X9 = X9,
+             X2s = X2s, 
+             X3s = X3s,
+             X4s = X4s, 
+             X5s = X5s, 
+             X6s = X6s,
+             X7s = X7s, 
+             X8s = X8s, 
+             X9s = X9s,             
              X1.d2 = X1.d2, 
              X2.d2 = X2.d2,
              X3.d2 = X3.d2,
@@ -607,7 +625,7 @@ if(missing(parscale)) parscale <- 1
              
   ##########################################################################################################################
 
-# never thought of it, but subset may cause trouble here? 
+# never thought of it, but subset may cause trouble here? don't think so
 
 if(gamlssfit == TRUE && margins[2] %in% c(m1d, m2d, m2, m3) && margins[3] %in% c(m1d, m2d, m2, m3)){ 
 
@@ -621,7 +639,7 @@ if(gamlssfit == TRUE && margins[2] %in% c(m1d, m2d, m2, m3) && margins[3] %in% c
                    gc.l = gc.l, parscale = 1, extra.regI = extra.regI, drop.unused.levels = drop.unused.levels), list(inde0 = inde0, weights = weights)))   
                    
   gamlss3 <- eval(substitute(gamlss(form.gamlR$formula.gamlss3, data = data, weights = weights, subset = inde1,  
-                   margin = margins[2], infl.fac = infl.fac, 
+                   margin = margins[3], infl.fac = infl.fac, 
                    rinit = rinit, rmax = rmax, iterlimsp = iterlimsp, tolsp = tolsp,
                    gc.l = gc.l, parscale = 1, extra.regI = extra.regI, drop.unused.levels = drop.unused.levels), list(inde1 = inde1, weights = weights)))                    
                       
@@ -634,7 +652,7 @@ if(gamlssfit == TRUE && margins[2] %in% c(m1d, m2d, m2, m3) && margins[3] %in% c
   
   main.sv                    <- c(gam1$coefficients, gamls.upsvR$start.v) 
   start.v[1:length(main.sv)] <- main.sv
-  names(start.v)             <- nstv                                           # this really needed? double check
+  names(start.v)             <- nstv                                           # this really needed? does not hurt
   
   sp <- gamls.upsvR$sp
  
@@ -747,7 +765,7 @@ L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, SemiParFit
           dof1.a = dof1, dof2.a = dof2, call = cl,
           surv = FALSE, surv.flex = surv.flex)
 
-class(L) <- c("SemiParBIV", "gjrm", "SemiParROY") # check that this is ok
+class(L) <- c("SemiParROY", "SemiParBIV", "gjrm") 
 
 L
 

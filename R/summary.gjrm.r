@@ -45,7 +45,7 @@ rm(bs, SE, Vb, XX, Xt, V)
               tableP7=table[[7]], tableP8=table[[8]],
               tableNP1=tableN[[1]], tableNP2=tableN[[2]], tableNP3=tableN[[3]], 
               tableNP4=tableN[[4]], tableNP5=tableN[[5]], tableNP6=tableN[[6]], tableNP7=tableN[[7]], 
-              tableNP8=tableN[[8]], 
+              tableNP8=tableN[[8]], Model = object$Model,
               n=n, theta=object$theta, theta.a=object$theta.a,
               dof=object$dof, dof.a=object$dof.a,
               sigma21=object$sigma21, sigma22=object$sigma22, 

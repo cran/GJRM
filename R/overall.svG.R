@@ -24,6 +24,10 @@ Sl.sf2 <- Sl.sf3 <- NULL
 if(type == "ROY"){
 
 
+X4 <- X5 <- X6 <- X7 <- X8 <- X9 <- X4s <- X5s <- X6s <- X7s <- X8s <- X9s <- matrix(1, vo$n, 1)  
+gp3 <- gp4 <- gp5 <- gp6 <- gp7 <- gp8 <- gp9 <- 0 
+
+
   if( margins[2] %in% c(M$bl,M$m1d) && margins[3] %in% c(M$bl,M$m1d) ){
   
   

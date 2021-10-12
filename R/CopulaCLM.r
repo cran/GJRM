@@ -621,7 +621,7 @@ L <- list(fit = CopulaCLMFit$fit, dataset = dataset, formula = formula, CopulaCL
           gamlssfit = gamlssfit, Cont = "NO", tau = CopulaCLMFit.p$tau, 
           tau.a = CopulaCLMFit.p$tau.a, l.flist = l.flist, v1 = v1, v2 = v2, triv = FALSE, univar.gamlss = FALSE,
           gamlss = gamlss2, BivD2 = BivD2, dof = dof, dof.a = dof, call = cl,
-          surv = FALSE, surv.flex = surv.flex, ordinal = TRUE, drop.unused.levels = drop.unused.levels)
+          surv = FALSE, surv.flex = surv.flex, ordinal = TRUE, drop.unused.levels = drop.unused.levels, Model = Model)
 
 
 if(BivD %in% BivD2){

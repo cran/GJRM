@@ -1441,7 +1441,7 @@ L <- list(fit = SemiParFit$fit, dataset = NULL, n = n, formula = formula, robust
           l.flist = l.flist, triv = FALSE, univar.gamlss = TRUE, call = cl, gev.par = gev.par,
           ygrid = ygrid,
           r.weights = SemiParFit$fit$d.psi, surv = surv, surv.flex = surv.flex, test.sv.inf = test.sv.inf,
-          rangeSurv = rangeSurv)
+          rangeSurv = rangeSurv, Model = "CC")
 
 class(L) <- c("gamlss","SemiParBIV","gjrm")
 

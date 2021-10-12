@@ -11,7 +11,7 @@ pream.wm <- function(formula, margins, M, l.flist, type = "copR"){
 
 ###################################################################################################################################################### 
 
-if(type == "ROY") stop("Work in progress.")  
+if(type == "ROY") stop("Work in progress, almost ready.")  
 
 ###################################################################################################################################################### 
 
@@ -55,7 +55,11 @@ if(type == "ROY"){ # binary - binary/cont/discr models
   if(  margins[2] %in% c(M$m1d)  &&   margins[3] %in% c(M$m2d)  ) stop("The second and third margins must have the same number of distributional parameters.")
   if(  margins[2] %in% c(M$m2d)  &&   margins[3] %in% c(M$m1d)  ) stop("The second and third margins must have the same number of distributional parameters.")
 
+  if(  margins[2] %in% c(M$m3)  &&   margins[3] %in% c(M$m3)  ){
+  
+    if(  (margins[2] == "DAGUM"  &&   margins[3] == "SM") ||  (margins[2] == "SM"  &&   margins[3] == "DAGUM") ) stop("The second and third margins must have the same distribution.")
 
+  }
   
   
   if(l.flist > 3 && margins[2] %in% c(M$bl)  && margins[3] %in% c(M$bl) ){ if(l.flist!=5) stop("You need to specify five equations.") } 

@@ -1,8 +1,9 @@
 susutsn <- function(object, bs, lf, cont1par, cont2par, cont3par, prob.lev, type = "copR", bin.link = NULL, n.sim = NULL, K1 = NULL ){
 
 
-CIrs <- CIkt <- CIsig21 <- CIsig22 <- CInu1 <- CInu2 <- CIdof <- CInu <- CIsig2 <- est.RHOb <- mu <- CImu <- NULL
-
+CIrs1 <- CIrs2 <- CIrs <- CIkt <- CIkt1 <- CIkt2 <- CIsig21 <- CIsig22 <- CInu1 <- CInu2 <- CIdof <- CInu <- CIsig2 <- NULL
+est.RHOb <- mu <- CImu <- est.RHOb1 <- est.RHOb2 <- tau1 <- tau2 <- NULL
+CIsig1 <- CInu1 <- CIsig2 <- CInu2 <- NULL
 
 
 if (!is.null(K1)) {
@@ -12,6 +13,102 @@ if (!is.null(K1)) {
 } else {
 	CLM.shift <- 0 ; CLM.shift2 <- 0
 }  
+
+
+
+
+
+
+
+if(type == "ROY"){
+
+  bs  <- rMVN(n.sim, mean = object$coefficients, sigma = object$Vb)  
+
+  VC1 <- list(BivD = object$VC$BivD1, BivD2 = NULL)  
+  VC2 <- list(BivD = object$VC$BivD2, BivD2 = NULL)  
+   
+
+
+  if(object$VC$margins[2] %in% c(cont2par,cont3par) && object$VC$margins[3] %in% c(cont2par,cont3par) ){
+  
+     sig1.st <- object$X4s%*%t(bs[,(object$X1.d2 + object$X2.d2 + object$X3.d2 + 1):(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2)]) 
+     sig1    <- esp.tr(sig1.st, object$VC$margins[2])$vrb  
+     CIsig1  <- rowQuantiles(sig1, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+
+     sig2.st <- object$X5s%*%t(bs[,(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + 1):(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2)]) 
+     sig2    <- esp.tr(sig2.st, object$VC$margins[3])$vrb  
+     CIsig2  <- rowQuantiles(sig2, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+
+  } 
+
+  if(object$VC$margins[2] %in% c(cont3par) && object$VC$margins[3] %in% c(cont3par) ){
+  
+     nu1.st <- object$X6s%*%t(bs[,(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + 1):(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2)]) 
+     nu1    <- enu.tr(nu1.st, object$VC$margins[2])$vrb  
+     CInu1  <- rowQuantiles(nu1, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+
+     nu2.st <- object$X7s%*%t(bs[,(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + 1):(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2)]) 
+     nu2    <- enu.tr(nu2.st, object$VC$margins[3])$vrb  
+     CInu2  <- rowQuantiles(nu2, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+
+  } 
+
+
+
+
+# stuff below is inefficient, might want to group code at some point
+
+  if(object$VC$margins[2] %in% c(bin.link, cont1par) && object$VC$margins[3] %in% c(bin.link, cont1par) ){
+  
+    epds1 <- object$X4s%*%t(bs[,(object$X1.d2 + object$X2.d2 + object$X3.d2 + 1):(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2)])
+    epds2 <- object$X5s%*%t(bs[,(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + 1):(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2)])
+  
+  }
+  
+  
+  if(object$VC$margins[2] %in% c(cont2par) && object$VC$margins[3] %in% c(cont2par) ){
+  
+    epds1 <- object$X6s%*%t(bs[,(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + 1):(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2)])
+    epds2 <- object$X7s%*%t(bs[,(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + 1):(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2)])
+  
+  } 
+  
+  if(object$VC$margins[2] %in% c(cont3par) && object$VC$margins[3] %in% c(cont3par) ){
+  
+    epds1 <- object$X8s%*%t(bs[,(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + 1):(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + object$X8.d2)])
+    epds2 <- object$X9s%*%t(bs[,(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + object$X8.d2 + 1):(object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + object$X8.d2 + object$X9.d2)])
+  
+  }    
+  
+ 
+  est.RHOb1 <- teta.tr(VC1, epds1)$teta
+  est.RHOb2 <- teta.tr(VC2, epds2)$teta
+  
+  est.RES1  <- ass.ms(object$VC$BivD1, object$VC$nCa1, est.RHOb1)
+  est.RES2  <- ass.ms(object$VC$BivD2, object$VC$nCa2, est.RHOb2)
+
+  est.RHOb1 <- est.RES1$theta
+  est.RHOb2 <- est.RES2$theta  
+  
+  tau1      <- est.RES1$tau
+  tau2      <- est.RES2$tau
+  
+  CIrs1 <- rowQuantiles(est.RHOb1, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+  CIrs2 <- rowQuantiles(est.RHOb2, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+
+  CIkt1 <- rowQuantiles(tau1, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+  CIkt2 <- rowQuantiles(tau2, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+  
+
+} # ROY
+
+
+
+
+
+
+
+
 
 
 
@@ -536,7 +633,7 @@ if(type == "copSS"){
 ##################################################################
 
 
-if(type != "gamls"){
+if( !(type %in% c("gamls", "ROY")) ){
 
 
 if( !is.null(object$VC$theta.fx) && type == "biv"){
@@ -609,14 +706,10 @@ if( is.null(object$X3) ) CIkt <- t(CIkt)
 
 
 
-
-
-
-
-
-
 list(CIrs = CIrs, CIkt = CIkt, CIsig21 = CIsig21, CIsig22 = CIsig22, CInu1 = CInu1, CInu2 = CInu2, CIdof = CIdof, 
-     CInu = CInu, CIsig2 = CIsig2, bs = bs, est.RHOb = est.RHOb, mu = mu, CImu = CImu)
+     CInu = CInu, CIsig2 = CIsig2, bs = bs, est.RHOb = est.RHOb, mu = mu, CImu = CImu,
+     est.RHOb1 = est.RHOb1, est.RHOb2 = est.RHOb2, CIrs1 = CIrs1, CIrs2 = CIrs2, CIkt1 = CIkt1, CIkt2 = CIkt2, CIsig1 =  CIsig1,
+     CInu1 = CInu1, CIsig2 = CIsig2, CInu2 = CInu2)
 
 
 

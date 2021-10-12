@@ -1,7 +1,7 @@
 bprobgHsDiscr2ROY <- function(params, respvec, VC, ps, AT = FALSE){
 
  
-  p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- l.par <- dl.dbe1 <- d2l.be1.be1 <- l.parL <- NA
+  p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- l.par <- dl.dbe1 <- d2l.be1.be1 <- l.parL <- NA
   etad1 <- etad2 <- etas1 <- etas2 <- etan1 <- etan2 <- l.ln <- NULL 
  
   ########
@@ -407,7 +407,7 @@ bprobgHsDiscr2ROY <- function(params, respvec, VC, ps, AT = FALSE){
   th1.th1 <-    crossprod(VC$X6*c(d2l.th1.th1),VC$X6)
   th1.th2 <- matrix(0,dim(VC$X6)[2],       dim(VC$X7)[2])   
   
-  th2.th2 <- crossprod(VC$X7*c(d2l.th2.th2),VC$X7)
+  th2.th2 <-    crossprod(VC$X7*c(d2l.th2.th2),VC$X7)
 
     
  
@@ -464,7 +464,7 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
               dl.dbe1 = dl.dbe1, dl.dbe2 = dl.dbe2, dl.dbe3 = dl.dbe3, dl.dsigma1.st = dl.dsigma1.st, dl.dsigma2.st = dl.dsigma2.st,
               dl.dteta1.st = dl.dteta1.st, dl.dteta2.st = dl.dteta2.st,
               BivD1 = VC$BivD1, BivD2 = VC$BivD2,                              
-              p1 = p1, p0 = p0,           
+              p1 = p1, p0 = p0, pdf1 = pdf2.M2, pdf2 = pdf2.M3, c.copula2.be1be2 = c(c.copula2.be1be2.C1.M2, c.copula2.be1be2.C2.M2, c.copula2.be1be2.C1.M3, c.copula2.be1be2.C2.M3),         
               teta.st1 = teta.st1, teta.st2 = teta.st2,
               Cop1 = Cop1, Cop2 = Cop2, teta1 = teta1, teta2 = teta2)      
 

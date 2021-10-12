@@ -195,6 +195,83 @@ if(x$margins[2]=="ZTP")    	       cat("\nMARGIN 2: Zero Truncated Poisson")
 
 
 
+if(type == "ROY"){
+
+if(x$margins[1] %in% x$bl &&  is.null(x$K1)) cat("\nMARGIN 1: Bernoulli") 
+if(x$margins[1] %in% x$bl && !is.null(x$K1)) cat("\nMARGIN 1: categorical") 
+if(x$margins[2] %in% x$bl                  ) cat("\nMARGIN 2: Bernoulli") 
+if(x$margins[3] %in% x$bl                  ) cat("\nMARGIN 3: Bernoulli") 
+
+
+
+if(x$margins[2] %in% c("N"))            cat("\nMARGIN 2: Gaussian")  
+if(x$margins[2] == "GP")                cat("\nMARGIN 2: generalised Pareto")  
+if(x$margins[2] == "GPII")              cat("\nMARGIN 2: generalised Pareto II")  
+if(x$margins[2] == "GPo")               cat("\nMARGIN 2: generalised Pareto (Orthogonal Parameterisation)")    
+if(x$margins[2] == "DGP")               cat("\nMARGIN 2: discrete generalised Pareto")  
+if(x$margins[2] == "DGPII")             cat("\nMARGIN 2: discrete generalised Pareto II")  
+if(x$margins[2] == "DGP0")              cat("\nMARGIN 2: discrete generalised Pareto (shape = 0)")  
+if(x$margins[2] == "GU")                cat("\nMARGIN 2: Gumbel")    
+if(x$margins[2] == "rGU")               cat("\nMARGIN 2: reverse Gumbel")  
+if(x$margins[2] == "LO")                cat("\nMARGIN 2: logistic")   
+if(x$margins[2] == "LN")                cat("\nMARGIN 2: log-normal") 
+if(x$margins[2] == "WEI")               cat("\nMARGIN 2: Weibull") 
+if(x$margins[2] == "GO")                cat("\nMARGIN 2: Gompertz") 
+if(x$margins[2] == "iG")                cat("\nMARGIN 2: inverse Gaussian") 
+if(x$margins[2] %in% c("GA","GAi"))     cat("\nMARGIN 2: gamma")  
+if(x$margins[2] == "BE")                cat("\nMARGIN 2: beta")    
+if(x$margins[2] == "DAGUM")             cat("\nMARGIN 2: Dagum")
+if(x$margins[2] == "TW")                cat("\nMARGIN 2: Tweedie")
+if(x$margins[2] == "SM")                cat("\nMARGIN 2: Singh-Maddala") 
+if(x$margins[2] == "FISK")              cat("\nMARGIN 2: Fisk") 
+if(x$margins[2] == "FISK2")             cat("\nMARGIN 2: Fisk2") 
+if(x$margins[2] %in% c("NBI","NBIa"))   cat("\nMARGIN 2: Negative Binomial - Type I") 
+if(x$margins[2] %in% c("NBII","NBIIa")) cat("\nMARGIN 2: Negative Binomial - Type II")
+if(x$margins[2] == "PIG")    	        cat("\nMARGIN 2: Poisson inverse Gaussian") 
+if(x$margins[2] == "PO")     	        cat("\nMARGIN 2: Poisson")   
+if(x$margins[2] == "ZTP")    	        cat("\nMARGIN 2: Zero Truncated Poisson")  
+
+
+if(x$margins[3] %in% c("N"))            cat("\nMARGIN 3: Gaussian")  
+if(x$margins[3] == "GP")                cat("\nMARGIN 3: generalised Pareto")  
+if(x$margins[3] == "GPII")              cat("\nMARGIN 3: generalised Pareto II")  
+if(x$margins[3] == "GPo")               cat("\nMARGIN 3: generalised Pareto (Orthogonal Parameterisation)")    
+if(x$margins[3] == "DGP")               cat("\nMARGIN 3: discrete generalised Pareto")  
+if(x$margins[3] == "DGPII")             cat("\nMARGIN 3: discrete generalised Pareto II")  
+if(x$margins[3] == "DGP0")              cat("\nMARGIN 3: discrete generalised Pareto (shape = 0)")  
+if(x$margins[3] == "GU")                cat("\nMARGIN 3: Gumbel")    
+if(x$margins[3] == "rGU")               cat("\nMARGIN 3: reverse Gumbel")  
+if(x$margins[3] == "LO")                cat("\nMARGIN 3: logistic")   
+if(x$margins[3] == "LN")                cat("\nMARGIN 3: log-normal") 
+if(x$margins[3] == "WEI")               cat("\nMARGIN 3: Weibull") 
+if(x$margins[3] == "GO")                cat("\nMARGIN 3: Gompertz") 
+if(x$margins[3] == "iG")                cat("\nMARGIN 3: inverse Gaussian") 
+if(x$margins[3] %in% c("GA","GAi"))     cat("\nMARGIN 3: gamma")  
+if(x$margins[3] == "BE")                cat("\nMARGIN 3: beta")    
+if(x$margins[3] == "DAGUM")             cat("\nMARGIN 3: Dagum")
+if(x$margins[3] == "TW")                cat("\nMARGIN 3: Tweedie")
+if(x$margins[3] == "SM")                cat("\nMARGIN 3: Singh-Maddala") 
+if(x$margins[3] == "FISK")              cat("\nMARGIN 3: Fisk") 
+if(x$margins[3] == "FISK2")             cat("\nMARGIN 3: Fisk2") 
+if(x$margins[3] %in% c("NBI","NBIa"))   cat("\nMARGIN 3: Negative Binomial - Type I") 
+if(x$margins[3] %in% c("NBII","NBIIa")) cat("\nMARGIN 3: Negative Binomial - Type II")
+if(x$margins[3] == "PIG")    	        cat("\nMARGIN 3: Poisson inverse Gaussian") 
+if(x$margins[3] == "PO")     	        cat("\nMARGIN 3: Poisson")   
+if(x$margins[3] == "ZTP")    	        cat("\nMARGIN 3: Zero Truncated Poisson")  
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
 
 
          

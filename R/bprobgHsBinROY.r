@@ -247,7 +247,7 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
               etad2 = etad2, etas1 = etas1, etas2 = etas2, etan1 = etan1, etan2 = etan2,
               dl.dbe1 = dl.dbe1, dl.dbe2 = dl.dbe2, dl.dbe3 = dl.dbe3, dl.dteta1.st = dl.dteta1.st, dl.dteta2.st = dl.dteta2.st,
               BivD1 = VC$BivD1, BivD2 = VC$BivD2,                              
-              p1 = p1, p2 = p2, p3 = p3,           
+              p1 = p1, p2 = p2, p3 = p3, c.copula2.be1be2 = c(c.copula2.be1be2.M2, c.copula2.be1be2.M3),          
               teta.st1 = teta.st1, teta.st2 = teta.st2,
               Cop1 = Cop1, Cop2 = Cop2, teta1 = teta1, teta2 = teta2)    
 

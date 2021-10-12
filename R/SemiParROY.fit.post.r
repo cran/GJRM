@@ -24,46 +24,77 @@ R          <- pVbres$R
 Ve         <- pVbres$Ve        
 t.edf      <- pVbres$t.edf     
 SemiParFit <- pVbres$SemiParFit
-  
+
+VC1 <- list(BivD = VC$BivD1, BivD2 = NULL)  
+VC2 <- list(BivD = VC$BivD2, BivD2 = NULL)  
   
 ############################################################################################  
 
-if(VC$margins[2] %in% c(cont2par, cont3par) ){
 
-sigma1   <- esp.tr(SemiParFit$fit$sigma1.st, VC$margins[2])$vrb  
+SemiParFit$fit$eta2 <- VC$X2s %*% SemiParFit$fit$argument[(VC$X1.d2 + 1):(VC$X1.d2 + VC$X2.d2)]
+SemiParFit$fit$eta3 <- VC$X3s %*% SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2)]
+
+
+
+
+
+if( VC$margins[2] %in% c(cont2par, cont3par) && VC$margins[3] %in% c(cont2par, cont3par) ){
+
+sigma1   <- esp.tr(VC$X4s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2)], VC$margins[2])$vrb  
 sigma1.a <- mean(sigma1)
-  
-} 
 
-if(VC$margins[3] %in% c(cont2par, cont3par) ){
-
-sigma2   <- esp.tr(SemiParFit$fit$sigma2.st, VC$margins[3])$vrb  
+sigma2   <- esp.tr(VC$X5s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2)], VC$margins[3])$vrb  
 sigma2.a <- mean(sigma2)
-  
-}  
-  
 
-#################################################################
+}
 
-if(VC$margins[2] %in% cont3par ){  
 
-nu1   <- enu.tr(SemiParFit$fit$nu1.st, VC$margins[2])$vrb    
+
+if(VC$margins[2] %in% cont3par && VC$margins[3] %in% cont3par){
+
+nu1   <- enu.tr(VC$X6s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2)], VC$margins[2])$vrb    
 nu1.a <- mean(nu1)
 
-}
-
-if(VC$margins[3] %in% cont3par ){  
-
-nu2   <- enu.tr(SemiParFit$fit$nu2.st, VC$margins[3])$vrb    
-nu2.a <- mean(nu2)
-
-}
+nu2   <- enu.tr(VC$X7s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2)], VC$margins[3])$vrb    
+nu2.a <- mean(nu2)  
+} 
+ 
 
 ############################################################################################
 
-ass.msR1 <- ass.ms(VC$BivD1, VC$nCa1, SemiParFit$fit$teta1)
-ass.msR2 <- ass.ms(VC$BivD2, VC$nCa2, SemiParFit$fit$teta2)
-  
+
+if( VC$margins[2] %in% c(bin.link, cont1par) && VC$margins[3] %in% c(bin.link, cont1par) ){
+
+teta1 <- teta.tr(VC1, VC$X4s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2)])$teta
+teta2 <- teta.tr(VC2, VC$X5s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2)])$teta
+
+ass.msR1 <- ass.ms(VC$BivD1, VC$nCa1, teta1)
+ass.msR2 <- ass.ms(VC$BivD2, VC$nCa2, teta2)
+
+}
+
+
+if( VC$margins[2] %in% c(cont2par) && VC$margins[3] %in% c(cont2par) ){
+
+teta1 <- teta.tr(VC1, VC$X6s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2)])$teta
+teta2 <- teta.tr(VC2, VC$X7s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2)])$teta
+
+ass.msR1 <- ass.ms(VC$BivD1, VC$nCa1, teta1)
+ass.msR2 <- ass.ms(VC$BivD2, VC$nCa2, teta2)
+
+}
+
+
+if( VC$margins[2] %in% c(cont3par) && VC$margins[3] %in% c(cont3par) ){
+
+teta1 <- teta.tr(VC1, VC$X8s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 + VC$X8.d2)])$teta
+teta2 <- teta.tr(VC2, VC$X9s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 + VC$X8.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 + VC$X8.d2 + VC$X9.d2)])$teta
+
+ass.msR1 <- ass.ms(VC$BivD1, VC$nCa1, teta1)
+ass.msR2 <- ass.ms(VC$BivD2, VC$nCa2, teta2)
+
+}
+ 
 theta1   <- ass.msR1$theta
 theta1.a <- ass.msR1$theta.a
 tau1     <- ass.msR1$tau  

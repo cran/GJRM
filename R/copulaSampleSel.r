@@ -546,7 +546,7 @@ L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, mice.formu
           X4s = X4s,
           X5s = X5s,
           p1n=SemiParFit.p$p1n , p2n = SemiParFit.p$p2n, 
-          VC = VC, Model = NULL, magpp = SemiParFit$magpp,
+          VC = VC, Model = "B", magpp = SemiParFit$magpp,
           gamlss = gamlss, Cont = "NO", tau = SemiParFit.p$tau, tau.a = SemiParFit.p$tau.a, 
           l.flist = l.flist, v1 = v1, v2 = v2, triv = FALSE, univar.gamlss = FALSE, BivD2 = BivD2, dof = dof, dof.a = dof, call = cl,
           surv = FALSE, surv.flex = surv.flex, gam2AUX = gam2AUX)

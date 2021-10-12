@@ -1004,7 +1004,7 @@ L <- list(fit = SemiParFit$fit, dataset = NULL, n = n, gamlss1 = gamlss1, gamlss
           gamlssfit = gamlssfit, Cont = "YES",
           tau = SemiParFit.p$tau, tau.a = SemiParFit.p$tau.a, l.flist = l.flist, v1 = v1, v2 = v2, triv = FALSE, univar.gamlss = FALSE,
           BivD2 = BivD2, call = cl, surv = surv, surv.flex = surv.flex,
-          Vb.t = SemiParFit.p$Vb.t, coef.t = SemiParFit.p$coef.t)
+          Vb.t = SemiParFit.p$Vb.t, coef.t = SemiParFit.p$coef.t, Model = "CC")
   
 if(BivD %in% BivD2){       
 

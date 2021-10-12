@@ -22,12 +22,14 @@ print.AT, print.PE, print.RR, print.OR,
 print.prev, 
 print.mb,
 print.SemiParBIV,
+print.SemiParROY,
 print.SemiParTRIV,
 print.gjrm, sim.resp,
 print.gamlss,
 print.copulaSampleSel,
 print.summary.SemiParBIV,
 print.summary.SemiParTRIV,
+print.summary.SemiParROY,
 print.summary.gjrm,
 print.summary.gamlss,
 print.summary.copulaSampleSel,
@@ -47,6 +49,7 @@ gjrm, CopulaCLM,
 copulaSampleSel.fit.post,
 copulaSampleSel,
 summary.SemiParBIV,
+summary.SemiParROY,
 summary.SemiParTRIV,
 summary.gjrm,
 summary.gamlss,
@@ -61,7 +64,6 @@ importFrom(ggplot2, fortify)
 importFrom(ismev, gpd.fit)
 importFrom(magic, adiag)
 importFrom(evd, rgpd)
-importFrom(trustOptim, trust.optim)
 importFrom(survey, svyrecvar, twophasevar, twophase2var, svyCprod)
 importFrom(trust,trust)
 importFrom(scam, scam)
@@ -92,6 +94,7 @@ importFrom(numDeriv, jacobian, hessian, grad)
 
 S3method(plot, SemiParBIV)
 S3method(summary, SemiParBIV)
+S3method(summary, SemiParROY)
 S3method(summary, SemiParTRIV)
 S3method(summary, gjrm)
 S3method(summary, copulaSampleSel)
@@ -102,10 +105,12 @@ S3method(print, RR)
 S3method(print, OR)
 S3method(print, SemiParBIV)
 S3method(print, SemiParTRIV)
+S3method(print, SemiParROY)
 S3method(print, gjrm)
 S3method(print, gamlss)
 S3method(print, copulaSampleSel)
 S3method(print, summary.SemiParBIV)
+S3method(print, summary.SemiParROY)
 S3method(print, summary.SemiParTRIV)
 S3method(print, summary.gjrm)
 S3method(print, summary.gamlss)

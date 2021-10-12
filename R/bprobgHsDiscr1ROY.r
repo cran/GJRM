@@ -1,6 +1,6 @@
 bprobgHsDiscr1ROY <- function(params, respvec, VC, ps, AT = FALSE){
 
- p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- l.par <- dl.dbe1 <- d2l.be1.be1 <- NA
+ p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- l.par <- dl.dbe1 <- d2l.be1.be1 <- NA
 
    eta1 <-         VC$X1%*%params[1:VC$X1.d2]
    eta2 <- eta.tr( VC$X2%*%params[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)],                   VC$margins[2])
@@ -366,9 +366,12 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
               etad2 = etad2, etas1 = etas1, etas2 = etas2, etan1 = etan1, etan2 = etan2,
               dl.dbe1 = dl.dbe1, dl.dbe2 = dl.dbe2, dl.dbe3 = dl.dbe3, dl.dteta1.st = dl.dteta1.st, dl.dteta2.st = dl.dteta2.st,
               BivD1 = VC$BivD1, BivD2 = VC$BivD2,                              
-              p1 = p1, p0 = p0,           
+              p1 = p1, p0 = p0, pdf1 = pdf2.M2, pdf2 = pdf2.M3, c.copula2.be1be2 = c(c.copula2.be1be2.C1.M2, c.copula2.be1be2.C2.M2, c.copula2.be1be2.C1.M3, c.copula2.be1be2.C2.M3),         
               teta.st1 = teta.st1, teta.st2 = teta.st2,
               Cop1 = Cop1, Cop2 = Cop2, teta1 = teta1, teta2 = teta2)      
 
 }
+
+
+
 

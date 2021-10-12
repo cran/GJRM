@@ -90,8 +90,7 @@ conv.check(bpJ0)
 AIC(bpN, bpF, bpC0, bpC180, bpJ0, bpJ180, bpG0, bpG180) 
 
 set.seed(1)
-summary(bpJ0, cex.axis = 1.6, 
-        cex.lab = 1.6, cex.main = 1.7)
+summary(bpJ0)
 
 #dev.copy(postscript, "contplot.eps")
 #dev.off()

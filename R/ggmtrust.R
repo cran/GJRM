@@ -7,7 +7,10 @@ my.env <- new.env(); my.env$countPD <- 0
 if( !(pen %in% c("ridge", "lasso", "alasso", "scad")) ) stop("pen should be one of: ridge, lasso, alasso, scad")
 
 
-if( !(method %in% c("H", "BHHH", "TB")) ) stop("method should be one of: H, BHHH, TB")
+# if( !(method %in% c("H", "BHHH", "TB")) ) stop("method should be one of: H, BHHH, TB")
+
+if( !(method %in% c("H", "BHHH")) ) stop("method should be one of: H, BHHH")
+
 
 
 fun.sk <- function(x, sigma, params, idx){
@@ -48,8 +51,8 @@ miter <- 100000
 if( method %in% c("H", "BHHH") ) fit <- trust(ggm.Deriv, params, rinit = 1, rmax = 100, parscale = parsc, s = s, n = n, idx = idx, lambda = lambda, pen = pen, 
                                               VC = VC, blather = TRUE, iterlim = miter, w.alasso = w.alasso, gamma = gamma, a = a)  
 
-if( method %in% c("TB") ) fit <- trust.optim(params, fn = ggm.DerivOPT1, gr = ggm.DerivOPT2, method = "BFGS", control = list(maxit = miter, function.scale.factor = 1, report.level = -1, report.freq = -1), s = s, n = n, idx = idx, 
-                                             lambda = lambda, pen = pen, VC = VC, w.alasso = w.alasso, gamma = gamma, a = a)
+#if( method %in% c("TB") ) fit <- trust.optim(params, fn = ggm.DerivOPT1, gr = ggm.DerivOPT2, method = "BFGS", control = list(maxit = miter, function.scale.factor = 1, report.level = -1, report.freq = -1), s = s, n = n, idx = idx, 
+#                                             lambda = lambda, pen = pen, VC = VC, w.alasso = w.alasso, gamma = gamma, a = a)
 
 
 gc()  

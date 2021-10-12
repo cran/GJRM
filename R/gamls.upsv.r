@@ -14,7 +14,7 @@ sp9 <- SP$sp9
 if(type == "ROY"){
 
    
-      if(margins[2] %in% c(M$m1d) && margins[2] %in% c(M$m1d)){
+      if(margins[2] %in% c(M$m1d) && margins[3] %in% c(M$m1d)){
     
         b2 <- gamlss1$coefficients[1:VC$X2.d2] # this is actually gamlss2, done to avoid changing arguments of the function
         b3 <- gamlss2$coefficients[1:VC$X3.d2] # this is actually gamlss3
@@ -26,7 +26,7 @@ if(type == "ROY"){
                                                               }
                                                                   
                                                            
-      if(margins[2] %in% c(M$m2d,M$m2) && margins[2] %in% c(M$m2d,M$m2)){
+      if(margins[2] %in% c(M$m2d,M$m2) && margins[3] %in% c(M$m2d,M$m2)){
     
         b2.1 <- gamlss1$coefficients[1:VC$X2.d2] 
         b2.2 <- gamlss1$coefficients[(VC$X2.d2 + 1):(VC$X2.d2 + VC$X4.d2)]
@@ -44,7 +44,7 @@ if(type == "ROY"){
                                                                          }   
                                                                          
                                                                          
-      if(margins[2] %in% c(M$m3) && margins[2] %in% c(M$m3)){
+      if(margins[2] %in% c(M$m3) && margins[3] %in% c(M$m3)){
     
         b2.1 <- gamlss1$coefficients[1:VC$X2.d2] 
         b2.2 <- gamlss1$coefficients[(VC$X2.d2 + 1):(VC$X2.d2 + VC$X4.d2)]
@@ -68,7 +68,7 @@ if(type == "ROY"){
                                                              }  
                                                              
                                                              
-      if(margins[2] %in% c(M$m2) && margins[2] %in% c(M$m3)){
+      if(margins[2] %in% c(M$m2) && margins[3] %in% c(M$m3)){
     
         b2.1 <- gamlss1$coefficients[1:VC$X2.d2] 
         b2.2 <- gamlss1$coefficients[(VC$X2.d2 + 1):(VC$X2.d2 + VC$X4.d2)]
@@ -90,7 +90,7 @@ if(type == "ROY"){
                                                              }                                                               
                                                              
 
-      if(margins[2] %in% c(M$m3) && margins[2] %in% c(M$m2)){
+      if(margins[2] %in% c(M$m3) && margins[3] %in% c(M$m2)){
     
         b2.1 <- gamlss1$coefficients[1:VC$X2.d2] 
         b2.2 <- gamlss1$coefficients[(VC$X2.d2 + 1):(VC$X2.d2 + VC$X4.d2)]
@@ -112,7 +112,7 @@ if(type == "ROY"){
                                                              }                                                              
                                                                          
 
-      if(margins[2] %in% c(M$m1d) && margins[2] %in% c(M$m2d)){
+      if(margins[2] %in% c(M$m1d) && margins[3] %in% c(M$m2d)){
     
         b2.1 <- gamlss1$coefficients 
         
@@ -128,7 +128,7 @@ if(type == "ROY"){
                                                                } 
 
 
-      if(margins[2] %in% c(M$m2d) && margins[2] %in% c(M$m1d)){
+      if(margins[2] %in% c(M$m2d) && margins[3] %in% c(M$m1d)){
     
         b2.1 <- gamlss1$coefficients[1:VC$X2.d2] 
         b2.2 <- gamlss1$coefficients[(VC$X2.d2 + 1):(VC$X2.d2 + VC$X4.d2)]

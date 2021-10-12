@@ -44,7 +44,7 @@ rm(bs, SE, Vb, epds, sigma2.st, sigma2, est.RHOb, et1s, et2s, p1s, p2s, p11s, p1
  
   res <- list(tableP1=table[[1]], tableP2=table[[2]], tableP3=table[[3]], formula = object$formula,
               tableP4=table[[4]], tableP5=table[[5]], tableP6=table[[6]],
-              tableP7=table[[7]], tableP8=table[[8]],
+              tableP7=table[[7]], tableP8=table[[8]], Model = object$Model,  
               tableNP1=tableN[[1]], tableNP2=tableN[[2]], tableNP3=tableN[[3]], 
               tableNP4=tableN[[4]], tableNP5=tableN[[5]], tableNP6=tableN[[6]], 
               tableNP7=tableN[[7]], tableNP8=tableN[[8]],

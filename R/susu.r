@@ -63,6 +63,23 @@ if (!is.null(K1)) {
        }         
                             
   }
+
+
+
+
+  if( object$Model == "ROY" ) {
+  
+  if(length(object$formula) == 3) index <- 1:3
+  if(length(object$formula) == 5) index <- 1:5
+  if(length(object$formula) == 6) index <- 1:6
+  if(length(object$formula) == 7) index <- 1:7
+  if(length(object$formula) == 8) index <- 1:8
+  if(length(object$formula) == 9) index <- 1:9
+
+
+  }
+
+
                             
   ind <- list( ind1 = ind1,
                ind2 = ind2,
@@ -88,7 +105,7 @@ if (!is.null(K1)) {
   
   if( object$l.sp1!=0 || object$l.sp2!=0 || object$l.sp3!=0 || object$l.sp4!=0 || object$l.sp5!=0 || object$l.sp6!=0 || object$l.sp7!=0 || object$l.sp8!=0 || object$l.sp9!=0){
 
-  	pTerms.df <- pTerms.chi.sq <- pTerms.pv <- tableN <- list(0, 0, 0, 0, 0, 0, 0, 0)
+  	pTerms.df <- pTerms.chi.sq <- pTerms.pv <- tableN <- list(0, 0, 0, 0, 0, 0, 0, 0, 0)
         XX <- object$R # this should be ok for monotonic effects as well but I may come back to this
         
            for(i in index){

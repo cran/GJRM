@@ -351,7 +351,7 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
               teta.st1 = teta.st1, teta.st2 = teta.st2, teta1 = teta1, teta2 = teta2,
               dl.dbe1 = dl.dbe1, dl.dbe2 = dl.dbe2, dl.dbe3 = dl.dbe3, dl.dsigma1.st = dl.dsigma1.st, dl.dsigma2.st = dl.dsigma2.st,
               dl.dteta1.st = dl.dteta1.st, dl.dteta2.st = dl.dteta2.st, dl.dnu1.st = dl.dnu1.st, dl.dnu2.st = dl.dnu2.st,
-              BivD1 = VC$BivD1, BivD2 = VC$BivD2,                              
+              BivD1 = VC$BivD1, BivD2 = VC$BivD2, pdf1 = pdf2.M2, pdf2 = pdf2.M3, c.copula2.be1be2 = c(c.copula2.be1be2.M2, c.copula2.be1be2.M3),                             
               p1 = p1, p0 = p0,           
               Cop1 = Cop1, Cop2 = Cop2)      
               

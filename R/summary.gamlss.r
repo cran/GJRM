@@ -43,7 +43,7 @@ rm(bs, SE, Vb, XX, Xt, V)
               tableNP1=tableN[[1]], tableNP2=tableN[[2]], tableNP3=tableN[[3]], 
               tableNP4=tableN[[4]], tableNP5=tableN[[5]], tableNP6=tableN[[6]], tableNP7=tableN[[7]], tableNP8=tableN[[8]], 
               n=n, 
-              sigma2=object$sigma2, sigma=object$sigma2,  
+              sigma2=object$sigma2, sigma=object$sigma2, Model = object$Model, 
               nu=object$nu,  
               sigma2.a=object$sigma2.a, sigma.a=object$sigma2.a, 
               nu.a=object$nu.a, 

@@ -98,6 +98,16 @@ Tajar M., Denuit M. and Lambert P. (2001), Copula-Type Representation for Random
 
 
 
+\section{WARNINGS}{
+
+Note that the summary output will also indeed provide the Kendall's tau and related interval. This is a valid measure of dependence for continuous margins
+but it is not for binary margins. However, it is still displayed for the sake of keeping the printed output consistent with that of
+other models in the package.
+
+} 
+
+
+
 \author{
 
 Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}

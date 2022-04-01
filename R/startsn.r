@@ -15,7 +15,7 @@ log.nu.1 <- NULL
         
         if( !(margins %in% c("GO")) ){
         
-        if(class(par.est)=="try-error") {
+        if(   inherits(par.est, "try-error")    ) {
         
  		if( margins %in% c("NBI","NBIa","PIG") )  log.sig2.1 <- log( max( sqrt((var(y1) - mean(y1))/mean(y1)^2), 0.1)   )
  		if( margins %in% c("NBII","NBIIa") )      log.sig2.1 <- log( max( sqrt((var(y1)/mean(y1)) - 1), 0.1)            ) 		
@@ -35,7 +35,7 @@ log.nu.1 <- NULL
         
 
               if( margins %in% c("DAGUM","SM") ){
-        	if(class(par.est)=="try-error") log.nu.1 <- log(1) else log.nu.1 <- par.est[3]
+        	if(  inherits(par.est, "try-error")           ) log.nu.1 <- log(1) else log.nu.1 <- par.est[3]
                                                 }                                                                                    
 
         }

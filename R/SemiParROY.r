@@ -337,8 +337,8 @@ ass.s  <- cor(res1[inde1], res3, method = "kendall")
 ass.s  <- sign(ass.s)*ifelse(abs(ass.s) > 0.9, 0.9, abs(ass.s))                
 i.rho2 <- ass.dp(ass.s, BivD2, scc, sccn, nCa2)
 
-names(i.rho1) <- "theta1.star"
-names(i.rho2) <- "theta2.star"
+names(i.rho1) <- "theta12.star"
+names(i.rho2) <- "theta13.star"
 
                
 ##############################################################
@@ -354,8 +354,8 @@ if( margins[2] %in% c(m2, m2d) && margins[3] %in% c(m2, m2d) ){
    start.snR1 <- startsn(margins[2], y2)  
    start.snR2 <- startsn(margins[3], y3)
    
-   log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma1.star"
-   log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma2.star"
+   log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma2.star"
+   log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma3.star"
 
 start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, log.sig1, log.sig2, i.rho1, i.rho2)
     
@@ -367,11 +367,11 @@ if( margins[2] %in% c(m3) && margins[3] %in% c(m3) ){
    start.snR1 <- startsn(margins[2], y2)  
    start.snR2 <- startsn(margins[3], y3)
    
-   log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma1.star"
-   log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma2.star"
+   log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma2.star"
+   log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma3.star"
    
-   log.nu1    <- start.snR1$log.nu.1; names(log.nu1) <- "nu1.star"
-   log.nu2    <- start.snR2$log.nu.1; names(log.nu2) <- "nu2.star"
+   log.nu1    <- start.snR1$log.nu.1; names(log.nu1) <- "nu2.star"
+   log.nu2    <- start.snR2$log.nu.1; names(log.nu2) <- "nu3.star"
    
 start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, log.sig1, log.sig2, log.nu1, log.nu2, i.rho1, i.rho2)
     
@@ -381,7 +381,7 @@ start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, log.sig1, 
 if( margins[2] %in% c(m1d) && margins[3] %in% c(m2d) ){
 
    start.snR2 <- startsn(margins[3], y3)
-   log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma2.star"
+   log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma3.star"
 
 start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, log.sig2, i.rho1, i.rho2)
     
@@ -392,7 +392,7 @@ if( margins[2] %in% c(m2d) && margins[3] %in% c(m1d) ){
 
    start.snR1 <- startsn(margins[2], y2)  
    
-   log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma1.star"
+   log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma2.star"
 
 start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, log.sig1, i.rho1, i.rho2)
     
@@ -404,10 +404,10 @@ if( margins[2] %in% c(m2) && margins[3] %in% c(m3) ){
    start.snR1 <- startsn(margins[2], y2)  
    start.snR2 <- startsn(margins[3], y3)
    
-   log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma1.star"
-   log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma2.star"
+   log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma2.star"
+   log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma3.star"
    
-   log.nu2    <- start.snR2$log.nu.1; names(log.nu2) <- "nu2.star"
+   log.nu2    <- start.snR2$log.nu.1; names(log.nu2) <- "nu3.star"
    
 start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, log.sig1, log.sig2, log.nu2, i.rho1, i.rho2)
     
@@ -419,10 +419,10 @@ if( margins[2] %in% c(m3) && margins[3] %in% c(m2) ){
    start.snR1 <- startsn(margins[2], y2)  
    start.snR2 <- startsn(margins[3], y3)
    
-   log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma1.star"
-   log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma2.star"
+   log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma2.star"
+   log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma3.star"
    
-   log.nu1    <- start.snR1$log.nu.1; names(log.nu1) <- "nu1.star"
+   log.nu1    <- start.snR1$log.nu.1; names(log.nu1) <- "nu2.star"
    
 start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, log.sig1, log.sig2, log.nu1, i.rho1, i.rho2)
     
@@ -720,8 +720,8 @@ L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, SemiParFit
           l.sp7 = l.sp7, l.sp8 = l.sp8, l.sp9 = l.sp9, bl = bl,
           fp = fp,  
           iter.if = SemiParFit$iter.if, iter.inner = SemiParFit$iter.inner,
-          theta1 = SemiParFit.p$theta1, theta2 = SemiParFit.p$theta2, 
-          theta1.a = SemiParFit.p$theta1.a, theta2.a = SemiParFit.p$theta2.a,   
+          theta12 = SemiParFit.p$theta12, theta13 = SemiParFit.p$theta13, 
+          theta12.a = SemiParFit.p$theta12.a, theta13.a = SemiParFit.p$theta13.a,   
           n = n, n.se0 = n.se0, n.se1 = n.se1, 
           X1 = X1, X2 = X2, X3 = X3, X1.d2 = X1.d2, X2.d2 = X2.d2, X3.d2 = X3.d2, 
           X4 = X4, X5 = X5, X6 = X6, X7 = X7, X8 = X8, X9 = X9, X4.d2 = X4.d2, X5.d2 = X5.d2, 
@@ -741,28 +741,28 @@ L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, SemiParFit
           wor.c = SemiParFit$wor.c,
           p1 = SemiParFit$fit$p1, p0 = SemiParFit$fit$p0,
           eta1 = SemiParFit$fit$eta1, eta2 = SemiParFit$fit$eta2, eta3 = SemiParFit$fit$eta3,           
-          etad1 = SemiParFit$fit$etad1, etad2 = SemiParFit$fit$etad2, etas1 = SemiParFit$fit$etas1, etas2 = SemiParFit$fit$etas2,
-          etan1 = SemiParFit$fit$etan1, etan2 = SemiParFit$fit$etan2,
+          etad12 = SemiParFit$fit$etad1, etad13 = SemiParFit$fit$etad2, etas2 = SemiParFit$fit$etas1, etas3 = SemiParFit$fit$etas2,
+          etan2 = SemiParFit$fit$etan1, etan3 = SemiParFit$fit$etan2,
           y1 = y1, y2 = y2.m, y3 = y3.m, 
           margins = margins,   
           logLik = SemiParFit.p$logLik,
           nC1 = nC1, nC2 = nC2, hess = hess, 
           respvec = respvec, inde0 = inde0, inde1 = inde1, 
           qu.mag = qu.mag,
-          sigma1 = SemiParFit.p$sigma1, sigma1.a = SemiParFit.p$sigma1.a,
           sigma2 = SemiParFit.p$sigma2, sigma2.a = SemiParFit.p$sigma2.a,
-          nu1 = SemiParFit.p$nu1, nu1.a = SemiParFit.p$nu1.a, 
+          sigma3 = SemiParFit.p$sigma3, sigma3.a = SemiParFit.p$sigma3.a,
           nu2 = SemiParFit.p$nu2, nu2.a = SemiParFit.p$nu2.a, 
-          tau1 = SemiParFit.p$tau1, tau1.a = SemiParFit.p$tau1.a, 
-          tau2 = SemiParFit.p$tau2, tau2.a = SemiParFit.p$tau2.a,
+          nu3 = SemiParFit.p$nu3, nu3.a = SemiParFit.p$nu3.a, 
+          tau12 = SemiParFit.p$tau12, tau12.a = SemiParFit.p$tau12.a, 
+          tau13 = SemiParFit.p$tau13, tau13.a = SemiParFit.p$tau13.a,
           Vb.t = SemiParFit.p$Vb.t,
           gp1 = gp1, gp2 = gp2, gp3 = gp3, gp4 = gp4, gp5 = gp5, gp6 = gp6, gp7 = gp7, gp8 = gp8, gp9 = gp9, 
           X2s = X2s, X3s = X3s, X4s = X4s, X5s = X5s, X6s = X6s, X7s = X7s, X8s = X8s, X9s = X9s, 
           VC = VC, Model = Model, magpp = SemiParFit$magpp,
           gamlssfit = gamlssfit, Cont = "NO",  
           l.flist = l.flist, v1 = v1, v2 = v2, v3 = v3, triv = FALSE, univar.gamlss = FALSE,
-          gamlss2 = gamlss2, gamlss3 = gamlss3, BivD1 = BivD1, BivD2 = BivD2, dof1 = dof1, dof2 = dof2, 
-          dof1.a = dof1, dof2.a = dof2, call = cl,
+          gamlss2 = gamlss2, gamlss3 = gamlss3, BivD1 = BivD1, BivD2 = BivD2, dof12 = dof1, dof13 = dof2, 
+          dof12.a = dof1, dof13.a = dof2, call = cl,
           surv = FALSE, surv.flex = surv.flex)
 
 class(L) <- c("SemiParROY", "SemiParBIV", "gjrm") 

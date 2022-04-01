@@ -5,7 +5,7 @@ ppROY <- function(x){
   cont3par <- c("DAGUM","SM","DEL","SICHEL","GGA","TW")   
 
   if(x$BivD1=="FGM")          {cop1 <- "FGM"                                     ;lind1 <- "atanh"} 
-  if(x$BivD1=="T")            {cop1 <- paste("Student-t (dof = ",format(x$dof1.a, digits=3),")",sep=""); lind1 <- "atanh"} 
+  if(x$BivD1=="T")            {cop1 <- paste("Student-t (dof = ",format(x$dof12.a, digits=3),")",sep=""); lind1 <- "atanh"} 
   if(x$BivD1=="AMH")          {cop1 <- "AMH"                                     ;lind1 <- "atanh"} 
   if(x$BivD1=="N")            {cop1 <- "Gaussian"                                ;lind1 <- "atanh"} 
   if(x$BivD1=="F")            {cop1 <- "Frank"                                   ;lind1 <- "identity"}       
@@ -45,7 +45,7 @@ ppROY <- function(x){
   if(x$BivD1=="G180G270")     {cop1 <- "180\u00B0 Gumbel & 270\u00B0 Gumbel"     ;lind1 <- "log(\u00B7 - 1) & log(- \u00B7 - 1)"}    
  
   if(x$BivD2=="FGM")          {cop2 <- "FGM"                                     ;lind2 <- "atanh"} 
-  if(x$BivD2=="T")            {cop2 <- paste("Student-t (dof = ",format(x$dof2.a, digits=3),")",sep=""); lind2 <- "atanh"} 
+  if(x$BivD2=="T")            {cop2 <- paste("Student-t (dof = ",format(x$dof13.a, digits=3),")",sep=""); lind2 <- "atanh"} 
   if(x$BivD2=="AMH")          {cop2 <- "AMH"                                     ;lind2 <- "atanh"} 
   if(x$BivD2=="N")            {cop2 <- "Gaussian"                                ;lind2 <- "atanh"} 
   if(x$BivD2=="F")            {cop2 <- "Frank"                                   ;lind2 <- "identity"}       

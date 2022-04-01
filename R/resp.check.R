@@ -67,7 +67,7 @@ if( margin %in% c("rGU") )              st.v <- c( mean(y) - 0.57722*sqrt(var(y)
 if( margin %in% c("WEI") )              st.v <- c( log( mean( exp(log(y) + 0.5772/(1.283/sqrt(var(log(y))))) )  ) , log( ( 1.283/sqrt(var(log(y))) )^2 ) ) 
 if( margin %in% c("GA") )               st.v <- c( log(mean((y + mean(y))/2)), log(var(y)/mean(y)^2)  ) # log( 1^2 )             
 if( margin %in% c("GAi") )              st.v <- c( mean((y + mean(y))/2), log(var(y)/mean(y)^2)  ) # log( 1^2 )
-if( margin %in% c("TW") )              {st.v <- coef(gam(list(y ~ 1, ~ 1, ~ 1), family = twlss()))
+if( margin %in% c("TW") )              {st.v <- st.vTW <- coef(gam(list(y ~ 1, ~ 1, ~ 1), family = twlss()))
                                         st.vTW[2] <- st.v[3]; st.vTW[3] <- st.v[2]
                                         st.v <- st.vTW 
                                         }
@@ -86,9 +86,9 @@ if( margin %in% c("GP","GPII","GPo","DGP","DGPII","DGP0") ){
 
  est.ob <- try(  gpd.fit(y, threshold = 0, siglink = exp, show = FALSE), silent = TRUE) 
  
- if(class(est.ob) == "try-error") est.ob <- try( gpd.fit(y, threshold = 0, siglink = exp, show = FALSE, siginit = mean(y + mean(y))/2, shinit = 0.0025), silent = TRUE)  
- if(class(est.ob) == "try-error") st.v <- c( 0.0025, log( mean((y + mean(y))/2)  )  ) 
- if(class(est.ob) != "try-error") st.v <- c( est.ob$mle[2], est.ob$mle[1]  ) 
+ if( inherits(est.ob, "try-error")   ) est.ob <- try( gpd.fit(y, threshold = 0, siglink = exp, show = FALSE, siginit = mean(y + mean(y))/2, shinit = 0.0025), silent = TRUE)  
+ if( inherits(est.ob, "try-error")   ) st.v <- c( 0.0025, log( mean((y + mean(y))/2)  )  ) 
+ if( !inherits(est.ob, "try-error")  ) st.v <- c( est.ob$mle[2], est.ob$mle[1]  ) 
   
  if( margin %in% c("GPo","GPII","DGPII") ) { if(st.v[1] < 0) st.v[1] <- 0.001  }
 
@@ -124,8 +124,8 @@ if(margin %in% c(m1d,m2,m2d)) univfit <-  try(trust(bprobgHsContUniv, st.v, rini
                                             
 if(margin %in% c(m3,m3d)) univfit <-  try(trust(bprobgHsContUniv3, st.v, rinit = 1, rmax = 100, respvec = respvec, 
                                             VC = VC, ps = ps, blather = TRUE), silent = TRUE)                                            
-                 
-if(class(univfit) == "try-error") stop("The parameters of the chosen distribution could not be estimated. Try a different distribution.")                  
+                   
+if(  inherits(univfit, "try-error")   ) stop("The parameters of the chosen distribution could not be estimated. Try a different distribution.")                  
  
  
     

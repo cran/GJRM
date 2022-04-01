@@ -4,7 +4,7 @@ pscr <- function(x, lind, m1l, m2l, cont1par, cont2par, cont3par, type = "copR",
 if(type == "ROY"){
 
 
-  cat("\n\nEQUATION 1")
+  cat("\n\nEQUATION 1 - Switching Mechanism")
   cat("\nLink function for mu.1:",m1l,"\n")
   cat("Formula: "); print(x$formula[[1]])
   cat("\n") 
@@ -20,7 +20,7 @@ if(type == "ROY"){
 
 
 
-  cat("\nEQUATION 2")
+  cat("\nEQUATION 2 - Regime 0")
   cat("\nLink function for mu.2:",m2l,"\n")
   cat("Formula: "); print(x$formula[[2]])
   cat("\n")
@@ -36,7 +36,7 @@ if(type == "ROY"){
     
     
 
-  cat("\nEQUATION 3")
+  cat("\nEQUATION 3 - Regime 1")
   cat("\nLink function for mu.3:",m3l,"\n")
   cat("Formula: "); print(x$formula[[3]])
   cat("\n")
@@ -55,8 +55,8 @@ if(type == "ROY"){
 #***********
 if(length(x$formula) > 3 && x$margins[2] %in% cont1par && x$margins[3] %in% cont1par){
 
-  cat("\nEQUATION 4")
-  cat("\nLink function for theta.1:",lind,"\n") 
+  cat("\nEQUATION 4 - Regime 0")
+  cat("\nLink function for theta.12:",lind,"\n") 
   cat("Formula: "); print(x$formula[[4]]) 
   cat("\n")
   cat("Parametric coefficients:\n")
@@ -70,8 +70,8 @@ if(length(x$formula) > 3 && x$margins[2] %in% cont1par && x$margins[3] %in% cont
     }    
 
 
-  cat("\nEQUATION 5")
-  cat("\nLink function for theta.2:",lind2,"\n") 
+  cat("\nEQUATION 5 - Regime 1")
+  cat("\nLink function for theta.13:",lind2,"\n") 
   cat("Formula: "); print(x$formula[[5]]) 
   cat("\n")
   cat("Parametric coefficients:\n")
@@ -91,8 +91,8 @@ if(length(x$formula) > 3 && x$margins[2] %in% cont1par && x$margins[3] %in% cont
 if(length(x$formula) > 3 && x$margins[2] %in% c(cont2par) && x$margins[3] %in% c(cont2par)){
 
 
-  cat("\nEQUATION 4")
-  if(x$margins[2] != "BE") cat("\nLink function for sigma.1:","log","\n") else cat("\nLink function for sigma.1:","qlogis","\n") 
+  cat("\nEQUATION 4 - Regime 0")
+  if(x$margins[2] != "BE") cat("\nLink function for sigma.2:","log","\n") else cat("\nLink function for sigma.2:","qlogis","\n") 
   cat("Formula: "); print(x$formula[[4]]) 
   cat("\n")
   cat("Parametric coefficients:\n")
@@ -106,8 +106,8 @@ if(length(x$formula) > 3 && x$margins[2] %in% c(cont2par) && x$margins[3] %in% c
     }    
 
 
-  cat("\nEQUATION 5")
-  if(x$margins[3] != "BE") cat("\nLink function for sigma.2:","log","\n") else cat("\nLink function for sigma.2:","qlogis","\n")
+  cat("\nEQUATION 5 - Regime 1")
+  if(x$margins[3] != "BE") cat("\nLink function for sigma.3:","log","\n") else cat("\nLink function for sigma.3:","qlogis","\n")
   cat("Formula: "); print(x$formula[[5]]) 
   cat("\n")
   cat("Parametric coefficients:\n")
@@ -121,8 +121,8 @@ if(length(x$formula) > 3 && x$margins[2] %in% c(cont2par) && x$margins[3] %in% c
     } 
 
 
-  cat("\nEQUATION 6")
-  cat("\nLink function for theta.1:",lind,"\n") 
+  cat("\nEQUATION 6 - Regime 0")
+  cat("\nLink function for theta.12:",lind,"\n") 
   cat("Formula: "); print(x$formula[[6]]) 
   cat("\n")
   cat("Parametric coefficients:\n")
@@ -136,8 +136,8 @@ if(length(x$formula) > 3 && x$margins[2] %in% c(cont2par) && x$margins[3] %in% c
     }    
 
 
-  cat("\nEQUATION 7")
-  cat("\nLink function for theta.2:",lind2,"\n") 
+  cat("\nEQUATION 7 - Regime 1")
+  cat("\nLink function for theta.13:",lind2,"\n") 
   cat("Formula: "); print(x$formula[[7]]) 
   cat("\n")
   cat("Parametric coefficients:\n")
@@ -159,8 +159,8 @@ if(length(x$formula) > 3 && x$margins[2] %in% c(cont2par) && x$margins[3] %in% c
 if(length(x$formula) > 3 && x$margins[2] %in% c(cont3par) && x$margins[3] %in% c(cont3par)){
 
 
-  cat("\nEQUATION 4")
-  cat("\nLink function for sigma.1:","log","\n") 
+  cat("\nEQUATION 4 - Regime 0")
+  cat("\nLink function for sigma.2:","log","\n") 
   cat("Formula: "); print(x$formula[[4]]) 
   cat("\n")
   cat("Parametric coefficients:\n")
@@ -174,8 +174,8 @@ if(length(x$formula) > 3 && x$margins[2] %in% c(cont3par) && x$margins[3] %in% c
     }    
 
 
-  cat("\nEQUATION 5")
-  cat("\nLink function for sigma.2:","log","\n")
+  cat("\nEQUATION 5 - Regime 1")
+  cat("\nLink function for sigma.3:","log","\n")
   cat("Formula: "); print(x$formula[[5]]) 
   cat("\n")
   cat("Parametric coefficients:\n")
@@ -192,8 +192,8 @@ if(length(x$formula) > 3 && x$margins[2] %in% c(cont3par) && x$margins[3] %in% c
     
     
     
-  cat("\nEQUATION 6")
-  cat("\nLink function for nu.1:","log","\n")  
+  cat("\nEQUATION 6 - Regime 0")
+  cat("\nLink function for nu.2:","log","\n")  
   cat("Formula: "); print(x$formula[[6]]) 
   cat("\n")
   cat("Parametric coefficients:\n")
@@ -207,8 +207,8 @@ if(length(x$formula) > 3 && x$margins[2] %in% c(cont3par) && x$margins[3] %in% c
     }    
 
 
-  cat("\nEQUATION 7")
-  cat("\nLink function for nu.2:","log","\n") 
+  cat("\nEQUATION 7 - Regime 1")
+  cat("\nLink function for nu.3:","log","\n") 
   cat("Formula: "); print(x$formula[[7]]) 
   cat("\n")
   cat("Parametric coefficients:\n")
@@ -222,16 +222,10 @@ if(length(x$formula) > 3 && x$margins[2] %in% c(cont3par) && x$margins[3] %in% c
     } 
     
     
-    
-    
-    
-    
-    
-    
 
 
-  cat("\nEQUATION 8")
-  cat("\nLink function for theta.1:",lind,"\n") 
+  cat("\nEQUATION 8 - Regime 0")
+  cat("\nLink function for theta.12:",lind,"\n") 
   cat("Formula: "); print(x$formula[[8]]) 
   cat("\n")
   cat("Parametric coefficients:\n")
@@ -245,8 +239,8 @@ if(length(x$formula) > 3 && x$margins[2] %in% c(cont3par) && x$margins[3] %in% c
     }    
 
 
-  cat("\nEQUATION 9")
-  cat("\nLink function for theta.2:",lind2,"\n") 
+  cat("\nEQUATION 9 - Regime 1")
+  cat("\nLink function for theta.13:",lind2,"\n") 
   cat("Formula: "); print(x$formula[[9]]) 
   cat("\n")
   cat("Parametric coefficients:\n")

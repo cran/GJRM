@@ -1,4 +1,4 @@
-AT <- function(x, nm.end, eq = NULL, E = TRUE, treat = TRUE, type = "joint", ind = NULL, 
+AT <- function(x, nm.end, eq = NULL, E = TRUE, treat = TRUE, type = "joint", ind = NULL, percentage = FALSE,
    n.sim = 100, prob.lev = 0.05, length.out = NULL, hd.plot = FALSE, te.plot = FALSE, 
    main = "Histogram and Kernel Density of Simulated Average Effects", 
    xlab = "Simulated Average Effects", ...){
@@ -283,8 +283,25 @@ if(x$Model == "ROY"){
   
   #* general for all cases *#  
   
+  if(percentage == FALSE){
+  
   est.AT  <- mean(p1, na.rm = TRUE) - mean(p0, na.rm = TRUE)
   est.ATs <- colMeans(p1s, na.rm = TRUE) - colMeans(p0s, na.rm = TRUE) 
+  
+  }
+  
+  if(percentage == TRUE){
+  
+  est.AT  <- mean(        (p1 - p0)/p0, na.rm = TRUE)
+  est.ATs <- colMeans( (p1s - p0s)/p0s, na.rm = TRUE)   
+  
+  
+  }
+  
+  
+  
+  
+  
   CIs     <- as.numeric(quantile(est.ATs, c(prob.lev/2, 1 - prob.lev/2), na.rm = TRUE))
  
     if(hd.plot == TRUE){

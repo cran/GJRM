@@ -1,5 +1,9 @@
+version 0.2-6
+- extended class of ROY models implemented and final checks completed.
+- copula survival models with general censoring scheme.
+
 version 0.2-5.1
-- trustOptiom dependence removed.
+- Extended class of ROY models implemented.
 
 version 0.2-5
 - DGP0 distribution introduced.

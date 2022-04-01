@@ -33,7 +33,7 @@ if(type == "biv"){
   if(M$Model=="B" && margins[2] %in% M$m2 &&  is.null(M$K1) ) {func.opt <- bprobgHsCont  ; func.optUniv <- bprobgHsContUniv }   
   if(M$Model=="B" && margins[2] %in% M$m3 &&  is.null(M$K1) ) {func.opt <- bprobgHsCont3 ; func.optUniv <- bprobgHsContUniv3}  
   
-  if(M$Model=="B" && margins[2] == "TW"   &&  is.null(M$K1) ) {func.opt <- bprobgHsCont3binTW; func.optUniv <- bprobgHsContUniv3}  
+  if(M$Model=="B" && margins[2] == "TW"   &&  is.null(M$K1) ) {func.optUniv <- bprobgHsContUniv3}  
 
   if(M$Model=="B" && margins[2] %in% M$m2 && !is.null(M$K1) ) {func.opt <- bCopulaCLMgHsCont}
   
@@ -43,10 +43,7 @@ if(type == "biv"){
   
 if(type == "copR"){
 
-  if(margins[1] %in% M$m1d && margins[2] %in% M$m2) func.opt  <- bdiscrcont12
-  if(margins[1] %in% M$m1d && margins[2] %in% M$m3) func.opt  <- bdiscrcont13
-  if(margins[1] %in% M$m2d && margins[2] %in% M$m2) func.opt  <- bdiscrcont
-  if(margins[1] %in% M$m2d && margins[2] %in% M$m3) func.opt  <- bdiscrcont23
+
   
   if(margins[1] %in% M$m1d && margins[2] %in% M$m1d) func.opt  <- bdiscrdiscr11 
   if(margins[1] %in% M$m1d && margins[2] %in% M$m2d) func.opt  <- bdiscrdiscr12
@@ -87,8 +84,7 @@ if(type == "copR"){
   
   
   
-   if(margins[1] %in% M$m2 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont2Surv # not really used
-  #if(margins[1] %in% M$m3 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont3Surv # not really used
+
   
   if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE && M$dep.cens == TRUE &&  is.null(M$c3)) func.opt <- bcontSurvGDep
   if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE && M$dep.cens == TRUE && !is.null(M$c3)) func.opt <- bcontSurvGDepA
@@ -105,7 +101,7 @@ if(type == "copSS"){
   
   if(margins[2] %in% M$m1d   ) func.opt <- bprobgHsDiscr1SS
   if(margins[2] %in% M$m2d   ) func.opt <- bprobgHsDiscr2SS  
-  if(margins[2] %in% c("TW") ) func.opt <- bprobgHsCont3binTWSS  
+
   
 
 }

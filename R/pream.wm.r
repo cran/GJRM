@@ -8,11 +8,6 @@ pream.wm <- function(formula, margins, M, l.flist, type = "copR"){
   
   scs <- c("WEI", "FISK") # for survival models
 
-
-###################################################################################################################################################### 
-
-if(type == "ROY") stop("Work in progress, almost ready.")  
-
 ###################################################################################################################################################### 
 
 
@@ -46,7 +41,6 @@ if(type == "ROY"){ # binary - binary/cont/discr models
   if(!(margins[2] %in% c(M$m1d,M$m2d)) &&   margins[3] %in% c(M$m1d,M$m2d)  ) stop("The second and third margins must be of the same type (e.g., both discrete).")
 
 
-  
   # this is because it is very unlikely that different distributions are required for equations 2 and 3, although it could be easily relaxed.
   
   if(  margins[2] %in% c(M$m2)  &&   margins[3] %in% c(M$m3)  ) stop("The second and third margins must have the same number of distributional parameters.")
@@ -169,6 +163,10 @@ if(type == "biv"){ # binary - cont/discr models #
   
   if( l.flist > 2  && M$Model == "BPO0")                 stop("You only need to specify two equations.\nThe chosen model does not have a correlation parameter.")
   if( l.flist > 2  && M$Model == "B" && !is.null(M$theta.fx)) stop("You only need to specify two equations.\nThe chosen model is not allowed to estimate the theta parameter.")
+  
+    
+  if(margins[2] %in% c("TW") && l.flist != 5) stop("You need to specify five equations.") 
+
   
   
   if(margins[2] %in% c("GP", "GPII","GPo","DGP","DGPII")) stop("GP, GPII, GPo, DGP, DGPII not done yet.\nGet in touch for details.")
@@ -316,7 +314,7 @@ if(type == "copSS"){
   
   ###########################################
   
-if(M$margins[2] %in% c("TW") ) stop("Tweedie not yet allowed for. Get in touch for details.")   
+  if(M$margins[2] %in% c("TW") ) stop("Tweedie not yet allowed for. Get in touch for details.")   
   
   ###########################################
   

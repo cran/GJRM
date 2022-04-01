@@ -32,21 +32,21 @@ gp3 <- gp4 <- gp5 <- gp6 <- gp7 <- gp8 <- gp9 <- 0
   
   
       formula.eq4 <- formula[[4]] 
-      nad <- "theta1" 
+      nad <- "theta12" 
       formula.eq4 <- as.formula( paste(nad,"~",formula.eq4[2],sep="") )
       
       set.seed(1)
-      theta1 <- rnorm(vo$n, vo$i.rho1, 0.001)    
+      theta12 <- rnorm(vo$n, vo$i.rho1, 0.001)    
       rm(list=".Random.seed", envir=globalenv()) 
       
       gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
       
       formula.eq5 <- formula[[5]] 
-      nad <- "theta2" 
+      nad <- "theta13" 
       formula.eq5 <- as.formula( paste(nad,"~",formula.eq5[2],sep="") )
       
       set.seed(1)
-      theta2 <- rnorm(vo$n, vo$i.rho2, 0.001)    
+      theta13 <- rnorm(vo$n, vo$i.rho2, 0.001)    
       rm(list=".Random.seed", envir=globalenv()) 
       
       gam5 <- gam(formula.eq5, data = data, gamma = ngc, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels)       
@@ -94,41 +94,41 @@ gp3 <- gp4 <- gp5 <- gp6 <- gp7 <- gp8 <- gp9 <- 0
   if( margins[2] %in% c(M$m2d,M$m2) && margins[3] %in% c(M$m2d,M$m2) ){
   
       formula.eq4 <- formula[[4]] 
-      nad <- "sigma1" 
+      nad <- "sigma2" 
       formula.eq4 <- as.formula( paste(nad,"~",formula.eq4[2],sep="") )
       
       set.seed(1)
-      sigma1 <- rnorm(vo$n, vo$log.sig1, 0.001)    
+      sigma2 <- rnorm(vo$n, vo$log.sig1, 0.001)    
       rm(list=".Random.seed", envir=globalenv()) 
       
       gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
       
       formula.eq5 <- formula[[5]] 
-      nad <- "sigma2" 
+      nad <- "sigma3" 
       formula.eq5 <- as.formula( paste(nad,"~",formula.eq5[2],sep="") )
       
       set.seed(1)
-      sigma2 <- rnorm(vo$n, vo$log.sig2, 0.001)    
+      sigma3 <- rnorm(vo$n, vo$log.sig2, 0.001)    
       rm(list=".Random.seed", envir=globalenv()) 
       
       gam5 <- gam(formula.eq5, data = data, gamma = ngc, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels)       
          
       formula.eq6 <- formula[[6]] 
-      nad <- "theta1" 
+      nad <- "theta12" 
       formula.eq6 <- as.formula( paste(nad,"~",formula.eq6[2],sep="") )
       
       set.seed(1)
-      theta1 <- rnorm(vo$n, vo$i.rho1, 0.001)    
+      theta12 <- rnorm(vo$n, vo$i.rho1, 0.001)    
       rm(list=".Random.seed", envir=globalenv()) 
       
       gam6 <- gam(formula.eq6, data = data, gamma = ngc, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels)      
                 
       formula.eq7 <- formula[[7]] 
-      nad <- "theta2" 
+      nad <- "theta13" 
       formula.eq7 <- as.formula( paste(nad,"~",formula.eq7[2],sep="") )
       
       set.seed(1)
-      theta2 <- rnorm(vo$n, vo$i.rho2, 0.001)    
+      theta13 <- rnorm(vo$n, vo$i.rho2, 0.001)    
       rm(list=".Random.seed", envir=globalenv()) 
       
       gam7 <- gam(formula.eq7, data = data, gamma = ngc, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels)          
@@ -222,62 +222,62 @@ gp3 <- gp4 <- gp5 <- gp6 <- gp7 <- gp8 <- gp9 <- 0
   
   
         formula.eq4 <- formula[[4]] 
-        nad <- "sigma1" 
+        nad <- "sigma2" 
         formula.eq4 <- as.formula( paste(nad,"~",formula.eq4[2],sep="") )
         
         set.seed(1)
-        sigma1 <- rnorm(vo$n, vo$log.sig1, 0.001)    
+        sigma2 <- rnorm(vo$n, vo$log.sig1, 0.001)    
         rm(list=".Random.seed", envir=globalenv()) 
         
         gam4 <- gam(formula.eq4, data = data, gamma = ngc, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
         
         formula.eq5 <- formula[[5]] 
-        nad <- "sigma2" 
+        nad <- "sigma3" 
         formula.eq5 <- as.formula( paste(nad,"~",formula.eq5[2],sep="") )
         
         set.seed(1)
-        sigma2 <- rnorm(vo$n, vo$log.sig2, 0.001)    
+        sigma3 <- rnorm(vo$n, vo$log.sig2, 0.001)    
         rm(list=".Random.seed", envir=globalenv()) 
         
         gam5 <- gam(formula.eq5, data = data, gamma = ngc, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels)       
            
         formula.eq6 <- formula[[6]] 
-        nad <- "nu1" 
+        nad <- "nu2" 
         formula.eq6 <- as.formula( paste(nad,"~",formula.eq6[2],sep="") )
         
         set.seed(1)
-        nu1 <- rnorm(vo$n, vo$log.nu1, 0.001)    
+        nu2 <- rnorm(vo$n, vo$log.nu1, 0.001)    
         rm(list=".Random.seed", envir=globalenv()) 
         
         gam6 <- gam(formula.eq6, data = data, gamma = ngc, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels) 
         
         formula.eq7 <- formula[[7]] 
-        nad <- "nu2" 
+        nad <- "nu3" 
         formula.eq7 <- as.formula( paste(nad,"~",formula.eq7[2],sep="") )
         
         set.seed(1)
-        nu2 <- rnorm(vo$n, vo$log.nu2, 0.001)    
+        nu3 <- rnorm(vo$n, vo$log.nu2, 0.001)    
         rm(list=".Random.seed", envir=globalenv()) 
         
         gam7 <- gam(formula.eq7, data = data, gamma = ngc, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels)       
             
         formula.eq8 <- formula[[8]] 
-        nad <- "theta1" 
+        nad <- "theta12" 
         formula.eq8 <- as.formula( paste(nad,"~",formula.eq8[2],sep="") )
         
         set.seed(1)
-        theta1 <- rnorm(vo$n, vo$i.rho1, 0.001)    
+        theta12 <- rnorm(vo$n, vo$i.rho1, 0.001)    
         rm(list=".Random.seed", envir=globalenv()) 
         
         gam8 <- gam(formula.eq8, data = data, gamma = ngc, subset = vo$inde0, knots = knots, drop.unused.levels = vo$drop.unused.levels)      
                   
                   
         formula.eq9 <- formula[[9]] 
-        nad <- "theta2" 
+        nad <- "theta13" 
         formula.eq9 <- as.formula( paste(nad,"~",formula.eq9[2],sep="") )
         
         set.seed(1)
-        theta2 <- rnorm(vo$n, vo$i.rho2, 0.001)    
+        theta13 <- rnorm(vo$n, vo$i.rho2, 0.001)    
         rm(list=".Random.seed", envir=globalenv()) 
         
         gam9 <- gam(formula.eq9, data = data, gamma = ngc, subset = vo$inde1, knots = knots, drop.unused.levels = vo$drop.unused.levels)          

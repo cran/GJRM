@@ -125,7 +125,7 @@ avte <- as.numeric(format(mbfres$avte*100, digits = 3, trim=TRUE))
 WCB  <- as.numeric(format(c(mbfres$LB*100, mbfres$UB*100), digits = 3, trim=TRUE))
 
 Cn <- try(uniroot( Cn.fun, interval=c(-5,5), UB = mbfres$UB, LB = mbfres$LB, sigma.UB = sUBb, sigma.LB = sLBb, alpha = sig.lev, n = n), silent = TRUE)
-if(class(Cn)=="try-error") Cn <- 1.645 else Cn <- abs(Cn$root)  
+if( inherits(Cn, "try-error")   ) Cn <- 1.645 else Cn <- abs(Cn$root)  
 
 
 #Cn <- abs(nleqslv( 0.5, Cn.fun, UB = mbfres$UB, LB = mbfres$LB, sigma.UB = sUBb, sigma.LB = sLBb, alpha = sig.lev, n = n)$x) 
@@ -199,7 +199,7 @@ sLBb <- sd(LBb, na.rm = TRUE)
 
 Cn <- try(uniroot( Cn.fun, interval=c(-5,5), UB = UB, LB = LB, sigma.UB = sUBb, sigma.LB = sLBb, alpha = sig.lev, n = n), silent = TRUE) 
 
-if(class(Cn)=="try-error") Cn <- 1.645 else Cn <- abs(Cn$root)
+if(     inherits(Cn, "try-error")       ) Cn <- 1.645 else Cn <- abs(Cn$root)
 
 
 CIb1 <- as.numeric(format((rei$LB - Cn*sLBb/sqrt(n))*100, digits = 3, trim=TRUE))   

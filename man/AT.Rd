@@ -12,7 +12,7 @@ corresponding interval obtained using posterior simulation.}
 \usage{
 
 AT(x, nm.end, eq = NULL, E = TRUE, treat = TRUE, type = "joint", ind = NULL, 
-   n.sim = 100, prob.lev = 0.05, length.out = NULL,
+   percentage = FALSE, n.sim = 100, prob.lev = 0.05, length.out = NULL,
    hd.plot = FALSE, te.plot = FALSE, 
    main = "Histogram and Kernel Density of Simulated Average Effects", 
    xlab = "Simulated Average Effects", ...)
@@ -42,6 +42,10 @@ the control group. This only makes sense if \code{E = FALSE}.}
 
 \item{ind}{Binary logical variable. It can be used to calculate the AT for a subset of the data. Note that it does not make sense to 
            use \code{ind} when some observations are excluded from the AT calculation (e.g., when using \code{E = FALSE}).}  
+
+
+\item{percentage}{Only for the Roy model, when \code{TRUE} it provides results in terms of percentage.}
+
 
 \item{n.sim}{Number of simulated coefficient vectors from the posterior distribution of the estimated model parameters. This is used 
              when \code{delta = FALSE}. It may be increased if more precision is required.} 

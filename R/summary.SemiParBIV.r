@@ -30,7 +30,7 @@ summary.SemiParBIV <- function(object, n.sim = 100, prob.lev = 0.05, gm = FALSE,
    
 if (gm == TRUE && is.null(object$VC$theta.fx)){   
 
-bs <- susutsn$bs
+bs <- susutsnR$bs
 
    ####
    # for OR and GM

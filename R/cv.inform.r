@@ -29,7 +29,7 @@ params1 <- out$fit$params1
 params2 <- out$fit$params2
 
 Xd <- try(Xdpred(out$gam1, train.mDat, out$VC$v1pred), silent = TRUE)
-if(class(Xd) == "try-error") stop("Your factor variable(s) has(have) different levels in the test and training data sets.")
+if(inherits(Xd, "try-error")) stop("Your factor variable(s) has(have) different levels in the test and training data sets.")
 
 Xp <- predict(out$gam1, type = "lpmatrix", newdata = train.mDat)
 
@@ -44,7 +44,7 @@ params1 <- out1$fit$params1
 params2 <- out2$fit$params1
 
 Xd <- try(Xdpred(out1$gam1, train.mDat, out1$VC$v1pred), silent = TRUE)
-if(class(Xd) == "try-error") stop("Your factor variable(s) has(have) different levels in the test and training data sets.")
+if(inherits(Xd, "try-error")) stop("Your factor variable(s) has(have) different levels in the test and training data sets.")
 
 Xp <- predict(out1$gam1, type = "lpmatrix", newdata = train.mDat)
 

@@ -28,21 +28,21 @@ print.summary.SemiParROY <- function(x, digits = max(3, getOption("digits") - 3)
 
  bin.link <- x$bl
  
- cp1 <- "\ntheta.1 = "; as.p1 <- x$theta1.a
- cp2 <- "  theta.2 = "; as.p2 <- x$theta2.a
+ cp1 <- "\ntheta.12 = "; as.p1 <- x$theta12.a
+ cp2 <- "  theta.13 = "; as.p2 <- x$theta13.a
  
- ct1 <- "\ntau.1 = "; kt.p1 <- x$tau1.a
- ct2 <- "  tau.2 = "; kt.p2 <- x$tau2.a
+ ct1 <- "\ntau.12 = "; kt.p1 <- x$tau12.a
+ ct2 <- "  tau.13 = "; kt.p2 <- x$tau13.a
 
- cs1 <- "\nsigma.1 = "; cs.p1 <- x$sigma1.a
- cs2 <- "  sigma.2 = "; cs.p2 <- x$sigma2.a
+ cs1 <- "\nsigma.2 = "; cs.p1 <- x$sigma2.a
+ cs2 <- "  sigma.3 = "; cs.p2 <- x$sigma3.a
  
- cn1 <- "\nnu.1 = "; cn.p1 <- x$nu1.a
- cn2 <- "  nu.2 = "; cn.p2 <- x$nu2.a 
+ cn1 <- "\nnu.2 = "; cn.p1 <- x$nu2.a
+ cn2 <- "  nu.3 = "; cn.p2 <- x$nu3.a 
 
  
  
- main.t1 <- "\nCOPULA 1:"; main.t2 <- "\nCOPULA 2:"     
+ main.t1 <- "\nCOPULA 1-2:"; main.t2 <- "\nCOPULA 1-3:"     
  cat(main.t1,cop1); cat(main.t2,cop2)  
   
  pscr0(x, type = "ROY")  
@@ -52,13 +52,13 @@ print.summary.SemiParROY <- function(x, digits = max(3, getOption("digits") - 3)
  
 
 
-  CIrs1 <- colMeans(x$CItheta1, na.rm = TRUE)
-  CIrs2 <- colMeans(x$CItheta2, na.rm = TRUE)
-  CIkt1 <- colMeans(x$CItau1, na.rm = TRUE)
-  CIkt2 <- colMeans(x$CItau2, na.rm = TRUE)
+  CIrs1 <- colMeans(x$CItheta12, na.rm = TRUE)
+  CIrs2 <- colMeans(x$CItheta13, na.rm = TRUE)
+  CIkt1 <- colMeans(x$CItau12, na.rm = TRUE)
+  CIkt2 <- colMeans(x$CItau13, na.rm = TRUE)
 
-  if( x$margins[2] %in% c(cont2par,cont3par) && x$margins[3] %in% c(cont2par,cont3par) ){ CIsi1 <- colMeans(x$CIsig1, na.rm = TRUE); CIsi2 <- colMeans(x$CIsig2, na.rm = TRUE) } 
-  if( x$margins[2] %in% cont3par && x$margins[3] %in% cont3par)                         { CIn1  <- colMeans(x$CInu1, na.rm = TRUE);  CIn2  <- colMeans(x$CInu2, na.rm = TRUE)  }
+  if( x$margins[2] %in% c(cont2par,cont3par) && x$margins[3] %in% c(cont2par,cont3par) ){ CIsi1 <- colMeans(x$CIsig2, na.rm = TRUE); CIsi2 <- colMeans(x$CIsig3, na.rm = TRUE) } 
+  if( x$margins[2] %in% cont3par && x$margins[3] %in% cont3par)                         { CIn1  <- colMeans(x$CInu2, na.rm = TRUE);  CIn2  <- colMeans(x$CInu3, na.rm = TRUE)  }
 
 
   cat("\n")

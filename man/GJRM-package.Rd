@@ -73,6 +73,14 @@ Part funded by EPSRC: EP/J006742/1 and EP/T033061/1
 
 \references{
 
+Submitted papers (developments available from release 0.2-5):
+
+Marra G., Radice R., Zimmer D. (2022), A Unifying Switching Regime Regression Framework with Applications in Health Economics.
+
+Petti D., Eletti A., Marra G., Radice R. (2022), Copula Link-Based Additive Models for Bivariate Time-to-Event Outcomes with General Censoring Scheme.
+
+Eletti A., Marra G., Quaresma M., Radice R., Rubio F.J. (2022), A Unifying Framework for Flexible Excess Hazard Modeling with Applications in Cancer Epidemiology.
+
 
 Key methodological references:
 
@@ -112,29 +120,12 @@ Marra G., Wyszynski K. (2016), Semi-Parametric Copula Sample Selection Models fo
 
 Radice R., Marra G., Wojtys M. (2016), Copula Regression Spline Models for Binary Outcomes. \emph{Statistics and Computing}, 26(5), 981-995. 
 
+Ranjbar S., Cantoni E., Chavez-Demoulin V., Marra G., Radice R., Jaton-Ogay K. (in press), Modelling the Extremes of Seasonal Viruses and Hospital Congestion: The Example of Flu in a Swiss Hospital. \emph{Journal of the Royal Statistical Society Series C}.
+
 Wojtys M., Marra G., Radice R. (2018), Copula Based Generalized Additive Models for Location, Scale and Shape with Non-Random Sample Selection. \emph{Computational Statistics and Data Analysis}, 127, 1-14.
 
 
 For applied case studies see \url{https://www.homepages.ucl.ac.uk/~ucakgm0/pubs.htm}.  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

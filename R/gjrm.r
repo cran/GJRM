@@ -26,11 +26,6 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
   v.rB1 <- upperBt1
   v.rB2 <- upperBt2
   
-  
-  
- 
- 
- 
   if( Model == "ROY"){
   
      L <- eval(substitute(SemiParROY(formula, data, weights, subset,
@@ -262,6 +257,9 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
     
     
   if( surv == TRUE){
+  
+       if(any(is.na(data[,v1[1]]) | is.na(data[,v2[1]]) )) stop("Time to event with NA's. Please check your time covariates.") 
+
   
        actual.NAs = as.numeric(which(apply(apply(data, 1, is.na), 2, any)))
   

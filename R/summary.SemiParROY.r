@@ -67,15 +67,15 @@ rm(bs, SE, Vb, et1s, et2s, p1s, p2s, p11s, p10s, p00s, p01s, ORs, GMs)
               l.sp7 = object$l.sp7, l.sp8 = object$l.sp8, l.sp9 = object$l.sp9,              
               BivD1 = object$BivD1, BivD2 = object$BivD2, margins = object$margins, bin.link = bin.link, bl = bin.link, t.edf=object$t.edf,
               Model = object$Model, univar.gamlss = FALSE,
-              dof1 = object$dof1, dof2 = object$dof2, dof1.a = object$dof1.a, dof2.a = object$dof2.a,   
+              dof12 = object$dof12, dof13 = object$dof13, dof12.a = object$dof12.a, dof13.a = object$dof13.a,   
               m2 = object$VC$m2, m3 = object$VC$m3, m1 = object$VC$m1,
               K1 = object$VC$K1,
-              theta1 = object$theta1, theta2 = object$theta2, theta1.a = object$theta1.a, theta2.a = object$theta2.a,
-              tau1 = object$tau1, tau1.a = object$tau1.a, tau2 = object$tau2, tau2.a = object$tau2.a,
-              sigma1.a = object$sigma1.a, sigma2.a = object$sigma2.a, sigma1 = object$sigma1, sigma2 = object$sigma2, 
-              nu1.a = object$nu1.a, nu2.a = object$nu2.a, nu1 = object$nu1, nu2 = object$nu2, 
-              CIsig1 = CIsig1, CInu1  = CInu1, CIsig2 = CIsig2, CInu2  = CInu2,
-              CItheta1 = CIrs1, CItheta2 = CIrs2, CItau1 = CIkt1, CItau2 = CIkt2)
+              theta12 = object$theta12, theta13 = object$theta13, theta12.a = object$theta12.a, theta13.a = object$theta13.a,
+              tau12 = object$tau12, tau12.a = object$tau12.a, tau13 = object$tau13, tau13.a = object$tau13.a,
+              sigma2.a = object$sigma2.a, sigma3.a = object$sigma3.a, sigma2 = object$sigma2, sigma3 = object$sigma3, 
+              nu2.a = object$nu2.a, nu3.a = object$nu3.a, nu2 = object$nu2, nu3 = object$nu3, 
+              CIsig2 = CIsig1, CInu2  = CInu1, CIsig3 = CIsig2, CInu3  = CInu2,
+              CItheta12 = CIrs1, CItheta13 = CIrs2, CItau12 = CIkt1, CItau13 = CIkt2)
 
 class(res) <- "summary.SemiParROY"
                                              

@@ -31,7 +31,7 @@ abline(0, 1, col = "red")
 qr2 <- -log(x$fit$p2)
 H2  <- -log(survfit(Surv(qr2, x$cens2) ~ 1,  type = "kaplan-meier", conf.type = "none")$surv)
 
-hist(qr2, freq = FALSE, main = main, xlab = "Cox-Snell residuals", ylab = "Density", ...)
+hist(qr2, freq = FALSE, main = main2, xlab = "Cox-Snell residuals", ylab = "Density", ...)
 lines(density(qr2, adjust = 2), lwd = 2)
 
 qqplot(qr2, H2, xlab = "Cox-Snell residuals", ylab = "Cumulative Hazards of residuals")
@@ -60,7 +60,7 @@ if(intervals == TRUE) int.postcheck(x, x$VC$margins[1], n.rep = n.sim, prob.lev 
 qr2 <- -log(x$fit$p2)
 H2  <- -log(survfit(Surv(qr2, x$cens2) ~ 1,  type = "kaplan-meier", conf.type = "none")$surv)
 
-hist(qr2, freq = FALSE, main = main, xlab = "Cox-Snell residuals", ylab = "Density", ...)
+hist(qr2, freq = FALSE, main = main2, xlab = "Cox-Snell residuals", ylab = "Density", ...)
 lines(density(qr2, adjust = 2), lwd = 2)
 
 qqplot(qr2, H2, xlab = "Cox-Snell residuals", ylab = "Cumulative Hazards of residuals")
@@ -200,7 +200,13 @@ if(x$VC$margins[2] %in% c(x$VC$m1d, x$VC$m2d, x$VC$m3d) && x$VC$ccss == "yes" &&
                                             pm1 <- (p2 - p12)/p1 
                                             pm1[ind.y2a] <- 0  
                                             
-                                            qr <- qnorm( runif(y2, pm1, p) )  
+                                            pm1 <- ifelse(pm1 < 0, 0, pm1) # these needed for very bad model fits
+                                            p   <- ifelse(p   < 0, 0, p  )
+                                            pm1 <- ifelse(pm1 > p, p, pm1)
+                                            ru  <- runif(y2, pm1, p)
+                                            ru  <- ifelse(ru == 0, 1e-16, ru)      
+                                            ru  <- ifelse(ru > 0.999999, 0.999999, ru)                                     
+                                            qr <- qnorm( ru )  
                                             
                                             }                                             
                                             
@@ -214,14 +220,14 @@ if(x$Model == "ROY"){
    eta2 <- x$eta2[x$inde0]
    eta3 <- x$eta3[x$inde1]
    
-   sigma1 <- x$sigma1[x$inde0]
-   sigma2 <- x$sigma2[x$inde1]
+   sigma1 <- x$sigma2[x$inde0]
+   sigma2 <- x$sigma3[x$inde1]
 
-   nu1 <- x$nu1[x$inde0]
-   nu2 <- x$nu2[x$inde1] 
+   nu1 <- x$nu2[x$inde0]
+   nu2 <- x$nu3[x$inde1] 
    
-   theta1 <- x$theta1[x$inde0]
-   theta2 <- x$theta2[x$inde1]
+   theta1 <- x$theta12[x$inde0]
+   theta2 <- x$theta13[x$inde1]
    
    p1eq2 <- x$p1[x$inde0]  
    p0eq2 <- 1 - p1eq2
@@ -232,7 +238,7 @@ if(x$Model == "ROY"){
 if(x$VC$margins[2] %in% c(x$VC$m2, x$VC$m3)){
 
                                             p2  <- distrHsAT(y2, eta2, sigma1, nu1, x$margins[2], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$p2
-                                            p12 <- mm(BiCDF(p0eq2, p2, x$nC1, theta1, x$dof1), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr )
+                                            p12 <- mm(BiCDF(p0eq2, p2, x$nC1, theta1, x$dof12), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr )
                                             p   <- p12/p0eq2                                            
                                               if(x$VC$margins[2] %in% c("TW")){ if( any(y2 == 0) == TRUE ) p[y2 == 0] <- runif(sum(y2 == 0), min = 0, max = p[y2 == 0]) }
                                             qr  <- qnorm(p)
@@ -242,7 +248,7 @@ if(x$VC$margins[2] %in% c(x$VC$m2, x$VC$m3)){
 if(x$VC$margins[3] %in% c(x$VC$m2, x$VC$m3)){
 
                                             p2  <- distrHsAT(y3, eta3, sigma2, nu2, x$margins[3], min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$p2
-                                            p12 <- mm(BiCDF(p0eq3, p2, x$nC2, theta2, x$dof2), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr )
+                                            p12 <- mm(BiCDF(p0eq3, p2, x$nC2, theta2, x$dof13), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr )
                                             p   <- (p2 - p12)/p1eq3                                            
                                               if(x$VC$margins[3] %in% c("TW")){ if( any(y3 == 0) == TRUE ) p[y3 == 0] <- runif(sum(y3 == 0), min = 0, max = p[y3 == 0]) }
                                             qr2 <- qnorm(p)
@@ -252,32 +258,44 @@ if(x$VC$margins[3] %in% c(x$VC$m2, x$VC$m3)){
 if(x$VC$margins[2] %in% c(x$VC$m1d, x$VC$m2d, x$VC$m3d)){ 
 
                                             p2  <- distrHsATDiscr(y2, eta2, sigma1, nu1, x$margins[2], y2m = y2m, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$p2
-                                            p12 <- mm(BiCDF(p0eq2, p2, x$nC1, theta1, x$dof1), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr )
+                                            p12 <- mm(BiCDF(p0eq2, p2, x$nC1, theta1, x$dof12), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr )
                                             p   <- p12/p0eq2
                                             
                                             y2a <- y2; y2a <- y2 - 1; ind.y2a <- y2a < 0; y2a <- ifelse(y2a < 0, 0, y2a)
                                             p2  <- distrHsATDiscr(y2a, eta2, sigma1, nu1, x$margins[2], y2m = y2m, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$p2 
-                                            p12 <- mm(BiCDF(p0eq2, p2, x$nC1, theta1, x$dof1), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr )
+                                            p12 <- mm(BiCDF(p0eq2, p2, x$nC1, theta1, x$dof12), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr )
                                             pm1 <- p12/p0eq2 
                                             pm1[ind.y2a] <- 0  
                                             
-                                            qr <- qnorm( runif(y2, pm1, p) )  
+                                            pm1 <- ifelse(pm1 < 0, 0, pm1) 
+                                            p   <- ifelse(p   < 0, 0, p  )
+                                            pm1 <- ifelse(pm1 > p, p, pm1)
+                                            ru  <- runif(y2, pm1, p)
+                                            ru  <- ifelse(ru == 0, 1e-16, ru)  
+                                            ru  <- ifelse(ru > 0.999999, 0.999999, ru)                                                                                
+                                            qr <- qnorm( ru )                                              
                                             
                                             }
 
 if(x$VC$margins[3] %in% c(x$VC$m1d, x$VC$m2d, x$VC$m3d)){ 
 
                                             p2  <- distrHsATDiscr(y3, eta3, sigma2, nu2, x$margins[3], y2m = y3m, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$p2
-                                            p12 <- mm(BiCDF(p0eq3, p2, x$nC2, theta2, x$dof2), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr )
+                                            p12 <- mm(BiCDF(p0eq3, p2, x$nC2, theta2, x$dof13), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr )
                                             p   <- (p2 - p12)/p1eq3
                                             
                                             y3a <- y3; y3a <- y3 - 1; ind.y3a <- y3a < 0; y3a <- ifelse(y3a < 0, 0, y3a)
                                             p2  <- distrHsATDiscr(y3a, eta3, sigma2, nu2, x$margins[3], y2m = y3m, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$p2 
-                                            p12 <- mm(BiCDF(p0eq3, p2, x$nC2, theta2, x$dof2), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr )
+                                            p12 <- mm(BiCDF(p0eq3, p2, x$nC2, theta2, x$dof13), min.pr = x$VC$min.pr, max.pr = x$VC$max.pr )
                                             pm1 <- (p2 - p12)/p1eq3 
                                             pm1[ind.y3a] <- 0  
                                             
-                                            qr2 <- qnorm( runif(y3, pm1, p) )  
+                                            pm1 <- ifelse(pm1 < 0, 0, pm1) 
+                                            p   <- ifelse(p   < 0, 0, p  )  
+                                            pm1 <- ifelse(pm1 > p, p, pm1)
+                                            ru  <- runif(y3, pm1, p)
+                                            ru  <- ifelse(ru == 0, 1e-16, ru)   
+                                            ru  <- ifelse(ru > 0.999999, 0.999999, ru)                                            
+                                            qr2 <- qnorm( ru )  
                                             
                                             }  
 
@@ -311,7 +329,7 @@ if(x$Model == "ROY"){
    lines(density(qr, adjust = 2), lwd = 2)
    qqnorm(qr); abline(0, 1, col = "red")
 
-   hist(qr2, freq = FALSE, main = main, xlab = xlab, ylab = "Density", ...)
+   hist(qr2, freq = FALSE, main = main2, xlab = xlab, ylab = "Density", ...)
    lines(density(qr2, adjust = 2), lwd = 2)
    qqnorm(qr2); abline(0, 1, col = "red")
    

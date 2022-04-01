@@ -8,7 +8,7 @@ form.eq12 <- function(formula.eq1, data, v1, margins, m1d, m2d, copSS = FALSE, i
     if(copSS == TRUE) y1 <- y1.test <- y1[inde]  
        
     if( v1[1] != as.character(formula.eq1r[2]) ) y1.test <- try(data[, as.character(formula.eq1r[2])], silent = TRUE)
-    if(class(y1.test) == "try-error") stop("Please check the syntax of the equations' responses.") 
+    if( inherits(y1.test, "try-error")  ) stop("Please check the syntax of the equations' responses.") 
 
     if(margins %in% c(m1d,m2d) && min(y1.test, na.rm = TRUE) < 0) stop("The response of one or more margins must be positive.")
     if(margins %in% c(m1d,m2d)){

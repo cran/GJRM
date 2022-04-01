@@ -12,8 +12,14 @@ if(BivD %in% c("F")){ signs <- sign(theta)
 # maybe there is no truncation to be done unless
 # I encouter an issue
 
-if(BivD %in% c("C0","C180","C90","C270","G0","G180","G90","G270",
-               "GAL0","GAL180","GAL90","GAL270"))                  theta <- ifelse(abs(theta) > 100, 100, abs(theta))
+
+if(BivD %in% c("C0","C180","C90","C270"))                  theta <- ifelse(abs(theta) > 28, 28, abs(theta)) # based on BiCopPar2Tau 
+
+if(BivD %in% c("G0","G180","G90","G270"))                  theta <- ifelse(abs(theta) > 17, 17, abs(theta)) # based on BiCopPar2Tau 
+
+
+if(BivD %in% c("GAL0","GAL180","GAL90","GAL270"))                  theta <- ifelse(abs(theta) > 45, 45, abs(theta))
+
 if(BivD %in% c("C90","C270","G90","G270","GAL90","GAL270"))        theta <- -theta
 
 

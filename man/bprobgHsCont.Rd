@@ -2,6 +2,7 @@
 \alias{bprobgHsCont}
 \alias{bprobgHsCont3}
 \alias{bCopulaCLMgHsCont}
+\alias{bCopulaCLMgHsOrd}
 \alias{bprobgHsCont3binTW}
 \alias{bprobgHsCont2ROY}
 \alias{bprobgHsCont3ROY}

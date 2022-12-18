@@ -152,8 +152,11 @@ if(x$margins[1] %in% x$bl && is.null(x$K1)) cat("\nMARGIN 1: Bernoulli")
 if(x$margins[1] %in% x$bl && !is.null(x$K1)) cat("\nMARGIN 1: categorical") 
 
 
-if(x$margins[2] %in% x$bl) cat("\nMARGIN 2: Bernoulli") 
+if(x$margins[2] %in% x$bl && is.null(x$K2)) cat("\nMARGIN 2: Bernoulli") 
+if(x$margins[2] %in% x$bl && !is.null(x$K2)) cat("\nMARGIN 2: categorical") 
 
+
+if(is.null(x$K2)){
 
 if(x$margins[2]%in%c("N"))           cat("\nMARGIN 2: Gaussian")  
 if(x$margins[2]=="GP")               cat("\nMARGIN 2: generalised Pareto")  
@@ -189,6 +192,9 @@ if(x$margins[2]%in% c("NBII","NBIIa")) cat("\nMARGIN 2: Negative Binomial - Type
 if(x$margins[2]=="PIG")    	       cat("\nMARGIN 2: Poisson inverse Gaussian") 
 if(x$margins[2]=="PO")     	       cat("\nMARGIN 2: Poisson")   
 if(x$margins[2]=="ZTP")    	       cat("\nMARGIN 2: Zero Truncated Poisson")  
+
+}
+
 
 }
 

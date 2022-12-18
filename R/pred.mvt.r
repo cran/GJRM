@@ -5,7 +5,10 @@ pred.mvt <- function(x, eq, fun = "mean", n.sim = 100, prob.lev = 0.05, smooth.n
 
  if( fun == "tau" && x$VC$univ.gamls == TRUE) stop("The value for fun can either be mean or variance.")
  
- 
+ if( !is.null(x$ordinal) && x$margins[1] %in% c("logit", "probit")  && x$margins[2] %in% c("logit", "probit") && fun %in% c("mean", "variance")  ) stop("This function is not suitable for the fitted model.")
+
+ if( !is.null(x$ordinal) && x$margins[1] %in% c("logit", "probit")  && !(x$margins[2] %in% c("logit", "probit")) && eq == 1  ) stop("Mean and variance are available for the second margin only.")
+
  
  
  if(fun != "tau"){
@@ -24,13 +27,13 @@ pred.mvt <- function(x, eq, fun = "mean", n.sim = 100, prob.lev = 0.05, smooth.n
  if(eq == 2) mar <- x$margins[2] 
  
  if( mar %in% c("GP","GPII","GPo","DGP","DGPII","TW","DGP0") ) stop("Function not ready yet for the chosen distribution(s).")
+ if( mar %in% c("logit","probit","cloglog") ) stop("Function not suitable for binary margin(s).")
 
  
  
  bs <- rMVN(n.sim, mean = x$coefficients, sigma = x$Vb)
  
- 
- 
+
 if( x$margins[1] %in% c(x$VC$m2, x$VC$m2d) && x$margins[2] %in% c(x$VC$m2, x$VC$m2d) ){ ###############
  
   
@@ -100,25 +103,19 @@ if( x$margins[1] %in% c(x$VC$bl, x$VC$m1d) && x$margins[2] %in% c(x$VC$m2, x$VC$
 
 
   
-if (!is.null(x$VC$K1)) {
-    
-        K1  <- x$VC$K1
-	CLM.shift  <- K1 - 2
-	CLM.shift2 <- CLM.shift + 1 # This is needed because in CopulaCLM the intercept has been already removed from X1.d2
+if (!is.null(x$VC$K1)) { 
+	CLM.shift  <- x$VC$K1 - 1
 } else {
-	CLM.shift <- CLM.shift2 <- 0
+	CLM.shift <- 0
 }  
 
- 
- 
- 
   
- if(eq == 1){ind1 <- (1:x$X1.d2) } # for ordinal this is not correct
+ if(eq == 1){ind1 <- ((1 + CLM.shift) : (x$X1.d2 + CLM.shift)) } #@ GIAMPIERO: I have modified this line because the cut points are included at the beginning of the parameter vector. Also, in the bits below I have substituted CLM.shift2 with CLM.shift
  
- if(eq == 2){ind1 <- (x$X1.d2 + 1 + CLM.shift2):(x$X1.d2 + x$X2.d2 + CLM.shift2); 
+ if(eq == 2){ind1 <- (x$X1.d2 + 1 + CLM.shift):(x$X1.d2 + x$X2.d2 + CLM.shift); 
  
-     if(is.null(x$X3)) ind2 <- x$X1.d2 + x$X2.d2 + 1 + CLM.shift2 else ind2 <- (x$X1.d2 + x$X2.d2 + 1 + CLM.shift2):(x$X1.d2 + x$X2.d2 + x$X3.d2 + CLM.shift2) 
-     if(is.null(x$X4)) ind3 <- x$X1.d2 + x$X2.d2 + x$X3.d2 + 1 + CLM.shift2 else ind3 <- (x$X1.d2 + x$X2.d2 + x$X3.d2 + 1 + CLM.shift2):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + CLM.shift2)
+     if(is.null(x$X3)) ind2 <- x$X1.d2 + x$X2.d2 + 1 + CLM.shift else ind2 <- (x$X1.d2 + x$X2.d2 + 1 + CLM.shift):(x$X1.d2 + x$X2.d2 + x$X3.d2 + CLM.shift) 
+     if(is.null(x$X4)) ind3 <- x$X1.d2 + x$X2.d2 + x$X3.d2 + 1 + CLM.shift else ind3 <- (x$X1.d2 + x$X2.d2 + x$X3.d2 + 1 + CLM.shift):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + CLM.shift)
      
              
              }  
@@ -177,6 +174,90 @@ if(eq == 2){
 
 }##################
 
+### NOTE TO GIAMPIERO: the conditional below was not included in this function. I wonder whether it is really necessary
+
+
+
+if( x$margins[1] %in% c(x$VC$bl, x$VC$m1d) && x$margins[2] %in% c(x$VC$bl, x$VC$m1d) ){ #############
+ 
+
+
+  
+if (!is.null(x$VC$K1)) {
+        K1  <- x$VC$K1
+	K2  <- x$VC$K2
+	CLM.shift  <- K1 + K2 - 2
+} else {
+	CLM.shift <- 0
+}  
+
+ 
+ 
+ 
+  
+ if(eq == 1){ind1 <- ((1 + CLM.shift) : (x$X1.d2 + CLM.shift)) } 
+ 
+ if(eq == 2){ind1 <- (x$X1.d2 + 1 + CLM.shift) : (x$X1.d2 + x$X2.d2 + CLM.shift); 
+ 
+     if(is.null(x$X3)) ind2 <- x$X1.d2 + x$X2.d2 + 1 + CLM.shift else ind2 <- (x$X1.d2 + x$X2.d2 + 1 + CLM.shift) : (x$X1.d2 + x$X2.d2 + x$X3.d2 + CLM.shift) 
+     if(is.null(x$X4)) ind3 <- x$X1.d2 + x$X2.d2 + x$X3.d2 + 1 + CLM.shift else ind3 <- (x$X1.d2 + x$X2.d2 + x$X3.d2 + 1 + CLM.shift) : (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + CLM.shift)
+     
+             
+             }  
+
+if(eq == 1){
+ Xfit1 <- predict(x, eq = 1, type = "lpmatrix", ...)
+ fit1  <- predict(x, eq = 1, type = "link", ...)
+           }
+
+if(eq == 2){
+
+
+ Xfit1 <- predict(x, eq = 2, type = "lpmatrix", ...)
+ fit1  <- predict(x, eq = 2, type = "link", ...)
+ 
+ if(!is.null(x$X3)){
+ 
+   Xfit2 <- predict(x, eq = 3, type = "lpmatrix", ...) 
+   fit2  <- predict(x, eq = 3, type = "link", ...)  
+   
+                   }
+                   
+ if(!is.null(x$X4)){
+ 
+   Xfit3 <- predict(x, eq = 4, type = "lpmatrix", ...) 
+   fit3  <- predict(x, eq = 4, type = "link", ...)  
+   
+                   }                   
+ 
+ if(is.null(x$X3)){
+ 
+   Xfit2 <- matrix(1, nrow = length(fit1), ncol = 1) 
+   fit2  <- x$coefficients["sigma.star"]
+   
+                   } 
+                   
+ if(is.null(x$X4)){
+ 
+   Xfit3 <- matrix(1, nrow = length(fit1), ncol = 1) 
+   fit3  <- x$coefficients["nu.star"]
+   
+                   }                    
+ 
+           }
+           
+           
+fit1Sim <- Xfit1%*%t(bs[, ind1])
+
+if(eq == 2){ 
+
+       if(!is.null(x$X3)) fit2Sim <- Xfit2%*%t(bs[, ind2]) else fit2Sim <- bs[, ind2]
+       #if(!is.null(x$X4)) fit3Sim <- Xfit3%*%t(bs[, ind3]) else fit3Sim <- bs[, ind3] This is not relevant for the ordinal-ordinal model
+       
+           }
+
+
+}################## End ordinal-ordinal
 
 
 
@@ -535,7 +616,7 @@ if( !is.null(x$X3) ) ind3 <- (x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d
  
   
  
-CIpred <- rowQuantiles(fitSim, probs = c(prob.lev/2, 1-prob.lev/2), na.rm = TRUE)
+CIpred <- rowQuantiles(as.matrix(fitSim), probs = c(prob.lev/2, 1-prob.lev/2), na.rm = TRUE)
 
 
 }
@@ -545,7 +626,10 @@ CIpred <- rowQuantiles(fitSim, probs = c(prob.lev/2, 1-prob.lev/2), na.rm = TRUE
 if(fun == "tau"){
 
 
-res <- jc.probs(x, mean(x$y1), mean(x$y2), intervals = TRUE, n.sim = n.sim, prob.lev = prob.lev, ...)
+
+# valiues for y1 and y2 should really be irrelevant given we are interested in tau
+
+res <- jc.probs(x, x$y1[1], x$y2[1], intervals = TRUE, n.sim = n.sim, prob.lev = prob.lev, ...)
 
 fit    <- res[, 6]
 CIpred <- res[, 7:8]

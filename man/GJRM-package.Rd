@@ -58,9 +58,10 @@ selection is also possible via the use of shrinakge smoothers and/or information
 Giampiero Marra (University College London, Department of Statistical Science) and Rosalba Radice (Business School, City, University of London)
 
 with contributions from Panagiota Filippou (specifically on the trivariate binary models), Francesco Donat (on the bivariate models with ordinal and 
-continuous margins), Matteo Fasiolo (for the implementation of the pdf and cdf, and related 
+continuous margins, and that with ordinal margins), Matteo Fasiolo (for the implementation of the pdf and cdf, and related 
 derivatives, of the Tweedie distribution), Alessia Eletti (on survival models with mixed censoring and excess hazards), Kiron Das
-(for help with the implementation of the Galambos copula), and Eva Cantoni and William Aeberhard (for help with the implementation of the robust gamlss).
+(for help with the implementation of the Galambos copula), Eva Cantoni and William Aeberhard (for help with the implementation of the robust gamlss), 
+Alessia Eletti and Danilo Petti (for help with the implementation of the copula survival model with general censoring scheme).
 
 Thanks to Bear Braumoeller for suggesting the implementation of 
 bivariate models with partial observability, and Carmen Cadarso for suggesting the inclusion of various modelling extensions.
@@ -77,10 +78,6 @@ Submitted papers (developments available from release 0.2-5):
 
 Marra G., Radice R., Zimmer D. (2022), A Unifying Switching Regime Regression Framework with Applications in Health Economics.
 
-Petti D., Eletti A., Marra G., Radice R. (2022), Copula Link-Based Additive Models for Bivariate Time-to-Event Outcomes with General Censoring Scheme.
-
-Eletti A., Marra G., Quaresma M., Radice R., Rubio F.J. (2022), A Unifying Framework for Flexible Excess Hazard Modeling with Applications in Cancer Epidemiology.
-
 
 Key methodological references:
 
@@ -88,13 +85,15 @@ Aeberhard W.H., Cantoni E., Marra G., Radice R. (2021), Robust Fitting for Gener
 
 Dettoni R., Marra G., Radice R. (2020), Generalized Link-Based Additive Survival Models with Informative Censoring. \emph{Journal of Computational and Graphical Statistics}, 29(3), 503-512.
 
+Eletti A., Marra G., Quaresma M., Radice R., Rubio F.J. (2022), A Unifying Framework for Flexible Excess Hazard Modeling with Applications in Cancer Epidemiology. \emph{Journal of the Royal Statistical Society Series C}, 71(4), 1044-1062.
+
 Filippou P., Kneib T., Marra G., Radice R. (2019), A Trivariate Additive Regression Model with Arbitrary Link Functions and Varying Correlation Matrix. \emph{Journal of Statistical Planning and Inference}, 199, 236-248.
 
 Filippou P., Marra G., Radice R. (2017), Penalized Likelihood Estimation of a Trivariate Additive Probit Model. \emph{Biostatistics}, 18(3), 569-585.
 
 Gomes M., Radice R., Camarena-Brenes J., Marra G. (2019), Copula Selection Models for Non-Gaussian Outcomes that Are Missing Not at Random. \emph{Statistics in Medicine}, 38(3), 480-496.
 
-Hohberg M., Donat F., Marra G., Kneib T. (in press), Beyond Unidimensional Poverty Analysis Using Distributional Copula Models for Mixed Ordered-Continuous Outcomes. \emph{Journal of the Royal Statistical Society Series C}.
+Hohberg M., Donat F., Marra G., Kneib T. (2021), Beyond Unidimensional Poverty Analysis Using Distributional Copula Models for Mixed Ordered-Continuous Outcomes. \emph{Journal of the Royal Statistical Society Series C}, 70(5), 1365-1390.
 
 Klein N., Kneib T., Marra G., Radice R., Rokicki S., McGovern M.E. (2019), Mixed Binary-Continuous Copula Regression Models with Application to Adverse Birth Outcomes. \emph{Statistics in Medicine}, 38(3), 413-436.
 
@@ -118,9 +117,11 @@ Marra G., Radice R., Zimmer D. (2020), Estimating the Binary Endogenous Effect o
 
 Marra G., Wyszynski K. (2016), Semi-Parametric Copula Sample Selection Models for Count Responses. \emph{Computational Statistics and Data Analysis}, 104, 110-129.
 
+Petti D., Eletti A., Marra G., Radice R. (2022), Copula Link-Based Additive Models for Bivariate Time-to-Event Outcomes with General Censoring Scheme. \emph{Computational Statistics and Data Analysis}, 107550.
+
 Radice R., Marra G., Wojtys M. (2016), Copula Regression Spline Models for Binary Outcomes. \emph{Statistics and Computing}, 26(5), 981-995. 
 
-Ranjbar S., Cantoni E., Chavez-Demoulin V., Marra G., Radice R., Jaton-Ogay K. (in press), Modelling the Extremes of Seasonal Viruses and Hospital Congestion: The Example of Flu in a Swiss Hospital. \emph{Journal of the Royal Statistical Society Series C}.
+Ranjbar S., Cantoni E., Chavez-Demoulin V., Marra G., Radice R., Jaton-Ogay K. (2022), Modelling the Extremes of Seasonal Viruses and Hospital Congestion: The Example of Flu in a Swiss Hospital. \emph{Journal of the Royal Statistical Society Series C}, 71(4), 884-905.
 
 Wojtys M., Marra G., Radice R. (2018), Copula Based Generalized Additive Models for Location, Scale and Shape with Non-Random Sample Selection. \emph{Computational Statistics and Data Analysis}, 127, 1-14.
 

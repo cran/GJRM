@@ -95,9 +95,9 @@ if(type == "ord"){
 
   if(M$BivD == "T" && (M$dof <=2 || M$dof > 249)) stop("dof must be a number greater than 2 and smaller than 249.")
 
-  if(margins[2] %in% M$bl) stop("The second margin must be a continuous distribution.") 
+#  if(margins[2] %in% M$bl) stop("The second margin must be a continuous distribution.") # Removed as the ordinal-ordinal model is now implemented
 
-  if(M$Model %in% c("T", "TSS", "TESS")) stop("A trivariate model is not currently implemented within an ordinal regression framework.")
+  if(M$Model %in% c("T", "TSS", "TESS")) stop("A trivariate model for ordinal responses with non-random sample selection is not currently supported by GJRM.")
   if(M$Model == "BSS") stop("A bivariate model for ordinal responses with non-random sample selection is not currently supported by GJRM.")
   if(M$Model %in% c("BPO", "BPO0")) stop("A bivariate model for ordinal responses with partial observability is not currently supported by GJRM.")  
   
@@ -108,13 +108,15 @@ if(type == "ord"){
   
   if( !( margins[1] %in% c("probit", "logit") ) ) stop("Error in first margin value. It should be one of:\nprobit, logit.")
     
-  if(!(margins[2] %in% c(M$m2)) && M$intf == TRUE ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, BE, FISK.")  
+  if(!(margins[2] %in% c(M$m2, "probit", "logit")) && M$intf == TRUE ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, BE, FISK, probit, logit") 
 
   if(margins[2] %in% c(M$m1d,M$m2d) ) stop("Discrete margins are not allowed.")   
     
   if(margins[2] %in% c("TW") ) stop("Tweedie not yet allowed for. Get in touch for details.")   
   
-    
+  if(margins[2] %in% c("cloglog") ) stop("Complementary log-log not yet allowed for. Get in touch for details.")     
+
+  
   if(l.flist > 2 && margins[2] %in% c(M$m2,M$m2d)){ if(l.flist!=4) stop("You need to specify four equations.") } 
   if(l.flist > 2 && margins[2] %in% M$m3         ){ if(l.flist!=5) stop("You need to specify five equations.") }  
   

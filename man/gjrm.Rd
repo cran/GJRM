@@ -23,7 +23,7 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
      k1.tvc = 0, k2.tvc = 0, knots = NULL,
      penCor = "unpen", sp.penCor = 3, 
      Chol = FALSE, gamma = 1, w.alasso = NULL,
-     drop.unused.levels = TRUE, ind.ord = FALSE,
+     drop.unused.levels = TRUE, 
      min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999)
 }
 
@@ -82,7 +82,7 @@ family. The options are: "C0C90", "C0C270", "C180C90", "C180C270",  "GAL0GAL90",
              "BPO" (bivariate model with partial observability)
              and "BPO0" (bivariate model with partial observability and zero correlation).
              Options "T", "TESS" and "TSS" are currently for trivariate binary models only. "BPO" and "BPO0" are for bivariate binary models only.    
-             
+             "ROY" is for the Roy switching regression model.
              } 
   
 \item{dof}{If \code{BivD = "T"} then the degrees of freedom can be set to a value greater than 2 and smaller than 249. Only for continuous margins,
@@ -157,8 +157,6 @@ documentation of \code{trust} for more details.}
  
 \item{drop.unused.levels}{By default unused levels are dropped from factors before fitting. For some smooths involving factor variables 
                           this may have to be turned off (only use if you know what you are doing).} 
- 
-\item{ind.ord}{Joint ordinal model under independence.} 
  
  \item{min.dn, min.pr, max.pr}{These values are used to set, depending on the model used for modelling, the minimum and maximum allowed 
                               for the densities and probabilities; recall that the margins of copula models have to be in the range (0,1). These

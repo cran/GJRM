@@ -1,4 +1,4 @@
-susu <- function(object, SE, Vb, informative = "no", K1 = NULL){
+susu <- function(object, SE, Vb, informative = "no", K1 = NULL, K2 = NULL){
 
   tableN <- table <- list(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
 
@@ -10,59 +10,67 @@ susu <- function(object, SE, Vb, informative = "no", K1 = NULL){
   if(informative == "yes") index <- 1
   
   
-if (!is.null(K1)) {
-  
+is_ordcon <- !is.null(K1) & is.null(K2)
+is_ordord <- !is.null(K1) & !is.null(K2)
+
+if (is_ordcon) {
 	CLM.shift  <- K1 - 2
-	CLM.shift2 <- CLM.shift + 1 # This is needed because in CopulaCLM the intercept has been already removed from X1.d2
+	CLM.shift2 <- CLM.shift2_1 <- CLM.shift3 <- CLM.shift + 1 # This is needed because in CopulaCLM the intercept has been already removed from X1.d2	
+} else if (is_ordord) {
+	CLM.shift    <- CLM.shift2 <- K1 + K2 - 3
+	CLM.shift2_1 <- CLM.shift + 1
+	CLM.shift3   <- CLM.shift2 + 1
 } else {
-	CLM.shift <- 0 ; CLM.shift2 <- 0
-}  
+	CLM.shift <- CLM.shift2 <- CLM.shift2_1 <- CLM.shift3 <- 0
+}
   
   
   ind1 <- 1:object$gp1
-  ind2 <- object$X1.d2 + (1:object$gp2) + CLM.shift2
-  ind3 <- ind4 <- ind5 <- ind6 <- ind7 <- ind8 <- ind9 <- NULL 
+  ind2 <- object$X1.d2 + (1:object$gp2) + CLM.shift2_1
+  ind3 <- ind4 <- ind5 <- ind6 <- ind7 <- ind8 <- ind9 <- NULL  
   
   if(informative == "yes"){ index <- 1; ind2 <- NULL }
   
   
   
+  if(informative != "yes"){
+  
   if(!is.null(object$X3) ) {
   
-       ind3 <- object$X1.d2 + object$X2.d2 + (1:object$gp3) + CLM.shift2
+       ind3 <- object$X1.d2 + object$X2.d2 + (1:object$gp3) + CLM.shift3
        index <- 1:3
        
        if(!is.null(object$X4) ) {
-       ind4 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + (1:object$gp4) + CLM.shift2
+       ind4 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + (1:object$gp4) + CLM.shift3
        index <- 1:4
        }
                                 
        if(!is.null(object$X5) ) {
-       ind5 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + (1:object$gp5) + CLM.shift2
+       ind5 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + (1:object$gp5) + CLM.shift3
        index <- 1:5  
        }     
                                 
        if(!is.null(object$X6) ) {
-       ind6 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + (1:object$gp6) + CLM.shift2
+       ind6 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + (1:object$gp6) + CLM.shift3
        index <- 1:6  
        }  
        
        if(!is.null(object$X7) ) {
-       ind7 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + (1:object$gp7) + CLM.shift2
+       ind7 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + (1:object$gp7) + CLM.shift3
        index <- 1:7  
        }
        
        if(!is.null(object$X8) ) {
-       ind8 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + (1:object$gp8) + CLM.shift2
+       ind8 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + (1:object$gp8) + CLM.shift3
        index <- 1:8  
        }  
        
        if(!is.null(object$X9) ) {
-       ind9 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + object$X8.d2 + (1:object$gp9) + CLM.shift2
+       ind9 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + object$X8.d2 + (1:object$gp9) + CLM.shift3
        index <- 1:9 
        }         
                             
-  }
+  } }
 
 
 
@@ -124,13 +132,13 @@ if (!is.null(K1)) {
 
                         if(i==1){ gam <- object$gam1; ind <-  gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para  + CLM.shift                               } 
                         if(i==2){ gam <- object$gam2; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2                } 
-                        if(i==3){ gam <- object$gam3; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 }
-                        if(i==4){ gam <- object$gam4; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 }
-                        if(i==5){ gam <- object$gam5; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 }
-                        if(i==6){ gam <- object$gam6; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 }
-                        if(i==7){ gam <- object$gam7; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 }
-                        if(i==8){ gam <- object$gam8; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 }
-                        if(i==9){ gam <- object$gam9; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + object$X8.d2}
+                        if(i==3){ gam <- object$gam3; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + object$X1.d2 + object$X2.d2 }
+                        if(i==4){ gam <- object$gam4; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + object$X1.d2 + object$X2.d2 + object$X3.d2 }
+                        if(i==5){ gam <- object$gam5; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 }
+                        if(i==6){ gam <- object$gam6; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 }
+                        if(i==7){ gam <- object$gam7; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 }
+                        if(i==8){ gam <- object$gam8; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 }
+                        if(i==9){ gam <- object$gam9; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 + object$X8.d2}
                           
                           
                         gam$sig2            <- 1
@@ -183,6 +191,10 @@ if (!is.null(K1)) {
 
   }
   
+# In what follows the cut points are removed from the table in the ordinal-ordinal model 
+if (is_ordord) {
+	table[[1]] <- table[[1]][- (1: (K1 + K2 - 2)), ]
+}  
 
 list(tableN = tableN, table = table)
 

@@ -1,5 +1,10 @@
+version 0.2-6.1
+- bug in summary function fixed. Thanks to Trevor Fitzpatrick.
+- models with ordinal margins implemented.
+
 version 0.2-6
 - extended class of ROY models implemented and final checks completed.
+- sample selection model with Tweedie margin implemented.
 - copula survival models with general censoring scheme.
 
 version 0.2-5.1

@@ -47,7 +47,7 @@ eta1.m <-   matrix(nrow = n        , ncol = VC$K1 - 1, eta1)
 
 lp1 <- c1.m - eta1.m ; lp.p <- cbind(lp1, infty) ; lp.m <- cbind(-infty, lp1)
 
-sel <- VC$sel ; lp.p.sel <- rowSums(lp.p * sel) ; lp.m.sel <- rowSums(lp.m * sel)
+sel <- VC$sel1 ; lp.p.sel <- rowSums(lp.p * sel) ; lp.m.sel <- rowSums(lp.m * sel)
 
 lp.p <- lp.p.sel ; lp.m <- lp.m.sel
 
@@ -201,11 +201,11 @@ cc1.ti <- matrix(nrow = n, ncol = VC$K1 - 2, byrow = TRUE, c1.ti[2 : (VC$K1 - 1)
 #################
 #################
 
-sel.p <- VC$sel.p 
-sel.m <- VC$sel.m
+sel.p <- VC$sel1.p 
+sel.m <- VC$sel1.m
 
-sel.mm <- VC$sel.mm
-sel.pm <- VC$sel.pm
+sel.mm <- VC$sel1.mm
+sel.pm <- VC$sel1.pm
 
 #################
 #################
@@ -624,7 +624,7 @@ if (VC$ind.ord == "TRUE") {
 	G <- G[-VC$drop.ind]
 	H <- H[-VC$drop.ind, -VC$drop.ind]
 
-	S.h <- S.h[-VC$drop.ind, -VC$drop.ind]
+	if(length(S.h) != 1) S.h <- S.h[-VC$drop.ind, -VC$drop.ind]
 }
 
 ##############################

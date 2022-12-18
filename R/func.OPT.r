@@ -20,8 +20,8 @@ if(type == "ROY"){
 
 if(type == "biv"){
 
-  if(M$Model=="B" && margins[2] %in% M$bl  &&  is.null(M$theta.fx)) func.opt <- bprobgHs   
-  if(M$Model=="B" && margins[2] %in% M$bl  && !is.null(M$theta.fx)) func.opt <- bprobgHsFixTheta
+  if(M$Model=="B" && margins[2] %in% M$bl  &&  is.null(M$theta.fx) && is.null(M$K2)) func.opt <- bprobgHs         #
+  if(M$Model=="B" && margins[2] %in% M$bl  && !is.null(M$theta.fx) && is.null(M$K2)) func.opt <- bprobgHsFixTheta # 
 
   if(M$Model=="B" && margins[2] %in% M$m1d  ) {func.opt <- bprobgHsDiscr1 ; func.optUniv <- bprobgHsContUniv}   
   if(M$Model=="B" && margins[2] %in% M$m2d  ) {func.opt <- bprobgHsDiscr2 ; func.optUniv <- bprobgHsContUniv} 
@@ -33,9 +33,10 @@ if(type == "biv"){
   if(M$Model=="B" && margins[2] %in% M$m2 &&  is.null(M$K1) ) {func.opt <- bprobgHsCont  ; func.optUniv <- bprobgHsContUniv }   
   if(M$Model=="B" && margins[2] %in% M$m3 &&  is.null(M$K1) ) {func.opt <- bprobgHsCont3 ; func.optUniv <- bprobgHsContUniv3}  
   
-  if(M$Model=="B" && margins[2] == "TW"   &&  is.null(M$K1) ) {func.optUniv <- bprobgHsContUniv3}  
+  if(M$Model=="B" && margins[2] == "TW"   &&  is.null(M$K1) ) {func.opt <- bprobgHsCont3binTW; func.optUniv <- bprobgHsContUniv3}  
 
-  if(M$Model=="B" && margins[2] %in% M$m2 && !is.null(M$K1) ) {func.opt <- bCopulaCLMgHsCont}
+  if(M$Model=="B" && margins[2] %in% M$m2 && !is.null(M$K1) ) {func.opt <- bCopulaCLMgHsCont} #
+  if(M$Model=="B" && margins[2] %in% M$bl && !is.null(M$K2) ) {func.opt <- bCopulaCLMgHsOrd } # These functions are used for the ordinal models
   
 }
   
@@ -84,7 +85,8 @@ if(type == "copR"){
   
   
   
-
+  # if(margins[1] %in% M$m2 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont2Surv # not really used
+  #if(margins[1] %in% M$m3 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont3Surv # not really used
   
   if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE && M$dep.cens == TRUE &&  is.null(M$c3)) func.opt <- bcontSurvGDep
   if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE && M$dep.cens == TRUE && !is.null(M$c3)) func.opt <- bcontSurvGDepA
@@ -101,7 +103,6 @@ if(type == "copSS"){
   
   if(margins[2] %in% M$m1d   ) func.opt <- bprobgHsDiscr1SS
   if(margins[2] %in% M$m2d   ) func.opt <- bprobgHsDiscr2SS  
-
   
 
 }

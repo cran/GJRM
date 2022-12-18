@@ -7,6 +7,7 @@
 \alias{jc.probs5}
 \alias{jc.probs6}
 \alias{jc.probs7}
+\alias{jc.probs8}
 
 
 

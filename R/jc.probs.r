@@ -27,24 +27,68 @@ if(x$univar.gamlss == TRUE) stop("This function is not suitable for univariate m
 
 if(missing(y1)) stop("You must provide a value for y1.")
 if(missing(y2)) stop("You must provide a value for y2.")
-if(x$triv == TRUE && missing(y3)) stop("You must provide a binary value for y3.")
+if(x$triv == TRUE && is.null(y3)) stop("You must provide a binary value for y3.")
+
+
+if(missing(newdata)){
+
+if(length(y1) != 1) stop("You can only provide one value for y1.")
+if(length(y2) != 1) stop("You can only provide one value for y2.")
+
+if( length(y1) == 1 && !is.null(x$ordinal) ) y1 <- rep(y1, length(x$eta1))         
+if( length(y2) == 1 && !is.null(x$ordinal) ) y2 <- rep(y2, length(x$eta1))         
+
+
+if( !is.null(y3) ){  
+
+        if( length(y3) != 1 ) stop("You can only provide one value for y3.")    
+        if( length(y3) == 1 && !is.null(x$ordinal) ) y3 <- rep(y3, length(x$eta1))                 
+                  }
+
+}
+
+
+
+if(!missing(newdata)){
+
+if(length(y1) != 1) stop("You can only provide one value for y1.")
+if(length(y2) != 1) stop("You can only provide one value for y2.")
+
+if( length(y1) == 1 && !is.null(x$ordinal)) y1 <- rep(y1, dim(newdata)[1])         
+if( length(y2) == 1 && !is.null(x$ordinal)) y2 <- rep(y2, dim(newdata)[1])         
+
+
+if( !is.null(y3) ){  
+
+        if( length(y3) != 1 ) stop("You can only provide one value for y3.")    
+        if( length(y3) == 1 && !is.null(x$ordinal)) y3 <- rep(y3, dim(newdata)[1])                 
+                  }
+
+
+
+}
+
+
+
 
 
 if(!(type %in% c("joint","independence"))) stop("Error in parameter type value. It should be one of: joint, independence.")
 if(!(cond %in% c(0,1,2, 3))) stop("Error in parameter cond value. It should be one of: 0, 1, 2 or 3 (for the trivariate model).")
 
-if( type %in% c("independence") && x$VC$gamlssfit == FALSE && is.null(x$VC$K1)) stop("You need to re-fit the model and set gamlssfit = TRUE to obtain probabilities under independence.") # CopulaCLM
-
+#if( type %in% c("independence") && x$VC$gamlssfit == FALSE && is.null(x$VC$K1)) stop("You need to re-fit the model and set gamlssfit = TRUE to obtain probabilities under independence.") # CopulaCLM
+if( type %in% c("independence") && x$VC$gamlssfit == FALSE) stop("You need to re-fit the model and set gamlssfit = TRUE to obtain probabilities under independence.") # This is now possible in CopulaCLM
 
 if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d) && (!is.wholenumber(y1) || y1 < 0)) stop("The value for y1 must be discrete and positive.")
 if(x$margins[2] %in% c(x$VC$m1d, x$VC$m2d) && (!is.wholenumber(y2) || y2 < 0)) stop("The value for y2 must be discrete and positive.")
 
 
-if( x$VC$Cont == "NO" && !(x$margins[2] %in% bin.link) && !(y1 %in% c(0,1)) && is.null(x$VC$K1) ) stop("The value for y1 must be either 0 or 1.")
+if( x$VC$Cont == "NO" && !(x$margins[2] %in% bin.link) && !all(y1 %in% c(0,1)) && is.null(x$VC$K1) ) stop("The value for y1 must be either 0 or 1.")
 
-if( x$VC$Cont == "NO" && !(x$margins[2] %in% bin.link) && !is.null(x$VC$K1) && !(y1 %in% seq.int(1, x$VC$K1))) stop(paste(paste("The value for y1 must be an integer between 1 and", x$VC$K1, "")), ".") # CopulaCLM
+if( x$VC$Cont == "NO" && !(x$margins[2] %in% bin.link) && !is.null(x$VC$K1) && !all(y1 %in% seq.int(1, x$VC$K1))) stop(paste(paste("The value for y1 must be an integer between 1 and", x$VC$K1, "")), ".") # CopulaCLM
 
-if( x$VC$Cont == "NO" && x$margins[2] %in% bin.link){ if( !(y1 %in% c(0,1)) || !(y2 %in% c(0,1))   ) stop("The value for y1 and/or y2 must be either 0 or 1.") }
+if( x$VC$Cont == "NO" && !(x$margins[2] %in% bin.link) && !is.null(x$VC$K2) && !all(y2 %in% seq.int(1, x$VC$K2))) stop(paste(paste("The value for y2 must be an integer between 1 and", x$VC$K2, "")), ".") # CopulaCLM
+
+if( x$VC$Cont == "NO" && x$margins[2] %in% bin.link && is.null(x$VC$K1) ){ if( !all(y1 %in% c(0,1)) || !all(y2 %in% c(0,1))   ) stop("The value for y1 and/or y2 must be either 0 or 1.") } # CopulaCLM
 
 if(x$triv == FALSE) {if(!missing(newdata) && x$BivD %in% x$BivD2) stop("Prediction for models based on mixed copulae and a new dataset is not feasible.")}
 
@@ -70,21 +114,25 @@ if(x$triv == FALSE){
 if(x$VC$Cont == "YES" && x$surv == FALSE )              rr <- jc.probs1(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr, cumul)
 
 
-if(x$VC$Cont == "NO" && !(x$margins[2] %in% bin.link) ){ 
+if(x$VC$Cont == "NO" && !(x$margins[2] %in% bin.link) ){ # CopulaCLM: This selects the ordinal-continuous model
 
+                                                                                                                                                                                 
+ if( is.null(x$VC$K1)) rr <- jc.probs2(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr)                       
+                                                                                                                                                                                 
+ if(!is.null(x$VC$K1)) {                                                                                                                                       
+	#if( type %in% c("joint")        && x$VC$ind.ord == "TRUE") stop("You need to provide the fitted joint model as input to obtain predictive probabilities.")               
+	
+	if( type %in% c("independence") && x$VC$is_ordcon == "TRUE" && x$VC$gamlssfit == FALSE ) stop("You have to set gamlssfit = TRUE when fitting the model to obtain probabilities under independence.")
 
-                                                                                                                                                                                  #
- if( is.null(x$VC$K1)) rr <- jc.probs2(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr)                                        #
-                                                                                                                                                                                  #
- if(!is.null(x$VC$K1)) {                                                                                                                                                          #
-	if( type %in% c("joint")        && x$VC$ind.ord == "TRUE") stop("You need to provide the fitted joint model as input to obtain predictive probabilities.")                #
-	if( type %in% c("independence") && x$VC$ind.ord != "TRUE") stop("You need to provide the fitted independence model as input to obtain probabilities under independence.") #
-	rr <- jc.probs7(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr) # CopulaCLM                                           #
- }                                                                                                                                                                                # CopulaCLM
+	rr <- jc.probs7(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr) # CopulaCLM
+ }
 
 }
 
-if(x$VC$Cont == "NO" &&   x$margins[2] %in% bin.link)   rr <- jc.probs3(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr)    
+if(x$VC$Cont == "NO" && x$margins[2] %in% bin.link) { # CopulaCLM: This selects the ordinal-ordinal model
+	if ( is.null(x$VC$K1)) rr <- jc.probs3(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr)    
+	if (!is.null(x$VC$K1)) rr <- jc.probs8(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr)  
+}
 
 if(x$VC$Cont == "YES" && x$surv == TRUE && x$margins[1] %in% bin.link && x$margins[2] %in% bin.link )             rr <- jc.probs4(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr)
 if(x$VC$Cont == "YES" && x$surv == TRUE && x$margins[1] %in% c(cont2par,cont3par) && x$margins[2] %in% bin.link ) rr <- jc.probs5(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr)
@@ -98,7 +146,7 @@ if(x$triv == TRUE)  rr <- jc.probs6(x, y1, y2, y3, newdata, type, cond, interval
 # SemiParBIV
 
 ######################################################################################################
-######################################################################################################
+###################################################################################################### 
 
 p12s <- rr$p12s
 p12  <- rr$p12
@@ -121,7 +169,7 @@ theta23s <- rr$theta23s
 
 
 ######################################################################################################
-######################################################################################################
+###################################################################################################### 
 
 if(intervals == TRUE){ 
 
@@ -136,7 +184,7 @@ if(x$triv == TRUE){ # triv
                       }else{
              CItheta12 <- CItheta13 <- CItheta23 <- cbind(0, 0)
                             }
-                  } # triv
+                  } # triv 
 
 
 if(x$triv == FALSE){ # biv
@@ -144,7 +192,7 @@ if(x$triv == FALSE){ # biv
   if(length(p12) > 1)  {res <- data.frame(p12, CIp12, p1, p2);       names(res)[2:3] <- names(quantile(c(1,1), probs = c(prob.lev/2,1-prob.lev/2)))}
   if(length(p12) == 1) {res <- data.frame(t(c(p12, CIp12, p1, p2))); names(res) <- c("p12",names(quantile(c(1,1), probs = c(prob.lev/2,1-prob.lev/2))),"p1","p2")}
                   
-                   } # biv
+                   } # biv 
 
 
 

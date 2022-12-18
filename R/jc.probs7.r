@@ -24,7 +24,7 @@ nu <- sigma2 <- NA
 
 #type <- "response"
 pk   <- predict(x, eq = 1, newdata = newdata, type = "response")$p1.cum # cdf
-	pk <- pk[, y1]
+	pk <- diag(pk[, y1]) # pk <- pk[, y1]
 eta2 <- predict(x, eq = 2, newdata = newdata, type = "response")
 
 
@@ -72,13 +72,18 @@ infty <- 1e+25
 
 lp1 <- cbind(x$fit$lp1, infty)
 
-lp1.sel <- lp1[, y1] # The choice of y1 selects the relevant cut point
+lp1.sel <- diag(lp1[, y1]) # lp1.sel <- lp1[, y1] # The choice of y1 selects the relevant cut point
 
-if (y1 != x$VC$K1){
-	pk <- probm(lp1.sel, x$VC$margins[1], only.pr = FALSE, bc = TRUE, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr # cumulative distribution function
-} else {
-	pk <- 1
-}
+# @ GIAMPIERO: I replaced the bits commented below as they didn't work
+
+#if (y1 != x$VC$K1) { 
+#	pk <- probm(lp1.sel, x$VC$margins[1], only.pr = FALSE, bc = TRUE, min.dn = min.pr, min.pr = min.pr, #max.pr = max.pr)$pr # cumulative distribution function
+#} else {
+#	pk <- 1
+#}
+
+pk <- probm(lp1.sel, x$VC$margins[1], only.pr = FALSE, bc = TRUE, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr # cumulative distribution function
+	pk[y1 == x$VC$K1] <- 1
 
 #p1   <- x$p1
 eta2 <- x$eta2
@@ -118,7 +123,7 @@ if(length(theta) == 1) p12[x$teta.ind2] <- mm(BiCDF(p0[x$teta.ind2], p2[x$teta.i
 
 }
 
-if(cond == 1 && y1 %in% seq.int(1 : x$VC$K1)) p12 <- p12 / p0
+if(cond == 1 && unique(y1 %in% seq.int(1 : x$VC$K1))) p12 <- p12 / p0
                       
 }#*#
 
@@ -319,7 +324,7 @@ for (i in 1 : n.sim) {
 	eta1s.m <-   matrix(nrow = n.s        , ncol = x$VC$K1 - 1, eta1s[ , i]              )
 
 	lp1s_i <- cbind(c1s.m - eta1s.m, infty)
-	lp1s[, i] <- lp1s_i[, y1] # The choice of y1 selects the relevant cut point
+	lp1s[, i] <- diag(lp1s_i[, y1]) # lp1s[, i] <- lp1s_i[, y1] # The choice of y1 selects the relevant cut point
 
 }
 
@@ -428,6 +433,8 @@ if( missing(newdata)){ if(x$VC$ccss == "yes") X4s <- x$X4s else X4s <- x$X4}
 
 if( is.null(x$X3) ){
 
+if(is.null(nu))     nu     <- rep(1, length(est.RHOb))
+
 est.RHOb <- matrix(rep(est.RHOb, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
 sigma2   <- matrix(rep(sigma2, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
 nu       <- matrix(rep(nu, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
@@ -461,7 +468,7 @@ if(!(x$BivD %in% x$BivD2)) {
 
 }
 
-if(cond == 1 && y1 %in% seq.int(1 : x$VC$K1)) p12s <- p12s / p0s
+if(cond == 1 && unique(y1 %in% seq.int(1 : x$VC$K1))) p12s <- p12s / p0s
  
 }#*# 
 
@@ -627,21 +634,34 @@ if(type == "independence"){
 
 ##### newdata included as inputs #####
 
-if(!missing(newdata)){
+if(!missing(newdata)){ 
 
-nu   <- sigma2 <- NA
-pk   <- predict(x, eq = 1, newdata = newdata, type = "response")$p1.cum # cdf
-	pk <- pk[, y1]
-eta2 <- predict(x, eq = 2, newdata = newdata, type = "response")
+nu <- sigma2 <- NA
+pk <- probm( predict(x, eq = 1, newdata = newdata, type = "lpmatrix") %*% x$coefficients.ind$beta1, x$VC$margin[1], 
+	      min.dn = min.pr, min.pr = min.pr, max.pr = max.pr )$pr # cdf
 
+if (x$gamlssfit != FALSE) {
+	eta2 <- predict(x$gamlss, eq = 1, newdata = newdata, type = "lpmatrix") %*% x$coefficients.ind$beta2
+} else {
+	eta2 <- predict(x, eq = 2, newdata = newdata, type = "lpmatrix") %*% x$coefficients.ind$beta2
+#pk   <- predict(x, eq = 1, newdata = newdata, type = "response")$p1.cum # cdf
+#	pk <- diag(pk[, y1]) # pk <- pk[, y1]
+#eta2 <- predict(x, eq = 2, newdata = newdata, type = "response")
+} 
 
-if( !(x$VC$margins[2] %in% cont1par) ){
+if( !(x$VC$margins[2] %in% cont1par) ){ 
 
 if( !is.null(x$X3) ){
 
-sigma2 <- esp.tr(predict(x, eq = 3, newdata = newdata, type = "response"), x$margins[2])$vrb
-if(x$margins[2] %in% cont3par) nu <- enu.tr(predict(x, eq = 4, newdata = newdata, type = "response"), x$margins[2])$vrb
-
+if (x$gamlssfit != FALSE) {
+	sigma2 <- esp.tr(predict(x$gamlss, eq = 2, newdata = newdata, type = "lpmatrix") %*% x$coefficients.ind$sigma2, x$margins[2])$vrb
+	if(x$margins[2] %in% cont3par) nu <- enu.tr(predict(x$gamlss, eq = 3, newdata = newdata, type = "lpmatrix") %*% x$gamlss$coefficients[(x$X2.d2 + x$X3.d2 + 1) : (x$X2.d2 + x$X3.d2 + x$X4.d2)], x$margins[2])$vrb # NOTE: this part is not modified with x$coefficients.ind$[...] because not relevant for the current formulation of the model
+} else {
+	sigma2 <- esp.tr(predict(x, eq = 3, newdata = newdata, type = "lpmatrix") %*% x$coefficients.ind$sigma2, x$margins[2])$vrb
+	if(x$margins[2] %in% cont3par) nu <- enu.tr(predict(x, eq = 4, newdata = newdata, type = "lpmatrix") %*% x$gam4$coefficients, x$margins[2])$vrb # NOTE: same comment as above.
+	#sigma2 <- esp.tr(predict(x, eq = 3, newdata = newdata, type = "response"), x$margins[2])$vrb
+	#if(x$margins[2] %in% cont3par) nu <- enu.tr(predict(x, eq = 4, newdata = newdata, type = "response"), x$margins[2])$vrb	
+}
                     }
 
 if( is.null(x$X3) ){
@@ -655,35 +675,52 @@ nu     <- x$nu
                                  }
 
 
-}
+} 
 
 
 ##### newdata NOT included as inputs #####
 
-if(missing(newdata)){
+if(missing(newdata)){ 
 
 infty <- 1e+25
 
 #cut <- t(matrix(nrow = x$VC$K1 - 1, ncol = x$n, x$coefficients[1 : (x$VC$K1 - 1)])) #
 #eta1 <- matrix(nrow = x$n, ncol = x$VC$K1 - 1, x$eta1) ##############################
 
-lp1 <- cbind(x$fit$lp1, infty)
+eta1 <- x$VC$X1 %*% x$coefficients.ind$beta1 ; eta1.m <- matrix(nrow = x$n, ncol = x$VC$K1 - 1, eta1) 
+c1.m <- t(matrix(nrow = x$VC$K1 - 1, ncol = x$n, x$coefficients.ind$c1))
+lp1 <- cbind(c1.m - eta1.m, infty) 
 
-lp1.sel <- lp1[, y1] # The choice of y1 selects the relevant cut point
+#lp1 <- cbind(x$fit$lp1, infty)
 
-if (y1 != x$VC$K1){
-	pk <- probm(lp1.sel, x$VC$margins[1], only.pr = FALSE, bc = TRUE, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr # cumulative distribution function
-} else {
-	pk <- 1
-}
+lp1.sel <- diag(lp1[, y1]) # lp1.sel <- lp1[, y1] # The choice of y1 selects the relevant cut point
+
+# @ GIAMPIERO: I replaced the bits commented below as they didn't work
+
+#if (y1 != x$VC$K1){
+#	pk <- probm(lp1.sel, x$VC$margins[1], only.pr = FALSE, bc = TRUE, min.dn = min.pr, min.pr = min.pr, #max.pr = max.pr)$pr # cumulative distribution function
+#} else {
+#	pk <- 1
+#}
+
+pk <- probm(lp1.sel, x$VC$margins[1], only.pr = FALSE, bc = TRUE, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr # cumulative distribution function
+	pk[y1 == x$VC$K1] <- 1 
 
 #p1   <- x$p1
-eta2 <- x$eta2
 
-sigma2 <- x$sigma2
+if (x$gamlssfit != FALSE) {
+	eta2   <- x$X2 %*% x$coefficients.ind$beta2
+	if(!is.null(x$X3)) sigma2 <- esp.tr(x$X3 %*% x$coefficients.ind$sigma2, x$margins[2])$vrb else sigma2 <- x$sigma2 # x$X3 %*% x$coefficients.ind$sigma2 ~ @ GIAMPIERO: I REPLACED THIS BIT: IS IT CORRECT?
+} else {
+	eta2   <- x$X2 %*% x$gam2$coefficients #
+	sigma2 <- x$X3 %*% x$gam3$coefficients # NOTE: I have not modified this part because the ind prediction can only be achieved if gamlssfit == TRUE
+}
+#eta2 <- x$eta2
+
+#sigma2 <- x$sigma2
 nu     <- x$nu 
 
-}
+} 
 
 
 ##### cond == 0, cond == 1 and cond == 2 #####
@@ -713,7 +750,7 @@ if(cond == 2) p12 <- p0
 }  #*#         
 
 
-##### Some other cases #####
+##### Some other cases ##### 
 
 #if(x$margins[2] %in% c(x$VC$m2d, x$VC$m1d)){#*#
 #
@@ -736,25 +773,39 @@ if(cond == 2) p12 <- p0
 
 
 #############################
-##### intervals == TRUE #####
+##### intervals == TRUE ##### 
 #############################
 
-if(intervals == TRUE){
+if(intervals == TRUE){ 
 
 # Cut points need to be transformed first...
 
-cut.sim <- x$coefficients[1 : (x$VC$K1 - 1)]
-	cut.sim.ti <- rep(0, x$VC$K1 - 1)
-	cut.sim.ti[1] <- cut.sim[1] ; for(i in 2 : (x$VC$K1 - 1)) {cut.sim.ti[i] <- sqrt(cut.sim[i] - cut.sim[i - 1])}
+cut1.sim <- x$coefficients.ind$c1
+	cut1.sim.ti <- rep(0, x$VC$K1 - 1)
+	cut1.sim.ti[1] <- cut1.sim[1] ; for(i in 2 : (x$VC$K1 - 1)) {cut1.sim.ti[i] <- sqrt(cut1.sim[i] - cut1.sim[i - 1])}
 
-coefficients.s <- x$coefficients
-	coefficients.s[1 : (x$VC$K1 - 1)] <- cut.sim.ti
+#cut.sim <- x$coefficients[1 : (x$VC$K1 - 1)]
+#	cut.sim.ti <- rep(0, x$VC$K1 - 1)
+#	cut.sim.ti[1] <- cut.sim[1] ; for(i in 2 : (x$VC$K1 - 1)) {cut.sim.ti[i] <- sqrt(cut.sim[i] - cut.sim[i - 1])}
+
+#coefficients.s <- x$coefficients
+#	coefficients.s[1 : (x$VC$K1 - 1)] <- cut.sim.ti
 
 
 #bs1 <- rMVN(n.sim, mean = x$gam1$coefficients, sigma=x$gam1$Vp)
-#bs2 <- rMVN(n.sim, mean = x$gamlss$coefficients, sigma=x$gamlss$Vb)
+#bs2 <- rMVN(n.sim, mean = x$gamlss$coefficients, sigma=x$gamlss$Vb) 
+bs.c1 <- rMVN(n.sim, mean = cut1.sim.ti, sigma = x$Vb.ind[1 : (x$VC$K1 - 1), 1 : (x$VC$K1 - 1)])
+bs1 <- rMVN(n.sim, mean = x$coefficients.ind$beta1, sigma = x$Vb.ind[x$VC$K1 : (x$VC$K1 + x$VC$X1.d - 1), x$VC$K1 : (x$VC$K1 + x$VC$X1.d - 1)]) 
 
-bs <- rMVN(n.sim, mean = coefficients.s, sigma = x$Vb)  
+if (x$gamlssfit != FALSE) {
+	bs2 <- rMVN(n.sim, mean = x$coefficients.ind$beta2, sigma = x$Vb.ind[(x$VC$K1 + x$VC$X1.d) : (x$VC$K1 + x$VC$X1.d + x$VC$X2.d - 1), (x$VC$K1 + x$VC$X1.d) : (x$VC$K1 + x$VC$X1.d + x$VC$X2.d - 1)])
+	if(!is.null(x$X3)) bs3 <- rMVN(n.sim, mean = x$coefficients.ind$sigma2, sigma = as.matrix(x$Vb.ind[(x$VC$K1 + x$VC$X1.d + x$VC$X2.d) : (x$VC$K1 + x$VC$X1.d + x$VC$X2.d + x$VC$X3.d - 1), (x$VC$K1 + x$VC$X1.d + x$VC$X2.d) : (x$VC$K1 + x$VC$X1.d + x$VC$X2.d + x$VC$X3.d - 1)])) else bs3 <- rMVN(n.sim, mean = x$gamlss$coefficients["sigma.star"], sigma = as.matrix(x$Vb.ind["sigma.star", "sigma.star"]))
+} else {
+	bs2 <- rMVN(n.sim, mean = x$gam2$coefficients, sigma = x$gam2$Vp) #
+	bs3 <- rMVN(n.sim, mean = x$gam3$coefficients, sigma = x$gam3$Vp) # NOTE: I have not modified this part because the ind prediction can only be achieved if gamlssfit == TRUE
+}
+
+bs <- cbind(bs.c1, bs1, bs2, bs3) 
 
 
 # ... and then transformed back
@@ -768,12 +819,12 @@ bs[, 1 : (x$VC$K1 - 1)] <- cut.sim
 
 #############  
 # etas
-#############  
+#############   
 
 ##### newdata included as inputs #####
 
 if(!missing(newdata)){ pred.1 <- predict(x, eq = 1, newdata = newdata, type = "lpmatrix")
-				X1 <- pred.1 ; colnames(X1) <- colnames(x$X1)
+		       X1  <- pred.1 ; colnames(X1) <- colnames(x$X1)
                        X2s <- predict(x, eq = 2, newdata = newdata, type = "lpmatrix") }
 
                        
@@ -784,7 +835,7 @@ if( missing(newdata)){ X1 <- x$X1
                        } 
   
 
-###
+### 
 
 # Adjustments for the ordinal-continuous model
 
@@ -807,11 +858,11 @@ for (i in 1 : n.sim) {
 	eta1s.m <-   matrix(nrow = n.s        , ncol = x$VC$K1 - 1, eta1s[ , i]              )
 
 	lp1s_i <- cbind(c1s.m - eta1s.m, infty)
-	lp1s[, i] <- lp1s_i[, y1] # The choice of y1 selects the relevant cut point
+	lp1s[, i] <- diag(lp1s_i[, y1]) # lp1s[, i] <- lp1s_i[, y1] # The choice of y1 selects the relevant cut point
 
 }
 
-###
+###  
 
 
 pks   <- probm( lp1s, x$VC$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr   
@@ -861,10 +912,12 @@ if( missing(newdata)){ if(x$VC$ccss == "yes") X4s <- x$X4s else X4s <- x$X4}
 } 
 
 
-#################
+################# 
 
 
 if( is.null(x$X3) ){
+
+if(is.null(nu))     nu     <- rep(1, dim(eta1s)[2])
 
 sigma2   <- matrix(rep(sigma2, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
 nu       <- matrix(rep(nu, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
@@ -899,7 +952,7 @@ if(cond == 2) p12s <- p0s
 }  #*#     
 
 
-##### Some other cases #####
+##### Some other cases ##### 
 
 #if(x$margins[2] %in% c(x$VC$m2d, x$VC$m1d)){#*#
 #

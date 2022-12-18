@@ -1,4 +1,4 @@
-susutsn <- function(object, bs, lf, cont1par, cont2par, cont3par, prob.lev, type = "copR", bin.link = NULL, n.sim = NULL, K1 = NULL ){
+susutsn <- function(object, bs, lf, cont1par, cont2par, cont3par, prob.lev, type = "copR", bin.link = NULL, n.sim = NULL, K1 = NULL, K2 = NULL){
 
 
 CIrs1 <- CIrs2 <- CIrs <- CIkt <- CIkt1 <- CIkt2 <- CIsig21 <- CIsig22 <- CInu1 <- CInu2 <- CIdof <- CInu <- CIsig2 <- NULL
@@ -6,18 +6,28 @@ est.RHOb <- mu <- CImu <- est.RHOb1 <- est.RHOb2 <- tau1 <- tau2 <- NULL
 CIsig1 <- CInu1 <- CIsig2 <- CInu2 <- NULL
 
 
-if (!is.null(K1)) {
-  
+#if (!is.null(K1)) {
+#  
+#	CLM.shift  <- K1 - 2
+#	CLM.shift2 <- CLM.shift + 1 # This is needed because in CopulaCLM the intercept has been already removed from X1.d2
+#} else {
+#	CLM.shift <- 0 ; CLM.shift2 <- 0
+#}  
+
+
+is_ordcon <- !is.null(K1) & is.null(K2)
+is_ordord <- !is.null(K1) & !is.null(K2)
+
+if (is_ordcon) {
 	CLM.shift  <- K1 - 2
-	CLM.shift2 <- CLM.shift + 1 # This is needed because in CopulaCLM the intercept has been already removed from X1.d2
+	CLM.shift2 <- CLM.shift3 <- CLM.shift + 1 # This is needed because in CopulaCLM the intercept has been already removed from X1.d2	
+} else if (is_ordord) {
+	CLM.shift  <- K1 + K2 - 3
+	CLM.shift2 <- CLM.shift + 1
+	CLM.shift3 <- CLM.shift2 + 1
 } else {
-	CLM.shift <- 0 ; CLM.shift2 <- 0
-}  
-
-
-
-
-
+	CLM.shift <- CLM.shift2 <- CLM.shift3 <- 0
+}
 
 
 if(type == "ROY"){
@@ -121,7 +131,7 @@ if(type == "ROY"){
 
 
 
-if(type == "biv"){
+if(type == "biv"){ 
 
   bs <- NULL
 
@@ -134,11 +144,11 @@ if(type == "biv"){
 if( is.null(object$VC$theta.fx) ){############
 
 
-  if(object$VC$margins[2] %in% c(bin.link, cont1par) && object$VC$Model != "BPO0"){
+  if(object$VC$margins[2] %in% c(bin.link, cont1par) && object$VC$Model != "BPO0"){ # This is relevant for the ordinal-ordinal model (CopulaCLM) but not for the ordinal-continuous model
   
   if(object$VC$Model == "BSS")  X3x <- object$X3s else X3x <- object$X3 
   
-  if( !is.null(object$X3) ) epds <- X3x%*%t(bs[,(object$X1.d2+object$X2.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2)])
+  if( !is.null(object$X3) ) epds <- X3x%*%t(bs[,(object$X1.d2+object$X2.d2+CLM.shift2+1):(object$X1.d2+object$X2.d2+object$X3.d2+CLM.shift2)])
   if(  is.null(object$X3) ) epds <- bs[,lf] 
   
                                                                                   }
@@ -630,7 +640,7 @@ if(type == "copSS"){
 
 
 ##################################################################
-##################################################################
+################################################################## 
 
 
 if( !(type %in% c("gamls", "ROY")) ){

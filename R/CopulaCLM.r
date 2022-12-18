@@ -4,7 +4,7 @@ CopulaCLM <- function(formula, data = list(), weights = NULL, subset = NULL,
                       fp = FALSE, hess = TRUE, infl.fac = 1, theta.fx = NULL, 
                       rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
                       gc.l = FALSE, parscale, extra.regI = "t", intf = FALSE, knots = NULL,
-                      drop.unused.levels = TRUE, ind.ord = FALSE,
+                      drop.unused.levels = TRUE, #ind.ord = FALSE,
                       min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999){
   
 
@@ -20,6 +20,7 @@ gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- gam9 <- gamlss2 
 gamlss2 <- NULL
 Sl.sf <- NULL
 sp.method <- "perf"
+sel2 <- sel2.p <- sel2.m <- sel2.mm <- sel2.pm <- c2 <- D21 <- D22 <- NA
   
 sp1 <- sp2 <- c.gam2 <- X2s <- X3s <- NULL
 sp3 <- gp3 <-   gam3 <- X3         <- NULL  
@@ -150,10 +151,7 @@ if(v2[1] %in% v1[-1]) end <- 2
 }
 
 
-##### Equation 1 #####
-
-# 1) bisogna fare in modo che l'intercetta nn venga rimossa 
-# 2) 
+##### Equation 1 ##### 
 
 gam1.false <- eval(substitute(gam(formula.eq1, gamma = infl.fac, weights = weights, 
                               data = data, knots = knots, fit = FALSE, drop.unused.levels = drop.unused.levels), list(weights = weights))) 
@@ -189,6 +187,9 @@ inde <- rep(TRUE, n)
 
 if(Model=="B" && !(margins[2] %in% bl)){
   
+is_ordcon <- TRUE
+is_ordord <- FALSE
+
 form.eq12R   <- form.eq12(formula.eq2, data, v2, margins[2], m1d, m2d)   
 formula.eq2  <- form.eq12R$formula.eq1
 formula.eq2r <- form.eq12R$formula.eq1r
@@ -209,12 +210,60 @@ l.sp2 <- length(gam2$sp) ; if(l.sp2 != 0) sp2 <- gam2$sp
     
 #cy <- 1 - y1
     
-} 
-
 gp2 <- gam2$nsdf
 
+K2 <- NULL # Added for distinguishing between the ordinal-continuous model from the ordinal-ordinal one
 
-##### Starting values for cut points #####
+} 
+
+
+##### Equation 2: B and ordinal response #####
+
+if(Model=="B" && margins[2] %in% bl){
+
+is_ordord <- TRUE # This is needed to distinguis between a mixed model from an ordinal-ordinal one
+is_ordcon <- FALSE
+
+gam2.false <- eval(substitute(gam(formula.eq2, gamma = infl.fac, weights = weights, 
+                              data = data, knots = knots, fit = FALSE, drop.unused.levels = drop.unused.levels), list(weights = weights))) 
+y2.false <- gam2.false$y
+X2.false <- gam2.false$X
+K2 <- resp.CLM(y2.false)
+
+if(dim(X2.false)[2] == 1 & all(X2.false == 1)) stop("The second equation for the ordinal renspose must include at least one regressor alongside the intercept.")
+
+
+M$K2 <- K2 # K2 computed and added to M
+
+
+gam2 <- eval(substitute(gam(formula.eq2, family = ocat(R = K2), gamma = infl.fac, weights = weights, 
+                            data = data, knots = knots, drop.unused.levels = drop.unused.levels), list(weights = weights))) 
+
+
+X2    <- model.matrix(gam2); if(all(X2[, 1] == 1)) X2 <- as.matrix(X2[, -1]) 
+X2.d2 <- dim(X2)[2]
+
+l.sp2 <- length(gam2$sp)
+if(l.sp2 != 0) sp2 <- gam2$sp
+  
+y2 <- gam2$y
+
+# In the ordinal-ordinal model, the parameter vector takes the form (c1, c2, other parameters)'. As such, gp1 will account for the cut points for both equations 1 and 2.
+
+gp1 <- K1 + K2 + gam1$nsdf - 3 # cut-points are added (K1 - 1 + K2 - 1) and the intercept removed (- 1)
+gp2 <- gam2$nsdf - 1           # intercept removed
+   
+} 
+
+
+###
+
+M$is_ordcon <- is_ordcon
+M$is_ordord <- is_ordord
+
+###
+
+##### Starting values for cut points ##### 
 
 # N.B. the intercept is removed from the coefficient's vector
 
@@ -225,14 +274,32 @@ gam1$coefficients <- gam1$coefficients[-1]
 
 }
 
-c1 <- gam1$family$getTheta(TRUE) - gam1.int
+c1 <- gam1$family$getTheta(TRUE) - gam1.int #; c1.ind <- c1
 
 c1.ti <- rep(0, K1 - 1)
 c1.ti[1] <- c1[1] ; for(i in 2 : (K1 - 1)) {c1.ti[i] <- sqrt(c1[i] - c1[i - 1])}
 
 
-n.num <- seq(1, K1 - 1) 
-names(c1.ti) <- paste(paste("c1", n.num, sep = ""), "star", sep = ".")
+n.num_1 <- seq(1, K1 - 1) 
+names(c1.ti) <- paste(paste("c1", n.num_1, sep = ""), "star", sep = ".")
+
+
+if (is_ordord) {
+	if(names(gam2$coefficients)[1] == "(Intercept)") {
+		gam2.int <- gam2$coefficients[1]
+		gam2$coefficients <- gam2$coefficients[-1]
+	}
+
+	c2 <- gam2$family$getTheta(TRUE) - gam2.int #; c2.ind <- c2
+
+	c2.ti <- rep(0, K2 - 1)
+	c2.ti[1] <- c2[1] ; for(i in 2 : (K2 - 1)) {c2.ti[i] <- sqrt(c2[i] - c2[i - 1])}
+
+	n.num_2 <- seq(1, K2 - 1) 
+	names(c2.ti) <- paste(paste("c2", n.num_2, sep = ""), "star", sep = ".")
+}# else {
+#	c2.ind <- NULL
+#}
 
 
 ##### Starting values for dependence parameter #####
@@ -260,11 +327,9 @@ i.rho <- ass.dp(ass.s, BivD, scc, sccn, nCa)
 names(i.rho) <- "theta.star"  
 
 
-##### Starting values for whole parameter vector #####
+##### Starting values for whole parameter vector ##### 
 
-
-
-if(margins[1] %in% bl && margins[2] %in% c(m2)){
+if(margins[1] %in% bl && is_ordcon){ # Mixed ordinal-continuous case
 
 start.snR <- startsn(margins[2], y2)    
 log.sig2  <- start.snR$log.sig2.1; names(log.sig2) <- "sigma.star"
@@ -277,7 +342,12 @@ if(margins[2] %in% c(m2))  start.v <- c(c1.ti, gam1$coefficients, gam2$coefficie
 
 } 
 
-##################################################
+
+if (margins[1] %in% bl && is_ordord) { # Ordinal-ordinal case
+	start.v <- c(c1.ti, c2.ti, gam1$coefficients, gam2$coefficients, i.rho)    
+} 
+
+################################################## 
   
 if(l.flist > 2){  
  
@@ -285,7 +355,8 @@ vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2 = log.sig2, log.nu 
   
 overall.svGR <- overall.svG(formula, data, ngc = 2, margins, M, vo, gam1, gam2, type = "biv", inde = inde, c.gam2 = c.gam2, knots = knots)
     
-start.v = c(c1.ti, overall.svGR$start.v) # cut points added
+if (is_ordcon) { start.v = c(c1.ti, overall.svGR$start.v) } # cut points added
+if (is_ordord) { start.v = c(c1.ti, c2.ti, overall.svGR$start.v) } # cut points added
 X3 = overall.svGR$X3; X4 = overall.svGR$X4; X5 = overall.svGR$X5
 X6 = overall.svGR$X6; X7 = overall.svGR$X7; X8 = overall.svGR$X8
 X3.d2 = overall.svGR$X3.d2; X4.d2 = overall.svGR$X4.d2; X5.d2 = overall.svGR$X5.d2
@@ -319,7 +390,8 @@ L.SP <- list(l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, l.sp4 = l.sp4,
              l.sp5 = l.sp5, l.sp6 = l.sp6, l.sp7 = l.sp7, l.sp8 = l.sp8, l.sp9 = l.sp9 )
 
 sp <- c(sp1, sp2, sp3, sp4, sp5, sp6, sp7, sp8)
-qu.mag <- S.m(GAM, L.SP, L.GAM, K1 = K1) 
+if (is_ordcon) { qu.mag <- S.m(GAM, L.SP, L.GAM, K1 = K1) }
+if (is_ordord) { qu.mag <- S.m(GAM, L.SP, L.GAM, K1 = K1, K2 = K2) }
 
 
 
@@ -339,9 +411,9 @@ respvec <- list(y1      = y1     ,
                 cy1     = cy1    ,
                 cy      = cy     , univ = 0)
 
+### 1st ordinal equation
 
 sel <- model.matrix(~ as.factor(y1) - 1)
-
 
 sel.p <- as.matrix(sel[, 3 : K1])
 sel.m <- as.matrix(sel[, 2 : (K1 - 1)])
@@ -351,22 +423,42 @@ sel.m[, (K1 - 2)] <- as.matrix(sel[, (K1 - 1)])
 
 sel.mm <- sel.pm <- matrix(nrow = n, ncol = K1 - 3, 0)
 
-
-
 if( K1 > 3 ){
    for (l in 1:(K1 - 3)) {sel.pm [, l] <- rowSums(sel.p[, l : (K1 - 2)])} ; sel.p[, 1 : (K1 - 3)] <- sel.pm
    for (l in 1:(K1 - 3)) {sel.mm [, l] <- rowSums(sel.m[, l : (K1 - 2)])} ; sel.m[, 1 : (K1 - 3)] <- sel.mm
             }
 
-
 c1 <- rep(0, K1 - 1)
-
-
 
 D11 <- rowSums(sel[, 1 : (K1 - 1)])
 D12 <- rowSums(sel[, 2 : K1])
 
 
+### 2nd ordinal equation 
+
+if (is_ordord) {
+	sel2 <- model.matrix(~ as.factor(y2) - 1)
+
+	sel2.p <- as.matrix(sel2[, 3 : K2])
+	sel2.m <- as.matrix(sel2[, 2 : (K2 - 1)])
+
+	sel2.p[, (K2 - 2)] <- as.matrix(sel2[, K2])
+	sel2.m[, (K2 - 2)] <- as.matrix(sel2[, (K2 - 1)])
+
+	sel2.mm <- sel2.pm <- matrix(nrow = n, ncol = K2 - 3, 0)
+
+	if ( K2 > 3 ) {
+   		for (l in 1:(K2 - 3)) {sel2.pm [, l] <- rowSums(sel2.p[, l : (K2 - 2)])} ; sel2.p[, 1 : (K2 - 3)] <- sel2.pm
+   		for (l in 1:(K2 - 3)) {sel2.mm [, l] <- rowSums(sel2.m[, l : (K2 - 2)])} ; sel2.m[, 1 : (K2 - 3)] <- sel2.mm
+	}
+
+	c2 <- rep(0, K2 - 1)
+
+	D21 <- rowSums(sel2[, 1 : (K2 - 1)])
+	D22 <- rowSums(sel2[, 2 : K2])
+}
+
+### 
 
 my.env <- new.env()
 my.env$signind <- 1
@@ -382,7 +474,7 @@ lsgam8 <- length(gam8$smooth)
 lsgam9 <- length(gam9$smooth)
 
 
-VC <- list(lsgam1 = lsgam1, robust = FALSE, sel = sel, sel.p = sel.p, sel.m = sel.m, sel.mm = sel.mm, sel.pm = sel.pm, c1 = c1, D11 = D11, D12 = D12, 
+VC <- list(lsgam1 = lsgam1, robust = FALSE,  
            lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
            lsgam3 = lsgam3, 
            lsgam4 = lsgam4,
@@ -390,7 +482,10 @@ VC <- list(lsgam1 = lsgam1, robust = FALSE, sel = sel, sel.p = sel.p, sel.m = se
            lsgam6 = lsgam6,
            lsgam7 = lsgam7, 
            lsgam8 = lsgam8, lsgam9 = lsgam9, 
+           sel1 = sel , sel1.p = sel.p , sel1.m = sel.m , sel1.mm = sel.mm , sel1.pm = sel.pm , c1 = c1, D11 = D11, D12 = D12, # added for CopulaCLM
+           sel2 = sel2, sel2.p = sel2.p, sel2.m = sel2.m, sel2.mm = sel2.mm, sel2.pm = sel2.pm, c2 = c2, D21 = D21, D22 = D22, # added for CopulaCLM
            K1 = K1, # added for CopulaCLM
+           K2 = K2, # added for CopulaCLM
            X1 = X1, inde = inde, my.env = my.env,
            X2 = X2, 
            X3 = X3,
@@ -439,86 +534,198 @@ VC <- list(lsgam1 = lsgam1, robust = FALSE, sel = sel, sel.p = sel.p, sel.m = se
            BivD2 = BivD2, cta = cta, ct = ct, zerov = -10, surv.flex = surv.flex, gp2.inf = NULL,
            informative = "no", sp.fixed = NULL,
            zero.tol = 1e-02,
-           min.dn = min.dn, min.pr = min.pr, max.pr = max.pr) # original n only needed in SemiParBIV.fit
+           min.dn = min.dn, min.pr = min.pr, max.pr = max.pr,
+           is_ordcon = is_ordcon, 
+           is_ordord = is_ordord) # original n only needed in SemiParBIV.fit
            
 if(gc.l == TRUE) gc()           
              
-##################################################
+################################################## 
 
-if(gamlssfit == TRUE && !(margins[2] %in% bl)){
-
-form.gamlR <- form.gaml(formula, l.flist, M, type = "biv")
-
-gamlss2 <- eval(substitute(gamlss(form.gamlR$formula.gamlss2, data = data, weights = weights, subset = subset,
-                 margin = margins[2], infl.fac = infl.fac,
-                 rinit = rinit, rmax = rmax, iterlimsp = iterlimsp, tolsp = tolsp,
-                 gc.l = gc.l, parscale = 1, extra.regI = extra.regI, drop.unused.levels = drop.unused.levels), list(weights = weights)))
-
-
-# Updated starting values
-
-MM <- M; MM$BivD <- "N" # this is for T case, dof is never estimated...
-  
-SP <- list(sp1 = sp1, sp2 = sp2, sp3 = sp3, sp4 = sp4, sp5 = sp5, sp6 = sp6, sp7 = sp7, sp8 = sp8)
-gamls.upsvR <- gamls.upsv(gamlss1 = NULL, gamlss2, margins, MM, l.flist, nstv = NULL, VC, GAM, SP, type = "biv")
-sp <- gamls.upsvR$sp
-start.v <- c(c1.ti, gamls.upsvR$start.v) # cut points added
-
-}
+#if(gamlssfit == TRUE && !(margins[2] %in% bl)){ # This option is not available for the ordinal-ordinal model
+#
+#form.gamlR <- form.gaml(formula, l.flist, M, type = "biv")
+#
+#gamlss2 <- eval(substitute(gamlss(form.gamlR$formula.gamlss2, data = data, weights = weights, subset = subset,
+#                 margin = margins[2], infl.fac = infl.fac,
+#                 rinit = rinit, rmax = rmax, iterlimsp = iterlimsp, tolsp = tolsp,
+#                 gc.l = gc.l, parscale = 1, extra.regI = extra.regI, drop.unused.levels = drop.unused.levels), list(weights = weights)))
+#
+#
+## Updated starting values
+#
+#MM <- M; MM$BivD <- "N" # this is for T case, dof is never estimated...
+#  
+#SP <- list(sp1 = sp1, sp2 = sp2, sp3 = sp3, sp4 = sp4, sp5 = sp5, sp6 = sp6, sp7 = sp7, sp8 = sp8)
+#gamls.upsvR <- gamls.upsv(gamlss1 = NULL, gamlss2, margins, MM, l.flist, nstv = NULL, VC, GAM, SP, type = "biv")
+#sp <- gamls.upsvR$sp
+#start.v <- c(c1.ti, gamls.upsvR$start.v) # cut points added
+#
+#}
 
 
 ##########################################################################################
 # Model estimation
-##########################################################################################
+########################################################################################## 
 
 
 func.opt <- func.OPT(margins, M, type = "biv")
 
 
-##############################
+############################## 
 
-# Independence model
+# Independence model #
 
-if (ind.ord == "TRUE") {
-	VC$ind.ord <- TRUE
-	VC$BivD <- "J0" # This is just used to fool the fitting procedure: no matter which copula is used in the independence model
-	VC$nCa <- cta[which(cta[, 1] == VC$BivD), 2] 
+# The part of the code below serves two purposes:
+#    (i)  Estimating a bivariate model under independence (both OrdCon and OrdOrd); and
+#    (ii) Producing better-calibrated start values bor the bivariate model without independence. This is achieved 
+#         by fitting a gamlss for the OrdCon model, and using the estimated parameter vector under independence 
+#         for the OrdOrd model.
 
-	if (is.null(VC$X3)) {
-		drop.ind <- VC$K1 + VC$X1.d2 + VC$X2.d2 + 1
+if (gamlssfit == "TRUE") {
+	VC.ind <- VC
+
+	VC.ind$ind.ord <- TRUE
+	VC.ind$BivD <- "J0" # This is just used to fool the fitting procedure: no matter which copula is used in the independence model
+	VC.ind$nC  <- ct [which(ct [, 1] == VC.ind$BivD), 2]
+	VC.ind$nCa <- cta[which(cta[, 1] == VC.ind$BivD), 2]
+
+	if (is_ordcon) {
+		if (is.null(X3)) {
+			drop.ind <- K1 + X1.d2 + X2.d2 + 1
+		} else {
+			drop.ind <- (K1 + X1.d2 + X2.d2 + X3.d2) : (K1 + X1.d2 + X2.d2 + X3.d2 + X4.d2 - 1)
+		}
 	} else {
-		drop.ind <- (VC$K1 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2):(VC$K1 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 - 1)
+		if(is.null(X3)) {
+			drop.ind <- K1 + K2 + X1.d2 + X2.d2 - 1
+		} else {
+			drop.ind <- (K1 + K2 + X1.d2 + X2.d2 - 1) : (K1 + K2 + X1.d2 + X2.d2 + X3.d2 - 2)
+		}
 	}
-	
-	VC$drop.ind <- drop.ind
-	start.v <- start.v[-drop.ind]
 
-	w.off <- which(qu.mag$off > length(start.v))
+	VC.ind$drop.ind <- drop.ind
+	start.v.ind <- start.v[-drop.ind]
 
-	if (length(w.off) > 0) {
-		qu.mag$rank <- qu.mag$rank[-w.off]
-		qu.mag$off  <- qu.mag$off [-w.off]
-		qu.mag$Ss   <- qu.mag$Ss  [-w.off]
+	if (is_ordcon) { # The gamlss will be fitted only when the second marginal is continuous 
+		form.gamlR <- form.gaml(formula, l.flist, M, type = "biv")
+
+		gamlss2 <- eval(substitute(gamlss(form.gamlR$formula.gamlss2, data = data, weights = weights, subset = subset,
+                 		margin = margins[2], infl.fac = infl.fac,
+                 		rinit = rinit, rmax = rmax, iterlimsp = iterlimsp, tolsp = tolsp,
+                 		gc.l = gc.l, parscale = 1, extra.regI = extra.regI, drop.unused.levels = drop.unused.levels), list(weights = weights)))
+
+		# Updated starting values
+
+		MM <- M; MM$BivD <- "N" # this is for T case, dof is never estimated...
+  
+		SP <- list(sp1 = sp1, sp2 = sp2, sp3 = sp3, sp4 = sp4, sp5 = sp5, sp6 = sp6, sp7 = sp7, sp8 = sp8)
+
+		GAM.ind <- GAM
+		GAM.ind$gam1$coefficients <- GAM.ind$gam4$coefficients <- NULL # When gamlssfit == "TRUE" only the continuous response is estimated under gamlss2
 		
-		sp <- sp[-w.off]
+		gamls.upsvR <- gamls.upsv(gamlss1 = NULL, gamlss2, margins, MM, l.flist, nstv = NULL, VC, GAM.ind, SP, type = "biv")
+		sp.ind <- gamls.upsvR$sp
 
-		l.spvec <- c(VC$l.sp1, VC$l.sp2, VC$l.sp3, VC$l.sp4, VC$l.sp5, VC$l.sp6, VC$l.sp7, VC$l.sp8)
-			l.spvec[length(formula) : length(l.spvec)] <- rep(0) #l.spvec[w.off : length(l.spvec)] <- rep(0) # The equation for theta is the last input in formula.
-		VC$l.sp1 <- l.spvec[1]
-		VC$l.sp2 <- l.spvec[2]
-		VC$l.sp3 <- l.spvec[3]
-		VC$l.sp4 <- l.spvec[4]
-		VC$l.sp5 <- l.spvec[5]
-		VC$l.sp6 <- l.spvec[6]
-		VC$l.sp7 <- l.spvec[7]
-		VC$l.sp8 <- l.spvec[8]
+		w.theta.star <- which(names(gamls.upsvR$start.v) == "theta.star")                        #
+		if (length(w.theta.star) != 0) gamls.upsvR$start.v <- gamls.upsvR$start.v[-w.theta.star] # theta.star is removed fom the estimated parameters
+
+		if (is.null(X3)) {
+			start.v.ind[(K1 + X1.d2) : (K1 + X1.d2 + X2.d2)] <- gamls.upsvR$start.v # When X3 is null, sigma.star is estimated as a scalar
+		} else {
+			start.v.ind[(K1 + X1.d2) : (K1 + X1.d2 + X2.d2 + X3.d2 - 1)] <- gamls.upsvR$start.v
+		}
 	}
+
+	qu.mag.ind <- qu.mag
+	w.off.ind <- which(qu.mag.ind$off > length(start.v.ind))
+
+	if (length(w.off.ind) > 0) {
+		qu.mag.ind$rank <- qu.mag.ind$rank[-w.off.ind]
+		qu.mag.ind$off  <- qu.mag.ind$off [-w.off.ind]
+		qu.mag.ind$Ss   <- qu.mag.ind$Ss  [-w.off.ind]
+		
+		sp.ind <- sp[-w.off.ind] # QUESTION: does this create an issue given that I define sp.ind also above when is_ordcon?
+
+		l.spvec <- c(VC.ind$l.sp1, VC.ind$l.sp2, VC.ind$l.sp3, VC.ind$l.sp4, VC.ind$l.sp5, VC.ind$l.sp6, VC.ind$l.sp7, VC.ind$l.sp8)
+			l.spvec[length(formula) : length(l.spvec)] <- rep(0) #l.spvec[w.off : length(l.spvec)] <- rep(0) # The equation for theta is the last input in formula.
+		VC.ind$l.sp1 <- l.spvec[1]
+		VC.ind$l.sp2 <- l.spvec[2]
+		VC.ind$l.sp3 <- l.spvec[3]
+		VC.ind$l.sp4 <- l.spvec[4]
+		VC.ind$l.sp5 <- l.spvec[5]
+		VC.ind$l.sp6 <- l.spvec[6]
+		VC.ind$l.sp7 <- l.spvec[7]
+		VC.ind$l.sp8 <- l.spvec[8]
+	} else {
+		sp.ind <- sp # NULL
+	}
+
+	# The independence model is fitted
+
+	fit_ind <- SemiParBIV.fit(func.opt = func.opt, start.v = start.v.ind,
+                              	  rinit = rinit, rmax = rmax, iterlim = 100, iterlimsp = iterlimsp, tolsp = tolsp,
+                                  respvec = respvec, VC = VC.ind, sp = sp.ind, qu.mag = qu.mag.ind)
+
+	coeff.ind <- fit_ind$fit$argument
+
+	if (is_ordcon) { # The start values of the bivariate model are updated
+		start.v[1 : (min(drop.ind) - 1)] <- coeff.ind
+	} else {
+		start.v[1 : (K1 + K2 + X1.d2 + X2.d2 - 2)] <- coeff.ind
+	}
+
+	# Cut points are transformed back and added to the parameter vector
+
+	infty <- 1e+25
+
+	c1.ti <- coeff.ind[1 : (K1 - 1)]
+	c1 <- rep(0, K1 - 1) ; c1[1] <- c1.ti[1] ; for (i in 2 : (K1 - 1)) c1[i] <- c1[i - 1] + c1.ti[i]^2
+	c1 <- sign(c1) * pmin(10000 * infty, abs(c1))
+
+	coeff.ind[1 : (K1 - 1)] <- c1
+	names(coeff.ind)[1 : (K1 - 1)] <- paste("c1", n.num_1, sep = "")
+
+	if (is_ordord) {
+		c2.ti <- coeff.ind[K1 : (K1 + K2 - 2)]
+		c2 <- rep(0, K2 - 1) ; c2[1] <- c2.ti[1] ; for (i in 2 : (K2 - 1)) c2[i] <- c2[i - 1] + c2.ti[i]^2
+		c2 <- sign(c2) * pmin(10000 * infty, abs(c2))
+
+		coeff.ind[K1 : (K1 + K2 - 2)] <- c2
+		names(coeff.ind)[K1 : (K1 + K2 - 2)] <- paste("c2", n.num_2, sep = "")
+	}
+
+	# Post-estimation
+
+	CopulaCLMFit.p.ind <- SemiParBIV.fit.post(SemiParFit = fit_ind, Model = Model, VC = VC.ind, GAM)     
+
+	# The coefficients of the independence model are stored in a more user-friendly way
+
+	if (is_ordcon) { 
+		coefficients.ind <- list(c1 = coeff.ind[1 : (K1 - 1)],
+                                         beta1 = coeff.ind[K1 : (K1 + X1.d2 - 1)],
+                                         beta2 = coeff.ind[(K1 + X1.d2) : (K1 + X1.d2 + X2.d2 - 1)])
+		if (!is.null(X3)){
+			coefficients.ind$sigma2 <- coeff.ind[(K1 + X1.d2 + X2.d2) : (K1 + X1.d2 + X2.d2 + X3.d2 - 1)]
+		}
+	} else {
+		coefficients.ind <- list(c1 = coeff.ind[1 : (K1 - 1)],
+                                         c2 = coeff.ind[K1 : (K1 + K2 - 2)],
+                                         beta1 = coeff.ind[(K1 + K2 - 1) : (K1 + K2 + X1.d2 - 2)],
+                                         beta2 = coeff.ind[(K1 + K2 + X1.d2 - 1) : (K1 + K2 + X1.d2 + X2.d2 - 2)])
+	}
+
+	# When the independence model is estimated, the bivariate model is subsequently estimated hence I should set ind.ord to FALSE.
+
+	VC$ind.ord <- FALSE
+	Vb.ind <- CopulaCLMFit.p.ind$Vb
 } else {
 	VC$ind.ord <- FALSE
+	coefficients.ind <- NULL
+	Vb.ind <- NULL
 }
 
-##########################################################################################
-
+########################################################################################## 
 
 CopulaCLMFit <- SemiParBIV.fit(func.opt = func.opt, start.v = start.v,
                                rinit = rinit, rmax = rmax, iterlim = 100, iterlimsp = iterlimsp, tolsp = tolsp,
@@ -527,17 +734,27 @@ CopulaCLMFit <- SemiParBIV.fit(func.opt = func.opt, start.v = start.v,
 
 # Cut points are transformed back and added to the parameter vector
 
-infty  <- 1e+25
+infty <- 1e+25
 
 c1.ti <- CopulaCLMFit$fit$argument[1 : (K1 - 1)]
-c1  <- rep(0, K1 - 1) ; c1[1] <- c1.ti[1] ; for (i in 2 : (K1 - 1)) c1[i] <- c1[i - 1] + c1.ti[i]^2
-c1  <- sign(c1) * pmin(10000 * infty, abs(c1))
+c1 <- rep(0, K1 - 1) ; c1[1] <- c1.ti[1] ; for (i in 2 : (K1 - 1)) c1[i] <- c1[i - 1] + c1.ti[i]^2
+c1 <- sign(c1) * pmin(10000 * infty, abs(c1))
 
 CopulaCLMFit$fit$argument[1 : (K1 - 1)] <- c1
-names(CopulaCLMFit$fit$argument)[1 : (K1 - 1)] <- paste("c1", n.num, sep = "")
+names(CopulaCLMFit$fit$argument)[1 : (K1 - 1)] <- paste("c1", n.num_1, sep = "")
+
+if (is_ordord) {
+	c2.ti <- CopulaCLMFit$fit$argument[K1 : (K1 + K2 - 2)]
+	c2 <- rep(0, K2 - 1) ; c2[1] <- c2.ti[1] ; for (i in 2 : (K2 - 1)) c2[i] <- c2[i - 1] + c2.ti[i]^2
+	c2 <- sign(c2) * pmin(10000 * infty, abs(c2))
+
+	CopulaCLMFit$fit$argument[K1 : (K1 + K2 - 2)] <- c2
+	names(CopulaCLMFit$fit$argument)[K1 : (K1 + K2 - 2)] <- paste("c2", n.num_2, sep = "")
+
+} 
 
 
-##########################################################################################
+########################################################################################## 
 # Post estimation
 ##########################################################################################
 
@@ -548,7 +765,7 @@ y2.m <- y2
 if(margins[2] == "LN") y2.m <- exp(y2)
 
 
-##################################################
+################################################## 
 
 if(gc.l == TRUE) gc()
 
@@ -586,7 +803,8 @@ L <- list(fit = CopulaCLMFit$fit, dataset = dataset, formula = formula, CopulaCL
           OR = CopulaCLMFit.p$OR,
           GM = CopulaCLMFit.p$GM,
           n = n, n.sel = n.sel,
-          K1 = K1,
+          #c1.ind = c1.ind, c2.ind = c2.ind,
+          K1 = K1, K2 = K2,
           X1 = X1, X2 = X2, X3 = X3, X1.d2 = X1.d2, X2.d2 = X2.d2, X3.d2 = X3.d2,
           X4 = X4, X5 = X5, X6 = X6, X7 = X7, X8 = X8, X4.d2 = X4.d2, X5.d2 = X5.d2,
           X6.d2 = X6.d2, X7.d2 = X7.d2, X8.d2 = X8.d2,
@@ -621,7 +839,10 @@ L <- list(fit = CopulaCLMFit$fit, dataset = dataset, formula = formula, CopulaCL
           gamlssfit = gamlssfit, Cont = "NO", tau = CopulaCLMFit.p$tau, 
           tau.a = CopulaCLMFit.p$tau.a, l.flist = l.flist, v1 = v1, v2 = v2, triv = FALSE, univar.gamlss = FALSE,
           gamlss = gamlss2, BivD2 = BivD2, dof = dof, dof.a = dof, call = cl,
-          surv = FALSE, surv.flex = surv.flex, ordinal = TRUE, drop.unused.levels = drop.unused.levels, Model = Model)
+          surv = FALSE, surv.flex = surv.flex, ordinal = TRUE, drop.unused.levels = drop.unused.levels, Model = Model,
+          is_ordcon = is_ordcon,
+          is_ordord = is_ordord,
+          coefficients.ind = coefficients.ind, Vb.ind = Vb.ind)
 
 
 if(BivD %in% BivD2){

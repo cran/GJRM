@@ -3,8 +3,8 @@ prev, distrHs, numch, numgh,distrHsAT,distrHsAT1,distrHsDiscr,distrHsATDiscr,dis
 adjCov, copgHsCont, BCDF, BiCDF, jc.probs,probm,probmS,postVb,ass.ms,edf.loop,pred.var,form.check,
 adjCovSD,int.postcheck, overall.svG, susutsn, susu,pscr, pscr0, mice.impute.copulaSS, r.resp,
 gt.bpm, esp.tr, eta.tr, teta.tr,copgHsAT,dof.tr,ass.dp,form.eq12,startsn, overall.sv,
-bprobgHs,bprobgHstwoParC, mb, H.tri, g.tri, triprobgHs, g.triSS, 
-g.triESS, pp, SS, bcontSurvGunivInform, rIC, bCopulaCLMgHsCont, pen,
+bprobgHs,bprobgHstwoParC, mb, H.tri, g.tri, triprobgHs, H.triSS, g.triSS, 
+H.triESS, g.triESS, pp, SS, bcontSurvGunivInform, rIC, bCopulaCLMgHsCont, bCopulaCLMgHsOrd, pen,
 bprobgHsPO, bcorrec, bcorrecDiscr,  Xdpred, pred.mvt, pred.gp, inform.setup, cv.inform, PDef, ggm.Deriv, ggmtrust, ggm.DerivOPT1, ggm.DerivOPT2,
 bprobgHsSS, intB, rob.int, resp.CLM, ggmtrust.path, Dpens, Dpens2,
 bprobgHsContUniv, lmc, bcontSurvGunivMIXED_ExcessHazard, survExcInd, pream.wm,
@@ -75,6 +75,8 @@ importFrom(copula, tau, plackettCopula, iTau, galambosCopula)
 importFrom(VineCopula, BiCopHfunc1, BiCopHfunc2, BiCopHfuncDeriv, BiCopCDF, BiCopTau2Par, BiCopPar2Tau, BiCopPDF, BiCopDeriv, BiCopDeriv2, BiCopHfuncDeriv2)
 importFrom(matrixStats, rowQuantiles, colQuantiles, colWeightedMeans)
 importFrom(gamlss.dist, pNBI, dNBI, pNBII, dNBII, pPIG, dPIG, pDEL, dDEL, pSICHEL, dSICHEL, pPO, rNO,rGU,rRG,rLO,rLOGNO,rWEI,rIG,rGA,rGB2,rBE,rNBI,rNBII,rPIG,rPO)
+
+importFrom(methods, extends)
 
 importFrom(distrEx, distrExIntegrate)
 

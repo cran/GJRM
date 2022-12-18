@@ -78,7 +78,7 @@ if(x$surv.flex == FALSE){##
 mbin <- c("probit", "logit", "cloglog")
 
 
-if(x$VC$margins[1] %in% mbin &&  x$VC$margins[2] %in% mbin ) stop("It does not make much sense to check the residuals for a binary response model.")
+if(x$VC$margins[1] %in% mbin &&  x$VC$margins[2] %in% mbin ) stop("Diagnostic plot(s) not available given the chosen margin(s).")
 
 
 if(x$Cont == "NO"){
@@ -505,7 +505,7 @@ if(x$univar.gamlss == TRUE){
 
 if(x$surv.flex == FALSE){ ###
 
-if(x$VC$margins[1] %in% c("GEVlink") ) stop("It does not make much sense to check the residuals for a binary response model.")
+if(x$VC$margins[1] %in% c("GEVlink") ) stop("Diagnostic plot(s) not available given the chosen margin(s).")
 
 y1 <- x$y1
 

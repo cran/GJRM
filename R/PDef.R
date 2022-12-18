@@ -16,13 +16,13 @@ PDef <- function(omega){
     
     e.val[e.val <= 0] <- p*(s - n.e.val)^2/t
     
-    D     <- diag(e.val)
-    D.inv <- diag(1/e.val)
+    D     <- diag(e.val, nrow = length(e.val), ncol = length(e.val))
+    D.inv <- diag(1/e.val, nrow = length(e.val), ncol = length(e.val))
 
     res     <- e.vec %*% D     %*% t(e.vec) 
     res.inv <- e.vec %*% D.inv %*% t(e.vec)
       
-  } else {res <- omega; res.inv <- e.vec %*% diag(1/e.val) %*% t(e.vec)} 
+  } else {res <- omega; res.inv <- e.vec %*% diag(1/e.val, nrow = length(e.val), ncol = length(e.val)) %*% t(e.vec)} 
   
   
 res.inv <- (res.inv + t(res.inv) ) / 2 

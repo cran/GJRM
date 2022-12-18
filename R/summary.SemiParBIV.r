@@ -18,7 +18,7 @@ summary.SemiParBIV <- function(object, n.sim = 100, prob.lev = 0.05, gm = FALSE,
 # CIs
 #######
 
-   susutsnR <- susutsn(object, bs = NULL, lf, cont1par, cont2par, cont3par, prob.lev, type = "biv", bin.link = bin.link, n.sim = n.sim, K1 = object$VC$K1)
+   susutsnR <- susutsn(object, bs = NULL, lf, cont1par, cont2par, cont3par, prob.lev, type = "biv", bin.link = bin.link, n.sim = n.sim, K1 = object$VC$K1, K2 = object$VC$K2)
    CIrs     <- susutsnR$CIrs
    CIkt     <- susutsnR$CIkt
    CIsig2   <- susutsnR$CIsig2
@@ -79,7 +79,7 @@ if(object$VC$gc.l == TRUE) gc()
  
 #########################
                  
-  susuR <- susu(object, SE, Vb, K1 = object$VC$K1)
+  susuR <- susu(object, SE, Vb, K1 = object$VC$K1, K2 = object$VC$K2)
   
   tableN <- susuR$tableN
   table  <- susuR$table
@@ -107,7 +107,7 @@ rm(bs, SE, Vb, et1s, et2s, p1s, p2s, p11s, p10s, p00s, p01s, ORs, GMs)
               l.sp1 = object$l.sp1, l.sp2 = object$l.sp2, l.sp3 = object$l.sp3, 
               l.sp4 = object$l.sp4, l.sp5 = object$l.sp5, l.sp6 = object$l.sp6, 
               l.sp7 = object$l.sp7, l.sp8 = object$l.sp8, univar.gamlss = FALSE,
-              bl = bin.link, K1 = object$VC$K1, 
+              bl = bin.link, K1 = object$VC$K1, K2 = object$VC$K2, 
               dof=object$dof, dof.a=object$dof)
 
 class(res) <- "summary.SemiParBIV"

@@ -2,13 +2,20 @@ edf.loop <- function(VC, F, F1, GAM){
 
 # CLM.shift accounts for the presence of the cut-points and the removed intercept in the ordinal model
 
-if (!is.null(VC$K1)) {
+is_ordcon <- !is.null(VC$K1) & is.null(VC$K2)
+is_ordord <- !is.null(VC$K1) & !is.null(VC$K2)
 
-        K1 <- VC$K1  
+if (is_ordcon) {
+	K1 <- VC$K1
 	CLM.shift  <- K1 - 2
-	CLM.shift2 <- CLM.shift + 1 # This is needed because in CopulaCLM the intercept has been already removed from X1.d2
+	CLM.shift2 <- CLM.shift3 <- CLM.shift + 1 # This is needed because in CopulaCLM the intercept has been already removed from X1.d2	
+} else if (is_ordord) {
+	K1 <- VC$K1
+	K2 <- VC$K2
+	CLM.shift  <- CLM.shift2 <- K1 + K2 - 3
+	CLM.shift3 <- CLM.shift2 + 1
 } else {
-	CLM.shift <- 0 ; CLM.shift2 <- 0
+	CLM.shift <- 0 ; CLM.shift2 <- 0 ; CLM.shift3 <- 0
 }
 
 
@@ -35,13 +42,13 @@ if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || 
 
               if(i==1){ gam <- GAM$gam1; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift } 
               if(i==2){ gam <- GAM$gam2; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + VC$X1.d2 } 
-              if(i==3){ gam <- GAM$gam3; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + VC$X1.d2 + VC$X2.d2 } 
-              if(i==4){ gam <- GAM$gam4; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 } 
-              if(i==5){ gam <- GAM$gam5; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 } 
-              if(i==6){ gam <- GAM$gam6; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 } 
-              if(i==7){ gam <- GAM$gam7; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 } 
-              if(i==8){ gam <- GAM$gam8; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 } 
-              if(i==9){ gam <- GAM$gam9; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 + VC$X8.d2 } 
+              if(i==3){ gam <- GAM$gam3; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + VC$X1.d2 + VC$X2.d2 } 
+              if(i==4){ gam <- GAM$gam4; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 } 
+              if(i==5){ gam <- GAM$gam5; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 } 
+              if(i==6){ gam <- GAM$gam6; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 } 
+              if(i==7){ gam <- GAM$gam7; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 } 
+              if(i==8){ gam <- GAM$gam8; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 } 
+              if(i==9){ gam <- GAM$gam9; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 + VC$X8.d2 } 
               
               
 	      edf[[i]][k]  <-  sum(diag(F)[ind])

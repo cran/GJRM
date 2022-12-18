@@ -7,10 +7,10 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                              gc.l = FALSE, parscale, extra.regI = "t", k1.tvc = 0, k2.tvc = 0, 
                              knots = NULL, penCor = "unpen",
                              sp.penCor = 3, Chol = FALSE, gamma = 1, w.alasso = NULL,
-                             drop.unused.levels = TRUE, ind.ord = FALSE,
+                             drop.unused.levels = TRUE, 
                              min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999){
   
-  if(dep.cens == TRUE) stop("The dependent censoring case is work in progress. \nGet in touch should you wish to get more info.")
+  # if(dep.cens == TRUE) stop("The dependent censoring case is work in progress. \nGet in touch should you wish to get more info.")
  
   if(missing(margins)) stop("You must choose the margins' values.")
   if(missing(Model))   stop("You must choose a Model type.")
@@ -65,7 +65,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                                fp, hess = TRUE, infl.fac, 
                                rinit, rmax, iterlimsp, tolsp,
                                gc.l, parscale, extra.regI, intf = TRUE, 
-                               theta.fx = NULL, knots = knots, drop.unused.levels = drop.unused.levels, ind.ord = ind.ord,
+                               theta.fx = NULL, knots = knots, drop.unused.levels = drop.unused.levels, 
                                min.dn = min.dn, min.pr = min.pr, max.pr = max.pr),list(weights=weights)))                                
                                                                         }
   }  

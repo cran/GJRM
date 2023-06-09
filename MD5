@@ -1,11 +1,11 @@
-8d7b149297f2f4d8b97be69a1fd8527a *ChangeLog
-d5cb10e67468fdec355c1b26491a76d3 *DESCRIPTION
-1fb9a4452782c2d604af0c90a77bd8f9 *NAMESPACE
+5aebfadf0df55dc1ae3f8dad4c82347f *ChangeLog
+4d2e982c27f114ecffd6d54d9299244d *DESCRIPTION
+73e90dfe58526ee29b8e3c0997e9666b *NAMESPACE
 f72c36e3013011f611aafd9b0bd2e0bf *R/AT.r
 938e7e920df46d95df0ea1e2106da4a1 *R/BCDF.r
 83e811348a06e10bec7b3c3a2836d7b4 *R/BiCDF.r
 9fbb4b43d9255161c7bb69547025e1f9 *R/Cop1Cop2.r
-5d088aa4e9a57f137f23875dbcc69995 *R/CopulaCLM.r
+6d58c971e82e0427a58e0102a961603e *R/CopulaCLM.r
 5f91e23011d9da8764858722b3c43e83 *R/Dpens.R
 5d6ef57b32af5cb53fc82b74d5448c35 *R/Dpens2.R
 cfe2c3e6056dc8114c8012cf2d185eef *R/H.tri.r
@@ -38,7 +38,7 @@ e0ef4b3c5644b7f16f79849e409389b5 *R/approx.CLM.r
 816d66e1756d57f1cf5da0a894c6b18a *R/ass.dp.r
 93751ef1db1a9ce708f7dd737ef8884e *R/ass.ms.r
 ba6414646ad0a1e7e0b33e8ec27649d0 *R/bCopulaCLMgHsCont.R
-7b4ff2e7fe586b16f7c64f39b27b5371 *R/bCopulaCLMgHsOrd.R
+4b94f73c21250c32d4eaa6a97b28f4e1 *R/bCopulaCLMgHsOrd.R
 2305256872c81730b8ea913cc61c49ff *R/bcont.R
 ce7d9579e831e1175a7560ab0471e8b0 *R/bcont23.R
 2b612a20493f078e007b47b440fb6cf4 *R/bcont23twoParC.R
@@ -120,7 +120,7 @@ d57153d86475a415d3a4bf4eb63d66ab *R/esp.tr.R
 1dc8f6de85e2d3ea5c41d83f7bb1a6f1 *R/form.check.r
 fec343e21dcb1bb4d4da7f1812223bc2 *R/form.eq12.r
 23d348a7c4e96f5cf760b667c881196f *R/form.gaml.r
-5f3e6febf2884295e7f4addca71483b2 *R/func.OPT.r
+4c2df339e504ca5adfca636693a46ac5 *R/func.OPT.r
 c990ccf5bab507cad01bef3654cfe9c9 *R/g.tri.r
 be43ca01fd030f77195d9ec8fe22a4fb *R/g.triESS.r
 62de036264a9518964ff080b83a1bd0a *R/g.triSS.r
@@ -169,7 +169,7 @@ d9985468ef021411f13aead9c6876cda *R/plot.SemiParBIV.r
 bff83c2db3d293f0a174a143ceccbdf7 *R/postVb.r
 6f18b7ec562bbfcaf9e654920047f65f *R/pp.r
 81b38928872166fdfdff70fd8ccca5fe *R/ppROY.r
-0448c504e01ae905f9e5c793a181529a *R/pream.wm.r
+7685c1d1766a256bc0240f9b58393b85 *R/pream.wm.r
 21bf1600954e3d503f5767295d70591d *R/pred.gp.r
 5fd1638b19c0734271cf5839ecc175d9 *R/pred.mvt.r
 64fead487cdcb38e75b4abedc48a07c1 *R/pred.var.r
@@ -227,12 +227,12 @@ fac40c85e2e7ff09ba436e66b73d728f *data/hiv.RData
 b179c58d87d39fbff8f44f6f10529aa5 *data/hiv.polys.RData
 2e1a7bb7b7bcae604aefabd6f2b69c35 *data/meps.RData
 3f175a39dcd95d4e4e27749c14e896c3 *data/war.RData
-7ade6863900392fc13ebdb53e8fc5a95 *inst/CITATION
+630957c1c94ee0614ed727a23fab36c2 *inst/CITATION
 b096f5d0cf9dab9e2ead8f7327cacde2 *man/AT.Rd
 84c23741db9b3795ce24f8eb53529a8c *man/BCDF.Rd
 007b15dfc346371a92257dfffa28cf7d *man/CopulaCLM.Rd
 62a50f14a88a8185dcee6be7575d39c6 *man/Dpens.Rd
-9bc8846036535cf7bf563e65ec435cdd *man/GJRM-package.Rd
+5f328a74abe6849654cd6a8babfc4468 *man/GJRM-package.Rd
 b4cc4468ff8f8d40ed851b65dcf6efc4 *man/H.tri.Rd
 3da81863857d4da4d47df163505b2493 *man/LM.bpm.Rd
 0dcce77c96d7b479ad5d4ce700c8b9cd *man/OR.Rd

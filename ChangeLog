@@ -1,3 +1,6 @@
+version 0.2-6.2
+- ordinal model improved.
+
 version 0.2-6.1
 - bug in summary function fixed. Thanks to Trevor Fitzpatrick.
 - models with ordinal margins implemented.

@@ -261,6 +261,12 @@ gp2 <- gam2$nsdf - 1           # intercept removed
 M$is_ordcon <- is_ordcon
 M$is_ordord <- is_ordord
 
+# Tests below prevent that CopulaCLM() is used to estimate a model where one (or two) binary responses are modelled
+test_bin1 <- K1 == 2
+test2     <- ifelse(is_ordord, K2 == 2, FALSE)
+if(test_bin1) stop("The levels of the first response variable must be greater than 2.")
+if(test2)     stop("The levels of the second response variable must be greater than 2.")
+
 ###
 
 ##### Starting values for cut points ##### 

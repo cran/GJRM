@@ -375,9 +375,19 @@ der2h.derc11.dereta2.2p2m <- D11         * (c.copula2.be1be2.pp * (derp1.dereta1
 der2h.derc11.derteta.2p2m <- D11         * c.copula2.be1th.2pm * derp1.dereta1.p - 
                              D12         * c.copula2.be1th.p2m * derp1.dereta1.m
 
-der2h.derc12.derc12.2p2m  <- crossprod(D11.1 * (VC$weights * der2h.derc12.derc12.2pm_app / h.2p2m), D11.1) - 
-                             crossprod(D12.1 * (VC$weights * der2h.derc12.derc12.p2m_app / h.2p2m), D12.1) +
-                             diag(colSums(2 * (VC$weights * der2h.derc12.derc12.mag_app / h.2p2m)))
+d_der2h.derc12.derc12.mag_app <- dim(der2h.derc12.derc12.mag_app)[2] == 1
+d_der2h.derc22.derc22.mag_app <- dim(der2h.derc22.derc22.mag_app)[2] == 1
+
+if (d_der2h.derc12.derc12.mag_app) {
+	der2h.derc12.derc12.2p2m  <- crossprod(D11.1 * (VC$weights * der2h.derc12.derc12.2pm_app / h.2p2m), D11.1) - 
+        	                     crossprod(D12.1 * (VC$weights * der2h.derc12.derc12.p2m_app / h.2p2m), D12.1) +
+                	             colSums(2 * (VC$weights * der2h.derc12.derc12.mag_app / h.2p2m))
+} else {
+	der2h.derc12.derc12.2p2m  <- crossprod(D11.1 * (VC$weights * der2h.derc12.derc12.2pm_app / h.2p2m), D11.1) - 
+        	                     crossprod(D12.1 * (VC$weights * der2h.derc12.derc12.p2m_app / h.2p2m), D12.1) +
+                	             diag(colSums(2 * (VC$weights * der2h.derc12.derc12.mag_app / h.2p2m)))
+}
+
 der2h.derc12.derc21.2p2m  <- D11.1 * D21 * (c.copula2.be1be2.pp * (derp1.dereta1.p * derp2.dereta2.p)) - 
                              D11.1 * D22 * (c.copula2.be1be2.pm * (derp1.dereta1.p * derp2.dereta2.m)) -
                              D12.1 * D21 * (c.copula2.be1be2.mp * (derp1.dereta1.m * derp2.dereta2.p)) + 
@@ -402,9 +412,16 @@ der2h.derc21.dereta1.2p2m <- D21   * (c.copula2.be1be2.pp * (derp1.dereta1.p * d
 der2h.derc21.derteta.2p2m <- D21   * c.copula2.be2th.2pm * derp2.dereta2.p - 
                              D22   * c.copula2.be2th.p2m * derp2.dereta2.m
 
-der2h.derc22.derc22.2p2m  <- crossprod(D21.1 * (VC$weights * der2h.derc22.derc22.2pm_app / h.2p2m), D21.1) -
-                             crossprod(D22.1 * (VC$weights * der2h.derc22.derc22.p2m_app / h.2p2m), D22.1) +
-                             diag(colSums(2 * (VC$weights * der2h.derc22.derc22.mag_app / h.2p2m)))
+if (d_der2h.derc22.derc22.mag_app) {
+	der2h.derc22.derc22.2p2m  <- crossprod(D21.1 * (VC$weights * der2h.derc22.derc22.2pm_app / h.2p2m), D21.1) -
+        	                     crossprod(D22.1 * (VC$weights * der2h.derc22.derc22.p2m_app / h.2p2m), D22.1) +
+                	             colSums(2 * (VC$weights * der2h.derc22.derc22.mag_app / h.2p2m))
+} else {
+	der2h.derc22.derc22.2p2m  <- crossprod(D21.1 * (VC$weights * der2h.derc22.derc22.2pm_app / h.2p2m), D21.1) -
+        	                     crossprod(D22.1 * (VC$weights * der2h.derc22.derc22.p2m_app / h.2p2m), D22.1) +
+                	             diag(colSums(2 * (VC$weights * der2h.derc22.derc22.mag_app / h.2p2m)))
+}
+
 der2h.derc22.dereta1.2p2m <- D21.1 * (c.copula2.be1be2.pp * (derp1.dereta1.p * derp2.dereta2.p) - c.copula2.be1be2.mp * (derp1.dereta1.m * derp2.dereta2.p)) -
                              D22.1 * (c.copula2.be1be2.pm * (derp1.dereta1.p * derp2.dereta2.m) - c.copula2.be1be2.mm * (derp1.dereta1.m * derp2.dereta2.m))
 der2h.derc22.dereta2.2p2m <- D21.1 * (c.copula2.be2be2.2pm * (derp2.dereta2.p)^2 + (c.copula.be2.pp - c.copula.be2.mp) * der2p2.dereta2eta2.p) - 

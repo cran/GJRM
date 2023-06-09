@@ -214,7 +214,7 @@ if(type == "triv"){
     
 ###################################################################################################################################################### 
 
-if( M$Model %in% c("TSS","TESS") ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
+#if( M$Model %in% c("TSS","TESS") ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
 
 ###################################################################################################################################################### 
 
@@ -295,8 +295,8 @@ if(M$surv == TRUE){
  
 ################################################################################################################################################################################################## 
 
-if( M$surv == TRUE && margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$bl) ) stop("Survival models with continuous and survival margins not ready yet.\nGet in touch to check progress.")
-if( margins[2] %in% c(M$m2,M$m3) && margins[1] %in% c(M$m1d,M$m2d) ) stop("The continuous - discrete margin case is not ready yet.\nGet in touch to check progress.")
+# if( M$surv == TRUE && margins[1] %in% c(M$m2,M$m3) && margins[2] %in% c(M$bl) ) stop("Survival models with continuous and survival margins not ready yet.\nGet in touch to check progress.")
+#if( margins[2] %in% c(M$m2,M$m3) && margins[1] %in% c(M$m1d,M$m2d) ) stop("The continuous - discrete margin case is not ready yet.\nGet in touch to check progress.")
 
 ################################################################################################################################################################################################## 
 
@@ -316,7 +316,7 @@ if(type == "copSS"){
   
   ###########################################
   
-  if(M$margins[2] %in% c("TW") ) stop("Tweedie not yet allowed for. Get in touch for details.")   
+  #if(M$margins[2] %in% c("TW") ) stop("Tweedie not yet allowed for. Get in touch for details.")   
   
   ###########################################
   

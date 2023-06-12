@@ -11,7 +11,7 @@ with a fixed probability.}
 
 \usage{
 
-mb(treat, outc, IV = NULL, Model, B = 100, sig.lev = 0.05)
+mb(treat, outc, IV = NULL, model, B = 100, sig.lev = 0.05)
 
 }
 
@@ -23,7 +23,7 @@ mb(treat, outc, IV = NULL, Model, B = 100, sig.lev = 0.05)
 
 \item{IV}{An instrumental binary variable can be used if available.} 
 
-\item{Model}{Possible values are "B" (model with endogenous variable) and "BSS" (model with non-random sample selection).}
+\item{model}{Possible values are "B" (model with endogenous variable) and "BSS" (model with non-random sample selection).}
 
 \item{B}{Number of bootstrap replicates. This is used to obtain some components needed for confidence interval calculations.} 
 
@@ -48,7 +48,7 @@ mb(treat, outc, IV = NULL, Model, B = 100, sig.lev = 0.05)
 \details{
 
 Based on Manski (1990), this function returns the nonparametric lower and upper (worst-case) Manski's bounds for the average 
-treatment effect (ATE) when \code{Model = "B"} or prevalence when \code{Model = "BSS"}. When an IV is employed
+treatment effect (ATE) when \code{model = "B"} or prevalence when \code{model = "BSS"}. When an IV is employed
 the function returns IV Manski bounds.
 
 For comparison, it also returns the estimated effect assuming random assignment (i.e., the treatment received or selection relies 

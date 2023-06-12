@@ -11,7 +11,7 @@ or non-random sample selection.}
 
 \usage{
 
-LM.bpm(formula, data = list(), weights = NULL, subset = NULL, Model, 
+LM.bpm(formula, data = list(), weights = NULL, subset = NULL, model, 
        hess = TRUE)
 
 }
@@ -20,7 +20,7 @@ LM.bpm(formula, data = list(), weights = NULL, subset = NULL, Model,
 
 
 \item{formula}{A list of two formulas, one for equation 1 and the other for equation 2. \code{s} terms are used to specify 
-               smooth smooth functions of predictors. Note that if \code{Model = "BSS"} then the first formula MUST refer 
+               smooth smooth functions of predictors. Note that if \code{model = "BSS"} then the first formula MUST refer 
                to the selection equation.} 
 
 \item{data}{An optional data frame, list or environment containing the variables in the model.  If not found in \code{data}, the
@@ -30,7 +30,7 @@ LM.bpm(formula, data = list(), weights = NULL, subset = NULL, Model,
 
 \item{subset}{Optional vector specifying a subset of observations to be used in the fitting process.}
 
-\item{Model}{It indicates the type of model to be used in the analysis. Possible values are "B" (bivariate model) and 
+\item{model}{It indicates the type of model to be used in the analysis. Possible values are "B" (bivariate model) and 
              "BSS" (bivariate model with sample selection). The two marginal equations have probit links.}
 
 \item{hess}{If \code{FALSE} then the expected (rather than observed) information matrix is employed.}

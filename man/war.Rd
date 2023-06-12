@@ -67,7 +67,7 @@ reb.eq <- onset ~ instab + oil + warl + lpopl + lmtnest + ethfrac +
                   polity2l + s(gdpenl) + s(relfrac) 
 gov.eq <- onset ~ instab + oil + warl + ncontig + nwstate + s(gdpenl)   
 
-bpo <- gjrm(list(reb.eq, gov.eq), data = war, Model = "BPO",
+bpo <- gjrm(list(reb.eq, gov.eq), data = war, model = "BPO",
             margins = c("probit", "probit"))
 conv.check(bpo)
 
@@ -79,7 +79,7 @@ sbpo$theta; sbpo$CItheta
 
 # let's exclude the correlation parameter in fitting
 
-bpo0 <- gjrm(list(reb.eq, gov.eq), data = war, Model = "BPO0",
+bpo0 <- gjrm(list(reb.eq, gov.eq), data = war, model = "BPO0",
              margins = c("probit", "probit"))
 conv.check(bpo0)
 

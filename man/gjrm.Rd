@@ -13,7 +13,7 @@ effects, copula and marginal distributions.
 
 \usage{
 gjrm(formula, data = list(), weights = NULL, subset = NULL,  
-     BivD = "N", BivD2 = "N", margins, Model, dof = 3, dof2 = 3, ordinal = FALSE,  
+     copula = "N", copula2 = "N", margins, model, dof = 3, dof2 = 3, ordinal = FALSE,  
      surv = FALSE, cens1 = NULL, cens2 = NULL, cens3 = NULL, dep.cens = FALSE,
      upperBt1 = NULL, upperBt2 = NULL,   
      gamlssfit = FALSE, fp = FALSE, infl.fac = 1, 
@@ -36,8 +36,8 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
                number of distributional parameters. \code{s} terms 
                are used to specify smooth functions of 
                   predictors; see the documentation of \code{mgcv} for further 
-                  details on formula specifications. Note that if a selection model is employed (that is, \code{Model = "BSS"}
-                  or \code{Model = "TSS"}) then the first formula (and the second as well for trivariate models) MUST refer to the selection equation(s).
+                  details on formula specifications. Note that if a selection model is employed (that is, \code{model = "BSS"}
+                  or \code{model = "TSS"}) then the first formula (and the second as well for trivariate models) MUST refer to the selection equation(s).
                   When one outcome is binary and the other continuous/discrete 
                   then the first equation should refer to the binary outcome whereas 
                   the second to the continuous/discrete one. When one outcome is discrete and the other continuous 
@@ -50,7 +50,7 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
 
 \item{subset}{Optional vector specifying a subset of observations to be used in the fitting process.}
 
-\item{BivD}{Type of bivariate error distribution employed. Possible choices are "N", "C0", "C90", "C180", "C270", "GAL0", "GAL90", "GAL180", "GAL270", "J0", "J90", "J180", "J270", 
+\item{copula}{Type of bivariate error distribution employed. Possible choices are "N", "C0", "C90", "C180", "C270", "GAL0", "GAL90", "GAL180", "GAL270", "J0", "J90", "J180", "J270", 
             "G0", "G90", "G180", "G270", "F", "AMH", "FGM", "T", "PL", "HO" which stand for bivariate normal, Clayton, rotated Clayton (90 degrees), 
             survival Clayton,
              rotated Clayton (270 degrees), Galambos, rotated Galambos (90 degrees), 
@@ -61,7 +61,7 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
 family. The options are: "C0C90", "C0C270", "C180C90", "C180C270",  "GAL0GAL90", "GAL0GAL270", "GAL180GAL90", "GAL180GAL270", "G0G90", "G0G270", "G180G90",
 "G180G270", "J0J90", "J0J270", "J180J90" and "J180J270". This allows the user to model negative and positive tail dependencies.}  
 
-\item{BivD2}{As above but used only for Roy models.}
+\item{copula2}{As above but used only for Roy models.}
 
 \item{margins}{It indicates the distributions used for the two or three margins. Possible distributions are normal ("N"),  
                log-normal ("LN"), Gumbel ("GU"), reverse Gumbel ("rGU"), generelised Pareto ("GP"), 
@@ -76,7 +76,7 @@ family. The options are: "C0C90", "C0C270", "C180C90", "C180C270",  "GAL0GAL90",
                possible link functions are "probit", "logit", "cloglog". For survival models, the margins can be proportional hazars ("PH"), odds ("PO")
                or "probit".}
 
-\item{Model}{Possible values are "B" (bivariate model), "T" (trivariate model) 
+\item{model}{Possible values are "B" (bivariate model), "T" (trivariate model) 
              "BSS" (bivariate model with non-random sample selection), "TSS" (trivariate model with double non-random sample selection),
              "TESS" (trivariate model with endogeneity and non-random sample selection),
              "BPO" (bivariate model with partial observability)
@@ -85,7 +85,7 @@ family. The options are: "C0C90", "C0C270", "C180C90", "C180C270",  "GAL0GAL90",
              "ROY" is for the Roy switching regression model.
              } 
   
-\item{dof}{If \code{BivD = "T"} then the degrees of freedom can be set to a value greater than 2 and smaller than 249. Only for continuous margins,
+\item{dof}{If \code{copula = "T"} then the degrees of freedom can be set to a value greater than 2 and smaller than 249. Only for continuous margins,
                  this will be taken as a starting value and the dof estimated from the data.}   
                  
 \item{dof2}{As above but used only for Roy models.} 
@@ -310,7 +310,7 @@ out  <- gjrm(list(y1 ~ x1 + x2 + x3,
                        y2 ~ x1 + x2 + x3), 
                        data = dataSim, 
                        margins = c("probit", "probit"),
-                       Model = "B")
+                       model = "B")
 conv.check(out)
 summary(out)
 AIC(out)
@@ -325,7 +325,7 @@ out  <- gjrm(list(y1 ~ x1 + s(x2) + s(x3),
                   y2 ~ x1 + s(x2) + s(x3)),  
                   data = dataSim,
                   margins = c("probit", "probit"),
-                  Model = "B")
+                  model = "B")
 conv.check(out)
 summary(out)
 AIC(out)
@@ -360,7 +360,7 @@ fl <- list(eq.mu.1, eq.mu.2, eq.theta)
 
 outD <- gjrm(fl, data = dataSim,
              margins = c("probit", "probit"),
-             Model = "B")
+             model = "B")
              
 conv.check(outD)  
 summary(outD)
@@ -400,7 +400,7 @@ dataSim <- data.frame(y1, y2, x1, x2)
 ## Testing the hypothesis of absence of endogeneity... 
 #
 
-LM.bpm(list(y1 ~ x1 + s(x2), y2 ~ y1 + s(x2)), dataSim, Model = "B")
+LM.bpm(list(y1 ~ x1 + s(x2), y2 ~ y1 + s(x2)), dataSim, model = "B")
 
 
 ## CLASSIC RECURSIVE BIVARIATE PROBIT
@@ -409,7 +409,7 @@ out <- gjrm(list(y1 ~ x1 + x2,
                  y2 ~ y1 + x2), 
                  data = dataSim,
                  margins = c("probit", "probit"),
-                 Model = "B")
+                 model = "B")
 conv.check(out)                        
 summary(out)
 AIC(out); BIC(out)
@@ -420,7 +420,7 @@ out <- gjrm(list(y1 ~ x1 + s(x2),
                  y2 ~ y1 + s(x2)), 
                  data = dataSim,
                  margins = c("probit", "probit"),
-                 Model = "B")
+                 model = "B")
 conv.check(out)                        
 summary(out)
 AIC(out); BIC(out)
@@ -433,7 +433,7 @@ gt.bpm(out)
 #
 ## treatment effect, risk ratio and odds ratio with CIs
 
-mb(y1, y2, Model = "B")
+mb(y1, y2, model = "B")
 AT(out, nm.end = "y1", hd.plot = TRUE) 
 RR(out, nm.end = "y1") 
 OR(out, nm.end = "y1") 
@@ -445,9 +445,9 @@ re.imp$AT
 
 outC <- gjrm(list(y1 ~ x1 + s(x2), 
                   y2 ~ y1 + s(x2)), 
-                  data = dataSim, BivD = "C0",
+                  data = dataSim, copula = "C0",
                   margins = c("probit", "probit"),
-                  Model = "B")
+                  model = "B")
 conv.check(outC)                         
 summary(outC)
 AT(outC, nm.end = "y1") 
@@ -458,9 +458,9 @@ re.imp$AT
 
 outJ <- gjrm(list(y1 ~ x1 + s(x2), 
                   y2 ~ y1 + s(x2)), 
-                  data = dataSim, BivD = "J0",
+                  data = dataSim, copula = "J0",
                   margins = c("probit", "probit"),
-                  Model = "B")
+                  model = "B")
 conv.check(outJ)
 summary(outJ)
 AT(outJ, "y1") 
@@ -477,7 +477,7 @@ outFP <- gjrm(list(y1 ~ x1 + s(x2, bs = "cr", k = 5),
                    y2 ~ y1 + s(x2, bs = "cr", k = 6)), 
                    fp = TRUE, data = dataSim,
                    margins = c("probit", "probit"),
-                   Model = "B")
+                   model = "B")
 conv.check(outFP)                            
 summary(outFP)
 
@@ -520,7 +520,7 @@ dataSim <- data.frame(y, ys, yo, bi, x1, x2)
 #
 ## Testing the hypothesis of absence of non-random sample selection... 
 
-LM.bpm(list(ys ~ bi + s(x1) + s(x2), yo ~ bi + s(x1)), dataSim, Model = "BSS")
+LM.bpm(list(ys ~ bi + s(x1) + s(x2), yo ~ bi + s(x1)), dataSim, model = "BSS")
 
 # p-value suggests presence of sample selection, hence fit a bivariate model
 
@@ -530,7 +530,7 @@ LM.bpm(list(ys ~ bi + s(x1) + s(x2), yo ~ bi + s(x1)), dataSim, Model = "BSS")
 
 out <- gjrm(list(ys ~ bi + s(x1) + s(x2), 
                  yo ~ bi + s(x1)), 
-                 data = dataSim, Model = "BSS",
+                 data = dataSim, model = "BSS",
                  margins = c("probit", "probit"))
 conv.check(out)                          
 gt.bpm(out)                        
@@ -544,7 +544,7 @@ summary(out$gam2)
 
 ## corrected predicted probability that 'yo' is equal to 1
 
-mb(ys, yo, Model = "BSS")
+mb(ys, yo, model = "BSS")
 prev(out, hd.plot = TRUE)
 prev(out, type = "univariate", hd.plot = TRUE)
 
@@ -566,7 +566,7 @@ plot(out$gam2, se = FALSE, col = "blue", ylim = c(-1.65,0.95),
 
 outC <- gjrm(list(ys ~ bi + s(x1) + s(x2), 
                   yo ~ bi + s(x1)), 
-                  data = dataSim, Model = "BSS", BivD = "C0",
+                  data = dataSim, model = "BSS", copula = "C0",
                   margins = c("probit", "probit"))
 conv.check(outC)
 summary(outC)
@@ -586,7 +586,7 @@ dataSim <- dataSim[, -c(1:2)]
 
 imp <- mice(dataSim, m = 1, method = c("copulaSS", "", "", ""),  
             mice.formula = outC$mice.formula, margins = outC$margins, 
-            BivD = outC$BivD, maxit = 1)
+            copula = outC$BivD, maxit = 1)
 
 comp.yo <- dataSim$yo
 comp.yo[ys == 0] <- imp$imp$yo[[1]]
@@ -622,7 +622,7 @@ dataSim <- data.frame(y, x1, x2, x3)
 
 out  <- gjrm(list(y ~ x1 + x2, 
                   y ~ x3), 
-                  data = dataSim, Model = "BPO",
+                  data = dataSim, model = "BPO",
                   margins = c("probit", "probit"))
 conv.check(out)
 summary(out)
@@ -645,7 +645,7 @@ dataSim <- data.frame(y, x1, x2, x3)
 
 out  <- gjrm(list(y ~ x1 + s(x2), 
                   y ~ x3), 
-                  data = dataSim, Model = "BPO",
+                  data = dataSim, model = "BPO",
                   margins = c("probit", "probit"))
 
 conv.check(out)
@@ -712,7 +712,7 @@ fl <- list(eq.mu.1, eq.mu.2, eq.sigma1, eq.sigma2, eq.theta)
 # using more than two equations
 
 out  <- gjrm(fl, data = dataSim, margins = c("N", "N"),
-             Model = "B")
+             model = "B")
 
 conv.check(out)
 post.check(out)
@@ -755,7 +755,7 @@ AIC(rc); BIC(rc)
 out <- gjrm(list(y1 ~ x1 + x2, 
                  y2 ~ y1 + x2), 
                  data = dataSim, margins = c("probit","N"),
-                 Model = "B")
+                 model = "B")
 conv.check(out)                        
 summary(out)
 post.check(out)
@@ -771,7 +771,7 @@ fl <- list(eq.mu.1, eq.mu.2, eq.sigma, eq.theta)
 
 out <- gjrm(fl, data = dataSim, 
             margins = c("probit","N"), gamlssfit = TRUE,
-            Model = "B")
+            model = "B")
 conv.check(out)                        
 summary(out)
 post.check(out)
@@ -816,7 +816,7 @@ fl <- list(eq.mu.1, eq.mu.2, eq.sigma, eq.theta)
 
 out <- gjrm(fl, data = dataSim, 
             margins = c("probit","N"),
-            Model = "B")
+            model = "B")
 conv.check(out)                        
 summary(out)
 post.check(out)
@@ -898,7 +898,7 @@ eq3 <-    ~ s(z2)
 
 out <- gjrm(list(eq1, eq2), data = dataSim, surv = TRUE,
             margins = c("PH", "PO"), 
-            cens1 = delta1, cens2 = delta2, Model = "B")
+            cens1 = delta1, cens2 = delta2, model = "B")
                  
 # PH margin fit can also be compared with cox.ph from mgcv
                  
@@ -953,7 +953,7 @@ jc.probs(out, type = "joint", newdata = newd1, intervals = TRUE)
 out1 <- gjrm(list(eq1, eq2, eq3), data = dataSim, surv = TRUE,
                   margins = c("PH", "PO"), 
                   cens1 = delta1, cens2 = delta2, gamlssfit = TRUE,
-                  Model = "B") 
+                  model = "B") 
 
 
 # eq1 <- u1 ~ z1 + s(z2)
@@ -963,7 +963,7 @@ out1 <- gjrm(list(eq1, eq2, eq3), data = dataSim, surv = TRUE,
 # out2 <- gjrm(list(eq1, eq2, ~ 1, ~ 1, eq3), data = dataSim, surv = TRUE,
 #                   margins = c("WEI", "WEI"), 
 #                   cens1 = delta1, cens2 = delta2,
-#                   Model = "B")    
+#                   model = "B")    
                   
 #########################################
 ## Joint continuous and survival outcomes
@@ -980,7 +980,7 @@ out1 <- gjrm(list(eq1, eq2, eq3), data = dataSim, surv = TRUE,
 # out3 <- gjrm(f.l, data = dataSim, surv = TRUE,
 #                   margins = c("N", "PO"), 
 #                   cens1 = NULL, cens2 = delta2, 
-#                   gamlssfit = TRUE, Model = "B")   
+#                   gamlssfit = TRUE, model = "B")   
 # 
 # conv.check(out3)
 # post.check(out3)
@@ -1037,9 +1037,9 @@ f.l <- list(y1 ~ x1 + s(x2),
             y2 ~ x1 + s(x2),
             y3 ~ x1)  
 
-out  <- gjrm(f.l, data = dataSim, Model = "T",
+out  <- gjrm(f.l, data = dataSim, model = "T",
              margins = c("probit", "probit", "probit"))
-out1 <- gjrm(f.l, data = dataSim, Chol = TRUE, Model = "T",
+out1 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T",
              margins = c("probit", "probit", "probit"))
 
 conv.check(out)
@@ -1049,9 +1049,9 @@ plot(out, eq = 2)
 AIC(out)
 BIC(out)
 
-out  <- gjrm(f.l, data = dataSim, Model = "T", 
+out  <- gjrm(f.l, data = dataSim, model = "T", 
              margins = c("probit","logit","cloglog"))
-out1 <- gjrm(f.l, data = dataSim, Chol = TRUE, Model = "T",
+out1 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T",
              margins = c("probit","logit","cloglog"))                    
 conv.check(out)
 summary(out)
@@ -1065,7 +1065,7 @@ f.l <- list(y1 ~ x1 + s(x2),
             y3 ~ x1,
                ~ 1, ~ 1, ~ 1) 
                
-out1 <- gjrm(f.l, data = dataSim, Chol = TRUE, Model = "T", 
+out1 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", 
              margins = c("probit", "probit", "probit"))
    
 f.l <- list(y1 ~ x1 + s(x2), 
@@ -1073,7 +1073,7 @@ f.l <- list(y1 ~ x1 + s(x2),
             y3 ~ x1,
                ~ 1, ~ s(x2), ~ 1) 
                
-out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, Model = "T", 
+out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", 
              margins = c("probit", "probit", "probit"))   
 
 f.l <- list(y1 ~ x1 + s(x2), 
@@ -1081,7 +1081,7 @@ f.l <- list(y1 ~ x1 + s(x2),
             y3 ~ x1,
                ~ x1, ~ s(x2), ~ x1 + s(x2)) 
                
-out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, Model = "T", 
+out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", 
              margins = c("probit", "probit", "probit"))   
 
 f.l <- list(y1 ~ x1 + s(x2), 
@@ -1089,7 +1089,7 @@ f.l <- list(y1 ~ x1 + s(x2),
             y3 ~ x1,
                ~ x1, ~ x1, ~ s(x2)) 
                
-out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, Model = "T", 
+out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", 
              margins = c("probit", "probit", "probit")) 
 
 f.l <- list(y1 ~ x1 + s(x2), 
@@ -1097,7 +1097,7 @@ f.l <- list(y1 ~ x1 + s(x2),
             y3 ~ x1,
                ~ x1, ~ x1 + x2, ~ s(x2)) 
                
-out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, Model = "T", 
+out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", 
              margins = c("probit", "probit", "probit")) 
 
 f.l <- list(y1 ~ x1 + s(x2), 
@@ -1105,7 +1105,7 @@ f.l <- list(y1 ~ x1 + s(x2),
             y3 ~ x1,
                ~ x1 + x2, ~ x1 + x2, ~ x1 + x2) 
                
-out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, Model = "T", 
+out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", 
              margins = c("probit", "probit", "probit")) 
        
        
@@ -1151,7 +1151,7 @@ f.l <- list(y1 ~ x1 + x2 + x3 + s(x4),
             y2 ~ x1 + x2 + x3, 
             y3 ~ x1 + s(x2))   
           
-out <- gjrm(f.l, data = dataSim, Model = "TSS",
+out <- gjrm(f.l, data = dataSim, model = "TSS",
             margins = c("probit", "probit", "probit"))
 conv.check(out)
 summary(out)
@@ -1215,7 +1215,7 @@ resp.check(yo[ys > 0], "N")
 
 out <- gjrm(list(ys ~ bi + x1 + x2, 
                  yo ~ bi + x1), 
-                 data = dataSim, Model = "BSS",
+                 data = dataSim, model = "BSS",
                  margins = c("probit", "N"))
 conv.check(out)
 post.check(out)
@@ -1229,7 +1229,7 @@ BIC(out)
 
 out <- gjrm(list(ys ~ bi + s(x1) + s(x2), 
                  yo ~ bi + s(x1)), 
-                 data = dataSim, Model = "BSS",
+                 data = dataSim, model = "BSS",
                  margins = c("probit", "N"))
 conv.check(out) 
 post.check(out)
@@ -1286,7 +1286,7 @@ eq.theta  <-    ~ bi + x1
 
 fl <- list(eq.mu.1, eq.mu.2, eq.sigma, eq.theta)
 
-out <- gjrm(fl, data = dataSim, Model = "BSS",
+out <- gjrm(fl, data = dataSim, model = "BSS",
                  margins = c("probit", "N"))
 conv.check(out)   
 post.check(out)
@@ -1296,7 +1296,7 @@ out$theta
 
 jc.probs(out, 0, 0.3, intervals = TRUE)[1:4,]
 
-outC0 <- gjrm(fl, data = dataSim, BivD = "C0", Model = "BSS",
+outC0 <- gjrm(fl, data = dataSim, copula = "C0", model = "BSS",
               margins = c("probit", "N"))
 conv.check(outC0)
 post.check(outC0)
@@ -1321,7 +1321,7 @@ dataSim <- dataSim[, -1]
 
 imp <- mice(dataSim, m = 1, method = c("copulaSS", "", "", ""),  
             mice.formula = outC0$mice.formula, margins = outC0$margins, 
-            BivD = outC0$BivD, maxit = 1)
+            copula = outC0$BivD, maxit = 1)
 
 comp.yo <- dataSim$yo
 comp.yo[ys == 0] <- imp$imp$yo[[1]]
@@ -1346,9 +1346,9 @@ dataSim <- data.frame(ys, yo, bi, x1, x2)
 
 out <- gjrm(list(ys ~ bi + s(x1) + s(x2), 
                  yo ~ bi + s(x1)), 
-                 data = dataSim, BivD = "G0", 
+                 data = dataSim, copula = "G0", 
                  margins = c("probit", "GA"),
-                 Model = "BSS")
+                 model = "BSS")
 conv.check(out)
 post.check(out)
 summary(out)

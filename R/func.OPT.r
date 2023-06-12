@@ -88,11 +88,11 @@ if(type == "copR"){
   
   
   
-  #if(margins[1] %in% M$m2 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont2Surv # not really used
+  # if(margins[1] %in% M$m2 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont2Surv # not really used
   #if(margins[1] %in% M$m3 && margins[2] %in% M$bl && M$surv == TRUE)  func.opt <- bcontSurvGcont3Surv # not really used
   
-  #if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE && M$dep.cens == TRUE &&  is.null(M$c3)) func.opt <- bcontSurvGDep
-  #if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE && M$dep.cens == TRUE && !is.null(M$c3)) func.opt <- bcontSurvGDepA
+  if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE && M$dep.cens == TRUE &&  is.null(M$c3)) func.opt <- bcontSurvGDep
+  if(margins[1] %in% M$bl && margins[2] %in% M$bl && M$surv == TRUE && M$dep.cens == TRUE && !is.null(M$c3)) func.opt <- bcontSurvGDepA
   
 
 }

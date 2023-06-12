@@ -174,7 +174,7 @@ fl <- list(sel.eq, out.eq, theta.eq)
 # complex and it serves to illustrate the 
 # flexibility of the modelling approach
      
-bss <- gjrm(fl, data = hiv, BivD = "J90", Model = "BSS",
+bss <- gjrm(fl, data = hiv, copula = "J90", model = "BSS",
             margins = c("probit", "probit"))
 
 conv.check(bss)

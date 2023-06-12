@@ -1,5 +1,7 @@
-LM.bpm <- function(formula, data = list(), weights = NULL, subset = NULL, Model, hess = TRUE){
+LM.bpm <- function(formula, data = list(), weights = NULL, subset = NULL, model, hess = TRUE){
 
+  
+  Model <- model
   sp <- qu.mag <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- NULL  
   
   end <- data <- var <- G <- var.eig <- params <- resf <- VC <- respvec <- qu.mag <- X1 <- X2 <- gam1 <- gam2 <- 0

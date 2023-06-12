@@ -76,14 +76,14 @@ out.eq <- visits.hosp ~ private + s(bmi) + s(income) + s(age) +
 
 f.list <- list(treat.eq, out.eq) 
 mr     <- c("probit", "probit")
-bpN    <- gjrm(f.list, data = meps, margins = mr, Model = "B")
-bpF    <- gjrm(f.list, data = meps, margins = mr, BivD = "F", Model = "B")
-bpC0   <- gjrm(f.list, data = meps, margins = mr, BivD = "C0", Model = "B")
-bpC180 <- gjrm(f.list, data = meps, margins = mr, BivD = "C180", Model = "B")
-bpJ0   <- gjrm(f.list, data = meps, margins = mr, BivD = "J0", Model = "B")
-bpJ180 <- gjrm(f.list, data = meps, margins = mr, BivD = "J180", Model = "B")
-bpG0   <- gjrm(f.list, data = meps, margins = mr, BivD = "G0", Model = "B")
-bpG180 <- gjrm(f.list, data = meps, margins = mr, BivD = "G180", Model = "B")
+bpN    <- gjrm(f.list, data = meps, margins = mr,                  model = "B")
+bpF    <- gjrm(f.list, data = meps, margins = mr, copula = "F",    model = "B")
+bpC0   <- gjrm(f.list, data = meps, margins = mr, copula = "C0",   model = "B")
+bpC180 <- gjrm(f.list, data = meps, margins = mr, copula = "C180", model = "B")
+bpJ0   <- gjrm(f.list, data = meps, margins = mr, copula = "J0",   model = "B")
+bpJ180 <- gjrm(f.list, data = meps, margins = mr, copula = "J180", model = "B")
+bpG0   <- gjrm(f.list, data = meps, margins = mr, copula = "G0",   model = "B")
+bpG180 <- gjrm(f.list, data = meps, margins = mr, copula = "G180", model = "B")
 
 conv.check(bpJ0)
 

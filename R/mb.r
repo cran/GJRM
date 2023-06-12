@@ -1,5 +1,7 @@
-mb <- function(treat, outc, IV = NULL, Model, B = 100, sig.lev = 0.05){
+mb <- function(treat, outc, IV = NULL, model, B = 100, sig.lev = 0.05){
 
+
+Model <- model
 
 if(length(table(treat))!=2 ) stop("The treatment variable must be binary.")
 if(length(table(outc))!=2  ) stop("The outcome variable must be binary.")

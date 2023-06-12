@@ -49,7 +49,7 @@ which will produce predictions for the response correctly and we are currently w
 For all the other \code{type} values the function will produce the correct results. 
 
 When predicting based on a new data set, this function can not return correct predictions for models based 
-on a BivD value of "C0C90", "C0C270", "C180C90", "C180C270", "G0G90", "G0G270", "G180G90",
+on a copula value of "C0C90", "C0C270", "C180C90", "C180C270", "G0G90", "G0G270", "G180G90",
 "G180G270", "J0J90", "J0J270", "J180J90" or "J180J270".
 
 

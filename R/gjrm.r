@@ -1,5 +1,5 @@
 gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,  
-                             BivD = "N", BivD2 = "N", margins, Model, dof = 3, dof2 = 3, ordinal = FALSE,
+                             copula = "N", copula2 = "N", margins, model, dof = 3, dof2 = 3, ordinal = FALSE,
                              surv = FALSE, cens1 = NULL, cens2 = NULL, cens3 = NULL, dep.cens = FALSE,  
                              upperBt1 = NULL, upperBt2 = NULL,                    
                              gamlssfit = FALSE, fp = FALSE, infl.fac = 1, 
@@ -10,6 +10,10 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                              drop.unused.levels = TRUE, 
                              min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999){
   
+  # better argument names
+  
+  BivD  <- copula; BivD2 <- copula2; Model <- model
+    
   # if(dep.cens == TRUE) stop("The dependent censoring case is work in progress. \nGet in touch should you wish to get more info.")
  
   if(missing(margins)) stop("You must choose the margins' values.")

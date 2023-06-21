@@ -44,10 +44,6 @@ if(type == "biv"){
   
 if(type == "copR"){
 
-  #if(margins[1] %in% M$m1d && margins[2] %in% M$m2) func.opt  <- bdiscrcont12
-  #if(margins[1] %in% M$m1d && margins[2] %in% M$m3) func.opt  <- bdiscrcont13
-  #if(margins[1] %in% M$m2d && margins[2] %in% M$m2) func.opt  <- bdiscrcont
-  #if(margins[1] %in% M$m2d && margins[2] %in% M$m3) func.opt  <- bdiscrcont23
   
   if(margins[1] %in% M$m1d && margins[2] %in% M$m1d) func.opt  <- bdiscrdiscr11 
   if(margins[1] %in% M$m1d && margins[2] %in% M$m2d) func.opt  <- bdiscrdiscr12

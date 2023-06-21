@@ -17,7 +17,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
   # if(dep.cens == TRUE) stop("The dependent censoring case is work in progress. \nGet in touch should you wish to get more info.")
  
   if(missing(margins)) stop("You must choose the margins' values.")
-  if(missing(Model))   stop("You must choose a Model type.")
+  if(missing(Model))   stop("You must choose a model type.")
   
   if(margins[1] == "PH" && surv == TRUE) margins[1] <- "cloglog"
   if(margins[1] == "PO" && surv == TRUE) margins[1] <- "logit" 
@@ -201,7 +201,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
   
-  mf$upperBt1 <- mf$upperBt2 <- mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$dep.cens <- mf$ordinal <- mf$Model <- mf$knots <- mf$k1.tvc <- mf$k2.tvc <- mf$surv <- mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
+  mf$upperBt1 <- mf$upperBt2 <- mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$dep.cens <- mf$ordinal <- mf$Model <- mf$model <- mf$knots <- mf$k1.tvc <- mf$k2.tvc <- mf$surv <- mf$BivD <- mf$copula <- mf$copula2 <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
   mf$drop.unused.levels <- drop.unused.levels 
   
   
@@ -797,9 +797,9 @@ my.env$k2   <- k2.tvc
              fp = fp, 
              gamlssfit = gamlssfit,
              hess = NULL,
-             Model = "CC", univ.gamls = FALSE,
+             Model = "CC", univ.gamls = FALSE, model = model,
              end = end,
-             BivD = BivD, nCa = nCa,
+             BivD = BivD, nCa = nCa, copula = copula, copula2 = copula2,
              nC = nC, gc.l = gc.l, 
              n = n, extra.regI = extra.regI,
              parscale = parscale, margins = margins,
@@ -996,7 +996,7 @@ L <- list(fit = SemiParFit$fit, dataset = NULL, n = n, gamlss1 = gamlss1, gamlss
           eta1 = SemiParFit$fit$eta1, eta2 = SemiParFit$fit$eta2, 
           etad=SemiParFit$fit$etad, etas1 = SemiParFit$fit$etas1, etas2 = SemiParFit$fit$etas2,
           y1 = y1.m, y2 = y2.m, 
-          BivD = BivD, margins = margins,   
+          BivD = BivD, margins = margins, copula = copula, copula2 = copula2, 
           logLik = SemiParFit.p$logLik,
           nC = nC, 
           respvec = respvec, hess = TRUE,
@@ -1006,7 +1006,7 @@ L <- list(fit = SemiParFit$fit, dataset = NULL, n = n, gamlss1 = gamlss1, gamlss
           gamlssfit = gamlssfit, Cont = "YES",
           tau = SemiParFit.p$tau, tau.a = SemiParFit.p$tau.a, l.flist = l.flist, v1 = v1, v2 = v2, triv = FALSE, univar.gamlss = FALSE,
           BivD2 = BivD2, call = cl, surv = surv, surv.flex = surv.flex,
-          Vb.t = SemiParFit.p$Vb.t, coef.t = SemiParFit.p$coef.t, Model = "CC")
+          Vb.t = SemiParFit.p$Vb.t, coef.t = SemiParFit.p$coef.t, Model = "CC", model = model)
   
 if(BivD %in% BivD2){       
 

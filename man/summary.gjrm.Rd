@@ -88,8 +88,8 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 \section{WARNINGS}{
 
 Note that the summary output will also indeed provide the Kendall's tau and related interval. This is a valid measure of dependence for continuous margins
-but it is not for discrete margins, for instance. However, it is still displayed for the sake of keeping the printed output consistent with that of
-other models in the package.
+but it may not for discrete margins, for instance. However, it is still displayed for the sake of keeping the printed output consistent with that of
+other models in the package. Also, it still provides an approximate measure of dependence under certan scenarios.
 
 } 
 

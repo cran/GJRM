@@ -1,6 +1,6 @@
-f13ba767a0cbd208bdfbb55b4f6134ff *ChangeLog
-edc05ff374e733c5a31f3f28dc44911b *DESCRIPTION
-a7cb77326206524e3f742eebb1d890e0 *NAMESPACE
+de3514d739f08cad53d14aa83feb27ca *ChangeLog
+4862072f99e3b950669dd3d9e50d828f *DESCRIPTION
+a6e89db40a519a583111ce5b0d60baf0 *NAMESPACE
 f72c36e3013011f611aafd9b0bd2e0bf *R/AT.r
 938e7e920df46d95df0ea1e2106da4a1 *R/BCDF.r
 83e811348a06e10bec7b3c3a2836d7b4 *R/BiCDF.r
@@ -9,9 +9,7 @@ f72c36e3013011f611aafd9b0bd2e0bf *R/AT.r
 5f91e23011d9da8764858722b3c43e83 *R/Dpens.R
 5d6ef57b32af5cb53fc82b74d5448c35 *R/Dpens2.R
 cfe2c3e6056dc8114c8012cf2d185eef *R/H.tri.r
-4146adc6e6fdc722dd0c3a742f761657 *R/H.triESS.r
-a47faa77ab377b0aeccb8423885c0490 *R/H.triSS.r
-97d177d70febc90fb66c3de34826f392 *R/LM.bpm.r
+94884b4d8f6b4c08af1c1472544d1f1a *R/LM.bpm.r
 b1691ca8c16e384a9faf95fc60850dc0 *R/OR.r
 4be9a28036b883e3776873fbee3f7680 *R/PDef.R
 56613afb9646f1e39bf14daa229a1cb6 *R/PE.r
@@ -26,7 +24,7 @@ ed60b7e614fa7a808a1d6126358080ad *R/SemiParBIV.r
 05018ef464bbd77300e4659f1e98a03f *R/SemiParROY.fit.post.r
 3ce4fd8efaa32d60ea9db5627f41283a *R/SemiParROY.r
 0469faa1b1ac7d2342141b8d05e4c608 *R/SemiParTRIV.fit.post.r
-c9b54b3a63ac31fc9af4c34d031c37a0 *R/SemiParTRIV.r
+4226ca85432819179e5a38d143f48486 *R/SemiParTRIV.r
 e30442563b5bcceee257d18aa7fd0c2a *R/TRIapprox.r
 f91e44eea71fb0e6904764bf1cdb9a6a *R/Tweedie.Functions.R
 9ac16cb6b09476f4b1a46306860c8b7f *R/VuongClarke.r
@@ -120,7 +118,7 @@ d57153d86475a415d3a4bf4eb63d66ab *R/esp.tr.R
 1dc8f6de85e2d3ea5c41d83f7bb1a6f1 *R/form.check.r
 fec343e21dcb1bb4d4da7f1812223bc2 *R/form.eq12.r
 23d348a7c4e96f5cf760b667c881196f *R/form.gaml.r
-2ad7252867271691220a63758be6e063 *R/func.OPT.r
+59f51a3692f6ffc978dbc698f0f250bc *R/func.OPT.r
 c990ccf5bab507cad01bef3654cfe9c9 *R/g.tri.r
 be43ca01fd030f77195d9ec8fe22a4fb *R/g.triESS.r
 62de036264a9518964ff080b83a1bd0a *R/g.triSS.r
@@ -132,7 +130,7 @@ a8855036f73cc41a663d771ca700c07c *R/ggm.DerivOPT1.R
 d0ae0a3afd53075da8ab7f19cec3f993 *R/ggm.DerivOPT2.R
 eab1255f43a9a65140ef8b0dcd788d74 *R/ggmtrust.R
 3250c803fa651b846d098fec8121d32d *R/ggmtrust.path.R
-b732bfb98a4242f47b85f440815301cc *R/gjrm.r
+28d84be2abbf9f0d4591180ea3a3cea2 *R/gjrm.r
 f95ec4a639f933eb49d2ea45de145923 *R/gt.bpm.R
 658f47a647f734d88d3da41cbf2baf96 *R/hazsurv.plot.r
 4f63be5dfc900a93789c0c1d6b5f2399 *R/imputeCounter.r
@@ -218,7 +216,7 @@ fd17f616c20eb4b73b4307a3bb694f14 *R/survExcInd.r
 20a7f4dc0f0c62ba989ed9810be858f4 *R/susu.r
 8fe44bc06e98a2256f3db5c84cbb8826 *R/susutsn.r
 b41494d1ba8956ea98d1bd598523fc84 *R/teta.tr.R
-9969699d77cf10f7e74cd94c1e482324 *R/triprobgHs.R
+0d7f00b3a17347df1c95b552f73164e3 *R/triprobgHs.R
 82d8c573f46a83f327120e4b786d5430 *R/vis.gam2.r
 d80988705b8a1c89c6fce59cf799002b *R/vis.gjrm.r
 1da9de3e308afc78322f5f38a6b8a502 *R/working.comp.r
@@ -269,7 +267,7 @@ eed78d0d9a312efb2ec71694ca1b1078 *man/eta.tr.Rd
 88e5eaf0e4df0fd289652055e2e668eb *man/gamlss.Rd
 f853afb470b072498facf804fdf3e4ee *man/gamlssObject.Rd
 cf97826ccf0d4b1f5011f299e5135927 *man/ggmtrust.Rd
-32a4007b5c47bc0bf8969ff19407b43c *man/gjrm.Rd
+af4ac96c1076c13a286964709431419c *man/gjrm.Rd
 c3d233897cbac43f7bef0e053457cfbc *man/gjrmObject.Rd
 7e5fd0d5ec2ac8e3f02bde91394b3130 *man/gt.bpm.Rd
 f25b8b69480d51ab839f1ee4f99cc6b5 *man/hazsurv.plot.Rd
@@ -311,12 +309,12 @@ ca990d3eb91fc01ecf263a5f6f2efbf1 *man/regH.Rd
 f32864f144ab285ea2d1a16ca15291a2 *man/resp.check.Rd
 943f5ff33e45bbbf4018f0ebb4e2c20f *man/rob.const.Rd
 1fc87b1c0397667785b8cd0dc0f3db80 *man/rob.int.Rd
-0001449476e71a28d306b3038a8eed4a *man/summary.SemiParBIV.Rd
+173f071c2ccd3fbc5cf95f284ddd1a47 *man/summary.SemiParBIV.Rd
 299a1916b2dde24a94e49c486705dba2 *man/summary.SemiParROY.Rd
 aa091e124558da13188900183b810a53 *man/summary.SemiParTRIV.Rd
 d64a2dbb85f177f612e05a3bbe5595c1 *man/summary.copulaSampleSel.Rd
 76b443a8e6e91677059672dd14a8fb92 *man/summary.gamlss.Rd
-11228617d3f71904ae1bc2754d04f283 *man/summary.gjrm.Rd
+eeab625a441e5294c04aab2c3cb31602 *man/summary.gjrm.Rd
 d95681f9440028660d1ffd67af79bff1 *man/triprobgHs.Rd
 36e4555ec7894a4fc72f4b511937ad4d *man/vis.gjrm.Rd
 503e772231ca3d511ec8302769751d7b *man/war.Rd

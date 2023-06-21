@@ -115,7 +115,12 @@ triprobgHs <- function(params, respvec, VC, ps, AT = FALSE){
   #if(VC$Chol == FALSE) params <- c(params[1:(VC$X1.d2 + VC$X2.d2 + VC$X3.d2)],theta12.st,theta13.st,theta23.st)
   
   if(is.null(VC$X4)){
-    if(VC$approx == FALSE){ for(i in 1:VC$n) p111[i] <- mm( pmnorm(x = c(mar1[i], mar2[i], mar3[i]), varcov = Sigma)[1] , min.pr = VC$min.pr, max.pr = VC$max.pr)   }
+  
+    #if(VC$approx == FALSE){ for(i in 1:VC$n) p111[i] <- mm( pmnorm(x = c(mar1[i], mar2[i], mar3[i]), varcov = Sigma)[1] , min.pr = VC$min.pr, max.pr = VC$max.pr)  }
+    
+    if(VC$approx == FALSE){                     p111 <- mm( pmnorm(x = cbind(mar1, mar2, mar3),      varcov = Sigma),     min.pr = VC$min.pr, max.pr = VC$max.pr)  }
+
+     
     if(VC$approx == TRUE) p111 <- mm( TRIapprox(mar1, mar2, mar3, Sigma), min.pr = VC$min.pr, max.pr = VC$max.pr )
   }
   

@@ -1,3 +1,6 @@
+version 0.2-6.4
+- speed of trivariate binary models improved. 
+
 version 0.2-6.3
 - better names used for arguments relating the copula functions. 
 

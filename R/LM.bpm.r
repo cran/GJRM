@@ -9,7 +9,7 @@ LM.bpm <- function(formula, data = list(), weights = NULL, subset = NULL, model,
   BivD <- "N"
   fp <- FALSE
   
-  if(!(Model %in% c("B", "BSS")) || missing(Model)) stop("Error in parameter Model value. It should be one of: B or BSS.")
+  if(!(Model %in% c("B", "BSS")) || missing(Model)) stop("Error in parameter model value. It should be one of: B or BSS.")
   if(length(formula) > 2) stop("This test is not designed for varying correlation coefficient models.")
 
 
@@ -20,7 +20,7 @@ LM.bpm <- function(formula, data = list(), weights = NULL, subset = NULL, model,
   fake.formula <- paste(ig[[1]]$response, "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(ig$fake.formula)
   mf$formula <- fake.formula  
-  mf$Model <- mf$hess <- NULL  
+  mf$model <- mf$hess <- NULL  
   mf$drop.unused.levels <- TRUE 
   if(Model=="BSS") mf$na.action <- na.pass
   mf[[1]] <- as.name("model.frame")
@@ -137,7 +137,7 @@ if( l.sp1!=0 || l.sp2!=0){
              l.sp2 = l.sp2, l.sp3 = 0,
              weights = weights,
              hess = hess,
-             Model = Model,
+             Model = Model, model = model,
              end = end, fp = fp,
              BivD = BivD, nC = 1, extra.regI = FALSE, margins = c("probit","probit"),
              bl = c("probit", "logit", "cloglog", "cauchit"), triv = FALSE, univ.gamls = FALSE , n = n,

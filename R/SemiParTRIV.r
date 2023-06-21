@@ -332,8 +332,7 @@ start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, theta12, t
 ##############################################################
 
 if(Model == "T")    func.opt <- triprobgHs
-#if(Model == "TSS")  func.opt <- triprobgHsSS
-#if(Model == "TESS") func.opt <- triprobgHsESS
+
 
 ##########################################################
 # SPs and penalties

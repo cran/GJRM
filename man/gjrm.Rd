@@ -364,7 +364,7 @@ outD <- gjrm(fl, data = dataSim,
              
 conv.check(outD)  
 summary(outD)
-outD$theta
+summary(outD$theta)
 
 plot(outD, eq = 1, seWithMean = TRUE)
 plot(outD, eq = 2, seWithMean = TRUE)
@@ -954,16 +954,7 @@ out1 <- gjrm(list(eq1, eq2, eq3), data = dataSim, surv = TRUE,
                   margins = c("PH", "PO"), 
                   cens1 = delta1, cens2 = delta2, gamlssfit = TRUE,
                   model = "B") 
-
-
-# eq1 <- u1 ~ z1 + s(z2)
-# eq2 <- u2 ~ z  
-# eq3 <-    ~ s(z2)    
-# note that Weibull is implemented as AFT model (test case)
-# out2 <- gjrm(list(eq1, eq2, ~ 1, ~ 1, eq3), data = dataSim, surv = TRUE,
-#                   margins = c("WEI", "WEI"), 
-#                   cens1 = delta1, cens2 = delta2,
-#                   model = "B")    
+  
                   
 #########################################
 ## Joint continuous and survival outcomes
@@ -1291,8 +1282,8 @@ out <- gjrm(fl, data = dataSim, model = "BSS",
 conv.check(out)   
 post.check(out)
 summary(out)
-out$sigma
-out$theta
+summary(out$sigma)
+summary(out$theta)
 
 jc.probs(out, 0, 0.3, intervals = TRUE)[1:4,]
 

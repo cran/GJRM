@@ -1,9 +1,15 @@
-jc.probs <- function(x, y1, y2, y3 = NULL, newdata, type = "joint", cond = 0, intervals = FALSE, n.sim = 100, prob.lev = 0.05, 
+copula.prob <- function(x, y1, y2, y3 = NULL, newdata, joint = TRUE, cond = 0, type = "surv", intervals = FALSE, n.sim = 100, prob.lev = 0.05, 
                      min.pr = 1e-323, max.pr = 1, cumul = "no"){
 
 ######################################################################################################
 # preliminary checks
 ######################################################################################################
+
+if(!(type %in% c("surv", "hazard", "cumhaz"))) stop("The type argument can either be surv, hazard or cumhaz")
+
+sf <- type 
+
+if(joint == TRUE) type <- "joint" else type <- "independence" 
 
 if(x$VC$Model == "ROY") stop("This function is not designed for the type of model chosen for modelling. Get in touch for more info.")
 
@@ -134,7 +140,7 @@ if(x$VC$Cont == "NO" && x$margins[2] %in% bin.link) { # CopulaCLM: This selects 
 	if (!is.null(x$VC$K1)) rr <- jc.probs8(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr)  
 }
 
-if(x$VC$Cont == "YES" && x$surv == TRUE && x$margins[1] %in% bin.link && x$margins[2] %in% bin.link )             rr <- jc.probs4(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr)
+if(x$VC$Cont == "YES" && x$surv == TRUE && x$margins[1] %in% bin.link && x$margins[2] %in% bin.link )             rr <- jc.probs4(x, y1, y2, newdata, type, cond, sf, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr)
 if(x$VC$Cont == "YES" && x$surv == TRUE && x$margins[1] %in% c(cont2par,cont3par) && x$margins[2] %in% bin.link ) rr <- jc.probs5(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr)
 # if(x$VC$Cont == "YES" && x$surv == TRUE && x$margins[1] %in% c(cont2par,cont3par) && x$margins[2] %in% bin.link ) rr <- jc.probs5(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr)
 }

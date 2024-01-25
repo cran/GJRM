@@ -5,6 +5,7 @@
 \alias{distrHsATDiscr}
 \alias{distrHsDiscr}
 \alias{distrHsATDiscr2}
+\alias{distrExIntegrate}
 
 \title{Internal Function}
 

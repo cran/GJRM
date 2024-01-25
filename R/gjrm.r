@@ -14,10 +14,19 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
   
   BivD  <- copula; BivD2 <- copula2; Model <- model
     
-  # if(dep.cens == TRUE) stop("The dependent censoring case is work in progress. \nGet in touch should you wish to get more info.")
+  if(dep.cens == TRUE) stop("The dependent censoring case is work in progress. \nGet in touch should you wish to know more.")
+ 
+  if(model %in% c("TSS", "TESS")) stop("This trivariate model case has not been made available yet. \nGet in touch should you wish to know more.")
+ 
+  if(model == "BSS" &&  margins[2] == "TW") stop("This model case has not been made available yet. \nGet in touch should you wish to know more.")
+ 
+  if(surv == TRUE && !(margins[1] %in% c("PH", "PO", "probit")) ) stop("This model case has not been made available yet. \nGet in touch should you wish to know more.")
+
+  if(margins[1] %in% c("PO", "ZTP", "NBI", "NBII", "PIG", "DGP", "DGPII", "DGP0") &&  margins[2] %in% c("N", "TW", "LN", "GU", "rGU", "LO", "WEI", "iG", "GA", "DAGUM", "SM", "BE", "FISK", "GP", "GPII", "GPo")) stop("This model case has not been made available yet. \nGet in touch should you wish to know more.")
+
  
   if(missing(margins)) stop("You must choose the margins' values.")
-  if(missing(Model))   stop("You must choose a model type.")
+  if(missing(model))   stop("You must choose a model type.")
   
   if(margins[1] == "PH" && surv == TRUE) margins[1] <- "cloglog"
   if(margins[1] == "PO" && surv == TRUE) margins[1] <- "logit" 
@@ -71,7 +80,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                                gc.l, parscale, extra.regI, intf = TRUE, 
                                theta.fx = NULL, knots = knots, drop.unused.levels = drop.unused.levels, 
                                min.dn = min.dn, min.pr = min.pr, max.pr = max.pr),list(weights=weights)))                                
-                                                                        }
+                                                                        }else{ stop("The first margin must be ordinal and the second either ordinal or continuous.") }
   }  
     
   
@@ -102,7 +111,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL,
                              iterlimsp, tolsp,
                              gc.l, parscale, extra.regI, knots, drop.unused.levels = drop.unused.levels,
                              min.dn = min.dn, min.pr = min.pr, max.pr = max.pr),list(weights=weights))) 
-                                                                      }
+                                                                      }else{ stop("The model currently support only binary outcomes.") }
   }
     
 

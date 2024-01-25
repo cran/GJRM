@@ -4,6 +4,7 @@ jc.probs5 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev
 
 CIp12 <- p12s <- nu1 <- nu1s <- nus <- nu <- NULL
 CIkt <- tau <- NULL
+dof <- x$dof
 
 ######################################################################################################
 
@@ -88,7 +89,7 @@ if(cond == 0){
 
 
 
-if(!(x$BivD %in% x$BivD2)) p12 <- mm(BiCDF(p1, p2, x$nC, theta, 3), min.pr = min.pr, max.pr = max.pr  )
+if(!(x$BivD %in% x$BivD2)) p12 <- mm(BiCDF(p1, p2, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr  )
 
 if(x$BivD %in% x$BivD2){
 
@@ -98,13 +99,13 @@ nC2 <- x$VC$ct[which(x$VC$ct[,1] == x$Cop2),2]
 p12 <- NA
  
 if( length(x$teta1) != 0){
-if(length(theta) > 1)  p12[x$teta.ind1] <- mm(BiCDF(p1[x$teta.ind1], p2[x$teta.ind1], nC1, theta[x$teta.ind1], 3), min.pr = min.pr, max.pr = max.pr  )
-if(length(theta) == 1) p12[x$teta.ind1] <- mm(BiCDF(p1[x$teta.ind1], p2[x$teta.ind1], nC1, theta, 3), min.pr = min.pr, max.pr = max.pr  )
+if(length(theta) > 1)  p12[x$teta.ind1] <- mm(BiCDF(p1[x$teta.ind1], p2[x$teta.ind1], nC1, theta[x$teta.ind1], dof), min.pr = min.pr, max.pr = max.pr  )
+if(length(theta) == 1) p12[x$teta.ind1] <- mm(BiCDF(p1[x$teta.ind1], p2[x$teta.ind1], nC1, theta, dof), min.pr = min.pr, max.pr = max.pr  )
                          }  
                           
 if( length(x$teta2) != 0){
-if(length(theta) > 1)  p12[x$teta.ind2] <- mm(BiCDF(p1[x$teta.ind2], p2[x$teta.ind2], nC2, theta[x$teta.ind2], 3), min.pr = min.pr, max.pr = max.pr  )
-if(length(theta) == 1) p12[x$teta.ind2] <- mm(BiCDF(p1[x$teta.ind2], p2[x$teta.ind2], nC2, theta, 3), min.pr = min.pr, max.pr = max.pr  )
+if(length(theta) > 1)  p12[x$teta.ind2] <- mm(BiCDF(p1[x$teta.ind2], p2[x$teta.ind2], nC2, theta[x$teta.ind2], dof), min.pr = min.pr, max.pr = max.pr  )
+if(length(theta) == 1) p12[x$teta.ind2] <- mm(BiCDF(p1[x$teta.ind2], p2[x$teta.ind2], nC2, theta, dof), min.pr = min.pr, max.pr = max.pr  )
                          }                            
                                                                            
 }
@@ -116,7 +117,7 @@ if(length(theta) == 1) p12[x$teta.ind2] <- mm(BiCDF(p1[x$teta.ind2], p2[x$teta.i
 
 if(cond == 1){
 
-if(!(x$BivD %in% x$BivD2)) p12 <- copgHsCond(p1, p2, theta, dof = 3, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
+if(!(x$BivD %in% x$BivD2)) p12 <- copgHsCond(p1, p2, theta, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
 
 
 if(x$BivD %in% x$BivD2){
@@ -124,13 +125,13 @@ if(x$BivD %in% x$BivD2){
 p12 <- NA
  
 if( length(x$teta1) != 0){
-if(length(theta) > 1)  p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta[x$teta.ind1], dof = 3, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
-if(length(theta) == 1) p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta, dof = 3, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
+if(length(theta) > 1)  p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta[x$teta.ind1], dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
+if(length(theta) == 1) p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta, dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
                          }  
                           
 if( length(x$teta2) != 0){
-if(length(theta) > 1)  p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta[x$teta.ind2], dof = 3, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
-if(length(theta) == 1) p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta, dof = 3, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
+if(length(theta) > 1)  p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta[x$teta.ind2], dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
+if(length(theta) == 1) p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta, dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
                          }                            
                                                                            
 }
@@ -143,7 +144,7 @@ if(length(theta) == 1) p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta
 
 if(cond == 2){
 
-if(!(x$BivD %in% x$BivD2)) p12 <- copgHsCond(p1, p2, theta, dof = 3, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if(!(x$BivD %in% x$BivD2)) p12 <- copgHsCond(p1, p2, theta, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
 
 
 if(x$BivD %in% x$BivD2){
@@ -151,13 +152,13 @@ if(x$BivD %in% x$BivD2){
 p12 <- NA
  
 if( length(x$teta1) != 0){
-if(length(theta) > 1)  p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta[x$teta.ind1], dof = 3, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
-if(length(theta) == 1) p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta, dof = 3, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if(length(theta) > 1)  p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta[x$teta.ind1], dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if(length(theta) == 1) p12[x$teta.ind1] <- copgHsCond(p1[x$teta.ind1], p2[x$teta.ind1], theta, dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
                          }  
                           
 if( length(x$teta2) != 0){
-if(length(theta) > 1)  p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta[x$teta.ind2], dof = 3, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
-if(length(theta) == 1) p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta, dof = 3, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if(length(theta) > 1)  p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta[x$teta.ind2], dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if(length(theta) == 1) p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta.ind2], theta, dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
                          }                            
                                                                            
 }
@@ -228,16 +229,16 @@ if( is.null(x$X3) ) est.RHOb <- matrix(rep(est.RHOb, each = dim(p1s)[1]), ncol =
 if(cond == 0){
 
 
-if(x$VC$BivD %in% c("N","T")) p12s <- matrix(mm(BiCDF(p1s, p2s, x$nC, est.RHOb, 3, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim) else{
+if(x$VC$BivD %in% c("N","T")) p12s <- matrix(mm(BiCDF(p1s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim) else{
 
-if(!(x$BivD %in% x$BivD2)) p12s <- matrix(mm(BiCDF(p1s, p2s, x$nC, est.RHOb, par2 = 3, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)) p12s <- matrix(mm(BiCDF(p1s, p2s, x$nC, est.RHOb, par2 = dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
 
 if(x$BivD %in% x$BivD2){ 
 
 p12s <- matrix(NA, ncol = n.sim, nrow = dim(p1s)[1])
 
-if( length(x$teta1) != 0) p12s[x$teta.ind1,] <-  matrix(mm(BiCDF(p1s[x$teta.ind1,], p2s[x$teta.ind1,], nC1,  est.RHOb[x$teta.ind1,]), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)         
-if( length(x$teta2) != 0) p12s[x$teta.ind2,] <-  matrix(mm(BiCDF(p1s[x$teta.ind2,], p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,]), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
+if( length(x$teta1) != 0) p12s[x$teta.ind1,] <-  matrix(mm(BiCDF(p1s[x$teta.ind1,], p2s[x$teta.ind1,], nC1,  est.RHOb[x$teta.ind1,], dof), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)         
+if( length(x$teta2) != 0) p12s[x$teta.ind2,] <-  matrix(mm(BiCDF(p1s[x$teta.ind2,], p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,], dof), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
                       
                         }
 
@@ -249,7 +250,7 @@ if( length(x$teta2) != 0) p12s[x$teta.ind2,] <-  matrix(mm(BiCDF(p1s[x$teta.ind2
 if(cond == 1){
 
 
-if(!(x$BivD %in% x$BivD2)) p12s <-  matrix(copgHsCond(p1s, p2s, est.RHOb, dof = 3, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be1, dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)) p12s <-  matrix(copgHsCond(p1s, p2s, est.RHOb, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be1, dim(p1s)[1], n.sim)
 
 if(x$BivD == "T") p12s <- matrix(p12s, dim(p1s)[1], n.sim)
 
@@ -258,8 +259,8 @@ if(x$BivD %in% x$BivD2){
 
 p12s <- matrix(NA, ncol = n.sim, nrow = dim(p1s)[1])
  
-if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- copgHsCond(p1s[x$teta.ind1,], p2s[x$teta.ind1,],  est.RHOb[x$teta.ind1,], dof = 3, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be1                                               
-if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2s[x$teta.ind2,], -est.RHOb[x$teta.ind2,], dof = 3, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
+if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- copgHsCond(p1s[x$teta.ind1,], p2s[x$teta.ind1,],  est.RHOb[x$teta.ind1,], dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be1                                               
+if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2s[x$teta.ind2,], -est.RHOb[x$teta.ind2,], dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
                                                                                                      
                        }
 
@@ -271,7 +272,7 @@ if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2
 if(cond == 2){
 
 
-if(!(x$BivD %in% x$BivD2)) p12s <-  matrix(copgHsCond(p1s, p2s, est.RHOb, dof = 3, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2, dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)) p12s <-  matrix(copgHsCond(p1s, p2s, est.RHOb, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2, dim(p1s)[1], n.sim)
 
 if(x$BivD == "T") p12s <- matrix(p12s, dim(p1s)[1], n.sim)
 
@@ -280,8 +281,8 @@ if(x$BivD %in% x$BivD2){
 
 p12s <- matrix(NA, ncol = n.sim, nrow = dim(p1s)[1])
  
-if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- copgHsCond(p1s[x$teta.ind1,], p2s[x$teta.ind1,],  est.RHOb[x$teta.ind1,], dof = 3, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2                                               
-if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2s[x$teta.ind2,], -est.RHOb[x$teta.ind2,], dof = 3, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- copgHsCond(p1s[x$teta.ind1,], p2s[x$teta.ind1,],  est.RHOb[x$teta.ind1,], dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2                                               
+if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2s[x$teta.ind2,], -est.RHOb[x$teta.ind2,], dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
                                                                                                      
                        }
                        

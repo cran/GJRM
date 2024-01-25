@@ -1,15 +1,19 @@
-\name{hazsurv.plot}
-\alias{hazsurv.plot}
+\name{hazsurv}
+\alias{hazsurv}
 
-\title{Hazard and survival plots}
+\title{Post-estimation calculation of hazard, cumulative hazard and survival functions}
+
+
+
+\description{This function produces estimated values, intervals and plots for the hazard, cumulative hazard and survival functions.}
 
 \usage{
 
-hazsurv.plot(x, eq, newdata, type = "surv", t.range = NULL, t.vec = NULL, 
-             intervals = TRUE, n.sim = 100, prob.lev = 0.05, shade = FALSE, 
-             bars = FALSE, ylim, ylab, xlab, pch, ls = 100, baseline = FALSE,
-             min.dn = 1e-200, min.pr = 1e-200, max.pr = 1, plot.out = TRUE, 
-             print.progress = TRUE, ...)
+hazsurv(x, eq, newdata, type = "surv", t.range = NULL, t.vec = NULL, 
+        intervals = TRUE, n.sim = 100, prob.lev = 0.05, shade = FALSE, 
+        bars = FALSE, ylim, ylab, xlab, pch, ls = 100, baseline = FALSE,
+        min.dn = 1e-200, min.pr = 1e-200, max.pr = 1, plot.out = TRUE, 
+        print.progress = TRUE, ...)
 
 
 
@@ -27,11 +31,11 @@ hazsurv.plot(x, eq, newdata, type = "surv", t.range = NULL, t.vec = NULL,
   
   For the (sub-)population survival/hazard/cumulative hazard function, the data frame must have as many rows as there are individuals in the (sub-)population of interest. Each row must contain the values of the model covariates of the corresponding individual.}
 
-  \item{type}{The plot to produce, either \code{"surv"}, \code{"hazard"} or \code{"cumhaz"}. In the excess hazard setting these are, respectively, the net survival, the excess hazard and the cumulative excess hazard.}
+  \item{type}{Either \code{"surv"}, \code{"hazard"} or \code{"cumhaz"}. In the excess hazard setting these are, respectively, the net survival, the excess hazard and the cumulative excess hazard.}
   
-  \item{t.range}{Time variable range to be considered for plotting. This must be a vector with only two elements: the minimum and maximum of the time range. If \code{NULL} then it is determined automatically based on the observed data.}
+  \item{t.range}{Time variable range. This must be a vector with only two elements: the minimum and maximum of the time range. If \code{NULL} then it is determined automatically based on the observed data.}
   
-  \item{t.vec}{Vector of time values to be considered for plotting. This could also be a single time. Note you cannot provide both \code{t.range} and \code{t.vec} as they are two mutually exclusive ways of defining the time variable. If \code{NULL} then it is determined automatically based on the observed data. }
+  \item{t.vec}{Vector of time values. This can also be a single time. Note you cannot provide both \code{t.range} and \code{t.vec} as they are two mutually exclusive ways of defining the time variable. If \code{NULL} then it is determined automatically based on the observed data. }
   
   \item{intervals}{If \code{TRUE} then intervals are also produced.}
 
@@ -62,15 +66,8 @@ hazsurv.plot(x, eq, newdata, type = "surv", t.range = NULL, t.vec = NULL,
 
 
 
-\value{It produces a plot or set of plots.}
+\value{It produces estimated values, intervals and plots for the hazard, cumulative hazard and survival functions.}
 
-
-
-\description{ 
-
-This function produces either a survival or hazard plot. 
-
-}
 
 
 \author{
@@ -79,7 +76,7 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 }
 
-
+\keyword{hazsurv}
 \keyword{hplot} 
 \keyword{smooth} 
 \keyword{regression}

@@ -1,4 +1,4 @@
-hazsurv.plot <- function (x, eq, newdata, type = "surv", t.range = NULL, t.vec = NULL, 
+hazsurv <- function (x, eq, newdata, type = "surv", t.range = NULL, t.vec = NULL, 
           intervals = TRUE, n.sim = 100, prob.lev = 0.05, shade = FALSE, 
           bars = FALSE, ylim, ylab, xlab, pch, ls = 100, baseline = FALSE, 
           min.dn = 1e-200, min.pr = 1e-200, max.pr = 1, plot.out = TRUE, 
@@ -307,6 +307,7 @@ hazsurv.plot <- function (x, eq, newdata, type = "surv", t.range = NULL, t.vec =
             ylab <- "Cumulative Hazard"
           if (missing(xlab)) 
             xlab <- "Time"
+          if(missing(pch)) pch <- 19            
           if (length(tv) == 1 | bars == TRUE) 
             type.plot = "p"
           else type.plot = "l"

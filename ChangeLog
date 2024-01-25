@@ -1,3 +1,9 @@
+version 0.2-6.5
+- included areds dataset.
+- ordinal model summary fixed. 
+- jc.probs now is copula.prob
+- hazsurv.plot now is hazsurv
+
 version 0.2-6.4
 - speed of trivariate binary models improved. 
 

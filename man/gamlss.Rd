@@ -7,7 +7,7 @@
 \code{gamlss} fits flexible univariate regression models with several continuous and discrete distributions, and types of covariate 
 effects. The purpose of this function was only to provide, in some cases, starting values 
 for the simultaneous models in the package, but it has now been made available in the form of a proper function should the user wish to fit 
-univariate models using the general estimation approach of this package. The distributions implemented here 
+univariate models using the general estimation approach of this package. The distributions used here 
 have been parametrised according to Rigby and Stasinopoulos (2005).
  
 }
@@ -43,7 +43,7 @@ gamlss(formula, data = list(), weights = NULL, subset = NULL,
 \item{subset}{Optional vector specifying a subset of observations to be used in the fitting process.}
 
 
-\item{margin}{Possible distributions are normal ("N"),  
+\item{margin}{Possible distributions are normal ("N"), Tweedie ("TW"),
                log-normal ("LN"), Gumbel ("GU"), reverse Gumbel ("rGU"), generelised Pareto ("GP"), 
                generelised Pareto II ("GPII") where the shape parameter is forced to be > -0.5, 
                generelised Pareto (with orthogonal parametrisation) ("GPo") where the shape parameter is forced to be > -0.5,
@@ -195,9 +195,15 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 \references{
 
+Aeberhard W.H., Cantoni E., Marra G., Radice R. (2021), Robust Fitting for Generalized Additive Models for Location, Scale and Shape. \emph{Statistics and Computing}, 31(11), 1-16.
+
+Eletti A., Marra G., Quaresma M., Radice R., Rubio F.J. (2022), A Unifying Framework for Flexible Excess Hazard Modeling with Applications in Cancer Epidemiology. \emph{Journal of the Royal Statistical Society Series C}, 71(4), 1044-1062.
+
 Marra G., Farcomeni A., Radice R. (2021), Link-Based Survival Additive Models under Mixed Censoring to Assess Risks of Hospital-Acquired Infections. \emph{Computational Statistics and Data Analysis}, 155, 107092.
 
 Marra G., Radice R. (2017), Bivariate Copula Additive Models for Location, Scale and Shape. \emph{Computational Statistics and Data Analysis}, 112, 99-113.
+
+Ranjbar S., Cantoni E., Chavez-Demoulin V., Marra G., Radice R., Jaton-Ogay K. (2022), Modelling the Extremes of Seasonal Viruses and Hospital Congestion: The Example of Flu in a Swiss Hospital. \emph{Journal of the Royal Statistical Society Series C}, 71(4), 884-905.
 
 Rigby R.A., Stasinopoulos D.M. (2005). Generalized additive models for location, scale and shape (with discussion). \emph{Journal of the Royal Statistical Society, Series C}, 54(3), 507-554.
 
@@ -414,10 +420,10 @@ summary(out)
 AIC(out)
 BIC(out)
 plot(out, eq = 1, scale = 0, pages = 1)
-hazsurv.plot(out, newdata = data.frame(z1 = 0, z2 = 0), shade = TRUE, 
-             n.sim = 1000, baseline = TRUE)
-hazsurv.plot(out, type = "hazard", newdata = data.frame(z1 = 0, z2 = 0), 
-             shade = TRUE, n.sim = 1000, baseline = TRUE)
+hazsurv(out, newdata = data.frame(z1 = 0, z2 = 0), shade = TRUE, 
+        n.sim = 1000, baseline = TRUE)
+hazsurv(out, type = "hazard", newdata = data.frame(z1 = 0, z2 = 0), 
+        shade = TRUE, n.sim = 1000, baseline = TRUE)
 
 out1 <- gam(u ~ z1 + s(z2), family = cox.ph(), 
             data = dataSim, weights = delta)
@@ -469,10 +475,10 @@ summary(out)
 AIC(out)
 BIC(out)
 plot(out, eq = 1, scale = 0)
-hazsurv.plot(out, newdata = data.frame(z = 0), shade = TRUE, n.sim = 1000,
-             baseline = TRUE)
-hazsurv.plot(out, type = "hazard", newdata = data.frame(z = 0), 
-             shade = TRUE, n.sim = 1000)
+hazsurv(out, newdata = data.frame(z = 0), shade = TRUE, n.sim = 1000,
+        baseline = TRUE)
+hazsurv(out, type = "hazard", newdata = data.frame(z = 0), 
+        shade = TRUE, n.sim = 1000)
              
                           
 #############################
@@ -558,8 +564,8 @@ plot(out, eq = 1, scale = 0, pages = 1)
   
 ndf <- data.frame(z1 = 1, z2 = 0, z3 = 0.2, z4 = 0.5)
 
-hazsurv.plot(out, eq = 1, newdata = ndf, type = "surv")
-hazsurv.plot(out, eq = 1, newdata = ndf, type = "hazard", n.sim = 1000)         
+hazsurv(out, eq = 1, newdata = ndf, type = "surv")
+hazsurv(out, eq = 1, newdata = ndf, type = "hazard", n.sim = 1000)         
 }
 
 }

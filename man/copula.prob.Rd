@@ -1,5 +1,5 @@
-\name{jc.probs}
-\alias{jc.probs}
+\name{copula.prob}
+\alias{copula.prob}
 \alias{jc.probs1}
 \alias{jc.probs2}
 \alias{jc.probs3}
@@ -11,19 +11,19 @@
 
 
 
-\title{Joint or conditional probabilities from a fitted joint model}
+\title{Copula probabilities (joint and conditional) from a fitted simultaneous model}
 
 \description{ 
-\code{jc.probs} can be used to calculate the joint or conditional probabilities from a fitted joint model with intervals obtained 
-using posterior simulation.}
+\code{copula.prob} can be used to calculate the joint or conditional copula probabilities from a fitted simultaneous model with intervals obtained 
+via posterior simulation.}
 
 
 
 \usage{
 
-jc.probs(x, y1, y2, y3 = NULL, newdata, type = "joint", cond = 0,
-         intervals = FALSE, n.sim = 100, prob.lev = 0.05, min.pr = 1e-323, max.pr = 1, 
-         cumul = "no")
+copula.prob(x, y1, y2, y3 = NULL, newdata, joint = TRUE, cond = 0,
+            type = "surv", intervals = FALSE, n.sim = 100, prob.lev = 0.05, 
+            min.pr = 1e-323, max.pr = 1, cumul = "no")
 
 }
 
@@ -38,17 +38,18 @@ jc.probs(x, y1, y2, y3 = NULL, newdata, type = "joint", cond = 0,
 
 \item{y3}{Value of response for third margin if a trivariate model is employed.}
 
-
 \item{newdata}{A data frame or list containing the values of the model covariates at which predictions are required. 
                If not provided then predictions corresponding to the original data are returned.
                When newdata is provided, it should contain all the variables needed for prediction.}
 
-\item{type}{This argument can take two: \code{"joint"} (the probabilities are calculated from the fitted 
-            joint model) and \code{"independence"} (the calculation is done from univariate fits).}
+\item{joint}{If \code{TRUE} then the calculation is done using the fitted joint model. If \code{FALSE} then 
+             the calculation is done from univariate fits.}
 
 \item{cond}{There are three possible values: 0 (joint probabilities are delivered), 1 (conditional probabilities are delivered and 
             conditioning is with the respect to the first margin), 2 (as before but conditioning is with the respect to 
             the second margin).}  
+  
+\item{type}{This argument is only valid for survival copula models. It can take values: "surv", "hazard", "cumhaz".}  
   
 \item{intervals}{If \code{TRUE} then intervals for the probabilities are also produced.}   
   
@@ -64,14 +65,13 @@ jc.probs(x, y1, y2, y3 = NULL, newdata, type = "joint", cond = 0,
 \item{cumul}{Only used for discrete and continuous margins' case.} 
 
 
-  
 }
 
 
 \details{
 
-This function calculates joint or conditional probabilities from a fitted joint model or a model assuming independence, with intervals 
-obtained using posterior simulation.
+This function calculates joint or conditional copula probabilities from a fitted simultaneous model or a model assuming independence, with intervals 
+obtained via posterior simulation.
 
 }
 

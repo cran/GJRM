@@ -1,18 +1,18 @@
 export(AT, PE, RR, OR, rMVN, post.check,mm,mmf,enu.tr,llpsi,imputeSS, imputeCounter,
 prev, distrHs, numch, numgh,distrHsAT,distrHsAT1,distrHsDiscr,distrHsATDiscr,distrHsATDiscr2, rob.const,
-adjCov, copgHsCont, BCDF, BiCDF, jc.probs,probm,probmS,postVb,ass.ms,edf.loop,pred.var,form.check,
+adjCov, copgHsCont, BCDF, BiCDF, copula.prob, probm,probmS,postVb,ass.ms,edf.loop,pred.var,form.check,
 adjCovSD,int.postcheck, overall.svG, susutsn, susu,pscr, pscr0, mice.impute.copulaSS, r.resp,
 gt.bpm, esp.tr, eta.tr, teta.tr,copgHsAT,dof.tr,ass.dp,form.eq12,startsn, overall.sv,
-bprobgHs,bprobgHstwoParC, mb, H.tri, g.tri, triprobgHs, 
-pp, SS, bcontSurvGunivInform, rIC, bCopulaCLMgHsCont, bCopulaCLMgHsOrd, pen,
+bprobgHs,bprobgHstwoParC, mb, H.tri, g.tri, triprobgHs, g.triSS,  
+g.triESS, pp, SS, bcontSurvGunivInform, rIC, bCopulaCLMgHsCont, bCopulaCLMgHsOrd, pen,
 bprobgHsPO, bcorrec, bcorrecDiscr,  Xdpred, pred.mvt, pred.gp, inform.setup, cv.inform, PDef, ggm.Deriv, ggmtrust, ggm.DerivOPT1, ggm.DerivOPT2,
-bprobgHsSS, intB, rob.int, resp.CLM, ggmtrust.path, Dpens, Dpens2, 
+bprobgHsSS, intB, rob.int, resp.CLM, ggmtrust.path, Dpens, Dpens2,
 bprobgHsContUniv, lmc, bcontSurvGunivMIXED_ExcessHazard, survExcInd, pream.wm,
 bcontSurvGunivL_ExcessHazard, bcontSurvGuniv_ExcessHazard, bcontSurvGunivI_ExcessHazard, bcontSurvGunivMIXED_LeftTruncation,
-bcontSurvGunivMIXED_ExcessHazard_LeftTruncation, 
+bcontSurvGunivMIXED_ExcessHazard_LeftTruncation,
 copgHs, copgHs2, copgHs3, PosDefCor,
 logLik.SemiParBIV, logLik.ggmtrust, logLik.lmc, pTweed, bcontSurvG_extended,
-LM.bpm, hazsurv.plot, approx.CLM,
+LM.bpm, hazsurv, approx.CLM,
 VuongClarke,
 bprobgHsBinROY, bprobgHsCont2ROY, bprobgHsCont3ROY, bprobgHsDiscr2ROY, bprobgHsDiscr1ROY,
 plot.SemiParBIV, vis.gjrm,
@@ -60,7 +60,6 @@ polys.map, polys.setup)
 
 
 importFrom(ggplot2, fortify)
-
 importFrom(ismev, gpd.fit)
 importFrom(magic, adiag)
 importFrom(evd, rgpd)
@@ -76,9 +75,7 @@ importFrom(VineCopula, BiCopHfunc1, BiCopHfunc2, BiCopHfuncDeriv, BiCopCDF, BiCo
 importFrom(matrixStats, rowQuantiles, colQuantiles, colWeightedMeans)
 importFrom(gamlss.dist, pNBI, dNBI, pNBII, dNBII, pPIG, dPIG, pDEL, dDEL, pSICHEL, dSICHEL, pPO, rNO,rGU,rRG,rLO,rLOGNO,rWEI,rIG,rGA,rGB2,rBE,rNBI,rNBII,rPIG,rPO)
 
-importFrom(methods, extends)
-
-importFrom(distrEx, distrExIntegrate)
+importFrom(methods, extends, is)
 
 importFrom(Rmpfr,getPrec,mpfr,pmax)
 importFrom(mnormt, pmnorm)

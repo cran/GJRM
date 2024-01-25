@@ -63,7 +63,7 @@ family. The options are: "C0C90", "C0C270", "C180C90", "C180C270",  "GAL0GAL90",
 
 \item{copula2}{As above but used only for Roy models.}
 
-\item{margins}{It indicates the distributions used for the two or three margins. Possible distributions are normal ("N"),  
+\item{margins}{It indicates the distributions used for the two or three margins. Possible distributions are normal ("N"), Tweedie ("TW"), 
                log-normal ("LN"), Gumbel ("GU"), reverse Gumbel ("rGU"), generelised Pareto ("GP"), 
                generelised Pareto II ("GPII") where the shape parameter is forced to be > -0.5,
                generelised Pareto (with orthogonal parametrisation) ("GPo") where the shape parameter is forced to be > -0.5,
@@ -719,7 +719,7 @@ post.check(out)
 summary(out)
 AIC(out)
 BIC(out)
-jc.probs(out, 1.4, 2.3, intervals = TRUE)[1:4,]
+copula.prob(out, 1.4, 2.3, intervals = TRUE)[1:4,]
 
 ############
 ## Example 6
@@ -775,7 +775,7 @@ out <- gjrm(fl, data = dataSim,
 conv.check(out)                        
 summary(out)
 post.check(out)
-jc.probs(out, 1, 1.5, intervals = TRUE)[1:4,]
+copula.prob(out, 1, 1.5, intervals = TRUE)[1:4,]
 AT(out, nm.end = "y1")
 AT(out, nm.end = "y1", type = "univariate")
 
@@ -929,17 +929,17 @@ AIC(out); BIC(out)
 plot(out, eq = 1, scale = 0, pages = 1)
 plot(out, eq = 2, scale = 0, pages = 1)
 
-hazsurv.plot(out, eq = 1, newdata = data.frame(z1 = 0, z2 = 0), 
-             shade = TRUE, n.sim = 100, baseline = TRUE)
-hazsurv.plot(out, eq = 1, newdata = data.frame(z1 = 0, z2 = 0), 
-             shade = TRUE, n.sim = 100, type = "hazard", baseline = TRUE, 
+hazsurv(out, eq = 1, newdata = data.frame(z1 = 0, z2 = 0), 
+        shade = TRUE, n.sim = 100, baseline = TRUE)
+hazsurv(out, eq = 1, newdata = data.frame(z1 = 0, z2 = 0), 
+        shade = TRUE, n.sim = 100, type = "hazard", baseline = TRUE, 
              intervals = FALSE)
-hazsurv.plot(out, eq = 2, newdata = data.frame(z = 0), 
-             shade = FALSE, n.sim = 100, baseline = TRUE)
-hazsurv.plot(out, eq = 2, newdata = data.frame(z = 0), 
-             shade = TRUE, n.sim = 100, type = "hazard", baseline = TRUE)
+hazsurv(out, eq = 2, newdata = data.frame(z = 0), 
+        shade = FALSE, n.sim = 100, baseline = TRUE)
+hazsurv(out, eq = 2, newdata = data.frame(z = 0), 
+        shade = TRUE, n.sim = 100, type = "hazard", baseline = TRUE)
  
-jc.probs(out, type = "joint", intervals = TRUE)[1:5,]
+copula.prob(out, intervals = TRUE)[1:5,]
  
 newd0 <- newd1 <- data.frame(z = 0, z1 = mean(dataSim$z1), 
                              z2 = mean(dataSim$z2), 
@@ -947,8 +947,8 @@ newd0 <- newd1 <- data.frame(z = 0, z1 = mean(dataSim$z1),
                              u2 =  mean(dataSim$u2) + 1) 
 newd1$z <- 1                   
 
-jc.probs(out, type = "joint", newdata = newd0, intervals = TRUE)
-jc.probs(out, type = "joint", newdata = newd1, intervals = TRUE)
+copula.prob(out, newdata = newd0, intervals = TRUE)
+copula.prob(out, newdata = newd1, intervals = TRUE)
 
 out1 <- gjrm(list(eq1, eq2, eq3), data = dataSim, surv = TRUE,
                   margins = c("PH", "PO"), 
@@ -985,7 +985,7 @@ out1 <- gjrm(list(eq1, eq2, eq3), data = dataSim, surv = TRUE,
 #                              z2 = mean(dataSim$z2), 
 #                              u2 =  mean(dataSim$u2) + 1) 
 # 
-# jc.probs(out3, y1 = 0.6, type = "joint", newdata = newd, intervals = TRUE)                
+# copula.prob(out3, y1 = 0.6, newdata = newd, intervals = TRUE)                
 }
 
 \dontrun{ 
@@ -1100,12 +1100,12 @@ out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T",
              margins = c("probit", "probit", "probit")) 
        
        
-jcres1 <- jc.probs(out2, 1, 1, 1, type = "joint", cond = 0, 
+jcres1 <- copula.prob(out2, 1, 1, 1, joint = TRUE, cond = 0, 
                    intervals = TRUE, n.sim = 100)
        
 nw <- data.frame( x1 = 0, x2 = seq(0, 1, length.out = 100) )   
        
-jcres2 <- jc.probs(out2, 1, 1, 1, newdata = nw, type = "joint", 
+jcres2 <- copula.prob(out2, 1, 1, 1, newdata = nw, 
                    cond = 0, intervals = TRUE, n.sim = 100)
       
 #############
@@ -1285,7 +1285,7 @@ summary(out)
 summary(out$sigma)
 summary(out$theta)
 
-jc.probs(out, 0, 0.3, intervals = TRUE)[1:4,]
+copula.prob(out, 0, 0.3, intervals = TRUE)[1:4,]
 
 outC0 <- gjrm(fl, data = dataSim, copula = "C0", model = "BSS",
               margins = c("probit", "N"))

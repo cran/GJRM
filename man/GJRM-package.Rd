@@ -74,14 +74,11 @@ Part funded by EPSRC: EP/J006742/1 and EP/T033061/1
 
 \references{
 
-Submitted papers (developments available from release 0.2-5):
-
-Marra G., Radice R., Zimmer D. (2022), A Unifying Switching Regime Regression Framework with Applications in Health Economics.
-
-
 Key methodological references (ordered by year of publication):
 
-Marra G., Fasiolo M., Radice R., Winkelmann R. (in press), A Flexible Copula Regression Model with Bernoulli and Tweedie Margins for Estimating the Effect of Spending on Mental Health. \emph{Health Economics}.
+Marra G., Radice R., Zimmer D. (2024), A Unifying Switching Regime Regression Framework with Applications in Health Economics. \emph{Econometric Reviews}, 43(1), 52-70.
+
+Marra G., Fasiolo M., Radice R., Winkelmann R. (2023), A Flexible Copula Regression Model with Bernoulli and Tweedie Margins for Estimating the Effect of Spending on Mental Health. \emph{Health Economics}, 32(6), 1305-1322.
 
 Eletti A., Marra G., Quaresma M., Radice R., Rubio F.J. (2022), A Unifying Framework for Flexible Excess Hazard Modeling with Applications in Cancer Epidemiology. \emph{Journal of the Royal Statistical Society Series C}, 71(4), 1044-1062.
 

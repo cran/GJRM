@@ -629,7 +629,7 @@ if(fun == "tau"){
 
 # valiues for y1 and y2 should really be irrelevant given we are interested in tau
 
-res <- jc.probs(x, x$y1[1], x$y2[1], intervals = TRUE, n.sim = n.sim, prob.lev = prob.lev, ...)
+res <- copula.prob(x, x$y1[1], x$y2[1], intervals = TRUE, n.sim = n.sim, prob.lev = prob.lev, ...)
 
 fit    <- res[, 6]
 CIpred <- res[, 7:8]

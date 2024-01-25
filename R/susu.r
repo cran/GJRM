@@ -193,7 +193,20 @@ if (is_ordcon) {
   
 # In what follows the cut points are removed from the table in the ordinal-ordinal model 
 if (is_ordord) {
-	table[[1]] <- table[[1]][- (1: (K1 + K2 - 2)), ]
+
+        tnas <- dimnames(table[[1]])[[1]][-(1: (K1 + K2 - 2))] 
+
+
+        table[[1]] <- table[[1]][-(1: (K1 + K2 - 2)), ]
+
+        if(is.null(dim(table[[1]]))){
+        
+	table[[1]] <- as.matrix(table[[1]])
+	dimnames( table[[1]] )[[2]] <- tnas 
+	table[[1]] <- t(table[[1]])
+	
+	}
+	
 }  
 
 list(tableN = tableN, table = table)

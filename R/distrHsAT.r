@@ -91,7 +91,7 @@ if(margin2 == "FISK"){
 
 
 
-if(margin2 == "iG"){
+if(margin2 == "IG"){
 
 
 #sigma2 <- ifelse(sigma2 < 0.001, 0.001, sigma2)

@@ -1,6 +1,6 @@
 CopulaCLM <- function(formula, data = list(), weights = NULL, subset = NULL,
                       Model = "B", BivD = "N", margins = c("probit","N"),
-                      dof = 3, gamlssfit = FALSE,
+                      dof = 3, left.trunc1 = 0, left.trunc2 = 0, gamlssfit = FALSE,
                       fp = FALSE, hess = TRUE, infl.fac = 1, theta.fx = NULL, 
                       rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
                       gc.l = FALSE, parscale, extra.regI = "t", intf = FALSE, knots = NULL,
@@ -16,9 +16,9 @@ CopulaCLM <- function(formula, data = list(), weights = NULL, subset = NULL,
 
 i.rho <- sp <- qu.mag <- n.sel <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- inde <- y2m <- K1 <- NULL  
 end <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- l.sp9 <- i.rho <- 0
-gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- gam9 <- gamlss2 <- dof.st <- NULL
+gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- gam9 <- gamlss2 <- dof.st <- coef.star <- NULL
 gamlss2 <- NULL
-Sl.sf <- NULL
+Sl.sf <- fit_ind <- coeff.ind <- NULL
 sp.method <- "perf"
 sel2 <- sel2.p <- sel2.m <- sel2.mm <- sel2.pm <- c2 <- D21 <- D22 <- NA
   
@@ -45,10 +45,10 @@ scc  <- c("C0" , "C180","GAL0" , "GAL180", "J0" , "J180", "G0","G180",BivD2)
 sccn <- c("C90", "C270", "GAL90", "GAL270","J90", "J270", "G90", "G270")
 
 mb   <- c("B", "BSS", "BPO", "BPO0")
-m2   <- c("N", "GU", "rGU", "LO", "LN", "WEI", "iG", "GA", "BE", "FISK","GP","GPII","GPo")
+m2   <- c("N", "GU", "rGU", "LO", "LN", "WEI", "IG", "GA", "BE", "FISK","GP","GPII","GPo")
 m3   <- c("DAGUM", "SM","TW")
-m1d  <- c("PO", "ZTP","DGP0") 
-m2d  <- c("NBI", "NBII", "PIG","DGP","DGPII") 
+m1d  <- c("P", "tP","DGP0") 
+m2d  <- c("tNBI", "tNBII", "tPIG","NBI", "NBII", "PIG","DGP","DGPII") 
 bl   <- c("probit", "logit", "cloglog") # , "cauchit")   
 M    <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, BivD = BivD, 
              opc = opc, extra.regI = extra.regI, margins = margins, bl = bl, intf = intf,
@@ -107,7 +107,7 @@ environment(fake.formula) <- environment(formula[[1]])
 mf$formula <- fake.formula 
 
 
-mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$ordinal <- mf$knots <- mf$dof <- mf$intf <- mf$theta.fx <- mf$Model <- mf$BivD <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
+mf$left.trunc1 <- mf$left.trunc2 <- mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$ordinal <- mf$knots <- mf$dof <- mf$intf <- mf$theta.fx <- mf$Model <- mf$BivD <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
 mf$drop.unused.levels <- drop.unused.levels
 mf$ind.ord <- NULL
   
@@ -337,7 +337,7 @@ names(i.rho) <- "theta.star"
 
 if(margins[1] %in% bl && is_ordcon){ # Mixed ordinal-continuous case
 
-start.snR <- startsn(margins[2], y2)    
+start.snR <- startsn(margins[2], y2, left.trunc = left.trunc2)    
 log.sig2  <- start.snR$log.sig2.1; names(log.sig2) <- "sigma.star"
 
 #if(margins[2] %in% c(m3    )){ log.nu <- start.snR$log.nu.1; names(log.nu) <- "nu.star"}  
@@ -482,7 +482,7 @@ lsgam9 <- length(gam9$smooth)
 
 VC <- list(lsgam1 = lsgam1, robust = FALSE,  
            lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
-           lsgam3 = lsgam3, 
+           lsgam3 = lsgam3, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
            lsgam4 = lsgam4,
            lsgam5 = lsgam5,
            lsgam6 = lsgam6,
@@ -542,7 +542,7 @@ VC <- list(lsgam1 = lsgam1, robust = FALSE,
            zero.tol = 1e-02,
            min.dn = min.dn, min.pr = min.pr, max.pr = max.pr,
            is_ordcon = is_ordcon, 
-           is_ordord = is_ordord) # original n only needed in SemiParBIV.fit
+           is_ordord = is_ordord, end.surv = FALSE) # original n only needed in SemiParBIV.fit
            
 if(gc.l == TRUE) gc()           
              
@@ -555,7 +555,7 @@ if(gc.l == TRUE) gc()
 #gamlss2 <- eval(substitute(gamlss(form.gamlR$formula.gamlss2, data = data, weights = weights, subset = subset,
 #                 margin = margins[2], infl.fac = infl.fac,
 #                 rinit = rinit, rmax = rmax, iterlimsp = iterlimsp, tolsp = tolsp,
-#                 gc.l = gc.l, parscale = 1, extra.regI = extra.regI, drop.unused.levels = drop.unused.levels), list(weights = weights)))
+#                 gc.l = gc.l, parscale = 1, drop.unused.levels = drop.unused.levels), list(weights = weights)))
 #
 #
 ## Updated starting values
@@ -617,9 +617,9 @@ if (gamlssfit == "TRUE") {
 		form.gamlR <- form.gaml(formula, l.flist, M, type = "biv")
 
 		gamlss2 <- eval(substitute(gamlss(form.gamlR$formula.gamlss2, data = data, weights = weights, subset = subset,
-                 		margin = margins[2], infl.fac = infl.fac,
+                 		family = margins[2], infl.fac = infl.fac,
                  		rinit = rinit, rmax = rmax, iterlimsp = iterlimsp, tolsp = tolsp,
-                 		gc.l = gc.l, parscale = 1, extra.regI = extra.regI, drop.unused.levels = drop.unused.levels), list(weights = weights)))
+                 		gc.l = gc.l, parscale = 1, drop.unused.levels = drop.unused.levels), list(weights = weights)))
 
 		# Updated starting values
 
@@ -737,7 +737,7 @@ CopulaCLMFit <- SemiParBIV.fit(func.opt = func.opt, start.v = start.v,
                                rinit = rinit, rmax = rmax, iterlim = 100, iterlimsp = iterlimsp, tolsp = tolsp,
                                respvec = respvec, VC = VC, sp = sp, qu.mag = qu.mag)
 
-
+coef.star <- CopulaCLMFit$fit$argument 
 # Cut points are transformed back and added to the parameter vector
 
 infty <- 1e+25
@@ -783,8 +783,7 @@ cov.c(CopulaCLMFit)
 
 ##################################################
 
-gam1$call$data <- gam2$call$data <- gam3$call$data <- gam4$call$data <- 
-gam5$call$data <- gam6$call$data <- gam7$call$data <- gam8$call$data <- cl$data 
+gam1$call$data <- gam2$call$data <- gam3$call$data <- gam4$call$data <- gam5$call$data <- gam6$call$data <- gam7$call$data <- gam8$call$data <- cl$data 
 
 
 ##################################################
@@ -842,13 +841,15 @@ L <- list(fit = CopulaCLMFit$fit, dataset = dataset, formula = formula, CopulaCL
           gp1 = gp1, gp2 = gp2, gp3 = gp3, gp4 = gp4, gp5 = gp5, gp6 = gp6, gp7 = gp7, gp8 = gp8, 
           X2s = X2s, X3s = X3s, p1n = CopulaCLMFit.p$p1n , p2n = CopulaCLMFit.p$p2n, 
           VC = VC, Model = Model, magpp = CopulaCLMFit$magpp,
-          gamlssfit = gamlssfit, Cont = "NO", tau = CopulaCLMFit.p$tau, 
-          tau.a = CopulaCLMFit.p$tau.a, l.flist = l.flist, v1 = v1, v2 = v2, triv = FALSE, univar.gamlss = FALSE,
+          gamlssfit = gamlssfit, Cont = "NO", #tau = CopulaCLMFit.p$tau, 
+          #tau.a = CopulaCLMFit.p$tau.a, 
+          l.flist = l.flist, v1 = v1, v2 = v2, triv = FALSE, univar.gamlss = FALSE,
           gamlss = gamlss2, BivD2 = BivD2, dof = dof, dof.a = dof, call = cl,
           surv = FALSE, surv.flex = surv.flex, ordinal = TRUE, drop.unused.levels = drop.unused.levels, Model = Model,
           is_ordcon = is_ordcon,
           is_ordord = is_ordord,
-          coefficients.ind = coefficients.ind, Vb.ind = Vb.ind)
+          coefficients.ind = coefficients.ind, Vb.ind = Vb.ind, coef.star = coef.star, end.surv = FALSE, coeff.ind = coeff.ind,
+          left.trunc1 = left.trunc1, left.trunc2 = left.trunc2)
 
 
 if(BivD %in% BivD2){

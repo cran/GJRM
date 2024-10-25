@@ -13,13 +13,13 @@ print.summary.gjrm <- function(x, digits = max(3, getOption("digits") - 3),
  m2l      <- ppR$m2l      
      
      
- main.t <- "\nCOPULA:  "     
+ main.t <- "\nCOPULA:"     
  cp <- "  theta = "; as.p <- x$theta.a; dof <- x$dof.a
  ct <- "  tau = "; kt.p <- x$tau.a
- s1 <- "sigma.1 = "; s1.p <- x$sigma21.a
- s2 <- "sigma.2 = "; s2.p <- x$sigma22.a 
- n1 <- "nu.1 = "; n1.p <- x$nu1.a
- n2 <- "nu.2 = "; n2.p <- x$nu2.a 
+ s1 <- "sigma1 = "; s1.p <- x$sigma21.a
+ s2 <- "sigma2 = "; s2.p <- x$sigma22.a 
+ n1 <- "nu1 = "; n1.p <- x$nu1.a
+ n2 <- "nu2 = "; n2.p <- x$nu2.a 
    
    
  cat(main.t,cop) 
@@ -29,9 +29,9 @@ print.summary.gjrm <- function(x, digits = max(3, getOption("digits") - 3),
  pscr(x, lind, m1l, m2l, cont1par, cont2par, cont3par, type = "copR", digits, signif.stars, ...)
   
  CIrs    <- colMeans(x$CItheta, na.rm = TRUE)
- CIkt    <- colMeans(x$CItau, na.rm = TRUE)
- if( x$margins[1] %in% c(cont2par,cont3par) ) CIsig21 <- colMeans(x$CIsig1, na.rm = TRUE)
- if( x$margins[2] %in% c(cont2par,cont3par) ) CIsig22 <- colMeans(x$CIsig2, na.rm = TRUE)
+ #CIkt    <- colMeans(x$CItau, na.rm = TRUE)
+ if( x$margins[1] %in% c(cont2par,cont3par) ) CIsig21 <- colMeans(x$CIsigma1, na.rm = TRUE)
+ if( x$margins[2] %in% c(cont2par,cont3par) ) CIsig22 <- colMeans(x$CIsigma2, na.rm = TRUE)
   
  if(x$margins[1] %in% cont3par)  CInu1 <- colMeans(x$CInu1, na.rm = TRUE)
  if(x$margins[2] %in% cont3par)  CInu2 <- colMeans(x$CInu2, na.rm = TRUE)  
@@ -54,7 +54,7 @@ print.summary.gjrm <- function(x, digits = max(3, getOption("digits") - 3),
                                                                       "  ",s2,format(s2.p,digits=nodi),"(",format(CIsig22[1],digits=nodi),",",format(CIsig22[2],digits=nodi),")",
                                                                       "\ndof = ",format(dof,digits=nodi),"(",format(CIdof[1],digits=nodi),",",format(CIdof[2],digits=nodi),")",                                                                     
                                                                       "\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
-                                                                      ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                      #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
                                                                       "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
  
 
@@ -65,7 +65,7 @@ print.summary.gjrm <- function(x, digits = max(3, getOption("digits") - 3),
                                                                       "  ",n2,format(n2.p,digits=nodi),"(",format(CInu2[1],digits=nodi),",",format(CInu2[2],digits=nodi),")",   
                                                                       "\ndof = ",format(dof,digits=nodi),"(",format(CIdof[1],digits=nodi),",",format(CIdof[2],digits=nodi),")",
                                                                       "\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
-                                                                      ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                      #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
                                                                       "\nn = ",x$n,"  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
  
  
@@ -75,7 +75,7 @@ print.summary.gjrm <- function(x, digits = max(3, getOption("digits") - 3),
                                                                       "\n",n2,format(n2.p,digits=nodi),"(",format(CInu2[1],digits=nodi),",",format(CInu2[2],digits=nodi),")", 
                                                                       "\ndof = ",format(dof,digits=nodi),"(",format(CIdof[1],digits=nodi),",",format(CIdof[2],digits=nodi),")",
                                                                       "\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
-                                                                      ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                      #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
                                                                       "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
                            
  
@@ -84,7 +84,7 @@ print.summary.gjrm <- function(x, digits = max(3, getOption("digits") - 3),
                                                                       "\n",n1,format(n1.p,digits=nodi),"(",format(CInu1[1],digits=nodi),",",format(CInu1[2],digits=nodi),")",
                                                                       "\ndof = ",format(dof,digits=nodi),"(",format(CIdof[1],digits=nodi),",",format(CIdof[2],digits=nodi),")",
                                                                       "\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
-                                                                      ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                      #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
                                                                       "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
          
  
@@ -94,14 +94,14 @@ print.summary.gjrm <- function(x, digits = max(3, getOption("digits") - 3),
  
    if( x$margins[1] %in% cont2par && x$margins[2] %in% cont1par && x$surv == TRUE  ) cat(s1,format(s1.p,digits=nodi),"(",format(CIsig21[1],digits=nodi),",",format(CIsig21[2],digits=nodi),")",
                                                                       "\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
-                                                                      ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                      #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
                                                                       "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
 
                         
   if( x$margins[1] %in% cont3par && x$margins[2] %in% cont1par && x$surv == TRUE) cat(s1,format(s1.p,digits=nodi),"(",format(CIsig21[1],digits=nodi),",",format(CIsig21[2],digits=nodi),")",
                                                                      "\n",n1,format(n1.p,digits=nodi),"(",format(CInu1[1],digits=nodi),",",format(CInu1[2],digits=nodi),")",
                                                                      "\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
-                                                                     ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                     #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
                                                                      "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
        
 
@@ -109,23 +109,23 @@ print.summary.gjrm <- function(x, digits = max(3, getOption("digits") - 3),
   if( x$margins[1] %in% cont2par && x$margins[2] %in% cont2par) cat(s1,format(s1.p,digits=nodi),"(",format(CIsig21[1],digits=nodi),",",format(CIsig21[2],digits=nodi),")",
                                                                      "  ",s2,format(s2.p,digits=nodi),"(",format(CIsig22[1],digits=nodi),",",format(CIsig22[2],digits=nodi),")",
                                                                      "\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
-                                                                     ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                     #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
                                                                      "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
 
 
   if( x$margins[1] %in% cont1par && x$margins[2] %in% cont2par) cat(s2,format(s2.p,digits=nodi),"(",format(CIsig22[1],digits=nodi),",",format(CIsig22[2],digits=nodi),")",
                                                                      "\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
-                                                                     ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                     #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
                                                                      "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
 
   if( x$margins[1] %in% cont1par && x$margins[2] %in% cont1par) cat("theta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
-                                                                     ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                     #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
                                                                      "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
 
 if( x$margins[1] %in% cont1par && x$margins[2] %in% cont3par) cat(s2,format(s2.p,digits=nodi),"(",format(CIsig22[1],digits=nodi),",",format(CIsig22[2],digits=nodi),")",
                                                                      "\n",n2,format(n2.p,digits=nodi),"(",format(CInu2[1],digits=nodi),",",format(CInu2[2],digits=nodi),")", 
                                                                      "\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
-                                                                     ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                     #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
                                                                      "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")                           
 
   if( x$margins[1] %in% cont3par && x$margins[2] %in% cont3par) cat(s1,format(s1.p,digits=nodi),"(",format(CIsig21[1],digits=nodi),",",format(CIsig21[2],digits=nodi),")",
@@ -133,14 +133,14 @@ if( x$margins[1] %in% cont1par && x$margins[2] %in% cont3par) cat(s2,format(s2.p
                                                                      "\n",n1,format(n1.p,digits=nodi),"(",format(CInu1[1],digits=nodi),",",format(CInu1[2],digits=nodi),")",
                                                                      "  ",n2,format(n2.p,digits=nodi),"(",format(CInu2[1],digits=nodi),",",format(CInu2[2],digits=nodi),")",   
                                                                      "\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
-                                                                     ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                     #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
                                                                      "\nn = ",x$n,"  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
 
 if( x$margins[1] %in% cont2par && x$margins[2] %in% cont3par) cat(  s1,format(s1.p,digits=nodi),"(",format(CIsig21[1],digits=nodi),",",format(CIsig21[2],digits=nodi),")",
                                                                      "  ",s2,format(s2.p,digits=nodi),"(",format(CIsig22[1],digits=nodi),",",format(CIsig22[2],digits=nodi),")",
                                                                      "\n",n2,format(n2.p,digits=nodi),"(",format(CInu2[1],digits=nodi),",",format(CInu2[2],digits=nodi),")", 
                                                                      "\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
-                                                                     ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                     #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
                                                                      "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
 
                         
@@ -148,7 +148,7 @@ if( x$margins[1] %in% cont2par && x$margins[2] %in% cont3par) cat(  s1,format(s1
                                                                      "  ",s2,format(s2.p,digits=nodi),"(",format(CIsig22[1],digits=nodi),",",format(CIsig22[2],digits=nodi),")",
                                                                      "\n",n1,format(n1.p,digits=nodi),"(",format(CInu1[1],digits=nodi),",",format(CInu1[2],digits=nodi),")",
                                                                      "\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
-                                                                     ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                     #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
                                                                      "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
        
 

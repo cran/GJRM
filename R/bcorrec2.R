@@ -21,7 +21,7 @@ if(is.null(VC$X2)){VC$X2 <- VC$X3 <- matrix(1, n, 1); VC$X2.d2 <- VC$X3.d2 <- 1}
 if(is.null(VC$lB) && is.null(VC$uB)){
 
 if( margin %in% c("N","GU","rGU","LO","LN") )                                     { lB <- -Inf;      uB <- Inf}
-if( margin %in% c("WEI","iG","GA","DAGUM","SM","FISK","GP","GPII","GPo","TW")  )  { lB <- sqrt(.Machine$double.eps); uB <- Inf} # tw should be zero here?
+if( margin %in% c("WEI","IG","GA","DAGUM","SM","FISK","GP","GPII","GPo","TW")  )  { lB <- sqrt(.Machine$double.eps); uB <- Inf} # tw should be zero here?
 if( margin %in% c("BE")  )                                                        { lB <- sqrt(.Machine$double.eps); uB <- 0.999999}
 
 }else{lB <- VC$lB; uB <- VC$uB}

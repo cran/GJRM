@@ -10,7 +10,7 @@ diagnostic information about the fitting procedure.
 
 \usage{
 
-conv.check(x)
+conv.check(x, blather = FALSE)
 
 
 }
@@ -20,6 +20,9 @@ conv.check(x)
 
 
 \item{x}{\code{gjrm} object.}
+
+\item{blather}{If \code{TRUE} then more diagnostic information is provided.}
+
 
 
 }

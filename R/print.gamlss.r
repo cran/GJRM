@@ -14,7 +14,7 @@ print.gamlss <- function(x, ...){
 
   pscr0(x, type = "gamlss")  
   
-  if(x$robust == TRUE) cat("\nROBUST Fit")
+  #if(x$robust == TRUE) cat("\nROBUST Fit")
 
   cat("\n\nEQUATION 1")
   if(x$surv.flex == FALSE && x$margins[1] !="DGP0") cat("\nLink function for mu:",m1l,"\n")

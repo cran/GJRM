@@ -13,7 +13,8 @@ bprobgHsDiscr1 <- function(params, respvec, VC, ps, AT = FALSE){
    eta2 <- eta.tr(eta2, VC$margins[2])
      
    
-  dHs <- distrHsDiscr(respvec$y2, eta2, 1, 1, nu = 1, nu.st = 1, margin2=VC$margins[2], naive = FALSE, y2m = VC$y2m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  dHs <- distrHsDiscr(respvec$y2, eta2, 1, 1, nu = 1, nu.st = 1, margin2=VC$margins[2], naive = FALSE, y2m = VC$y2m, min.dn = VC$min.dn, min.pr = VC$min.pr, 
+                      max.pr = VC$max.pr, left.trunc = VC$left.trunc2)
    
    
    pdf2                         <- dHs$pdf2

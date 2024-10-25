@@ -24,7 +24,7 @@ gt.bpm(x)
 \details{
 
 The gradient test was first proposed by Terrell (2002) and it is based on classic likelihood 
-theory. See Marra et al. (in press) for full details. 
+theory. See Marra et al. (2017) for full details. 
 
 }
 

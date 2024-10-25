@@ -1,13 +1,13 @@
 pp <- function(x){
 
-   cont1par <- c("PO","ZTP","DGP0","probit","logit","cloglog","GEVlink")  
-   cont2par <- c("N","N2","GU","rGU","LO","LN","WEI","GO","iG","GA","GA2","GAi","BE","FISK","NBI", "NBII","NBIa", "NBIIa","PIG","GP","GPII","GPo","DGP","DGPII")  
+   cont1par <- c("P","tP","DGP0","probit","logit","cloglog","GEVlink")  
+   cont2par <- c("N","N2","GU","rGU","LO","LN","WEI","GO","IG","GA","GA2","GAi","BE","FISK","tNBI", "tNBII","tPIG","NBI", "NBII","PIG","GP","GPII","GPo","DGP","DGPII")  
    cont3par <- c("DAGUM","SM","DEL","SICHEL","GGA","TW")   
 
 if(x$univar.gamlss == TRUE) x$BivD <- "N" 
 
   if(x$BivD=="FGM")  {cop <- "FGM"                ;lind <- "atanh"} 
-  if(x$BivD=="T")    {cop <- paste("Student-t (dof = ",format(x$dof.a, digits=3),")",sep="")   ;lind <- "atanh"} 
+  if(x$BivD=="T")    {cop <- "Student-t"          ;lind <- "atanh"}    # {cop <- paste("Student-t (dof = ",format(x$dof.a, digits=3),")",sep="")   ;lind <- "atanh"} 
   if(x$BivD=="AMH")  {cop <- "AMH"                ;lind <- "atanh"} 
   if(x$BivD=="N")    {cop <- "Gaussian"           ;lind <- "atanh"} 
   if(x$BivD=="F")    {cop <- "Frank"              ;lind <- "identity"}       
@@ -63,7 +63,7 @@ if(x$univar.gamlss == TRUE) x$BivD <- "N"
   
   # if(x$BivD=="N" && x$Model=="BPO0") cop <- "Independent"   
     
-  mml <- c("LN","WEI","GO","iG","GA","GA2","GGA","DAGUM","SM","FISK","NBI","NBII","NBIa","NBIIa","PIG","PO","DGP0","ZTP","GP","GPII","GPo","DGP","DGPII","TW")  
+  mml <- c("LN","WEI","GO","IG","GA","GA2","GGA","DAGUM","SM","FISK","tNBI","tNBII","tPIG","NBI","NBII","PIG","P","DGP0","tP","GP","GPII","GPo","DGP","DGPII","TW")  
   
   
   

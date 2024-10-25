@@ -16,7 +16,7 @@ der2p2.dernu.st2            = 1
 der2p2.dereta2dernu.st      = 1
 der2p2.dersigma2.stdernu.st = 1
 
-cont2par <- c("WEI","iG","LO","rGU","GU","GA","GAi","BE","FISK", "N","LN","GP","GPII","GPo") 
+cont2par <- c("WEI","IG","LO","rGU","GU","GA","GAi","BE","FISK", "N","LN","GP","GPII","GPo") 
 cont3par <- c("DAGUM", "SM", "TW")
 
 ############################################################################
@@ -1419,7 +1419,7 @@ der2p2.derdermu2sigma2 <- numch(funcD1, mu2, sigma)
 
 ####
 
-if(margin2 == "iG"){
+if(margin2 == "IG"){
 
 
 #

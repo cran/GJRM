@@ -1,13 +1,11 @@
-r.resp <- function(margin, rsim, eta1, eta2, eta3){
-
-
-if(margin == "ZTP") rZTP <- function(n, mu) qpois(runif(n, dpois(0, mu), 1), mu)
+r.resp <- function(margin, rsim, eta1, eta2, eta3, left.trunc = 0){
 
 if(margin %in% c("DGP","DGPII","DGP0")){
 
        rDGP <- function(n, eta1, eta2, margin){  
 
-                minp <- distrHsATDiscr(0, eta1, esp.tr(eta2, margin)$vrb, NULL, margin, NULL, robust = TRUE, min.dn = 1e-323, min.pr = 1e-16, max.pr = 0.999999 )$pdf2 
+                minp <- distrHsATDiscr(0, eta1, esp.tr(eta2, margin)$vrb, NULL, margin, NULL, robust = TRUE, min.dn = 1e-323, min.pr = 1e-16, max.pr = 0.999999,
+                                       left.trunc = left.trunc)$pdf2 
                 
                 p    <- runif(rsim)
 
@@ -31,7 +29,7 @@ if(margin == "rGU")   y <- rRG(   rsim,    mu =     eta1,     sigma = esp.tr(eta
 if(margin == "LO")    y <- rLO(   rsim,    mu =     eta1,     sigma = esp.tr(eta2, margin)$vrb) 
 if(margin == "LN")    y <- rLOGNO(rsim,    mu =     eta1,     sigma = esp.tr(eta2, margin)$vrb) 
 if(margin == "WEI")   y <- rWEI(  rsim,    mu = exp(eta1),    sigma = esp.tr(eta2, margin)$vrb) 
-if(margin == "iG")    y <- rIG(   rsim,    mu = exp(eta1),    sigma = esp.tr(eta2, margin)$vrb) 
+if(margin == "IG")    y <- rIG(   rsim,    mu = exp(eta1),    sigma = esp.tr(eta2, margin)$vrb) 
 if(margin == "GA")    y <- rGA(   rsim,    mu = exp(eta1),    sigma = esp.tr(eta2, margin)$vrb) 
 if(margin == "GAi")   y <- rGA(   rsim,    mu =     eta1,     sigma = esp.tr(eta2, margin)$vrb)
 
@@ -94,8 +92,12 @@ if(margin == "FISK")  y <- rGB2(  rsim,    mu = exp(eta1),    sigma = esp.tr(eta
 if(margin == "NBI")   y <- rNBI(  rsim,    mu = exp(eta1),    sigma = esp.tr(eta2, margin)$vrb) 
 if(margin == "NBII")  y <- rNBII( rsim,    mu = exp(eta1),    sigma = esp.tr(eta2, margin)$vrb) 
 if(margin == "PIG")   y <- rPIG(  rsim,    mu = exp(eta1),    sigma = esp.tr(eta2, margin)$vrb) 
-if(margin == "PO")    y <- rPO(   rsim,    mu = exp(eta1)) 
-if(margin == "ZTP")   y <- rZTP(  rsim,    mu = exp(eta1)) 
+if(margin == "P")     y <- rPO(   rsim,    mu = exp(eta1)) 
+if(margin == "tP")   y <- rPtr(  rsim,    mu = exp(eta1), left.trunc = left.trunc) 
+
+if(margin == "tNBI")   y <- rNBItr(  rsim,    mu = exp(eta1),    sigma = esp.tr(eta2, margin)$vrb, left.trunc = left.trunc) 
+if(margin == "tNBII")  y <- rNBIItr( rsim,    mu = exp(eta1),    sigma = esp.tr(eta2, margin)$vrb, left.trunc = left.trunc) 
+if(margin == "tPIG")   y <- rPIGtr(  rsim,    mu = exp(eta1),    sigma = esp.tr(eta2, margin)$vrb, left.trunc = left.trunc) 
 
 if(margin %in% c("DGP", "DGPII", "DGP0")){
 

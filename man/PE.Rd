@@ -12,8 +12,8 @@ corresponding interval obtained using posterior simulation.}
 \usage{
 
 PE(x1, idx, n.sim = 100, prob.lev = 0.05, 
-   hd.plot = FALSE, 
-   main = "Histogram and Kernel Density of Simulated Average Effects", 
+   plot = FALSE, 
+   main = "Histogram of Simulated Average Effects", 
    xlab = "Simulated Average Effects", ...)
 
 }
@@ -30,7 +30,7 @@ PE(x1, idx, n.sim = 100, prob.lev = 0.05,
 
 \item{prob.lev}{Overall probability of the left and right tails of the AT distribution used for interval calculations.} 
 
-\item{hd.plot}{If \code{TRUE} then a plot of the histogram and kernel density estimate of the simulated average effects is produced.}
+\item{plot}{If \code{TRUE} then a plot of the histogram and kernel density estimate of the simulated average effects is produced.}
 
 
 \item{main}{Title for the plot.}

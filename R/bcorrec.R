@@ -1,6 +1,6 @@
 bcorrec <- function(VC, params){ 
 
-m2sel <- c("WEI","iG","GA","BE","FISK","DAGUM","TW","SM","GP","GPII","GPo")
+m2sel <- c("WEI","IG","GA","BE","FISK","DAGUM","TW","SM","GP","GPII","GPo")
 
 ###############################
 # fixed quantities
@@ -24,7 +24,7 @@ if(is.null(VC$X2)){VC$X2 <- VC$X3 <- matrix(1, n, 1); VC$X2.d2 <- VC$X3.d2 <- 1}
 if(is.null(VC$lB) && is.null(VC$uB)){
 
 if( margin %in% c("N","GU","rGU","LO") )                                                { lB <- -Inf;      uB <- Inf}
-if( margin %in% c("LN","WEI","iG","GA","DAGUM","SM","FISK","GP","GPII","GPo","TW")  )   { lB <- sqrt(.Machine$double.eps); uB <- Inf} # tw should be zero here?
+if( margin %in% c("LN","WEI","IG","GA","DAGUM","SM","FISK","GP","GPII","GPo","TW")  )   { lB <- sqrt(.Machine$double.eps); uB <- Inf} # tw should be zero here?
 if( margin %in% c("BE")  )                                                              { lB <- sqrt(.Machine$double.eps); uB <- 0.999999}
 
 }else{lB <- VC$lB; uB <- VC$uB}

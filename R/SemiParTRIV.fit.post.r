@@ -28,17 +28,32 @@ theta12 <- SemiParFit$fit$theta12
 theta13 <- SemiParFit$fit$theta13     
 theta23 <- SemiParFit$fit$theta23  
 
+theta12.a  <- mean(theta12); names(theta12.a) <- "theta12.a"
+theta13.a  <- mean(theta13); names(theta13.a) <- "theta13.a"
+theta23.a  <- mean(theta23); names(theta23.a) <- "theta23.a" 
+
 if(is.null(VC$X4)){
 
-names(theta12) <- "theta12"
-names(theta13) <- "theta13" 
-names(theta23) <- "theta23" 
+names(theta12) <- "theta12"#; attr(theta12, "names") <- NULL
+names(theta13) <- "theta13"#; attr(theta13, "names") <- NULL 
+names(theta23) <- "theta23"#; attr(theta23, "names") <- NULL 
 
 }
 
-theta12.a  <- mean(theta12) 
-theta13.a  <- mean(theta13)
-theta23.a  <- mean(theta23)   
+
+if(!is.null(VC$X4)){
+
+theta12 <- as.matrix(theta12)     
+theta13 <- as.matrix(theta13)     
+theta23 <- as.matrix(theta23)  
+
+dimnames(theta12)[[1]] <- dimnames(VC$X1)[[1]]; dimnames(theta12)[[2]] <- "theta12"
+dimnames(theta13)[[1]] <- dimnames(VC$X1)[[1]]; dimnames(theta13)[[2]] <- "theta13"
+dimnames(theta23)[[1]] <- dimnames(VC$X1)[[1]]; dimnames(theta23)[[2]] <- "theta23"
+
+}
+
+
 
 ############################################################################################
 
@@ -68,6 +83,9 @@ edf  <- edf.loopR$edf
 edf1 <- edf.loopR$edf1 
   
 sp <- SemiParFit$sp 
+
+
+
   
                  list(SemiParFit = SemiParFit, He = He, logLik = logLik, Vb = Vb, Vb.t = Vb.t,
                       HeSh = HeSh, F = F, F1 = F1, t.edf = t.edf, edf = edf, 

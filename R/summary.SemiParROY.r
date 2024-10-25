@@ -24,19 +24,15 @@ summary.SemiParROY <- function(object, n.sim = 100, prob.lev = 0.05, ...){
 
 susutsnR <- susutsn(object, bs = NULL, lf, cont1par, cont2par, cont3par, prob.lev, type = "ROY", bin.link = bin.link, n.sim = n.sim, K1 = object$VC$K1)
 
-
-
 CIsig1 <- susutsnR$CIsig1
 CInu1  <- susutsnR$CInu1
 CIsig2 <- susutsnR$CIsig2
-CInu2  <- susutsnR$CInu1
-
+CInu2  <- susutsnR$CInu2
 
 CIkt1  <- susutsnR$CIkt1
 CIkt2  <- susutsnR$CIkt2
 CIrs1  <- susutsnR$CIrs1
 CIrs2  <- susutsnR$CIrs2
-
 
 ########################   
    
@@ -48,7 +44,17 @@ tableN <- susuR$tableN
 table  <- susuR$table
   
 #########################
- 
+
+if(!is.null(CIrs1))  { if(dim(CIrs1)[1]  > 1)  dimnames(CIrs1)[[1]]  <- dimnames(object$theta12)[[1]]  else dimnames(CIrs1)[[1]]  <- ""  }
+if(!is.null(CIrs2))  { if(dim(CIrs2)[1]  > 1)  dimnames(CIrs2)[[1]]  <- dimnames(object$theta13)[[1]]  else dimnames(CIrs2)[[1]]  <- ""  }
+if(!is.null(CIsig1)) { if(dim(CIsig1)[1] > 1)  dimnames(CIsig1)[[1]] <- dimnames(object$sigma2)[[1]]   else dimnames(CIsig1)[[1]] <- ""  }
+if(!is.null(CIsig2)) { if(dim(CIsig2)[1] > 1)  dimnames(CIsig2)[[1]] <- dimnames(object$sigma3)[[1]]   else dimnames(CIsig2)[[1]] <- ""  }
+if(!is.null(CInu1))  { if(dim(CInu1)[1]  > 1)  dimnames(CInu1)[[1]]  <- dimnames(object$nu2)[[1]]      else dimnames(CInu1)[[1]]  <- ""  }
+if(!is.null(CInu2))  { if(dim(CInu2)[1]  > 1)  dimnames(CInu2)[[1]]  <- dimnames(object$nu3)[[1]]      else dimnames(CInu2)[[1]]  <- ""  }
+
+###########################
+
+
 rm(bs, SE, Vb, et1s, et2s, p1s, p2s, p11s, p10s, p00s, p01s, ORs, GMs) 
  
   res <- list(formula = object$formula,              
@@ -71,11 +77,11 @@ rm(bs, SE, Vb, et1s, et2s, p1s, p2s, p11s, p10s, p00s, p01s, ORs, GMs)
               m2 = object$VC$m2, m3 = object$VC$m3, m1 = object$VC$m1,
               K1 = object$VC$K1,
               theta12 = object$theta12, theta13 = object$theta13, theta12.a = object$theta12.a, theta13.a = object$theta13.a,
-              tau12 = object$tau12, tau12.a = object$tau12.a, tau13 = object$tau13, tau13.a = object$tau13.a,
+              #tau12 = object$tau12, tau12.a = object$tau12.a, tau13 = object$tau13, tau13.a = object$tau13.a,
               sigma2.a = object$sigma2.a, sigma3.a = object$sigma3.a, sigma2 = object$sigma2, sigma3 = object$sigma3, 
               nu2.a = object$nu2.a, nu3.a = object$nu3.a, nu2 = object$nu2, nu3 = object$nu3, 
-              CIsig2 = CIsig1, CInu2  = CInu1, CIsig3 = CIsig2, CInu3  = CInu2,
-              CItheta12 = CIrs1, CItheta13 = CIrs2, CItau12 = CIkt1, CItau13 = CIkt2)
+              CIsigma2 = CIsig1, CInu2  = CInu1, CIsigma3 = CIsig2, CInu3  = CInu2,
+              CItheta12 = CIrs1, CItheta13 = CIrs2)#, CItau12 = CIkt1, CItau13 = CIkt2)
 
 class(res) <- "summary.SemiParROY"
                                              

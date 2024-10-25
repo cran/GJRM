@@ -3,7 +3,7 @@ teta.tr <- function(VC, teta.st){
  
  epsilon <- c(sqrt(.Machine$double.eps)) # this works well especially for AMH
  
- cjg <- c("C0","C180","C90","C270","GAL0","GAL180","GAL90","GAL270","J0","J180","J90","J270","G0","G180","G90","G270",VC$BivD2)
+ cjg <- c("PL","C0","C180","C90","C270","GAL0","GAL180","GAL90","GAL270","J0","J180","J90","J270","G0","G180","G90","G270",VC$BivD2)
  
  if( VC$BivD %in% c("N","AMH","FGM","T") ) teta.st <- ifelse( abs(teta.st) > 8.75, sign(teta.st)*8.75, teta.st )  # looks fine and gives almost 1
  if(VC$BivD %in% c("AMH"))                 teta.st <- ifelse( abs(teta.st) < epsilon, epsilon, teta.st )

@@ -13,7 +13,7 @@ print.summary.copulaSampleSel <- function(x, digits = max(3, getOption("digits")
  bin.link <- x$bin.link  
     
  as.p <- x$theta.a  
- main.t <- "\nCOPULA:  "; cp <- "  theta = "     
+ main.t <- "\nCOPULA:"; cp <- "  theta = "     
 
  cat(main.t,cop) 
  
@@ -22,19 +22,19 @@ print.summary.copulaSampleSel <- function(x, digits = max(3, getOption("digits")
 
  pscr(x, lind, m1l, m2l, cont1par, cont2par, cont3par, type = "copSS", digits, signif.stars, ...)
 
-  kt.p <- x$tau.a 
-  CIkt <- colMeans(x$CItau, na.rm = TRUE)
+  #kt.p <- x$tau.a 
+  #CIkt <- colMeans(x$CItau, na.rm = TRUE)
   CIrs <- colMeans(x$CItheta, na.rm = TRUE)
-  if(x$margins[2] %in% cont2par)  CIsig2 <- colMeans(x$CIsig, na.rm = TRUE)
-  if(x$margins[2] %in% cont3par){ CIsig2 <- colMeans(x$CIsig, na.rm = TRUE); CInu <- colMeans(x$CInu, na.rm = TRUE)}
+  if(x$margins[2] %in% cont2par)  CIsig2 <- colMeans(x$CIsigma, na.rm = TRUE)
+  if(x$margins[2] %in% cont3par){ CIsig2 <- colMeans(x$CIsigma, na.rm = TRUE); CInu <- colMeans(x$CInu, na.rm = TRUE)}
 
   nodi <- 3
   
-  if(x$margins[2] %in% cont1par ) cat("\nn = ",x$n,"  n.sel = ", x$n.sel,"\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")","  tau = ",format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")","\ntotal edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
+  if(x$margins[2] %in% cont1par ) cat("\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")","\nn = ",x$n,"  n.sel = ", x$n.sel,"\ntotal edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
   
-  if(x$margins[2] %in% cont2par ) cat("\nn = ",x$n,"  n.sel = ", x$n.sel,"\nsigma = ",format(x$sigma2.a,digits=nodi),"(",format(CIsig2[1],digits=nodi),",",format(CIsig2[2],digits=nodi),")","\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")","  tau = ",format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")","\ntotal edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
+  if(x$margins[2] %in% cont2par ) cat("\nsigma2 = ",format(x$sigma2.a,digits=nodi),"(",format(CIsig2[1],digits=nodi),",",format(CIsig2[2],digits=nodi),")","\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")","\nn = ",x$n,"  n.sel = ", x$n.sel,"\ntotal edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
        
-  if(x$margins[2] %in% cont3par ) cat("\nn = ",x$n,"  n.sel = ", x$n.sel,"\nsigma = ",format(x$sigma2.a,digits=nodi),"(",format(CIsig2[1],digits=nodi),",",format(CIsig2[2],digits=nodi),")","  nu = ",format(x$nu.a,digits = nodi),"(",format(CInu[1],digits=nodi),",",format(CInu[2],digits=nodi),")","\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")","  tau = ",format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")","\ntotal edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
+  if(x$margins[2] %in% cont3par ) cat("\nsigma2 = ",format(x$sigma2.a,digits=nodi),"(",format(CIsig2[1],digits=nodi),",",format(CIsig2[2],digits=nodi),")","  nu2 = ",format(x$nu.a,digits = nodi),"(",format(CInu[1],digits=nodi),",",format(CInu[2],digits=nodi),")","\ntheta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")","\nn = ",x$n,"  n.sel = ", x$n.sel,"\ntotal edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
        
        
 invisible(x)

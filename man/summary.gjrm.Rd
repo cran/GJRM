@@ -63,13 +63,12 @@ to calculate intervals for the association parameter, dispersion coefficient etc
 \item{tableNP2,tableNP3, ...}{As above but for equation 2 and equations 3 and 4 if present.}
 \item{n}{Sample size.}
 \item{theta}{Estimated dependence parameter linking the two equations.}
-\item{tau}{Estimated Kendall's tau dependence measure between the two equations.}
 \item{sigma1,sigma2}{Estimated distribution specific parameters for equations 1 and 2.}
 \item{nu1,nu2}{Estimated distribution specific parameters for equations 1 and 2.}
 \item{formula1,formula2,formula3, ...}{Formulas used for the model equations.}
 \item{l.sp1,l.sp2,l.sp3, ...}{Number of smooth components in model equations.}
 \item{t.edf}{Total degrees of freedom of the estimated bivariate model.}
-\item{CItheta, CItau}{Interval(s) for \eqn{\theta}{\theta} and Kendall's tau.}
+\item{CItheta}{Interval(s) for \eqn{\theta}{\theta}.}
 \item{CIsig1,CIsig2,CInu1,CInu2}{Intervals for distribution specific parameters} 
 
 
@@ -87,9 +86,8 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 \section{WARNINGS}{
 
-Note that the summary output will also indeed provide the Kendall's tau and related interval. This is a valid measure of dependence for continuous margins
-but it may not for discrete margins, for instance. However, it is still displayed for the sake of keeping the printed output consistent with that of
-other models in the package. Also, it still provides an approximate measure of dependence under certan scenarios.
+Note that the Kendall's tau (and related interval), as implemented here, is a valid measure of dependence for continuous margins and it will only provide a crude 
+indication of dependence in other cases. 
 
 } 
 

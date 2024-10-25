@@ -1,4 +1,4 @@
-conv.check <- function(x){
+conv.check <- function(x, blather = FALSE){
 
 
 #if(!is.null(x$conv.sp)){
@@ -11,11 +11,13 @@ est.dens  <- c(x$fit$pdf1, x$fit$pdf2, x$fit$pdf3, x$fit$c.copula2.be1be2)
 
 e.v <- eigen(x$fit$hessian, symmetric = TRUE, only.values = TRUE)$values
 
-cat("\nLargest absolute gradient value:",max(abs(x$fit$gradient)))
+cat("\nMaximum absolute gradient value:",max(abs(x$fit$gradient)))
 
 if(x$hess==TRUE) mv <- "Observed" else mv <- "Expected" 
 
 if (min(e.v) > 0) cat("\n",mv," information matrix is positive definite\n",sep="") else cat("\n",mv," information matrix is not positive definite\n",sep="")
+
+if(blather == TRUE){
 
 cat("Eigenvalue range: [",min(e.v),",",max(e.v),"]\n", sep = "")
 
@@ -25,10 +27,12 @@ cat("\nTrust region iterations before smoothing parameter estimation:",x$iter.if
 cat("\nLoops for smoothing parameter estimation:",x$iter.sp) 
 cat("\nTrust region iterations within smoothing loops:",x$iter.inner)
 
-}else{cat("\nTrust region iterations:",x$iter.if)}
+} else cat("\nTrust region iterations:",x$iter.if)
 
-if( any( is.na(est.probs) == FALSE ) ) cat("\nEstimated overall probability range:",range(est.probs, na.rm = TRUE)) 
-if( any( is.na(est.dens)  == FALSE ) ) cat("\nEstimated overall density range:",range(est.dens, na.rm = TRUE)) 
+if( any( is.na(est.probs) == FALSE ) ) cat("\nOverall probability range:",range(est.probs, na.rm = TRUE)) 
+if( any( is.na(est.dens)  == FALSE ) ) cat("\nOverall density range:",range(est.dens, na.rm = TRUE)) 
+
+}
 
 cat("\n\n")
 

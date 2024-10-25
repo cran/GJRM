@@ -1,8 +1,13 @@
 bdiscrdiscr11 <- function(params, respvec, VC, ps, AT = FALSE){
 p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
 
-    eta1 <- VC$X1%*%params[1:VC$X1.d2]
-    eta2 <- VC$X2%*%params[(VC$X1.d2 + 1):(VC$X1.d2 + VC$X2.d2)]
+
+offset1 <- VC$offset1; if(is.null(offset1) == TRUE) offset1 <- 0
+offset2 <- VC$offset2; if(is.null(offset2) == TRUE) offset2 <- 0
+
+
+    eta1 <- offset1 + VC$X1%*%params[1:VC$X1.d2]
+    eta2 <- offset2 + VC$X2%*%params[(VC$X1.d2 + 1):(VC$X1.d2 + VC$X2.d2)]
     etad <- etas1 <- etas2 <- l.ln <- NULL 
   
 
@@ -91,8 +96,10 @@ nC2 <- VC$ct[which(VC$ct[,1] == Cop2),2]
 } 
 ##################
 
-  dHs1 <- distrHsDiscr(respvec$y1, eta1, sigma21, sigma21.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = FALSE, y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-  dHs2 <- distrHsDiscr(respvec$y2, eta2, sigma22, sigma22.st, nu = 1, nu.st = 1, margin2=VC$margins[2], naive = FALSE, y2m = VC$y2m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  dHs1 <- distrHsDiscr(respvec$y1, eta1, sigma21, sigma21.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = FALSE, y2m = VC$y1m, 
+                       min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc1)
+  dHs2 <- distrHsDiscr(respvec$y2, eta2, sigma22, sigma22.st, nu = 1, nu.st = 1, margin2=VC$margins[2], naive = FALSE, y2m = VC$y2m, 
+                       min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc2)
 
   pdf1 <- dHs1$pdf2
   pdf2 <- dHs2$pdf2

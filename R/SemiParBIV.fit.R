@@ -71,7 +71,7 @@ if( VC$penCor %in% c("lasso", "alasso") ) VC$sp <- sp
                                iterlim = iterlim/10), silent = sc)   
 
 
-if((inherits(fit, "try-error") || is.null(fit$l)) && VC$gamlssfit == FALSE ) stop("It is not possible to fit the model.\nTry re-fitting the model and setting gamlssfit = TRUE if allowed.\nAlso, read the WARNINGS section of ?gjrm.")
+if((inherits(fit, "try-error") || is.null(fit$l)) && VC$gamlssfit == FALSE ) stop("It is not possible to fit the model.\nTry re-fitting the model and setting uni.fit = TRUE if allowed.\nAlso, read the WARNINGS section of ?gjrm.")
 if((inherits(fit, "try-error") || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop("It is not possible to fit the model.\nRead the WARNINGS section of ?gjrm.")         
  
              
@@ -155,7 +155,7 @@ if((inherits(fit, "try-error") || is.null(fit$l)) && VC$gamlssfit == TRUE  ) sto
                                                                       blather = TRUE, iterlim = iterlim), silent = sc)  
                                                                       
 
-if((inherits(fit, "try-error") || is.null(fit$l)) && VC$gamlssfit == FALSE ) stop("It is not possible to fit the model.\nTry re-fitting the model and setting gamlssfit = TRUE if allowed.\nAlso, read the WARNINGS section of ?gjrm.")
+if((inherits(fit, "try-error") || is.null(fit$l)) && VC$gamlssfit == FALSE ) stop("It is not possible to fit the model.\nTry re-fitting the model and setting uni.fit = TRUE if allowed.\nAlso, read the WARNINGS section of ?gjrm.")
 if((inherits(fit, "try-error") || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop("It is not possible to fit the model.\nRead the WARNINGS section of ?gjrm.")         
  
     
@@ -360,7 +360,7 @@ for(iter in 1:200){
 			                                              respvec = respvec, VC = VC, 
 			                                              ps = ps, 
                                                                       blather = TRUE, iterlim = iterlim), silent = sc)                                                                       
-                         if((inherits(fit, "try-error") || is.null(fit$l)) && VC$gamlssfit == FALSE ) stop("It is not possible to fit the model.\nTry re-fitting the model and setting gamlssfit = TRUE if allowed.\nAlso, read the WARNINGS section of ?gjrm.")
+                         if((inherits(fit, "try-error") || is.null(fit$l)) && VC$gamlssfit == FALSE ) stop("It is not possible to fit the model.\nTry re-fitting the model and setting uni.fit = TRUE if allowed.\nAlso, read the WARNINGS section of ?gjrm.")
                          if((inherits(fit, "try-error") || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop("It is not possible to fit the model.\nRead the WARNINGS section of ?gjrm.")         
                                                                          }  
         iter.inner <- iter.inner + fit$iterations   	                                        
@@ -396,7 +396,7 @@ for(iter in 1:200){
 			                                              respvec = respvec, VC = VC, 
 			                                              ps = ps, 
                                                                       blather = TRUE, iterlim = iterlim), silent = sc)                                                                       
-                         if((inherits(fit2, "try-error") || is.null(fit2$l)) && VC$gamlssfit == FALSE ) stop("It is not possible to fit the model.\nTry re-fitting the model and setting gamlssfit = TRUE if allowed.\nAlso, read the WARNINGS section of ?gjrm.")
+                         if((inherits(fit2, "try-error") || is.null(fit2$l)) && VC$gamlssfit == FALSE ) stop("It is not possible to fit the model.\nTry re-fitting the model and setting uni.fit = TRUE if allowed.\nAlso, read the WARNINGS section of ?gjrm.")
                          if((inherits(fit2, "try-error") || is.null(fit2$l)) && VC$gamlssfit == TRUE  ) stop("It is not possible to fit the model.\nRead the WARNINGS section of ?gjrm.")         
                                                                          }  
         iter.inner <- iter.inner + fit2$iterations  
@@ -442,7 +442,7 @@ for(iter in 1:200){
 			                                              respvec = respvec, VC = VC, 
 			                                              ps = ps, 
                                                                       blather = TRUE, iterlim = iterlim), silent = sc)                                                                       
-                         if((inherits(fit, "try-error") || is.null(fit$l)) && VC$gamlssfit == FALSE ) stop("It is not possible to fit the model.\nTry re-fitting the model and setting gamlssfit = TRUE if allowed.\nAlso, read the WARNINGS section of ?gjrm.")
+                         if((inherits(fit, "try-error") || is.null(fit$l)) && VC$gamlssfit == FALSE ) stop("It is not possible to fit the model.\nTry re-fitting the model and setting uni.fit = TRUE if allowed.\nAlso, read the WARNINGS section of ?gjrm.")
                          if((inherits(fit, "try-error") || is.null(fit$l)) && VC$gamlssfit == TRUE  ) stop("It is not possible to fit the model.\nRead the WARNINGS section of ?gjrm.")         
                                                                          }  
         iter.inner <- iter.inner + fit$iterations  

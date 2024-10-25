@@ -1,11 +1,14 @@
-OR <- function(x, nm.end, E = TRUE, treat = TRUE, type = "joint", ind = NULL, 
-   n.sim = 100, prob.lev = 0.05, length.out = NULL, hd.plot = FALSE, or.plot = FALSE, 
-   main = "Histogram and Kernel Density of Simulated Odds Ratios", 
-   xlab = "Simulated Odds Ratios", ...){
+OR <- function(x, trt, int.var = NULL, joint= TRUE, n.sim = 100, prob.lev = 0.05, 
+   length.out = NULL){
 
 if(x$Cont == "YES") stop("This function is not suitable for bivariate models with continuous/discrete margins.")
 if(x$Cont == "NO" && x$VC$ccss == "yes" ) stop("This function is not suitable for selection models.")
 
+if(joint == TRUE)  type <- "joint"
+if(joint == FALSE) type <- "univariate"
+
+lbn <- paste(prob.lev/2*100, "%", sep = "")
+ubn <- paste((1-(prob.lev/2))*100, "%", sep = "")
 
 CIs <- est.AT <- NULL
 
@@ -26,57 +29,43 @@ if(x$v1[1] %in% x$v2[-1]) {end <- 1; eq <- 2}
 if(x$v2[1] %in% x$v1[-1]) {end <- 2; eq <- 1}
 
 if( !( type %in% c("naive","univariate","joint") ) ) stop("Error in parameter type value. It should be one of: naive, univariate or bivariate.")
-if( !(x$margins[2] %in% bin.link) && eq == 2 ) stop("It does not make sense to calculate OR when the outcome is continuous.")
-if(missing(nm.end)) stop("You must provide the name of the endogenous variable.")
+if( !(x$margins[2] %in% bin.link) && eq == 2 ) stop("Calculation of OR not allowed for.")
+if( !(x$margins[1] %in% bin.link && x$margins[2] %in% c("probit", "logit", "cloglog", "N")) ) stop("The margins have to be probit, logit, cloglog or Gaussian for this measure to make sense.")
+
+if(missing(trt)) stop("You must provide the name of the treatment variable.")
 
 if(x$Model=="BSS" || x$Model=="BPO" || x$Model=="BPO0" || end==0) stop("Calculation of this ratio is valid for recursive models only.")
-if(is.character(nm.end)==FALSE) stop("nm.end is not a character!")
-if( !is.null(ind) && E == FALSE) stop("ind is not designed to be used when some observations are excluded from the OR's calculation.")
-if( type == "naive" && E == FALSE) stop("It does not make sense to calculate the naive estimate from the treated only.")
-
-if( !is.null(ind) ){ 
-
-    if(is.logical(ind) == FALSE) stop("ind must be a logical variable.")
-    if(length(table(ind))!=2 ) stop("ind must be a logical binary variable.")
-    if( length(ind) != x$n ) stop("ind must have the same length as the number of observations used in fitting.")   
-
-}
-
-
-
-if( is.null(ind) ) ind <- 1:x$n
-
-
-if(E == FALSE ) {
-
- if(!(x$margins[2] %in% bin.link)) ind <- 1:x$n  
- 
- if(eq==1) X.int <- as.matrix(x$X1[ind,])
- if(eq==2) X.int <- as.matrix(x$X2[ind,]) 
-
-    if(treat == TRUE)  ind <- as.logical(X.int[, nm.end]) 
-    if(treat == FALSE) ind <- as.logical(X.int[, nm.end])!=TRUE
-                                              
-}
-
-
-
-#################################################################################
+if(is.character(trt)==FALSE) stop("trt is not a character!")
 
 if(type == "naive" && !(x$margins[2] %in% bin.link)) stop("Please fit a bivariate model with intercept and endogenous variable only and then use OR with the univariate type option.")
 
+
+if( !is.null(int.var) ){
+
+  if( length(int.var) != 2 )              stop("int.var must contain a name and a value for the interaction variable.")
+  if( is.character(int.var[1]) == FALSE ) stop("The first element of int.var must be the name of the interaction.")
+
+  int.var1 <- int.var[1]
+  int.var2 <- as.numeric(int.var[2]) # as.numeric works for both numeric and factor vars
+
+  if( !(int.var2 %in% c(0, 1)) ) stop("The interaction can only currently take value 0 or 1.")  
+
+}
+
+
 #################################################################################
+
 
 if(type == "naive" && x$margins[2] %in% bin.link){ # it looks fine from comparing the naive and univariate options
 
 if(eq==2){
-y1 <- x$y1[ind] 
-y2 <- x$y2[ind]
+y1 <- x$y1 
+y2 <- x$y2
 }
 
 if(eq==1){
-y1 <- x$y2[ind] 
-y2 <- x$y1[ind]
+y1 <- x$y2 
+y2 <- x$y1
 }
 
 tab2 <- table(y1, y2)                                  
@@ -117,27 +106,53 @@ if(type == "joint"){
 }
 
 
-if(eq==1){ X.int <- as.matrix(x$X1[ind,])
+if(eq==1){ ff <- reformulate(all.vars(x$gam1$terms)[-1]); tgam <- x$gam1
 
     if(type == "joint") ind.int <- indD[[1]]
    
                     
 }
 
-if(eq==2){ X.int <- as.matrix(x$X2[ind,])
+if(eq==2){ ff <- reformulate(all.vars(x$gam2$terms)[-1]); tgam <- x$gam2
 
     if(type == "joint") ind.int <- indD[[2]]
 
 }
 
 
-if(type == "joint") coef.int <- as.numeric(x$coefficients[ind.int])
+d0 <- d1 <- model.frame(ff, data = get(x$mcd)) 
+attr(d0,"terms") <- attr(d1,"terms") <- NULL
+
+
+
+
+
+
+
+
+if(type == "joint") coef.int <- x$coefficients[ind.int]
 	   
+ if( is.logical(d0[, trt]) == TRUE) stop("The treatment variable must be a binary numeric or factor variable.")
 
                
-d0 <- d1 <- X.int
-d0[,nm.end] <- 0
-d1[,nm.end] <- 1
+d0[, trt] <- 0
+d1[, trt] <- 1
+
+d0 <- predict(tgam, d0, type = "lpmatrix")  
+d1 <- predict(tgam, d1, type = "lpmatrix") 
+
+
+if( !is.null(int.var) ){
+
+   if( any(grepl(int.var1, dimnames(d1)[[2]])) == FALSE ) stop("Check the name provided for the interaction term.")
+   if( any(grepl(":", int.var1)) == FALSE      )          stop("Check the name provided for the interaction term.")
+
+if( int.var2 == 0) d1[, int.var1] <- 0
+if( int.var2 == 1) d1[, int.var1] <- 1
+
+}
+
+
 
 
 if(type == "joint"){
@@ -189,14 +204,7 @@ est.AT <- ( mean(p.int1, na.rm = TRUE) * (1 - mean(p.int0, na.rm = TRUE)) ) / ( 
 
 CIs <- as.numeric(quantile(est.ATb, c(prob.lev/2,1-prob.lev/2), na.rm = TRUE))
 
-if(hd.plot == TRUE){
-  
-  hist(est.ATb, freq = FALSE, main=main, 
-       xlab=xlab, 
-       ylim=c(0,max(density(est.ATb)$y,hist(est.ATb, plot = FALSE)$density)), ...)
-  lines(density(est.ATb))
 
- }
 
 
 }
@@ -212,21 +220,23 @@ if(hd.plot == TRUE){
 
 
 
-
-
-
-
-
-
-
-
 if(type != "naive" && !(x$margins[2] %in% bin.link)) {
 
+n.t <- as.character(x$formula[[2]][[2]])
 
 if(is.null(length.out)) length.out <- length( seq( min(ceiling(x$y2)) , max(floor(x$y2)) ) ) 
  y2  <- round( seq( min(ceiling(x$y2)) , max(floor(x$y2)), length.out = length.out  ), 2 ) 
 ly2  <- length(y2)
-data <- x$dataset[ind,]
+
+
+
+ff <- reformulate(all.vars(x$gam1$terms)[-1])
+datas <- model.frame(ff, data = get(x$mcd)) 
+attr(datas,"terms") <- NULL
+
+
+ if( !is.null(int.var) ) stop("int.var option not allowed yet. Get in touch to check progress.")
+
  
  
 
@@ -253,8 +263,8 @@ diffEfSquant <- as.data.frame(matrix(NA, ly2 - 1, 2))
 
 for(i in 1:ly2) {
 
-data[, 2]   <- y2[i]
-lpm    <- as.matrix( predict.gam(x$gam1, newdata = data, type = "lpmatrix") )
+datas[, n.t] <- y2[i]
+lpm    <- predict.gam(x$gam1, newdata = datas, type = "lpmatrix") 
 eta1   <- lpm%*%coefe
 etins  <- lpm%*%coefes
 
@@ -282,13 +292,13 @@ names(Effects)[2:3] <- names(quantile(c(1,1), probs = c(prob.lev/2,1-prob.lev/2)
 dimnames(Effects)[[1]] <- y2[2:ly2]
 
 
-if(or.plot == TRUE){
-
-plot(y2[2:ly2], diffE, log = "y", ylab = "OR", xlab = "Treatment", pch = 16, ylim = c(min(diffEfSquant[,1]),max(diffEfSquant[,2])))
-lines(y2[2:ly2], diffE, type = "l")
-for (i in 1:(ly2-1)) lines( y = c(diffEfSquant[i,1], diffEfSquant[i,2]), x = c(y2[i+1],y2[i+1]))
-
-}
+#if(plot == TRUE){
+#
+#plot(y2[2:ly2], diffE, log = "y", ylab = "Odd Ratios", xlab = "Unit Increment Treatment", pch = 16, ylim = c(min(diffEfSquant[,1]),max(diffEfSquant[,2])))
+#lines(y2[2:ly2], diffE, type = "l")
+#for (i in 1:(ly2-1)) lines( y = c(diffEfSquant[i,1], diffEfSquant[i,2]), x = c(y2[i+1],y2[i+1]))
+#
+#}
 
 
 
@@ -302,6 +312,8 @@ rm(etap.noi, X.int, X.noi, eti1, eti0, etno, indS, bs, ind.excl, p.int1, p.int0,
 
 
 res <- c(CIs[1], est.AT, CIs[2])
+if(!(type != "naive" && !(x$margins[2] %in% bin.link))) names(res) <- c(lbn, "OR", ubn)
+
 
 
 out <- list(res=res, prob.lev=prob.lev, sim.OR=est.ATb, mar2=x$margins[2], type = type,

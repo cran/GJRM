@@ -7,7 +7,9 @@ weights <- VC$weights
 
 l.lnun <- bcorR <- NULL
 
-eta2 <- VC$X1%*%params[1:VC$X1.d2] # this is eta1 but changed to eta2 for convenience
+offset <- VC$offset; if(is.null(offset) == TRUE) offset <- 0
+
+eta2 <- offset + VC$X1%*%params[1:VC$X1.d2] # this is eta1 but changed to eta2 for convenience
 eta2 <- eta.tr(eta2, VC$margins[1], zero.tol = VC$zero.tol) # eta2 is xi for GP and there is no restriction
 
 
@@ -29,7 +31,8 @@ if(VC$margins[1] %in% VC$m1d) sigma2.st <- 0
 if(VC$surv == TRUE) naiveind <- FALSE else naiveind <- TRUE  
 
 if(VC$margins[1] %in% VC$m2)            dHs  <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = naiveind, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-if(VC$margins[1] %in% c(VC$m1d,VC$m2d)) dHs  <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = TRUE, y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+if(VC$margins[1] %in% c(VC$m1d,VC$m2d)) dHs  <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = TRUE, y2m = VC$y1m, min.dn = VC$min.dn, 
+                                                             min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
 
 #########################################################################
 #########################################################################
@@ -72,7 +75,7 @@ bcorR <- list(b = 0, bp = 0, bs = 0)
 
 VC$y <- respvec$y1  # do I need this?
 
-if(VC$margins[1] %in% c("NBI", "NBII","NBIa", "NBIIa","PIG","PO","ZTP","DGP","DGPII","DGP0") ) bcorR <- bcorrecDiscr(VC, params) else{
+if(VC$margins[1] %in% c("tNBI", "tNBII","tPIG","tP", "NBI", "NBII","NBIa", "NBIIa","PIG","P","ZTP","DGP","DGPII","DGP0") ) bcorR <- bcorrecDiscr(VC, params) else{
 
 
 

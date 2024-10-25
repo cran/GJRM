@@ -1,254 +1,114 @@
-jc.probs7 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr){
+jc.probs7 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr, tau.res = FALSE){
+
+if(!(y1 >= range(x$y1)[1] && y1 <= range(x$y1)[2])) stop("y1 is not within its observed range.") 
+if(!(y2 >= range(x$y2)[1] && y2 <= range(x$y2)[2])) stop("y2 is not within its observed range.") 
+
+if(x$BivD %in% x$BivD2) stop("The chosen copula is not supported by this function.")
 
 
-# Prediction for ordinal-continuous case
+# Ordinal-Continuous case
 
 nu1 <- nu2 <- nu <- sigma2 <- 1
-CIp12 <- NULL
-CIkt <- tau <- NULL
+CIp12 <- CIkt <- tau <- theta <- CItheta <- NULL
 dof <- x$dof
+
+pk1 <- p12.s <- p12s.s <- pks1 <- 0
 
 infty <- 1e+25
 
-p12s <- NULL
+p12s  <- matrix(0, 1, 2) 
 
 
 if(type == "joint"){
 
 
-##### newdata included as inputs #####
+pkt <- predict(x, eq = 1, newdata = newdata, type = "response")$p1.cum 
+pk  <- pkt[, y1]
+if(y1 > 1) pk1 <- pkt[, y1 - 1]
 
-if(!missing(newdata)){
+p1m <- pk - pk1                         
+                                                    
 
-nu <- sigma2 <- NA
-
-#type <- "response"
-pk   <- predict(x, eq = 1, newdata = newdata, type = "response")$p1.cum # cdf
-	pk <- diag(pk[, y1]) # pk <- pk[, y1]
-eta2 <- predict(x, eq = 2, newdata = newdata, type = "response")
+eta2 <- predict(x, eq = 2, newdata = newdata, type = "link")
 
 
-if( !is.null(x$X3) && x$margins[2] %in% c(cont2par,cont3par) ){
+if( !is.null(x$X3) && x$margins[2] %in% c(cont2par, cont3par) ){
 
-sigma2 <- esp.tr(predict(x, eq = 3, newdata = newdata, type = "response"), x$margins[2])$vrb
+sigma2 <- esp.tr(predict(x, eq = 3, newdata = newdata), x$margins[2])$vrb
 
-if(x$margins[2] %in% cont2par) eq.th <- 4
-if(x$margins[2] %in% cont3par){ eq.nu <- 4; eq.th <- 5}
+if(x$margins[2] %in% cont2par)  eq.th <- 4
+if(x$margins[2] %in% cont3par){ eq.nu <- 4; eq.th <- 5} # case of 3 par margin not implemented yet
 
-if(x$margins[2] %in% cont3par) nu <- enu.tr(predict(x, eq = eq.nu, newdata = newdata, type = "response"), x$margins[2])$vrb
+if(x$margins[2] %in% cont3par)  nu <- enu.tr(predict(x, eq = eq.nu, newdata = newdata), x$margins[2])$vrb
 
-theta <- teta.tr(x$VC, predict(x, eq = eq.th, newdata = newdata, type = "response"))$teta
+theta <- teta.tr(x$VC, predict(x, eq = eq.th, newdata = newdata))$teta
 
-}
-
-
-# new part for discrete
-#if( !is.null(x$X3) && x$margins[2] %in% cont1par ) theta <- teta.tr(x$VC, 
-#	predict.SemiParBIV(x, eq = 3, newdata = newdata))$teta              # DO I NEED TO INCLUDE THIS PART!?!??!
-
-
-
+                                                                }
 
 if( is.null(x$X3) ){
 
-sigma2 <- x$sigma2
-nu     <- x$nu 
-theta  <- x$theta 
+   sigma2 <- x$sigma2
+   nu     <- x$nu 
+   theta  <- x$theta 
 
-}
-
-
-}
+                   }
 
 
-##### newdata NOT included as inputs #####
-
-if(missing(newdata)){
-
-infty <- 1e+25
-
-#cut <- t(matrix(nrow = x$VC$K1 - 1, ncol = x$n, x$coefficients[1 : (x$VC$K1 - 1)])) #
-#eta1 <- matrix(nrow = x$n, ncol = x$VC$K1 - 1, x$eta1) ##############################
-
-lp1 <- cbind(x$fit$lp1, infty)
-
-lp1.sel <- diag(lp1[, y1]) # lp1.sel <- lp1[, y1] # The choice of y1 selects the relevant cut point
-
-# @ GIAMPIERO: I replaced the bits commented below as they didn't work
-
-#if (y1 != x$VC$K1) { 
-#	pk <- probm(lp1.sel, x$VC$margins[1], only.pr = FALSE, bc = TRUE, min.dn = min.pr, min.pr = min.pr, #max.pr = max.pr)$pr # cumulative distribution function
-#} else {
-#	pk <- 1
-#}
-
-pk <- probm(lp1.sel, x$VC$margins[1], only.pr = FALSE, bc = TRUE, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr # cumulative distribution function
-	pk[y1 == x$VC$K1] <- 1
-
-#p1   <- x$p1
-eta2 <- x$eta2
-
-sigma2 <- x$sigma2
-nu     <- x$nu 
-theta  <- x$theta 
-
-}
 
 
-##### cond == 0 and cond == 1 #####
 
-if((cond == 0 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)) || (cond == 1 && x$margins[2] %in% c(x$VC$m2, x$VC$m3))){#*# ord - cont
 
-p0  <- pk       
+if(cond == 0 || cond == 1 ){ 
+
 p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
 
-if(!(x$BivD %in% x$BivD2)) p12 <- mm(BiCDF(p0, p2, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr  )
+if(y1 > 1){
+            p12.f <- mm(BiCDF(pk,  p2, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr)
+            p12.s <- mm(BiCDF(pk1, p2, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr)
+          }
+          
+if(y1 == 1) p12.f <- mm(BiCDF(pk,  p2, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr)
+         
+p12 <- p12.f - p12.s          
 
-if(x$BivD %in% x$BivD2){
+if(cond == 1) p12 <- p12/p1m
 
-nC1 <- x$VC$ct[which(x$VC$ct[,1] == x$Cop1),2] 
-nC2 <- x$VC$ct[which(x$VC$ct[,1] == x$Cop2),2]
-
-p12 <- NA
-
-if( length(x$teta1) != 0){
-if(length(theta) > 1)  p12[x$teta.ind1] <- mm(BiCDF(p0[x$teta.ind1], p2[x$teta.ind1], nC1, theta[x$teta.ind1], dof), min.pr = min.pr, max.pr = max.pr  )
-if(length(theta) == 1) p12[x$teta.ind1] <- mm(BiCDF(p0[x$teta.ind1], p2[x$teta.ind1], nC1, theta, dof), min.pr = min.pr, max.pr = max.pr  )
-                          }
-                       
-if( length(x$teta2) != 0){
-if(length(theta) > 1)  p12[x$teta.ind2] <- mm(BiCDF(p0[x$teta.ind2], p2[x$teta.ind2], nC2, theta[x$teta.ind2], dof), min.pr = min.pr, max.pr = max.pr  )
-if(length(theta) == 1) p12[x$teta.ind2] <- mm(BiCDF(p0[x$teta.ind2], p2[x$teta.ind2], nC2, theta, dof), min.pr = min.pr, max.pr = max.pr  )
-                          }                       
-
-}
-
-if(cond == 1 && unique(y1 %in% seq.int(1 : x$VC$K1))) p12 <- p12 / p0
-                      
-}#*#
+                     
+                            }  
 
 
-##### cond == 2 #####
 
-if(cond == 2 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*# ord - cont
 
-p0  <- pk     
+if(cond == 2){ 
+
+   
 p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
 
+if(y1 > 1){
+            p12.f <- copgHsCond(pk,  p2, theta, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+            p12.s <- copgHsCond(pk1, p2, theta, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+            
+          }
 
-if(!(x$BivD %in% x$BivD2)) p12 <- copgHsCond(p0, p2, theta, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if(y1 == 1) p12.f <- copgHsCond(pk,  p2, theta, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
 
 
-if(x$BivD %in% x$BivD2){
+p12 <- p12.f - p12.s
 
-p12 <- NA
- 
-if( length(x$teta1) != 0){
-if(length(theta) > 1)  p12[x$teta.ind1] <- copgHsCond(p0[x$teta.ind1], p2[x$teta.ind1], theta[x$teta.ind1], dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
-if(length(theta) == 1) p12[x$teta.ind1] <- copgHsCond(p0[x$teta.ind1], p2[x$teta.ind1], theta, dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
-                         }  
-                          
-if( length(x$teta2) != 0){
-if(length(theta) > 1)  p12[x$teta.ind2] <- copgHsCond(p0[x$teta.ind2], p2[x$teta.ind2], theta[x$teta.ind2], dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
-if(length(theta) == 1) p12[x$teta.ind2] <- copgHsCond(p0[x$teta.ind2], p2[x$teta.ind2], theta, dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
-                         }                            
-                                                                           
-                       }
                    
-}#*#
+             } 
 
 
-##### Some other cases #####
-
-#if(x$margins[2] %in% c(x$VC$m2d, x$VC$m1d)){#*# ord - discr
-#
-#p0   <- pk
-#ppdf <- distrHsATDiscr(y2, eta2, sigma2, nu = 1, x$margins[2], x$VC$y2m)
-#p2   <- ppdf$p2 
-#pdf2 <- ppdf$pdf2
-#
-#
-#if(x$BivD %in% x$BivD2){
-#
-#nC1 <- x$VC$ct[which(x$VC$ct[,1] == x$Cop1),2] 
-#nC2 <- x$VC$ct[which(x$VC$ct[,1] == x$Cop2),2]
-#
-#C1 <- C2 <- NA
-#
-#if( length(x$teta1) != 0){
-#
-#if(length(theta) > 1){
-#C1[x$teta.ind1] <- BiCDF(p0[x$teta.ind1], p2[x$teta.ind1],          nC1, theta[x$teta.ind1], dof)
-#C2[x$teta.ind1] <- BiCDF(p0[x$teta.ind1], mm(p2[x$teta.ind1]-pdf2[x$teta.ind1]), nC1, theta[x$teta.ind1], dof)
-#                     }
-#
-#if(length(theta) == 1){
-#C1[x$teta.ind1] <- BiCDF(p0[x$teta.ind1], p2[x$teta.ind1],          nC1, theta, dof)
-#C2[x$teta.ind1] <- BiCDF(p0[x$teta.ind1], mm(p2[x$teta.ind1]-pdf2[x$teta.ind1]), nC1, theta, dof)
-#                       }
-#
-#                          }
-#                       
-#                       
-#                       
-#if( length(x$teta2) != 0){
-#
-#if(length(theta) > 1){
-#C1[x$teta.ind2] <- BiCDF(p0[x$teta.ind2], p2[x$teta.ind2],          nC2, theta[x$teta.ind2], dof)
-#C2[x$teta.ind2] <- BiCDF(p0[x$teta.ind2], mm(p2[x$teta.ind2]-pdf2[x$teta.ind2]), nC2, theta[x$teta.ind2], dof)
-#                     }
-#
-#if(length(theta) == 1){
-#C1[x$teta.ind2] <- BiCDF(p0[x$teta.ind2], p2[x$teta.ind2],          nC2, theta, dof)
-#C2[x$teta.ind2] <- BiCDF(p0[x$teta.ind2], mm(p2[x$teta.ind2]-pdf2[x$teta.ind2]), nC2, theta, dof)
-#                       }
-#
-#                          }                       
-#
-#}
-#
-#
-#
-#if(!(x$BivD %in% x$BivD2)){
-#
-#C1 <- BiCDF(p0, p2,          x$nC, theta, dof)
-#C2 <- BiCDF(p0, mm(p2-pdf2), x$nC, theta, dof)
-#
-#}
-#
-#
-#
-#A <- ifelse(C1 - C2 < min.pr, min.pr, C1 - C2)
-#
-##if(y1 == 0){
-##
-##p12 <- A
-##if(cond == 1) p12 <- p12/p0
-##if(cond == 2) p12 <- p12/pdf2
-##
-##          }
-##
-##if(y1 == 1){
-##
-##p12 <- ifelse( pdf2 - A < min.pr, min.pr, pdf2 - A)
-##if(cond == 1) p12 <- p12/p1
-##if(cond == 2) p12 <- p12/pdf2
-##
-##           }
-#
-#if (y1 %in% seq.int(1, x$VC$K1)) {
-#	p12 <- A
-#	if (cond == 1) p12 / p1
-#	if (cond == 2) p12 / pdf2
-#}
-#
-#}#*#
 
 
-# kendalls' tau
 
-if(x$BivD %in% x$BivD2)   {x$SemiParFit <- x; tau <- Reg2Copost(x$SemiParFit, x$VC, theta)$tau }
-if(!(x$BivD %in% x$BivD2)) tau <- ass.ms(x$VC$BivD, x$VC$nCa, theta)$tau 
+#######################################################################################
+### kendalls' tau and theta ###
+
+if(tau.res == TRUE) tau   <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = tau.res)$tau
+                    theta <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = FALSE)$theta
+     
+
 
 
 #############################
@@ -283,106 +143,89 @@ bs[, 1 : (x$VC$K1 - 1)] <- cut.sim
 # etas
 ############# 
 
-##### newdata included as inputs #####
 
-#type <- "lpmatrix"
+X1 <- predict(x, eq = 1, newdata = newdata, type = "lpmatrix")
+X2 <- predict(x, eq = 2, newdata = newdata, type = "lpmatrix") 
 
-if(!missing(newdata)){ 
-	pred.1 <- predict(x, eq = 1, newdata = newdata, type = "lpmatrix")
-		X1  <- pred.1 ; colnames(X1) <- colnames(x$X1)
-		X2s <- predict(x, eq = 2, newdata = newdata, type = "lpmatrix") 
-}
               
-
-##### newdata NOT included as inputs #####
-         
-if( missing(newdata)){ X1 <- x$X1
-                       if(x$VC$ccss == "yes") X2s <- x$X2s else X2s <- x$X2  
-                       }
-
-
-###
-
 # Adjustments for the ordinal-continuous model
 
 if (!is.null(x$VC$K1)) {
 	CLM.shift  <- x$VC$K1 - 2
 	CLM.shift2 <- CLM.shift + 1 # This is needed because in CopulaCLM the intercept has been already removed from X1.d2
-} else {
+                       } else {
 	CLM.shift <- 0 ; CLM.shift2 <- 0
-}
+                               }
 
 
 eta1s <- X1 %*% t(bs[, (CLM.shift2 + 1) : (x$X1.d2 + CLM.shift2)])
-n.s   <- dim(X1)[1]
+n.s   <- 1
 
 
-lp1s <- matrix(nrow = n.s, ncol = n.sim, 0)
+lp1s <- lp1s1 <- matrix(nrow = 1, ncol = n.sim, 0)
 
 for (i in 1 : n.sim) {
+
 	c1s.m   <- t(matrix(nrow = x$VC$K1 - 1, ncol = n.s        , bs   [i, 1 : CLM.shift2])) 
 	eta1s.m <-   matrix(nrow = n.s        , ncol = x$VC$K1 - 1, eta1s[ , i]              )
 
 	lp1s_i <- cbind(c1s.m - eta1s.m, infty)
-	lp1s[, i] <- diag(lp1s_i[, y1]) # lp1s[, i] <- lp1s_i[, y1] # The choice of y1 selects the relevant cut point
+	           lp1s[, i]  <- lp1s_i[, y1] 
+	if(y1 > 1) lp1s1[, i] <- lp1s_i[, y1 - 1] 
 
-}
+                      }
 
 ###
 
 
-pks   <- probm( lp1s, x$VC$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
-eta2s <- eta.tr( X2s %*% t(bs[, (x$X1.d2 + CLM.shift2 + 1) : (x$X1.d2 + x$X2.d2 + CLM.shift2)]), x$VC$margins[2] )
+           pks  <- probm(lp1s,  x$VC$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
+if(y1 > 1) pks1 <- probm(lp1s1, x$VC$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
+
+eta2s <- eta.tr( X2 %*% t(bs[, (x$X1.d2 + CLM.shift2 + 1) : (x$X1.d2 + x$X2.d2 + CLM.shift2)]), x$VC$margins[2] )
 
 
 #############  
 # thetas
 #############  
 
-if( is.null(x$X3) ) epds <- bs[,length(x$coefficients)]
+if( is.null(x$X3) ) epds <- bs[, length(x$coefficients)]
   
-if( !is.null(x$X3) ){ 
-
-
-  if(x$VC$margins[2] %in% cont1par){   
-  
-  
-if(!missing(newdata)){ X3s <- predict(x, eq = 3, newdata = newdata, type = "lpmatrix")}
-                       
-if( missing(newdata)){ if(x$VC$ccss == "yes") X3s <- x$X3s else X3s <- x$X3}    
-  
-                epds <- X3s%*%t(bs[,((x$X1.d2+x$X2.d2+1):(x$X1.d2+x$X2.d2+x$X3.d2)) + CLM.shift2])
-  
-                                   }
-
+if(!is.null(x$X3) ){ 
 
   if(x$VC$margins[2] %in% cont2par){   
   
-  
-if(!missing(newdata)){ X4s <- predict(x, eq = 4, newdata = newdata, type = "lpmatrix")}
-                       
-if( missing(newdata)){ if(x$VC$ccss == "yes") X4s <- x$X4s else X4s <- x$X4}    
-  
-                epds <- X4s%*%t(bs[,((x$X1.d2+x$X2.d2+x$X3.d2+1):(x$X1.d2+x$X2.d2+x$X3.d2+x$X4.d2)) + CLM.shift2])
+                X4 <- predict(x, eq = 4, newdata = newdata, type = "lpmatrix")
+                epds <- X4%*%t(bs[,((x$X1.d2+x$X2.d2+x$X3.d2+1):(x$X1.d2+x$X2.d2+x$X3.d2+x$X4.d2)) + CLM.shift2])
   
                                    }
          
          
   if(x$VC$margins[2] %in% cont3par){
   
-if(!missing(newdata)){ X5s <- predict(x, eq = 5, newdata = newdata, type = "lpmatrix")}
-                       
-if( missing(newdata)){ if(x$VC$ccss == "yes") X5s <- x$X5s else X5s <- x$X5}    
-  
-                epds <- X5s%*%t(bs[,((x$X1.d2+x$X2.d2+x$X3.d2+x$X4.d2+1):(x$X1.d2+x$X2.d2+x$X3.d2+x$X4.d2+x$X5.d2)) + CLM.shift2])
+                X5 <- predict(x, eq = 5, newdata = newdata, type = "lpmatrix")  
+                epds <- X5%*%t(bs[,((x$X1.d2+x$X2.d2+x$X3.d2+x$X4.d2+1):(x$X1.d2+x$X2.d2+x$X3.d2+x$X4.d2+x$X5.d2)) + CLM.shift2])
                 
                                    }
-  
-  
-  
-  }
+                   }
 
-est.RHOb <- teta.tr(x$VC, epds)$teta
+
+
+                    est.RHOb <- teta.tr(x$VC, epds)$teta   
+
+
+                    ass.msR <- theta2tau(x$VC$BivD, x$VC$nCa, est.RHOb, tau.res = tau.res)
+if(tau.res == TRUE) taus    <- ass.msR$tau
+                    thetas  <- ass.msR$theta
+
+
+
+
+                                                 
+if(tau.res == TRUE){ taus <- matrix(taus, 1, n.sim)
+                     CIkt <- rowQuantiles(taus,   probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+                    }
+                    thetas  <- matrix(thetas, 1, n.sim) 
+                    CItheta <- rowQuantiles(thetas, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
    
 
 #############  
@@ -391,234 +234,69 @@ est.RHOb <- teta.tr(x$VC, epds)$teta
 
 if( x$VC$margins[2] %in% cont2par ){  
 
-      if( is.null(x$X3) )   sigma2.star <- bs[, CLM.shift2 + x$X1.d2 + x$X2.d2 + 1] 
-      if( !is.null(x$X3) ) {
+      if( is.null(x$X3) )  sigma2.star <- bs[, CLM.shift2 + x$X1.d2 + x$X2.d2 + 1] 
+      if(!is.null(x$X3) ){
       
-if(!missing(newdata)){ X3s <- predict(x, eq = 3, newdata = newdata, type = "lpmatrix")}
-                       
-if( missing(newdata)){ if(x$VC$ccss == "yes") X3s <- x$X3s else X3s <- x$X3}        
-                
-            sigma2.star <- X3s %*% t(bs[,((x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)) + CLM.shift2]) 
+                       X3 <- predict(x, eq = 3, newdata = newdata, type = "lpmatrix")
+                       sigma2.star <- X3 %*% t(bs[,((x$X1.d2 + x$X2.d2 + 1):(x$X1.d2 + x$X2.d2 + x$X3.d2)) + CLM.shift2]) 
   
-                           }
+                          }
   
-sigma2 <- esp.tr(sigma2.star, x$VC$margins[2])$vrb   
+       sigma2 <- esp.tr(sigma2.star, x$VC$margins[2])$vrb   
     
-}    
-    
-
-#############  
-# NUs
-#############    
-  
-if( x$VC$margins[2] %in% cont3par ){  
-    
-  if( is.null(x$X3)  ) nu.st <- bs[, CLM.shift2 + x$X1.d2 + x$X2.d2 + 2] # t(as.matrix(bs[,  x$X1.d2 + x$X2.d2 + 2]))
-  if( !is.null(x$X3) ){
-  
-if(!missing(newdata)){ X4s <- predict(x, eq = 4, newdata = newdata, type = "lpmatrix")}                    
-if( missing(newdata)){ if(x$VC$ccss == "yes") X4s <- x$X4s else X4s <- x$X4}    
-  
-              nu.st <- X4s %*% t(bs[, ((x$X1.d2 + x$X2.d2 + x$X3.d2 + 1) : (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)) + CLM.shift2]) 
-  
-                      }
-  
- nu <- enu.tr(nu.st, x$VC$margins[2])$vrb   
-  
-} 
-
-
-#################
-
-
-if( is.null(x$X3) ){
-
-if(is.null(nu))     nu     <- rep(1, length(est.RHOb))
-
-est.RHOb <- matrix(rep(est.RHOb, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
-sigma2   <- matrix(rep(sigma2, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
-nu       <- matrix(rep(nu, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
-
-                   }
+                                    }   
 
 
 ##### cond == 0 and cond == 1 #####
 
-if((cond == 0 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)) || (cond == 1 && x$margins[2] %in% c(x$VC$m2, x$VC$m3))){#*# ord - cont
+if(cond == 0 || cond == 1){  
+       
+p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
 
-p0s  <- pks         
-p2s  <- matrix( distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2 , dim(p0s)[1], n.sim)
+if(y1 > 1){ 
+            p12s.f <- mm(BiCDF(pks,  p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr )
+            p12s.s <- mm(BiCDF(pks1, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr )
 
-if(x$VC$BivD %in% c("N","T")) p12s <- matrix(mm(BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(pks)[1], n.sim) else{
+           }
+           
+if(y1 == 1) p12s.f <- mm(BiCDF(pks,  p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr )
+          
+          
+p12s <- p12s.f - p12s.s          
 
 
-if(x$BivD %in% x$BivD2){
+if(cond == 1) p12s <- p12s/(pks - pks1)
 
-p12s <- matrix(NA, ncol = n.sim, nrow = dim(p0s)[1])
 
-if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- mm(BiCDF(p0s[x$teta.ind1,], p2s[x$teta.ind1,], nC1,  est.RHOb[x$teta.ind1,]), min.pr = min.pr, max.pr = max.pr  )                  
-if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- mm(BiCDF(p0s[x$teta.ind2,], p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,]), min.pr = min.pr, max.pr = max.pr  )
-                      
-                        }
+                           }   
 
-if(!(x$BivD %in% x$BivD2)) {
-	p12s <- mm(BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  )    
-	p12s <- matrix(nrow = n.s, ncol = n.sim, p12s) # This part is not in jc.probs2
-}
 
-}
-
-if(cond == 1 && unique(y1 %in% seq.int(1 : x$VC$K1))) p12s <- p12s / p0s
  
-}#*# 
+if(cond == 2){
+     
+     
+p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
 
 
-##### cond == 2 #####
- 
-if(cond == 2 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*# ord - cont
+if(y1 > 1){
+            p12s.f <- copgHsCond(pks,  p2s, est.RHOb, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+            p12s.s <- copgHsCond(pks1, p2s, est.RHOb, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+            
+          }
 
-p0s  <- pks         
-p2s  <- matrix( distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2 , dim(p0s)[1], n.sim)
-
-
-if(!(x$BivD %in% x$BivD2)) p12s <- matrix( copgHsCond(p0s, p2s, est.RHOb, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2 , dim(p0s)[1], n.sim) 
-         if(x$BivD == "T") p12s <- matrix(p12s, dim(pks)[1], n.sim)
+if(y1 == 1) p12s.f <- copgHsCond(pks,  p2s, est.RHOb, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
 
 
-if(x$BivD %in% x$BivD2){
+p12s <- p12s.f - p12s.s
 
-p12s <- matrix(NA, ncol = n.sim, nrow = dim(pks)[1])
- 
-if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- copgHsCond(p0s[x$teta.ind1,], p2s[x$teta.ind1,],  est.RHOb[x$teta.ind1,], dof = dof, x$Cop1, min.pr = min.pr, max.pr = max.pr)$c.copula.be2                                               
-if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p0s[x$teta.ind2,], p2s[x$teta.ind2,], -est.RHOb[x$teta.ind2,], dof = dof, x$Cop2, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
-                                                                                                     
-                       }
-
-}
+              }
 
 
-##### Some other cases #####
-
-#if(x$margins[2] %in% c(x$VC$m2d, x$VC$m1d)){#*#
-#
-#p0s   <- 1 - p1s
-#ppdf  <- distrHsATDiscr(y2, eta2s, sigma2, nu = 1, x$margins[2], x$VC$y2m) # not sure about y2m
-#p2s   <- ppdf$p2 
-#pdf2s <- ppdf$pdf2
-#
-#if(x$VC$BivD %in% c("N","T")) C1s <- matrix(BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE), dim(p1s)[1], n.sim) else{
-#
-#
-#if(x$BivD %in% x$BivD2){
-#
-#C1s <- matrix(NA, ncol = n.sim, nrow = dim(p0s)[1])
-#
-#if( length(x$teta1) != 0) C1s[x$teta.ind1,] <- BiCDF(p0s[x$teta.ind1,], p2s[x$teta.ind1,], nC1,  est.RHOb[x$teta.ind1,])                  
-#if( length(x$teta2) != 0) C1s[x$teta.ind2,] <- BiCDF(p0s[x$teta.ind2,], p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,])
-#                      
-#                        }
-#
-#if(!(x$BivD %in% x$BivD2)) C1s <- BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE)
-#
-#
-#
-#}
-#
-#
-#
-#if(x$VC$BivD %in% c("N","T")) C2s <- matrix(BiCDF(p0s, mm(p2s-pdf2s), x$nC, est.RHOb, dof, test = FALSE), dim(p1s)[1], n.sim) else{
-#
-#
-#if(x$BivD %in% x$BivD2){
-#
-#C2s <- matrix(NA, ncol = n.sim, nrow = dim(p0s)[1])
-#
-#if( length(x$teta1) != 0) C2s[x$teta.ind1,] <- BiCDF(p0s[x$teta.ind1,], mm(p2s[x$teta.ind1,]-pdf2s[x$teta.ind1,]), nC1,  est.RHOb[x$teta.ind1,])                  
-#if( length(x$teta2) != 0) C2s[x$teta.ind2,] <- BiCDF(p0s[x$teta.ind2,], mm(p2s[x$teta.ind2,]-pdf2s[x$teta.ind2,]), nC2, -est.RHOb[x$teta.ind2,])
-#                      
-#                        }
-#
-#if(!(x$BivD %in% x$BivD2)) C2s <- BiCDF(p0s, mm(p2s-pdf2s), x$nC, est.RHOb, dof, test = FALSE)
-#
-#
-#}
-#
-#
-#
-#
-#As <- ifelse(C1s - C2s < min.pr, min.pr, C1s - C2s)
-#
-#
-#
-#
-#if(y1 == 0){
-#p12s <- As
-#if(cond == 1) p12s <- p12s/p0s
-#if(cond == 2) p12s <- p12s/pdf2s
-#          }
-#
-#if(y1 == 1){
-#p12s <- ifelse( pdf2s - As < min.pr, min.pr, pdf2s - As)
-#if(cond == 1) p12s <- p12s/p1s
-#if(cond == 2) p12s <- p12s/pdf2s
-#           }
-#       
-#}#*# 
- 
-   
-   
-   
-   
-   
-   
-   
-   
-
-nCa   <- x$VC$nCa
-BivDt <- x$VC$BivD
-
-  if(x$BivD %in% x$BivD2){
-  
-  if(x$BivD %in% x$BivD2[c(1:4,13:16)]) { BivDt <- "C0"; nCa <- 3} 
-  if(x$BivD %in% x$BivD2[5:8]) { BivDt <- "J0"; nCa <- 6}
-  if(x$BivD %in% x$BivD2[9:12]){ BivDt <- "G0"; nCa <- 4}
-  
-                         }
-  
-ass.msR <- ass.ms(BivDt, nCa, est.RHOb)
-taus    <- ass.msR$tau
-if(!is.null(x$X3) && BivDt %in% c("AMH", "FGM")) taus <- matrix(taus, nrow(x$X3), nrow(bs))
-CIkt <- rowQuantiles(taus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
-#if( is.null(x$X3) ) CIkt <- t(CIkt) 
-
-
-
- if(x$BivD %in% x$BivD2){ 
- 
-   if(length(x$theta) > 1){
- 
-     if( length(x$teta2) != 0) CIkt[x$teta.ind2, ] <- -CIkt[x$teta.ind2, ]; CIkt[x$teta.ind2, c(1,2)] <- CIkt[x$teta.ind2, c(2,1)] 
-                                 
-                          }else{
- 
-     if( length(x$teta2) != 0) CIkt <- -CIkt; CIkt[, c(1,2)] <- CIkt[, c(2,1)]
-                                 
-                                }
- }
-
-   
-   
-   
-   
-   
-   
 
 } # int
 
 
-
-
-     
+  
 } # biv
 
 
@@ -632,356 +310,161 @@ CIkt <- rowQuantiles(taus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
 
 if(type == "independence"){
 
-##### newdata included as inputs #####
 
-if(!missing(newdata)){ 
+#coefficients.ind <- x$coeff.ind   # c(x$coefficients.ind$c1, x$fit_ind$fit$argument[-c(1 : (x$VC$K1 - 1))], 0)
+#Vb.ind           <- x$Vb.ind      # rbind(cbind(x$Vb.ind,0),0)
 
-nu <- sigma2 <- NA
-pk <- probm( predict(x, eq = 1, newdata = newdata, type = "lpmatrix") %*% x$coefficients.ind$beta1, x$VC$margin[1], 
-	      min.dn = min.pr, min.pr = min.pr, max.pr = max.pr )$pr # cdf
+xx <- x
+xx$coefficients <- x$coeff.ind
+xx$Vb           <- x$Vb.ind
 
-if (x$gamlssfit != FALSE) {
-	eta2 <- predict(x$gamlss, eq = 1, newdata = newdata, type = "lpmatrix") %*% x$coefficients.ind$beta2
-} else {
-	eta2 <- predict(x, eq = 2, newdata = newdata, type = "lpmatrix") %*% x$coefficients.ind$beta2
-#pk   <- predict(x, eq = 1, newdata = newdata, type = "response")$p1.cum # cdf
-#	pk <- diag(pk[, y1]) # pk <- pk[, y1]
-#eta2 <- predict(x, eq = 2, newdata = newdata, type = "response")
-} 
+           pkt <- predict(xx, eq = 1, newdata = newdata, type = "response")$p1.cum 
+           pk  <- pkt[, y1]
+if(y1 > 1) pk1 <- pkt[, y1 - 1]
 
-if( !(x$VC$margins[2] %in% cont1par) ){ 
+p1m <- pk - pk1                         
+                                                    
 
-if( !is.null(x$X3) ){
+eta2 <- predict(xx, eq = 2, newdata = newdata, type = "link")
 
-if (x$gamlssfit != FALSE) {
-	sigma2 <- esp.tr(predict(x$gamlss, eq = 2, newdata = newdata, type = "lpmatrix") %*% x$coefficients.ind$sigma2, x$margins[2])$vrb
-	if(x$margins[2] %in% cont3par) nu <- enu.tr(predict(x$gamlss, eq = 3, newdata = newdata, type = "lpmatrix") %*% x$gamlss$coefficients[(x$X2.d2 + x$X3.d2 + 1) : (x$X2.d2 + x$X3.d2 + x$X4.d2)], x$margins[2])$vrb # NOTE: this part is not modified with x$coefficients.ind$[...] because not relevant for the current formulation of the model
-} else {
-	sigma2 <- esp.tr(predict(x, eq = 3, newdata = newdata, type = "lpmatrix") %*% x$coefficients.ind$sigma2, x$margins[2])$vrb
-	if(x$margins[2] %in% cont3par) nu <- enu.tr(predict(x, eq = 4, newdata = newdata, type = "lpmatrix") %*% x$gam4$coefficients, x$margins[2])$vrb # NOTE: same comment as above.
-	#sigma2 <- esp.tr(predict(x, eq = 3, newdata = newdata, type = "response"), x$margins[2])$vrb
-	#if(x$margins[2] %in% cont3par) nu <- enu.tr(predict(x, eq = 4, newdata = newdata, type = "response"), x$margins[2])$vrb	
+
+if( !is.null(xx$X3) && xx$margins[2] %in% c(cont2par, cont3par) ){
+
+sigma2 <- esp.tr(predict(xx, eq = 3, newdata = newdata), xx$margins[2])$vrb
+
+if(xx$margins[2] %in% cont2par)  eq.th <- 4
+if(xx$margins[2] %in% cont3par){ eq.nu <- 4; eq.th <- 5} # case of 3 par margin not implemented yet
+
+if(xx$margins[2] %in% cont3par)  nu <- enu.tr(predict(xx, eq = eq.nu, newdata = newdata), xx$margins[2])$vrb
+
 }
-                    }
 
-if( is.null(x$X3) ){
+if( is.null(xx$X3) ){
 
-sigma2 <- x$sigma2
-nu     <- x$nu 
+   sigma2 <- esp.tr(xx$coeff.ind[length(xx$coeff.ind)], xx$margins[2])$vrb 
 
-                   }
-
-
-                                 }
-
-
-} 
-
-
-##### newdata NOT included as inputs #####
-
-if(missing(newdata)){ 
-
-infty <- 1e+25
-
-#cut <- t(matrix(nrow = x$VC$K1 - 1, ncol = x$n, x$coefficients[1 : (x$VC$K1 - 1)])) #
-#eta1 <- matrix(nrow = x$n, ncol = x$VC$K1 - 1, x$eta1) ##############################
-
-eta1 <- x$VC$X1 %*% x$coefficients.ind$beta1 ; eta1.m <- matrix(nrow = x$n, ncol = x$VC$K1 - 1, eta1) 
-c1.m <- t(matrix(nrow = x$VC$K1 - 1, ncol = x$n, x$coefficients.ind$c1))
-lp1 <- cbind(c1.m - eta1.m, infty) 
-
-#lp1 <- cbind(x$fit$lp1, infty)
-
-lp1.sel <- diag(lp1[, y1]) # lp1.sel <- lp1[, y1] # The choice of y1 selects the relevant cut point
-
-# @ GIAMPIERO: I replaced the bits commented below as they didn't work
-
-#if (y1 != x$VC$K1){
-#	pk <- probm(lp1.sel, x$VC$margins[1], only.pr = FALSE, bc = TRUE, min.dn = min.pr, min.pr = min.pr, #max.pr = max.pr)$pr # cumulative distribution function
-#} else {
-#	pk <- 1
-#}
-
-pk <- probm(lp1.sel, x$VC$margins[1], only.pr = FALSE, bc = TRUE, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr # cumulative distribution function
-	pk[y1 == x$VC$K1] <- 1 
-
-#p1   <- x$p1
-
-if (x$gamlssfit != FALSE) {
-	eta2   <- x$X2 %*% x$coefficients.ind$beta2
-	if(!is.null(x$X3)) sigma2 <- esp.tr(x$X3 %*% x$coefficients.ind$sigma2, x$margins[2])$vrb else sigma2 <- x$sigma2 # x$X3 %*% x$coefficients.ind$sigma2 ~ @ GIAMPIERO: I REPLACED THIS BIT: IS IT CORRECT?
-} else {
-	eta2   <- x$X2 %*% x$gam2$coefficients #
-	sigma2 <- x$X3 %*% x$gam3$coefficients # NOTE: I have not modified this part because the ind prediction can only be achieved if gamlssfit == TRUE
 }
-#eta2 <- x$eta2
-
-#sigma2 <- x$sigma2
-nu     <- x$nu 
-
-} 
 
 
-##### cond == 0, cond == 1 and cond == 2 #####
 
-if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*# ord - cont
+p2 <- distrHsAT(y2, eta2, sigma2, nu, xx$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2  
 
-#if(y1 == 0 || y1 == 1){  
-
-p0  <- pk                   
-p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
-p12 <- p0 * p2
-
+if(cond == 0) p12 <- p1m*p2                             
 if(cond == 1) p12 <- p2
-if(cond == 2) p12 <- p0
+if(cond == 2) p12 <- p1m
 
-#                      }
-
-#if(y1 == 1){                                          
-#
-#p12 <- p1*p2 
-#
-#if(cond == 1) p12 <- p2
-#if(cond == 2) p12 <- p1
-#
-#           }
-                     
-}  #*#         
-
-
-##### Some other cases ##### 
-
-#if(x$margins[2] %in% c(x$VC$m2d, x$VC$m1d)){#*#
-#
-#p0   <- 1 - p1
-#pdf2 <- distrHsATDiscr(y2, eta2, sigma2, nu = 1, x$margins[2], x$VC$y2m)$pdf2  
-#
-#if(y1 == 0){
-#p12 <- p0*pdf2
-#if(cond == 1) p12 <- pdf2
-#if(cond == 2) p12 <- p0
-#          }
-#
-#if(y1 == 1){
-#p12 <- p1*pdf2
-#if(cond == 1) p12 <- pdf2
-#if(cond == 2) p12 <- p1
-#           }
-#       
-#}#*#  
 
 
 #############################
-##### intervals == TRUE ##### 
+##### intervals == TRUE #####
 #############################
 
-if(intervals == TRUE){ 
+if(intervals == TRUE){
 
 # Cut points need to be transformed first...
 
-cut1.sim <- x$coefficients.ind$c1
-	cut1.sim.ti <- rep(0, x$VC$K1 - 1)
-	cut1.sim.ti[1] <- cut1.sim[1] ; for(i in 2 : (x$VC$K1 - 1)) {cut1.sim.ti[i] <- sqrt(cut1.sim[i] - cut1.sim[i - 1])}
+cut.sim <- xx$coefficients[1 : (xx$VC$K1 - 1)]
+	cut.sim.ti <- rep(0, xx$VC$K1 - 1)
+	cut.sim.ti[1] <- cut.sim[1] ; for(i in 2 : (xx$VC$K1 - 1)) {cut.sim.ti[i] <- sqrt(cut.sim[i] - cut.sim[i - 1])}
 
-#cut.sim <- x$coefficients[1 : (x$VC$K1 - 1)]
-#	cut.sim.ti <- rep(0, x$VC$K1 - 1)
-#	cut.sim.ti[1] <- cut.sim[1] ; for(i in 2 : (x$VC$K1 - 1)) {cut.sim.ti[i] <- sqrt(cut.sim[i] - cut.sim[i - 1])}
-
-#coefficients.s <- x$coefficients
-#	coefficients.s[1 : (x$VC$K1 - 1)] <- cut.sim.ti
+coefficients.s <- xx$coefficients
+coefficients.s[1 : (xx$VC$K1 - 1)] <- cut.sim.ti
 
 
-#bs1 <- rMVN(n.sim, mean = x$gam1$coefficients, sigma=x$gam1$Vp)
-#bs2 <- rMVN(n.sim, mean = x$gamlss$coefficients, sigma=x$gamlss$Vb) 
-bs.c1 <- rMVN(n.sim, mean = cut1.sim.ti, sigma = x$Vb.ind[1 : (x$VC$K1 - 1), 1 : (x$VC$K1 - 1)])
-bs1 <- rMVN(n.sim, mean = x$coefficients.ind$beta1, sigma = x$Vb.ind[x$VC$K1 : (x$VC$K1 + x$VC$X1.d - 1), x$VC$K1 : (x$VC$K1 + x$VC$X1.d - 1)]) 
-
-if (x$gamlssfit != FALSE) {
-	bs2 <- rMVN(n.sim, mean = x$coefficients.ind$beta2, sigma = x$Vb.ind[(x$VC$K1 + x$VC$X1.d) : (x$VC$K1 + x$VC$X1.d + x$VC$X2.d - 1), (x$VC$K1 + x$VC$X1.d) : (x$VC$K1 + x$VC$X1.d + x$VC$X2.d - 1)])
-	if(!is.null(x$X3)) bs3 <- rMVN(n.sim, mean = x$coefficients.ind$sigma2, sigma = as.matrix(x$Vb.ind[(x$VC$K1 + x$VC$X1.d + x$VC$X2.d) : (x$VC$K1 + x$VC$X1.d + x$VC$X2.d + x$VC$X3.d - 1), (x$VC$K1 + x$VC$X1.d + x$VC$X2.d) : (x$VC$K1 + x$VC$X1.d + x$VC$X2.d + x$VC$X3.d - 1)])) else bs3 <- rMVN(n.sim, mean = x$gamlss$coefficients["sigma.star"], sigma = as.matrix(x$Vb.ind["sigma.star", "sigma.star"]))
-} else {
-	bs2 <- rMVN(n.sim, mean = x$gam2$coefficients, sigma = x$gam2$Vp) #
-	bs3 <- rMVN(n.sim, mean = x$gam3$coefficients, sigma = x$gam3$Vp) # NOTE: I have not modified this part because the ind prediction can only be achieved if gamlssfit == TRUE
-}
-
-bs <- cbind(bs.c1, bs1, bs2, bs3) 
+bs <- rMVN(n.sim, mean = coefficients.s, sigma = xx$Vb)  
 
 
 # ... and then transformed back
 
-cut.sim.ti <- bs[, 1 : (x$VC$K1 - 1)]
-	cut.sim <- matrix(nrow = n.sim, ncol = x$VC$K1 - 1, 0)	
-	cut.sim[, 1] <- cut.sim.ti[, 1] ; for (i in 2 : (x$VC$K1 - 1)) cut.sim[, i] <- cut.sim[, i - 1] + cut.sim.ti[, i]^2
+cut.sim.ti <- bs[, 1 : (xx$VC$K1 - 1)]
+	cut.sim <- matrix(nrow = n.sim, ncol = xx$VC$K1 - 1, 0)	
+	cut.sim[, 1] <- cut.sim.ti[, 1] ; for (i in 2 : (xx$VC$K1 - 1)) cut.sim[, i] <- cut.sim[, i - 1] + cut.sim.ti[, i]^2
 
-bs[, 1 : (x$VC$K1 - 1)] <- cut.sim
+bs[, 1 : (xx$VC$K1 - 1)] <- cut.sim
 
 
 #############  
 # etas
-#############   
+############# 
 
-##### newdata included as inputs #####
 
-if(!missing(newdata)){ pred.1 <- predict(x, eq = 1, newdata = newdata, type = "lpmatrix")
-		       X1  <- pred.1 ; colnames(X1) <- colnames(x$X1)
-                       X2s <- predict(x, eq = 2, newdata = newdata, type = "lpmatrix") }
+X1 <- predict(xx, eq = 1, newdata = newdata, type = "lpmatrix")
+X2 <- predict(xx, eq = 2, newdata = newdata, type = "lpmatrix") 
 
-                       
-##### newdata NOT included as inputs #####
-
-if( missing(newdata)){ X1 <- x$X1 
-                       if(x$VC$ccss == "yes") X2s <- x$X2s else X2s <- x$X2  
-                       } 
-  
-
-### 
-
+              
 # Adjustments for the ordinal-continuous model
 
-if (!is.null(x$VC$K1)) {
-	CLM.shift  <- x$VC$K1 - 2
+if (!is.null(xx$VC$K1)) {
+	CLM.shift  <- xx$VC$K1 - 2
 	CLM.shift2 <- CLM.shift + 1 # This is needed because in CopulaCLM the intercept has been already removed from X1.d2
 } else {
 	CLM.shift <- 0 ; CLM.shift2 <- 0
 }
 
 
-eta1s <- X1 %*% t(bs[, (CLM.shift2 + 1) : (x$X1.d2 + CLM.shift2)])
-n.s   <- dim(X1)[1]
+eta1s <- X1 %*% t(bs[, (CLM.shift2 + 1) : (xx$X1.d2 + CLM.shift2)])
+n.s   <- 1
 
 
-lp1s <- matrix(nrow = n.s, ncol = n.sim, 0)
+lp1s <- lp1s1 <- matrix(nrow = 1, ncol = n.sim, 0)
 
 for (i in 1 : n.sim) {
-	c1s.m   <- t(matrix(nrow = x$VC$K1 - 1, ncol = n.s        , bs   [i, 1 : CLM.shift2])) 
-	eta1s.m <-   matrix(nrow = n.s        , ncol = x$VC$K1 - 1, eta1s[ , i]              )
+	c1s.m   <- t(matrix(nrow = xx$VC$K1 - 1, ncol = n.s        , bs   [i, 1 : CLM.shift2])) 
+	eta1s.m <-   matrix(nrow = n.s        , ncol = xx$VC$K1 - 1, eta1s[ , i]              )
 
 	lp1s_i <- cbind(c1s.m - eta1s.m, infty)
-	lp1s[, i] <- diag(lp1s_i[, y1]) # lp1s[, i] <- lp1s_i[, y1] # The choice of y1 selects the relevant cut point
+	           lp1s[, i]  <- lp1s_i[, y1] 
+	if(y1 > 1) lp1s1[, i] <- lp1s_i[, y1 - 1] 
 
-}
-
-###  
-
-
-pks   <- probm( lp1s, x$VC$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr   
-eta2s <- eta.tr( X2s %*% t(bs[, (x$X1.d2 + CLM.shift2 + 1) : (x$X1.d2 + x$X2.d2 + CLM.shift2)]) , x$VC$margins[2])
-
-
-#############  
-# sigmas   
-#############  
-
-if( x$VC$margins[2] %in% cont2par ){ 
-
-      if( is.null(x$X3) )   sigma2.star <- bs[, CLM.shift2 + x$X1.d2 + x$X2.d2 + 1] 
-      
-      if( !is.null(x$X3) ){
-      
-if(!missing(newdata)){ X3s <- predict(x, eq = 3, newdata = newdata, type = "lpmatrix")}                     
-if( missing(newdata)){ if(x$VC$ccss == "yes") X3s <- x$X3s else X3s <- x$X3}        
-      
-                      sigma2.star <- X3s %*% t(bs[, ((x$X1.d2 + x$X2.d2 + 1) : (x$X1.d2 + x$X2.d2 + x$X3.d2)) + CLM.shift2]) 
-
-                          }
-
-sigma2 <- esp.tr(sigma2.star, x$VC$margins[2])$vrb   
-    
-}    
-    
-
-#############  
-# NUs
-#############    
-  
-if( x$VC$margins[2] %in% cont3par ){  
-    
-  if( is.null(x$X3)  ) nu.st <- bs[, CLM.shift2 + x$X1.d2 + x$X2.d2 + 2] # t(as.matrix(bs2[,  x$X2.d2 + 2]))
-  
-  if( !is.null(x$X3) ){
-  
-if(!missing(newdata)){ X4s <- predict(x, eq = 4, newdata = newdata, type = "lpmatrix")}                      
-if( missing(newdata)){ if(x$VC$ccss == "yes") X4s <- x$X4s else X4s <- x$X4}     
-  
-             nu.st <- X4s %*% t(bs[, ((x$X1.d2 + x$X2.d2 + x$X3.d2 + 1) : (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2)) + CLM.shift2]) 
                       }
-                      
- nu <- enu.tr(nu.st, x$VC$margins[2])$vrb   
+
+###
+
+
+           pks  <- probm(lp1s,  xx$VC$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
+if(y1 > 1) pks1 <- probm(lp1s1, xx$VC$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
+
+eta2s <- eta.tr( X2 %*% t(bs[, (xx$X1.d2 + CLM.shift2 + 1) : (xx$X1.d2 + xx$X2.d2 + CLM.shift2)]), xx$VC$margins[2] )
+
+
+#############  
+# sigmas
+#############  
+
+if( xx$VC$margins[2] %in% cont2par ){  
+
+      if( is.null(xx$X3) )  sigma2.star <- bs[, CLM.shift2 + xx$X1.d2 + xx$X2.d2 + 1] 
+      if(!is.null(xx$X3) ){
+      
+                       X3 <- predict(xx, eq = 3, newdata = newdata, type = "lpmatrix")
+                       sigma2.star <- X3 %*% t(bs[,((xx$X1.d2 + xx$X2.d2 + 1):(xx$X1.d2 + xx$X2.d2 + xx$X3.d2)) + CLM.shift2]) 
   
-} 
+                          }
+  
+sigma2 <- esp.tr(sigma2.star, xx$VC$margins[2])$vrb   
+    
+                         }   
+
+p2s  <- distrHsAT(y2, eta2s, sigma2, nu, xx$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2  
+
+if(cond == 0) p12s <- (pks - pks1)*p2s                             
+if(cond == 1) p12s <- p2s 
+if(cond == 2) p12s <- (pks - pks1)
 
 
-################# 
 
+       
 
-if( is.null(x$X3) ){
+} # int
 
-if(is.null(nu))     nu     <- rep(1, dim(eta1s)[2])
-
-sigma2   <- matrix(rep(sigma2, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
-nu       <- matrix(rep(nu, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
-
-                   }
-
-
-##### cond == 0, cond == 1 and cond == 2 #####
-
-if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*# ord - cont
-
-#if(y1 == 0 || y1 == 1){  
-
-p0s  <- pks                   
-p2s  <- matrix( distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2 , dim(p0s)[1], n.sim)
-p12s <- p0s * p2s
-
-if(cond == 1) p12s <- p2s
-if(cond == 2) p12s <- p0s
-
-#                      }
-
-#if(y1 == 1){                                          
-#
-#p12s <- p1s*p2s
-#
-#if(cond == 1) p12s <- p2s
-#if(cond == 2) p12s <- p1s
-#
-#           }
-                     
-}  #*#     
-
-
-##### Some other cases ##### 
-
-#if(x$margins[2] %in% c(x$VC$m2d, x$VC$m1d)){#*#
-#
-#p0s   <- 1 - p1s
-#pdf2s <- distrHsATDiscr(y2, eta2s, sigma2, nu = 1, x$margins[2], x$VC$y2m)$pdf2 # not sure about y2m
-#
-#if(y1 == 0){
-#p12s <- p0s*pdf2s
-#if(cond == 1) p12s <- pdf2s
-#if(cond == 2) p12s <- p0s
-#          }
-#
-#if(y1 == 1){
-#p12s <- p1s*pdf2s
-#if(cond == 1) p12s <- pdf2s
-#if(cond == 2) p12s <- p1s
-#           }
-#       
-#}#*#  
- 
- 
- 
-}# int
-
+rm(xx)
 
 } # indep
 
 
-list(p12 = p12, p12s = p12s, p1 = pk, p2 = p2, p3 = NULL, CIkt = CIkt, tau = tau)
+
+
+list(p12 = p12, p12s = matrix(p12s, 1, length(p12s)), p1 = pk, p2 = p2, p3 = NULL, CItau = CIkt, tau = tau, CItheta = CItheta, theta = theta)
 
 
 }

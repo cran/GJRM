@@ -36,7 +36,7 @@ bs <- susutsnR$bs
    # for OR and GM
    ##   
    
-if(object$VC$margins[2] %in% bin.link && object$VC$Model != "BPO0"){   
+if(object$VC$margins[2] %in% bin.link && !(object$VC$Model %in% c("BPO0", "BSS"))){   
      
    et1s <- object$X1%*%t(bs[,1:object$X1.d2])    
    et2s <- object$X2%*%t(bs[,(object$X1.d2+1):(object$X1.d2+object$X2.d2)]) 
@@ -66,8 +66,8 @@ if(object$VC$margins[2] %in% bin.link && object$VC$Model != "BPO0"){
  ORs <- colMeans(ORs)
 
 
- CIor <- as.numeric(quantile(ORs,c(prob.lev/2,1-prob.lev/2),na.rm=TRUE))
- CIgm <- as.numeric(quantile(GMs,c(prob.lev/2,1-prob.lev/2),na.rm=TRUE))
+ CIor <- quantile(ORs, c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+ CIgm <- quantile(GMs, c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
 
 
 }
@@ -86,28 +86,32 @@ if(object$VC$gc.l == TRUE) gc()
   
 #########################
  
+if(!is.null(CIrs))   { if(dim(CIrs)[1]   > 1)  dimnames(CIrs)[[1]]   <- dimnames(object$theta)[[1]] else dimnames(CIrs)[[1]]   <- ""  }
+if(!is.null(CIsig2)) { if(dim(CIsig2)[1] > 1)  dimnames(CIsig2)[[1]] <- dimnames(object$sigma)[[1]] else dimnames(CIsig2)[[1]] <- ""  }
+if(!is.null(CInu))   { if(dim(CInu)[1]   > 1)  dimnames(CInu)[[1]]   <- dimnames(object$nu)[[1]]    else dimnames(CInu)[[1]]   <- ""  }
+
 rm(bs, SE, Vb, et1s, et2s, p1s, p2s, p11s, p10s, p00s, p01s, ORs, GMs) 
  
-  res <- list(tableP1=table[[1]], tableP2=table[[2]], tableP3=table[[3]], formula = object$formula,
+  res <- list(tableP1=table[[1]], tableP2=table[[2]], tableP3=table[[3]], formula = object$formula,est.RHOb = est.RHOb,
               tableP4=table[[4]], tableP5=table[[5]], tableP6=table[[6]],
               tableP7=table[[7]], tableP8=table[[8]],
               tableNP1=tableN[[1]], tableNP2=tableN[[2]], tableNP3=tableN[[3]], 
               tableNP4=tableN[[4]], tableNP5=tableN[[5]], tableNP6=tableN[[6]], 
               tableNP7=tableN[[7]], tableNP8=tableN[[8]],
-              n=n, theta.a=object$theta.a, sigma2.a=object$sigma2.a, sigma.a=object$sigma2.a, nu.a=object$nu.a, 
-              theta=object$theta, sigma2=object$sigma2, sigma=object$sigma2, nu=object$nu,
+              n=n, theta.a=object$theta.a, sigma2.a=object$sigma2.a, sigma.a=object$sigma.a, nu.a=object$nu.a, 
+              theta=object$theta, sigma2=object$sigma2, sigma=object$sigma, nu=object$nu,
               OR = object$OR, GM = object$GM, 
               formula1=object$gam1$formula, formula2=object$gam2$formula, formula3=object$gam3$formula,
               formula4=object$gam4$formula, formula5=object$gam5$formula, formula6=object$gam6$formula,
               formula7=object$gam7$formula, formula8=object$gam8$formula,
-              t.edf=object$t.edf, CItheta=CIrs, CIsig=CIsig2, CInu=CInu,  
-              n.sel=n.sel, CIor = CIor, CIgm = CIgm, CItau = CIkt, tau=object$tau, tau.a=object$tau.a,  
+              t.edf=object$t.edf, CItheta=CIrs, CIsigma=CIsig2, CInu=CInu,  
+              n.sel=n.sel, CIor = CIor, CIgm = CIgm, #CItau = CIkt, tau=object$tau, tau.a=object$tau.a,  
               BivD=object$BivD, margins = object$margins, bin.link = bin.link, 
               Model=object$Model, m2 = object$VC$m2, m3 = object$VC$m3, 
               l.sp1 = object$l.sp1, l.sp2 = object$l.sp2, l.sp3 = object$l.sp3, 
               l.sp4 = object$l.sp4, l.sp5 = object$l.sp5, l.sp6 = object$l.sp6, 
               l.sp7 = object$l.sp7, l.sp8 = object$l.sp8, univar.gamlss = FALSE,
-              bl = bin.link, K1 = object$VC$K1, K2 = object$VC$K2, 
+              bl = bin.link, K1 = object$VC$K1, K2 = object$VC$K2, K1ns = object$gam1$nsdf, K2ns = object$gam2$nsdf,   
               dof=object$dof, dof.a=object$dof)
 
 class(res) <- "summary.SemiParBIV"

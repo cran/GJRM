@@ -1,4 +1,4 @@
-polys.map <- function (lm, z, scheme = "gray", lab = "", zlim, rev.col = TRUE, ...){
+polys.map <- function (lm, z, scheme = "gray", lab = "", zlim, rev.col = FALSE, ...){
 
 poly2 <- getFromNamespace("poly2", "mgcv") 
 

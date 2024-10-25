@@ -1,7 +1,7 @@
 gamlss.fit.post <- function(SemiParFit, VC, GAM){
 
 Ve <- R <- edf <- edf1 <- coef.t <- NULL
-sigma2 <- sigma2.a <- nu <- nu.a <- NULL
+sigma <- sigma.a <- sigma2 <- sigma2.a <- nu <- nu.a <- NULL
 
 cont1par  <- c(VC$m1d) 
 cont2par  <- c(VC$m2,VC$m2d) 
@@ -32,11 +32,11 @@ coef.t     <- pVbres$coef.t
   
 if(VC$margins[1] %in% c(cont2par,cont3par) ){
   
-sigma2 <- esp.tr(SemiParFit$fit$etas1, VC$margins[1])$vrb  
+sigma <- sigma2 <- esp.tr(SemiParFit$fit$etas1, VC$margins[1])$vrb  
   
-if( is.null(VC$X2) ) names(sigma2) <- "sigma"
+if( is.null(VC$X2) ) names(sigma) <- names(sigma2) <- "sigma"
 
-sigma2.a <- mean(sigma2) 
+sigma.a <- sigma2.a <- mean(sigma2) 
 
 }
 
@@ -63,6 +63,22 @@ edf  <- edf.loopR$edf
 edf1 <- edf.loopR$edf1 
  
 sp <- SemiParFit$sp 
+
+
+if(!is.null(sigma2.a)) names(sigma2.a) <- "sigma2.a"
+if(!is.null(sigma.a))  names(sigma.a)  <- "sigma.a"
+if(!is.null(nu.a))     names(nu.a)     <- "nu.a"
+
+if(!is.null(sigma2) && length(sigma2) == 1) names(sigma2) <- "sigma2"
+if(!is.null(sigma)  && length(sigma)  == 1) names(sigma)  <- "sigma"
+if(!is.null(nu)     && length(nu)     == 1) names(nu)     <- "nu"
+
+
+if(!is.null(sigma2) && length(sigma2) > 1){ sigma2 <- as.matrix(sigma2) ; dimnames(sigma2)[[1]] <- dimnames(VC$X1)[[1]]; dimnames(sigma2)[[2]] <- "sigma2"}
+if(!is.null(sigma)  && length(sigma)  > 1){ sigma  <- as.matrix(sigma)  ; dimnames(sigma )[[1]] <- dimnames(VC$X1)[[1]]; dimnames(sigma )[[2]] <- "sigma" }
+if(!is.null(nu)     && length(nu)     > 1){ nu     <- as.matrix(nu    ) ; dimnames(nu    )[[1]] <- dimnames(VC$X1)[[1]]; dimnames(nu    )[[2]] <- "nu"    }
+
+
    
     
                  list(SemiParFit = SemiParFit, He = He, logLik = logLik, Vb = Vb, Vb1 = Vb1, Vb.t = Vb.t, HeSh = HeSh, 
@@ -73,7 +89,7 @@ sp <- SemiParFit$sp
                       edf1.1 = edf1[[1]], edf1.2 = edf1[[2]], edf1.3 = edf1[[3]], edf1.4 = edf1[[4]], 
                       edf1.5 = edf1[[5]], edf1.6 = edf1[[6]], edf1.7 = edf1[[7]], edf1.8 = edf1[[8]],
                       sigma2 = sigma2, sigma2.a = sigma2.a, 
-                      sigma = sigma2, sigma.a = sigma2.a,
+                      sigma = sigma, sigma.a = sigma.a,
                       nu = nu, nu.a = nu.a, sp = sp, 
                       R = R, Ve = Ve, coef.t = coef.t) 
 

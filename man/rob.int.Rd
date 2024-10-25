@@ -6,7 +6,7 @@
 
 \description{ 
 
-Tool for tuning bounds of integral in robust GAMLSS. 
+Tool for tuning bounds of integral in robust GAMLSS with continuous distribution. 
 
 }
 

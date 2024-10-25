@@ -12,7 +12,7 @@ It helps finding the robust constant for a GAMLSS.
 
 \usage{
 
-rob.const(x, B = 100)
+rob.const(x, B = 100, left.trunc = 0)
 
 }
 
@@ -21,6 +21,9 @@ rob.const(x, B = 100)
 \item{x}{A fitted \code{gjrm} object.}
 
 \item{B}{Number of bootstrap replicates.}
+
+\item{left.trunc}{If a truncated count distribution is employed then this is the left truncation point.}
+
 
 }
 

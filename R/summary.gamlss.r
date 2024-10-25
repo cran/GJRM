@@ -35,7 +35,15 @@ cont3par  <- c(object$VC$m3,object$VC$m3d)
   table  <- susuR$table
 
 #########################
- 
+
+
+
+#if(!is.null(CImu))   { if(dim(CImu)[1]    > 1)  dimnames(CImu)[[1]]    <- dimnames(object$mu)[[1]]     else dimnames(CImu)[[1]]    <- ""  }
+if(!is.null(CIsig2)) { if(dim(CIsig2)[1]  > 1)  dimnames(CIsig2)[[1]]  <- dimnames(object$sigma)[[1]]  else dimnames(CIsig2)[[1]]  <- ""  }
+if(!is.null(CInu))   { if(dim(CInu)[1]    > 1)  dimnames(CInu)[[1]]    <- dimnames(object$nu)[[1]]     else dimnames(CInu)[[1]]    <- ""  }
+
+###########
+
 rm(bs, SE, Vb, XX, Xt, V) 
  
   res <- list(tableP1=table[[1]], tableP2=table[[2]], tableP3=table[[3]], 
@@ -43,16 +51,16 @@ rm(bs, SE, Vb, XX, Xt, V)
               tableNP1=tableN[[1]], tableNP2=tableN[[2]], tableNP3=tableN[[3]], 
               tableNP4=tableN[[4]], tableNP5=tableN[[5]], tableNP6=tableN[[6]], tableNP7=tableN[[7]], tableNP8=tableN[[8]], 
               n=n, 
-              sigma2=object$sigma2, sigma=object$sigma2, Model = object$Model, 
+              sigma2=object$sigma2, sigma=object$sigma, Model = object$Model, 
               nu=object$nu,  
-              sigma2.a=object$sigma2.a, sigma.a=object$sigma2.a, 
+              sigma2.a=object$sigma2.a, sigma.a=object$sigma.a, 
               nu.a=object$nu.a, 
               formula = object$formula,
               formula1=object$gam1$formula, formula2=object$gam2$formula, formula3=object$gam3$formula,
               formula4=object$gam4$formula, formula5=object$gam5$formula, formula6=object$gam6$formula, 
               formula7=object$gam7$formula, formula8=object$gam8$formula,
               t.edf=object$t.edf, CImu = CImu, mu = mu,
-              CIsig=CIsig2, CInu=CInu,
+              CIsigma=CIsig2, CInu=CInu,
               margins = object$margins, 
               l.sp1 = object$l.sp1, l.sp2 = object$l.sp2, l.sp3 = object$l.sp3, 
               l.sp4 = object$l.sp4, l.sp5 = object$l.sp5, l.sp6 = object$l.sp6, 

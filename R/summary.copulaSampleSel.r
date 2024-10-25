@@ -26,7 +26,8 @@ bs <- rMVN(n.sim, mean = object$coefficients, sigma=Vb)
    CInu2    <- susutsnR$CInu2
    CIsig2   <- susutsnR$CIsig2 
    CInu     <- susutsnR$CInu   
-   
+   est.RHOb <- susutsnR$est.RHOb
+
 #######
 
   if(object$VC$gc.l == TRUE) gc()
@@ -37,24 +38,32 @@ bs <- rMVN(n.sim, mean = object$coefficients, sigma=Vb)
   table  <- susuR$table
 
 #######  
+
+if(!is.null(CIrs))   { if(dim(CIrs)[1]    > 1)  dimnames(CIrs)[[1]]    <- dimnames(object$theta)[[1]]  else dimnames(CIrs)[[1]]    <- ""  }
+if(!is.null(CIsig2)) { if(dim(CIsig2)[1]  > 1)  dimnames(CIsig2)[[1]]  <- dimnames(object$sigma)[[1]]  else dimnames(CIsig2)[[1]]  <- ""  }
+if(!is.null(CInu))   { if(dim(CInu)[1]    > 1)  dimnames(CInu)[[1]]    <- dimnames(object$nu)[[1]]     else dimnames(CInu)[[1]]    <- ""  }
+
+
+#######
+
  
  
  
-rm(bs, SE, Vb, epds, sigma2.st, sigma2, est.RHOb, et1s, et2s, p1s, p2s, p11s, p10s, p00s, p01s, ORs, GMs, XX, Xt, V) 
+rm(bs, SE, Vb, epds, sigma2.st, sigma2, et1s, et2s, p1s, p2s, p11s, p10s, p00s, p01s, ORs, GMs, XX, Xt, V) 
  
-  res <- list(tableP1=table[[1]], tableP2=table[[2]], tableP3=table[[3]], formula = object$formula,
+  res <- list(tableP1=table[[1]], tableP2=table[[2]], tableP3=table[[3]], formula = object$formula,est.RHOb = est.RHOb,
               tableP4=table[[4]], tableP5=table[[5]], tableP6=table[[6]],
               tableP7=table[[7]], tableP8=table[[8]], Model = object$Model,  
               tableNP1=tableN[[1]], tableNP2=tableN[[2]], tableNP3=tableN[[3]], 
               tableNP4=tableN[[4]], tableNP5=tableN[[5]], tableNP6=tableN[[6]], 
               tableNP7=tableN[[7]], tableNP8=tableN[[8]],
-              n=n, theta.a=object$theta.a, sigma2.a=object$sigma2.a, sigma.a=object$sigma2.a, nu.a=object$nu.a, 
-              theta=object$theta, sigma2=object$sigma2, sigma=object$sigma2, nu=object$nu, 
+              n=n, theta.a=object$theta.a, sigma2.a=object$sigma2.a, sigma.a=object$sigma.a, nu.a=object$nu.a, 
+              theta=object$theta, sigma2=object$sigma2, sigma=object$sigma, nu=object$nu, 
               formula1=object$gam1$formula, formula2=object$gam2$formula, formula3=object$gam3$formula,
               formula4=object$gam4$formula, formula5=object$gam5$formula, formula6=object$gam6$formula,
               formula7=object$gam7$formula, formula8=object$gam8$formula,
-              t.edf=object$t.edf, CItheta=CIrs, CIsig=CIsig2, CInu=CInu,  
-              n.sel=n.sel, tau=object$tau, tau.a=object$tau.a, CItau = CIkt, 
+              t.edf=object$t.edf, CItheta=CIrs, CIsigma=CIsig2, CInu=CInu,  
+              n.sel=n.sel, #tau=object$tau, tau.a=object$tau.a, CItau = CIkt, 
               BivD=object$BivD, margins = object$margins, bin.link = bin.link, 
               l.sp1 = object$l.sp1, l.sp2 = object$l.sp2, l.sp3 = object$l.sp3, 
               l.sp4 = object$l.sp4, l.sp5 = object$l.sp5, l.sp6 = object$l.sp6, 

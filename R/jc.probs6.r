@@ -1,4 +1,4 @@
-jc.probs6 <- function(x, y1, y2, y3, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr){
+jc.probs6 <- function(x, y1, y2, y3, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr, tau.res = FALSE){
 
 #############################################################################################
 
@@ -9,6 +9,7 @@ lf <- length(x$coefficients)
 theta12 <- theta13 <- theta23 <- 0
 epd12s <- epd13s <- epd23s <- p123s <- 0
 CIkt <- tau <- NULL
+p12s  <- p123s <- matrix(0, 1, 2) 
 #############################################################################################
 #############################################################################################
 
@@ -240,10 +241,10 @@ mar2s <- qnorm(p2s)
 mar3s <- qnorm(p3s)
 
 
-
+p111s <- matrix(NA, dim(X1)[1], n.sim) 
 
 if(is.null(x$X4))  epd12s <- epd13s <- epd23s <- NA  
-if(!is.null(x$X4)) epd12s <- epd13s <- epd23s <- p111s <- matrix(NA, dim(X1)[1], n.sim)  
+if(!is.null(x$X4)) epd12s <- epd13s <- epd23s <- matrix(NA, dim(X1)[1], n.sim)  
 
 
 if(x$VC$Chol == FALSE){
@@ -525,11 +526,14 @@ if(y1 == 0 && y2 == 0 && y3 == 0){
 if(intervals == TRUE){
 
 
-bs <- rMVN(n.sim, mean = x$coefficients, sigma = x$Vb)  
+bs1 <- rMVN(n.sim, mean = x$gam1$coefficients, sigma = x$gam1$Vp)
+bs2 <- rMVN(n.sim, mean = x$gam2$coefficients, sigma = x$gam2$Vp)
+bs3 <- rMVN(n.sim, mean = x$gam3$coefficients, sigma = x$gam3$Vp)
 
-p1s <- probm(X1%*%t(bs[,1:x$X1.d2]),                                     x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
-p2s <- probm(X2%*%t(bs[,(x$X1.d2+1):(x$X1.d2+x$X2.d2)]),                 x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
-p3s <- probm(X3%*%t(bs[,(x$X1.d2+x$X2.d2+1):(x$X1.d2+x$X2.d2+x$X3.d2)]), x$margins[3], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
+
+p1s <- probm(X1%*%t(bs1), x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
+p2s <- probm(X2%*%t(bs2), x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
+p3s <- probm(X3%*%t(bs3), x$margins[3], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
 
 
   
@@ -619,7 +623,7 @@ p3s <- probm(X3%*%t(bs[,(x$X1.d2+x$X2.d2+1):(x$X1.d2+x$X2.d2+x$X3.d2)]), x$margi
     
   
 
-list(p12 = p123, p12s = p123s, p1 = p1, p2 = p2, p3 = p3, 
+list(p12 = p123, p12s = matrix(p123s, 1, length(p123s)), p1 = p1, p2 = p2, p3 = p3, 
      theta12 = theta12, theta13 = theta13, theta23 = theta23, 
      theta12s = epd12s, theta13s = epd13s, theta23s = epd23s)
 

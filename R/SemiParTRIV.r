@@ -18,6 +18,8 @@ SemiParTRIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   gam1 <- gam2 <- gam3 <- gam4 <- gam5 <- gam6 <- gam7 <- gam8 <- gam9 <- NULL
   opc  <- scc <- sccn <- m2 <- m2d <- m3 <- m3d <- bl <- NULL  
    
+  left.trunc1 <- left.trunc2 <- 0 
+   
   fp <- FALSE
   surv.flex <- FALSE
   
@@ -332,8 +334,8 @@ start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, theta12, t
 ##############################################################
 
 if(Model == "T")    func.opt <- triprobgHs
-#if(Model == "TSS")  func.opt <- triprobgHsSS
-#if(Model == "TESS") func.opt <- triprobgHsESS
+if(Model == "TSS")  func.opt <- triprobgHsSS
+if(Model == "TESS") func.opt <- triprobgHsESS
 
 ##########################################################
 # SPs and penalties
@@ -410,7 +412,7 @@ if(missing(parscale)) parscale <- 1
    
   VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL,
              lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
-             lsgam3 = lsgam3,
+             lsgam3 = lsgam3, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
              lsgam4 = lsgam4,
              lsgam5 = lsgam5,
              lsgam6 = lsgam6,
@@ -464,7 +466,7 @@ if(missing(parscale)) parscale <- 1
              zerov = -10, Chol = Chol, surv.flex = surv.flex, l.flist = l.flist, gp2.inf = NULL,
              informative = "no",
              zero.tol = 1e-02,
-             min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+             min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, end.surv = FALSE)
              
   if(gc.l == TRUE) gc()           
              
@@ -498,7 +500,7 @@ L <- list(fit = SemiParFit$fit, formula = formula, Model = Model, robust = FALSE
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8,
           coefficients = SemiParFit$fit$argument, coef.t = NULL, iterlimsp = iterlimsp,
           weights = weights, 
-          sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, 
+          sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
           l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, 
           l.sp4 = l.sp4, l.sp5 = l.sp5, l.sp6 = l.sp6,
           l.sp7 = l.sp7, l.sp8 = l.sp8, l.sp9 = l.sp9, gam9 = gam9, bl = bl,
@@ -548,7 +550,7 @@ L <- list(fit = SemiParFit$fit, formula = formula, Model = Model, robust = FALSE
           l.flist = l.flist, margins = margins,
           inde2 = inde2, X2s = X2s, X3s = X3s,
           p1n = SemiParFit.p$p1n, p2n = SemiParFit.p$p2n, p3n = SemiParFit.p$p3n, v1 = v1, v2 = v2, v3 = v3, univar.gamlss = FALSE, call = cl,
-          surv = FALSE, surv.flex = surv.flex)
+          surv = FALSE, surv.flex = surv.flex, end.surv = FALSE)
 
 class(L) <- c("SemiParTRIV","SemiParBIV","gjrm")
 

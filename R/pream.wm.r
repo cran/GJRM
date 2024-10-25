@@ -1,6 +1,6 @@
 pream.wm <- function(formula, margins, M, l.flist, type = "copR"){
   
-  #if(margins[2] %in% c("GU", "rGU", "LO", "LN", "WEI","iG", "DAGUM", "SM", "BE", "FISK","TW") ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
+  #if(margins[2] %in% c("GU", "rGU", "LO", "LN", "WEI","IG", "DAGUM", "SM", "BE", "FISK","TW") ) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
   #scs <- c("WEI", "FISK", "LN", "LO", "N") # for survival models
   #if(M$robust == TRUE) stop("Check the next release for the final tested version of this model\nor get in touch to check progress.")
   #if(M$dep.cens == TRUE) stop("The dependent censoring case is work in progress. \nGet in touch should you wish to get more info.")
@@ -26,8 +26,8 @@ if(type == "ROY"){ # binary - binary/cont/discr models
   
   if(!(margins[1] %in% M$bl) ) stop("Error in first margin value. It should be one of:\nprobit, logit, cloglog.")
 
-  if(!(margins[2] %in% c(M$bl,M$m2,M$m3,M$m1d,M$m2d)) ) stop("Error in second margin value. It should be one of:\nprobit, logit, cloglog, N, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, PO, GP (and its versions), DGP (and its versions), ZTP, NBI, NBII, PIG.")  
-  if(!(margins[3] %in% c(M$bl,M$m2,M$m3,M$m1d,M$m2d)) ) stop("Error in third margin value.  It should be one of:\nprobit, logit, cloglog, N, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, PO, GP (and its versions), DGP (and its versions), ZTP, NBI, NBII, PIG.")  
+  if(!(margins[2] %in% c(M$bl,M$m2,M$m3,M$m1d,M$m2d)) ) stop("Error in second margin value. It should be one of:\nprobit, logit, cloglog, N, GU, rGU, LO, LN, WEI, IG, GA, DAGUM, TW, SM, BE, FISK, P, GP (and its versions), DGP (and its versions), \ntP, NBI, NBII, PIG, tNBI, tNBII, tPIG.")  
+  if(!(margins[3] %in% c(M$bl,M$m2,M$m3,M$m1d,M$m2d)) ) stop("Error in third margin value.  It should be one of:\nprobit, logit, cloglog, N, GU, rGU, LO, LN, WEI, IG, GA, DAGUM, TW, SM, BE, FISK, P, GP (and its versions), DGP (and its versions), \ntP, NBI, NBII, PIG, tNBI, tNBII, tPIG.")  
 
   if(  margins[2] %in% c(M$bl)  && !(margins[3] %in% c(M$bl)) ) stop("The second and third margins must be of the same type (e.g., both binary).") 
   if(!(margins[2] %in% c(M$bl)) &&   margins[3] %in% c(M$bl)  ) stop("The second and third margins must be of the same type (e.g., both binary).") 
@@ -108,7 +108,7 @@ if(type == "ord"){
   
   if( !( margins[1] %in% c("probit", "logit") ) ) stop("Error in first margin value. It should be one of:\nprobit, logit.")
     
-  if(!(margins[2] %in% c(M$m2, "probit", "logit")) && M$intf == TRUE ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, BE, FISK, probit, logit") 
+  if(!(margins[2] %in% c(M$m2, "probit", "logit")) && M$intf == TRUE ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, IG, GA, BE, FISK, probit, logit") 
 
   if(margins[2] %in% c(M$m1d,M$m2d) ) stop("Discrete margins are not allowed.")   
     
@@ -154,7 +154,7 @@ if(type == "biv"){ # binary - cont/discr models #
   
   if(!(margins[1] %in% M$bl) ) stop("Error in first margin value. It should be one of:\nprobit, logit, cloglog.")
   if(!(margins[2] %in% c(M$bl,M$m2,M$m3)) && M$intf == FALSE ) stop("Error in second margin value. It should be one of:\nprobit, logit, cloglog.")  
-  if(!(margins[2] %in% c(M$bl,M$m2,M$m3,M$m1d,M$m2d)) && M$intf == TRUE ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, PO, GP (and its versions), DGP (and its versions), ZTP, NBI, NBII, PIG.")  
+  if(!(margins[2] %in% c(M$bl,M$m2,M$m3,M$m1d,M$m2d)) && M$intf == TRUE ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, IG, GA, DAGUM, TW, SM, BE, FISK, P, GP (and its versions), DGP (and its versions), \ntP, NBI, NBII, PIG, tNBI, tNBII, tPIG.")  
 
   if(margins[2] %in% c(M$m2,M$m3,M$m1d,M$m2d) && (M$Model == "BPO" || M$Model == "BPO0") ) stop("For continuous/discrete responses, partial observability models\nare not allowed for.")   
   
@@ -172,6 +172,13 @@ if(type == "biv"){ # binary - cont/discr models #
   
   
   if(margins[2] %in% c("GP", "GPII","GPo","DGP","DGPII")) stop("GP, GPII, GPo, DGP, DGPII not done yet.\nGet in touch for details.")
+
+
+ # if( margins[1] %in% c(M$m2d, M$m1d) && margins[2] %in% M$bl ) stop("Please swap the two equations (and hence margins' specification).\nThe second instead of the first margin has to refer to the discrete distribution.")
+ # if( margins[1] %in% c(M$m2, M$m3)   && margins[2] %in% M$bl ) stop("Please swap the two equations (and hence margins' specification).\nThe first instead of the second margin has to refer to the binary equation.")
+
+
+
 
   
 
@@ -229,8 +236,8 @@ if(type == "copR"){
 if(M$surv == TRUE){
 
 
-  if( !(margins[1] %in% c(M$m2,M$m3,M$bl)) ) stop("The first marginal distribution must be either continuous or probit, PO or PH.")
-  if( !(margins[2] %in% c(M$bl,scs)) )       stop("The second marginal distribution must be probit, PO or PH.")
+  if( !(margins[1] %in% c(M$m2,M$m3,M$bl)) ) stop("The first marginal distribution must be either continuous or -probit, PO or PH.")
+  if( !(margins[2] %in% c(M$bl,scs)) )       stop("The second marginal distribution must be -probit, PO or PH.")
 
 
   if(margins[1] %in% c("TW") || margins[2] %in% c("TW") ) stop("Tweedie not yet allowed for. Get in touch for details.")   
@@ -259,8 +266,8 @@ if(M$surv == TRUE){
  
   if(!(M$extra.regI %in% c("t","pC","sED"))) stop("Error in parameter extra.regI value. It should be one of:\nt, pC or sED.")
   
-  if(!(margins[1] %in% c(M$m2,M$m3,M$m1d,M$m2d,M$bl)) ) stop("Error in first margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, PO, GP (and its versions), DGP (and its versions), ZTP\nor probit, logit, cloglog for survival models.")  
-  if(!(margins[2] %in% c(M$m2,M$m3,M$m1d,M$m2d,M$bl)) ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, PO, GP (and its versions), DGP (and its versions), ZTP\nor probit, logit, cloglog for survival models.")  
+  if(!(margins[1] %in% c(M$m2,M$m3,M$m1d,M$m2d,M$bl)) ) stop("Error in first margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, IG, GA, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, tNBI, tNBII, tPIG, P, GP (and its versions), DGP (and its versions), tP\nor probit, logit, cloglog for survival models.")  
+  if(!(margins[2] %in% c(M$m2,M$m3,M$m1d,M$m2d,M$bl)) ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, IG, GA, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, tNBI, tNBII, tPIG, P, GP (and its versions), DGP (and its versions), tP\nor probit, logit, cloglog for survival models.")  
   
 
   
@@ -312,7 +319,7 @@ if(type == "copSS"){
   if(!(M$extra.regI %in% c("t","pC","sED"))) stop("Error in parameter extra.regI value. It should be one of: t, pC or sED.")
   
   if(!(M$margins[1] %in% M$bl) ) stop("Error in first margin value. It should be one of:\nprobit, logit, cloglog.")
-  if(!(M$margins[2] %in% c(M$m2,M$m3,M$m1d,M$m2d)) ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, DAGUM, TW, SM, BE, FISK, PO, GP (and its versions), DGP (and its versions), ZTP, NBI, NBII, PIG.")  
+  if(!(M$margins[2] %in% c(M$m2,M$m3,M$m1d,M$m2d)) ) stop("Error in second margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, IG, GA, DAGUM, TW, SM, BE, FISK, P, GP (and its versions), DGP (and its versions), \ntP, NBI, NBII, PIG, tNBI, tNBII, tPIG.")  
   
   ###########################################
   
@@ -345,7 +352,7 @@ if(M$surv == TRUE){
 
   if( !(M$type.cens %in% c("R","L","I","mixed")) ) stop("The type of censoring can be R, L, I or mixed.")
   if( !is.null(M$v.rB) && !is.character(M$v.rB) )  stop("v.rB must be a character variable.") 
-  if( !(M$margin %in% c(scs,M$bl)) )               stop("The marginal distribution can be probit, PO or PH.")
+  if( !(M$margin %in% c(scs,M$bl)) )               stop("The marginal distribution can be -probit, PO or PH.")
   if(is.null(M$cens) )                             stop("You must provide the binary censoring indicator.")
   
   if( M$type.cens %in% c("R","L","I") ){
@@ -368,7 +375,7 @@ if(M$surv == TRUE){
   if(M$surv == TRUE && M$robust == TRUE) stop("It is not currently possible to fit robust survival models.")
 
   if(!(M$extra.regI %in% c("t","pC","sED"))) stop("Error in parameter extra.regI value. It should be one of:\nt, pC or sED.")
-  if(!(M$margin %in% c(M$m2,M$m3,M$m1d,M$m2d, M$bl)) ) stop("Error in margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, iG, GA, GP, GPII, GPo, DGP, DGPII, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, PO, GP (and its versions), DGP (and its versions), ZTP, GEVlink.")  
+  if(!(M$margin %in% c(M$m2,M$m3,M$m1d,M$m2d, M$bl)) ) stop("Error in margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, IG, GA, GP, GPII, GPo, DGP, DGPII, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, tNBI, tNBII, tPIG, P, GP (and its versions), DGP (and its versions), tP, GEVlink.")  
   if(l.flist > 1 && M$margin %in% c(M$m1d)    )                   stop("You need to specify one equation.")  
   if(l.flist > 1 && M$margin %in% c(M$m2,M$m2d) ){ if(l.flist!=2) stop("You need to specify two equations.")   } 
   if(l.flist > 1 && M$margin %in% c(M$m3,M$m3d) ){ if(l.flist!=3) stop("You need to specify three equations.") } 

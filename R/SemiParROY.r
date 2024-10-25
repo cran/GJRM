@@ -1,6 +1,6 @@
 SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
-                       BivD1 = "N", BivD2 = "N", margins = c("probit","PO","PO"), 
-                       dof1 = 3, dof2 = 3, gamlssfit = FALSE,
+                       BivD1 = "N", BivD2 = "N", margins = c("probit","P","P"), 
+                       dof1 = 3, dof2 = 3, left.trunc2 = 0, left.trunc3 = 0, gamlssfit = FALSE,
                        fp = FALSE, infl.fac = 1, 
                        rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
                        gc.l = FALSE, parscale, extra.regI = "t", knots = NULL,
@@ -18,6 +18,9 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
   y10.y20 <- y10.y21 <- y11.y30 <- y11.y31 <- NULL
   
   y10.y20R <- y10.y21R <- y11.y30R <- y11.y31R <- NULL
+  
+  left.trunc1 <- left.trunc2
+  left.trunc2 <- left.trunc3
   
   Model <- "ROY"
   
@@ -52,10 +55,10 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
   scc  <- c("C0", "C180", "GAL0" , "GAL180","J0", "J180", "G0", "G180")
   sccn <- c("C90", "C270", "GAL90", "GAL270","J90", "J270", "G90", "G270")
     
-  m2   <- c("N","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP","GPII","GPo")
+  m2   <- c("N","GU","rGU","LO","LN","WEI","IG","GA","BE","FISK","GP","GPII","GPo")
   m3   <- c("DAGUM","SM","TW")
-  m1d  <- c("PO", "ZTP","DGP0") 
-  m2d  <- c("NBI", "NBII", "PIG","DGP","DGPII") 
+  m1d  <- c("P", "tP","DGP0") 
+  m2d  <- c("tNBI", "tNBII", "tPIG","NBI", "NBII", "PIG","DGP","DGPII") 
   bl   <- c("probit", "logit", "cloglog")   
   
   
@@ -108,7 +111,7 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
   fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
-  mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$ordinal <- mf$knots <- mf$dof1 <- mf$dof2 <- mf$intf <- mf$theta.fx <- mf$BivD1 <- mf$BivD2 <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
+  mf$left.trunc2 <- mf$left.trunc3 <- mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$ordinal <- mf$knots <- mf$dof1 <- mf$dof2 <- mf$intf <- mf$theta.fx <- mf$BivD1 <- mf$BivD2 <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
   mf$drop.unused.levels <- drop.unused.levels  
   mf[[1]] <- as.name("model.frame")
   data <- eval(mf, parent.frame())
@@ -351,8 +354,8 @@ if( margins[2] %in% c(m1d, bl) && margins[3] %in% c(m1d, bl) ) start.v <- c(gam1
 
 if( margins[2] %in% c(m2, m2d) && margins[3] %in% c(m2, m2d) ){
 
-   start.snR1 <- startsn(margins[2], y2)  
-   start.snR2 <- startsn(margins[3], y3)
+   start.snR1 <- startsn(margins[2], y2, left.trunc = left.trunc1)  
+   start.snR2 <- startsn(margins[3], y3, left.trunc = left.trunc2)
    
    log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma2.star"
    log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma3.star"
@@ -364,8 +367,8 @@ start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, log.sig1, 
 
 if( margins[2] %in% c(m3) && margins[3] %in% c(m3) ){
 
-   start.snR1 <- startsn(margins[2], y2)  
-   start.snR2 <- startsn(margins[3], y3)
+   start.snR1 <- startsn(margins[2], y2, left.trunc = left.trunc1)  
+   start.snR2 <- startsn(margins[3], y3, left.trunc = left.trunc2)
    
    log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma2.star"
    log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma3.star"
@@ -380,7 +383,7 @@ start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, log.sig1, 
 
 if( margins[2] %in% c(m1d) && margins[3] %in% c(m2d) ){
 
-   start.snR2 <- startsn(margins[3], y3)
+   start.snR2 <- startsn(margins[3], y3, left.trunc = left.trunc2)
    log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma3.star"
 
 start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, log.sig2, i.rho1, i.rho2)
@@ -390,7 +393,7 @@ start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, log.sig2, 
 
 if( margins[2] %in% c(m2d) && margins[3] %in% c(m1d) ){
 
-   start.snR1 <- startsn(margins[2], y2)  
+   start.snR1 <- startsn(margins[2], y2, left.trunc = left.trunc1)  
    
    log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma2.star"
 
@@ -401,8 +404,8 @@ start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, log.sig1, 
 
 if( margins[2] %in% c(m2) && margins[3] %in% c(m3) ){
 
-   start.snR1 <- startsn(margins[2], y2)  
-   start.snR2 <- startsn(margins[3], y3)
+   start.snR1 <- startsn(margins[2], y2, left.trunc = left.trunc1)  
+   start.snR2 <- startsn(margins[3], y3, left.trunc = left.trunc2)
    
    log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma2.star"
    log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma3.star"
@@ -416,8 +419,8 @@ start.v <- c(gam1$coefficients, gam2$coefficients, gam3$coefficients, log.sig1, 
 
 if( margins[2] %in% c(m3) && margins[3] %in% c(m2) ){
 
-   start.snR1 <- startsn(margins[2], y2)  
-   start.snR2 <- startsn(margins[3], y3)
+   start.snR1 <- startsn(margins[2], y2, left.trunc = left.trunc1)  
+   start.snR2 <- startsn(margins[3], y3, left.trunc = left.trunc2)
    
    log.sig1   <- start.snR1$log.sig2.1; names(log.sig1) <- "sigma2.star"
    log.sig2   <- start.snR2$log.sig2.1; names(log.sig2) <- "sigma3.star"
@@ -542,7 +545,7 @@ if(missing(parscale)) parscale <- 1
 
   VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL, K1 = NULL,
              lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
-             lsgam3 = lsgam3,
+             lsgam3 = lsgam3, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
              lsgam4 = lsgam4,
              lsgam5 = lsgam5,
              lsgam6 = lsgam6,
@@ -619,7 +622,7 @@ if(missing(parscale)) parscale <- 1
              y10.y20R = y10.y20R,             
              y10.y21R = y10.y21R,            
              y11.y30R = y11.y30R,            
-             y11.y31R = y11.y31R ) # original n only needed in SemiParBIV.fit
+             y11.y31R = y11.y31R, end.surv = FALSE ) # original n only needed in SemiParBIV.fit
              
   if(gc.l == TRUE) gc()           
              
@@ -634,14 +637,14 @@ if(gamlssfit == TRUE && margins[2] %in% c(m1d, m2d, m2, m3) && margins[3] %in% c
   form.gamlR <- form.gaml(formula, l.flist, M, type = "ROY")
 
   gamlss2 <- eval(substitute(gamlss(form.gamlR$formula.gamlss2, data = data, weights = weights, subset = inde0,  
-                   margin = margins[2], infl.fac = infl.fac, 
+                   family = margins[2], infl.fac = infl.fac, 
                    rinit = rinit, rmax = rmax, iterlimsp = iterlimsp, tolsp = tolsp,
-                   gc.l = gc.l, parscale = 1, extra.regI = extra.regI, drop.unused.levels = drop.unused.levels), list(inde0 = inde0, weights = weights)))   
+                   gc.l = gc.l, parscale = 1, drop.unused.levels = drop.unused.levels), list(inde0 = inde0, weights = weights)))   
                    
   gamlss3 <- eval(substitute(gamlss(form.gamlR$formula.gamlss3, data = data, weights = weights, subset = inde1,  
-                   margin = margins[3], infl.fac = infl.fac, 
+                   family = margins[3], infl.fac = infl.fac, 
                    rinit = rinit, rmax = rmax, iterlimsp = iterlimsp, tolsp = tolsp,
-                   gc.l = gc.l, parscale = 1, extra.regI = extra.regI, drop.unused.levels = drop.unused.levels), list(inde1 = inde1, weights = weights)))                    
+                   gc.l = gc.l, parscale = 1, drop.unused.levels = drop.unused.levels), list(inde1 = inde1, weights = weights)))                    
                       
   # updated starting values                   
   
@@ -714,7 +717,7 @@ L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, SemiParFit
           gam7 = gam7, gam8 = gam8, gam9 = gam9, gam2TW = gam2TW,
           coefficients = SemiParFit$fit$argument, coef.t = NULL, iterlimsp = iterlimsp,
           weights = weights, 
-          sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, 
+          sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
           l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, 
           l.sp4 = l.sp4, l.sp5 = l.sp5, l.sp6 = l.sp6,
           l.sp7 = l.sp7, l.sp8 = l.sp8, l.sp9 = l.sp9, bl = bl,
@@ -763,7 +766,7 @@ L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, SemiParFit
           l.flist = l.flist, v1 = v1, v2 = v2, v3 = v3, triv = FALSE, univar.gamlss = FALSE,
           gamlss2 = gamlss2, gamlss3 = gamlss3, BivD1 = BivD1, BivD2 = BivD2, dof12 = dof1, dof13 = dof2, 
           dof12.a = dof1, dof13.a = dof2, call = cl,
-          surv = FALSE, surv.flex = surv.flex)
+          surv = FALSE, surv.flex = surv.flex, end.surv = FALSE)
 
 class(L) <- c("SemiParROY", "SemiParBIV", "gjrm") 
 

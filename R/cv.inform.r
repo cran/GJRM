@@ -22,7 +22,7 @@ for(i in 1:K){
 if(informative == "yes"){
 
 out <- gamlss(x$formula, data = test.mDat, 
-              surv = TRUE, margin = x$margins[1], margin2 = x$margins[2], cens = cens.test, 
+              family = x$mar1surv, family2 = x$mar2surv, cens = cens.test, 
               informative = "yes", inform.cov = c(x$VC$inform.cov))
               
 params1 <- out$fit$params1
@@ -35,10 +35,10 @@ Xp <- predict(out$gam1, type = "lpmatrix", newdata = train.mDat)
 
 }
 
-if(informative == "no"){
+if(informative == "no"){        
 
-out1 <- gamlss(list(x$formula[[1]]), data = test.mDat, surv = TRUE, margin = x$margins[1], cens = cens.test)
-out2 <- gamlss(list(x$formula[[2]]), data = test.mDat, surv = TRUE, margin = x$margins[2], cens = 1 - cens.test)   
+out1 <- gamlss(list(x$formula[[1]]), data = test.mDat, family = x$mar1surv, cens = cens.test)
+out2 <- gamlss(list(x$formula[[2]]), data = test.mDat, family = x$mar2surv, cens = 1 - cens.test)   
 
 params1 <- out1$fit$params1
 params2 <- out2$fit$params1

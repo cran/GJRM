@@ -1,9 +1,9 @@
 bibentry(
  bibtype="Manual",
  title="GJRM: Generalised Joint Regression Modelling",
- pages="R package version 0.2-6.4",
- year="2023",
+ pages="R package version 0.2-6.7",
+ year="2024",
  author="Giampiero Marra and Rosalba Radice",
- textVersion="Marra, G. and Radice, R. (2023), GJRM: Generalised Joint Regression Modelling, R package version 0.2-6.4" )
+ textVersion="Marra, G. and Radice, R. (2024), GJRM: Generalised Joint Regression Modelling, R package version 0.2-6.7" )
 
 

@@ -1,21 +1,18 @@
 \name{prev}
 \alias{prev}
 
-\title{Estimated overall prevalence from sample selection model}
+\title{Estimated overall prevalence from a sample selection model}
 
 \description{ 
 \code{prev} can be used to calculate the overall estimated prevalence from a sample selection model 
 with binay outcome, with corresponding interval
-obtained using the delta method or posterior simulation.}
+obtained using posterior simulation.}
 
 
 
 \usage{
 
-prev(x, sw = NULL, type = "joint", ind = NULL, delta = FALSE,  
-     n.sim = 100, prob.lev = 0.05, hd.plot = FALSE, 
-     main = "Histogram and Kernel Density of Simulated Prevalences", 
-     xlab = "Simulated Prevalences", ...)
+prev(x, sw = NULL, joint = TRUE, n.sim = 100, prob.lev = 0.05)
 
 }
 
@@ -25,31 +22,15 @@ prev(x, sw = NULL, type = "joint", ind = NULL, delta = FALSE,
 
 \item{sw}{Survey weights.}  
 
-\item{type}{This argument can take three values: \code{"naive"} (the prevalence is calculated ignoring the presence of observed 
-            and unobserved confounders), \code{"univariate"} (the prevalence is obtained from the univariate probit/single imputation model 
-            which neglects the presence of unobserved confounders) and \code{"joint"} (the prevalence is obtained from the 
-            bivariate/trivariate model 
-            which accounts for observed and unobserved confounders).}
-             
-\item{ind}{Binary logical variable. It can be used to calculate the prevalence for a subset of the data.} 
-
-\item{delta}{If \code{TRUE} then the delta method is used for confidence interval calculations, otherwise Bayesian posterior 
-             simulation is employed.} 
-             
-\item{n.sim}{Number of simulated coefficient vectors from the posterior distribution of the estimated model parameters. This is used 
-             when \code{delta = FALSE}. It may be increased if more precision is required.}  
+\item{joint}{If \code{FALSE} then the prevalence is obtained from the univariate model 
+            which neglects the presence of unobserved confounders. When \code{TRUE}, the prevalence is obtained from 
+            the simultaneous model which accounts for observed and unobserved confounders.}
+                       
+\item{n.sim}{Number of simulated coefficient vectors from the posterior distribution of the estimated model parameters. It may 
+             be increased if more precision is required.}  
              
 \item{prob.lev}{Overall probability of the left and right tails of the prevalence distribution used for interval calculations.}
               
-
-\item{hd.plot}{If \code{TRUE} then a plot of the histogram and kernel density estimate of the simulated prevalences is produced. This can only 
-               be produced when \code{delta = FALSE}.}
-
-\item{main}{Title for the plot.}
-
-\item{xlab}{Title for the x axis.}
-
-\item{...}{Other graphics parameters to pass on to plotting commands. These are used only when \code{hd.plot = TRUE}.}
 
 }
 
@@ -57,7 +38,7 @@ prev(x, sw = NULL, type = "joint", ind = NULL, delta = FALSE,
 \details{
 
 \code{prev} estimates the overall prevalence of a disease (e.g., HIV) when there are missing values that are not at random. 
-An interval for the estimated prevalence can be obtained using the delta method or posterior simulation. 
+An interval for the estimated prevalence can be obtained using posterior simulation. 
 
 
 }
@@ -68,7 +49,7 @@ An interval for the estimated prevalence can be obtained using the delta method 
 
 \item{res}{It returns three values: lower confidence interval limit, estimated prevalence and upper confidence interval limit.}
 \item{prob.lev}{Probability level used.}
-\item{sim.prev}{If \code{delta = FALSE} then it returns a vector containing simulated values of the prevalence. This 
+\item{sim.prev}{Vector containing simulated values of the prevalence. This 
                is used to calculate an interval.}
 
 }

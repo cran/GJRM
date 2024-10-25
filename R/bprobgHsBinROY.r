@@ -48,10 +48,10 @@ bprobgHsBinROY <- function(params, respvec, VC, ps, AT = FALSE){
     
     
   p00 <- mm(BiCDF(1 - p1[VC$inde0], 1 - p2, nC1, teta1, VC$dof1), min.pr = VC$min.pr, max.pr = VC$max.pr )
-  p01 <- (1 - p1[VC$inde0]) - p00
+  p01 <- mm( (1 - p1[VC$inde0]) - p00, min.pr = VC$min.pr, max.pr = VC$max.pr )
   
-  p10 <- (1 - p3) - mm(BiCDF(1 - p1[VC$inde1], 1 - p3, nC2, teta2, VC$dof2), min.pr = VC$min.pr, max.pr = VC$max.pr )
-  p11 <- p1[VC$inde1] - p10
+  p10 <- mm( (1 - p3) - mm(BiCDF(1 - p1[VC$inde1], 1 - p3, nC2, teta2, VC$dof2), min.pr = VC$min.pr, max.pr = VC$max.pr ), min.pr = VC$min.pr, max.pr = VC$max.pr )
+  p11 <- mm( p1[VC$inde1] - p10, min.pr = VC$min.pr, max.pr = VC$max.pr )
 
   l.par[VC$y10.y20] <- log(p00[VC$y10.y20R]) 
   l.par[VC$y10.y21] <- log(p01[VC$y10.y21R]) 

@@ -137,10 +137,10 @@ dH1.pm <- copgHs(p1.p[teta.ind1], p2.m[teta.ind1], eta1 = NULL, eta2 = NULL, tet
 dH1.mp <- copgHs(p1.m[teta.ind1], p2.p[teta.ind1], eta1 = NULL, eta2 = NULL, teta1, teta.st1, Cop1, VC$dof, CLM = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 dH1.mm <- copgHs(p1.m[teta.ind1], p2.m[teta.ind1], eta1 = NULL, eta2 = NULL, teta1, teta.st1, Cop1, VC$dof, CLM = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
-h.pp[teta.ind1] <- BiCDF(u1 = p1.p[teta.ind1], u2 = p2.p[teta.ind1], family = VC$nC, par1 = teta1, par2 = NULL, test = TRUE)
-h.pm[teta.ind1] <- BiCDF(u1 = p1.p[teta.ind1], u2 = p2.m[teta.ind1], family = VC$nC, par1 = teta1, par2 = NULL, test = TRUE)
-h.mp[teta.ind1] <- BiCDF(u1 = p1.m[teta.ind1], u2 = p2.p[teta.ind1], family = VC$nC, par1 = teta1, par2 = NULL, test = TRUE)
-h.mm[teta.ind1] <- BiCDF(u1 = p1.m[teta.ind1], u2 = p2.m[teta.ind1], family = VC$nC, par1 = teta1, par2 = NULL, test = TRUE)
+h.pp[teta.ind1] <- BiCDF(u1 = p1.p[teta.ind1], u2 = p2.p[teta.ind1], family = VC$nC, par1 = teta1, par2 = VC$dof, test = TRUE)
+h.pm[teta.ind1] <- BiCDF(u1 = p1.p[teta.ind1], u2 = p2.m[teta.ind1], family = VC$nC, par1 = teta1, par2 = VC$dof, test = TRUE)
+h.mp[teta.ind1] <- BiCDF(u1 = p1.m[teta.ind1], u2 = p2.p[teta.ind1], family = VC$nC, par1 = teta1, par2 = VC$dof, test = TRUE)
+h.mm[teta.ind1] <- BiCDF(u1 = p1.m[teta.ind1], u2 = p2.m[teta.ind1], family = VC$nC, par1 = teta1, par2 = VC$dof, test = TRUE)
 
 }
 
@@ -151,10 +151,10 @@ dH2.pm <- copgHs(p1.p[teta.ind2], p2.m[teta.ind2], eta1 = NULL, eta2 = NULL, tet
 dH2.mp <- copgHs(p1.m[teta.ind2], p2.p[teta.ind2], eta1 = NULL, eta2 = NULL, teta2, teta.st2, Cop2, VC$dof, CLM = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 dH2.mm <- copgHs(p1.m[teta.ind2], p2.m[teta.ind2], eta1 = NULL, eta2 = NULL, teta2, teta.st2, Cop2, VC$dof, CLM = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
-h.pp[teta.ind2] <- BiCDF(u1 = p1.p[teta.ind2], u2 = p2.p[teta.ind2], family = VC$nC, par1 = teta2, par2 = NULL, test = TRUE)
-h.pm[teta.ind2] <- BiCDF(u1 = p1.p[teta.ind2], u2 = p2.m[teta.ind2], family = VC$nC, par1 = teta2, par2 = NULL, test = TRUE)
-h.mp[teta.ind2] <- BiCDF(u1 = p1.m[teta.ind2], u2 = p2.p[teta.ind2], family = VC$nC, par1 = teta2, par2 = NULL, test = TRUE)
-h.mm[teta.ind2] <- BiCDF(u1 = p1.m[teta.ind2], u2 = p2.m[teta.ind2], family = VC$nC, par1 = teta2, par2 = NULL, test = TRUE)
+h.pp[teta.ind2] <- BiCDF(u1 = p1.p[teta.ind2], u2 = p2.p[teta.ind2], family = VC$nC, par1 = teta2, par2 = VC$dof, test = TRUE)
+h.pm[teta.ind2] <- BiCDF(u1 = p1.p[teta.ind2], u2 = p2.m[teta.ind2], family = VC$nC, par1 = teta2, par2 = VC$dof, test = TRUE)
+h.mp[teta.ind2] <- BiCDF(u1 = p1.m[teta.ind2], u2 = p2.p[teta.ind2], family = VC$nC, par1 = teta2, par2 = VC$dof, test = TRUE)
+h.mm[teta.ind2] <- BiCDF(u1 = p1.m[teta.ind2], u2 = p2.m[teta.ind2], family = VC$nC, par1 = teta2, par2 = VC$dof, test = TRUE)
 
 }
 

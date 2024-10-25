@@ -928,8 +928,7 @@ if(sum(VC$indUU)>1){
                 
                 )
         
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+
         d2l.rho.rho <- -( 
                 
                 VC$weights*VC$indUU*( -c.copula2.be1be2^-2*der2h.derp1teta^2*derteta.derteta.st^2 
@@ -1337,19 +1336,15 @@ if(sum(VC$indUL)>1){
                 )
         rho.rho <- crossprod(X3*c(d2l.rho.rho), X3)
         
-        be1.rho <- -(
-                
-                
-                crossprod(VC$weights*VC$indUL*c(rotConst*(-(c.copula.be1-1)^-2*c.copula2.be1*c.copula2.be1t 
-                                                          + (c.copula.be1-1)^-1*der3C.p1p1teta)*dS1eta1*derteta.derteta.st)*dereta1derb1, X3)
-        )
         
-        be2.rho <- -(
-                
-                crossprod(VC$weights*VC$indUL*c(rotConst*(-(c.copula.be1-1)^-2*(c.copula2.be1be2)*c.copula2.be1t 
-                                                          + (c.copula.be1-1)^-1*der2h.derp1teta)*dS2eta2*derteta.derteta.st)*dereta2derb2, X3)
-                
-        )
+    be1.rho <- -(crossprod(VC$weights * VC$indUL * c( (rotConst *-(c.copula.be1 - 1)^-2 * c.copula2.be1 * c.copula2.be1t + 
+                                                          (c.copula.be1 - 1)^-1 * der3C.p1p1teta) * dS1eta1 * 
+                                                       derteta.derteta.st) * dereta1derb1, X3))
+    be2.rho <- -(crossprod(VC$weights * VC$indUL * c( (rotConst *-(c.copula.be1 - 1)^-2 * (c.copula2.be1be2) * c.copula2.be1t + 
+                                                          (c.copula.be1 - 1)^-1 * der2h.derp1teta) * dS2eta2 * 
+                                                       derteta.derteta.st) * dereta2derb2, X3))        
+        
+        
         
         H <- H+ rbind( cbind( be1.be1        ,   be1.be2      ,      be1.rho    ), 
                        cbind( t(be1.be2)     ,   be2.be2      ,      be2.rho    ), 
@@ -1422,17 +1417,14 @@ if(sum(VC$indLU)>1){
         
         rho.rho <- crossprod(X3*c(d2l.rho.rho), X3)
         
-        be1.rho <- -( 
-                
-                crossprod(VC$weights*VC$indLU*c(rotConst*(-(c.copula.be2-1)^-2*c.copula2.be1be2*c.copula2.be2t 
-                                                          + (c.copula.be2-1)^-1*der2h.derp1teta)*dS1eta1*derteta.derteta.st)*dereta1derb1, X3)
-                )
-        
-        be2.rho <- -( 
-                
-                crossprod(VC$weights*VC$indLU*c(rotConst*(-(c.copula.be2-1)^-2*(c.copula2.be2)*c.copula2.be2t 
-                                                          + (c.copula.be2-1)^-1*der2h.derp2teta)*dS2eta2*derteta.derteta.st)*dereta2derb2, X3)
-                )
+    be1.rho <- -(crossprod(VC$weights * VC$indLU * c( 
+                                                       (rotConst *-(c.copula.be2 - 1)^-2 * c.copula2.be1be2 * c.copula2.be2t + 
+                                                          (c.copula.be2 - 1)^-1 * der2h.derp1teta) * dS1eta1 * 
+                                                       derteta.derteta.st) * dereta1derb1, X3))
+    be2.rho <- -(crossprod(VC$weights * VC$indLU * c(
+                                                       (rotConst * -(c.copula.be2 - 1)^-2 * (c.copula2.be2) * c.copula2.be2t + 
+                                                          (c.copula.be2 - 1)^-1 * der2h.derp2teta) * dS2eta2 * 
+                                                       derteta.derteta.st) * dereta2derb2, X3))
         
         H <- H+ rbind( cbind( be1.be1        ,   be1.be2      ,      be1.rho    ), 
                        cbind( t(be1.be2)     ,   be2.be2      ,      be2.rho    ), 
@@ -2198,18 +2190,29 @@ if(sum(VC$indUI)>1){
         
         rho.rho <- crossprod(X3*c(d2l.rho.rho), X3)
         
-        be1.rho <- -(
-                #UI
-                crossprod(VC$weights*VC$indUI*c(rotConst*(-mm(c.copula.be1-c.copula.be1.mix1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(c.copula2.be1-c.copula2.be1.mix1)*(c.copula2.be1t-c.copula2.be1t.mix1) 
-                                                          + mm(c.copula.be1-c.copula.be1.mix1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(der3C.p1p1teta-der3C.p1p1teta.mix1))*dS1eta1*derteta.derteta.st)*dereta1derb1, X3)
-        )
-        be2.rho <- -( 
-                #UI
-                crossprod(VC$weights*VC$indUI*c(rotConst*(-mm(c.copula.be1-c.copula.be1.mix1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(c.copula2.be1be2)*(c.copula2.be1t-c.copula2.be1t.mix1) 
-                                                          + mm(c.copula.be1-c.copula.be1.mix1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(der2h.derp1teta))*dS2eta2*derteta.derteta.st)*dereta2derb2, X3)+
-                        
-                        crossprod(VC$weights*VC$indUI*c(rotConst*(-mm(c.copula.be1-c.copula.be1.mix1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(-c.copula2.be1be2.mix1)*(c.copula2.be1t-c.copula2.be1t.mix1) 
-                                                                  + mm(c.copula.be1-c.copula.be1.mix1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(-der2h.derp1teta.mix1))*dS2eta2.2*derteta.derteta.st)*dereta2derb2.2, X3))
+    be1.rho <- -(crossprod(VC$weights * VC$indUI * c( 
+                                                       (rotConst *-mm(c.copula.be1 - c.copula.be1.mix1, min.pr = VC$min.pr, 
+                                                            max.pr = VC$max.pr)^-2 * (c.copula2.be1 - c.copula2.be1.mix1) * 
+                                                          (c.copula2.be1t - c.copula2.be1t.mix1) + mm(c.copula.be1 - 
+                                                                                                        c.copula.be1.mix1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1 * 
+                                                          (der3C.p1p1teta - der3C.p1p1teta.mix1)) * dS1eta1 * 
+                                                       derteta.derteta.st) * dereta1derb1, X3))
+    be2.rho <- -(crossprod(VC$weights * VC$indUI * c( 
+                                                       (rotConst *-mm(c.copula.be1 - c.copula.be1.mix1, min.pr = VC$min.pr, 
+                                                            max.pr = VC$max.pr)^-2 * (c.copula2.be1be2) * 
+                                                          (c.copula2.be1t - c.copula2.be1t.mix1) + mm(c.copula.be1 - 
+                                                                                                        c.copula.be1.mix1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1 * 
+                                                          (der2h.derp1teta)) * dS2eta2 * derteta.derteta.st) * 
+                             dereta2derb2, X3) + crossprod(VC$weights * VC$indUI * 
+                                                             c( (rotConst *-mm(c.copula.be1 - c.copula.be1.mix1, 
+                                                                               min.pr = VC$min.pr, max.pr = VC$max.pr)^-2 * 
+                                                                             (-c.copula2.be1be2.mix1) * (c.copula2.be1t - 
+                                                                                                           c.copula2.be1t.mix1) + mm(c.copula.be1 - c.copula.be1.mix1, 
+                                                                                                                                     min.pr = VC$min.pr, max.pr = VC$max.pr)^-1 * 
+                                                                             (-der2h.derp1teta.mix1)) * dS2eta2.2 * derteta.derteta.st) * 
+                                                             dereta2derb2.2, X3))    
+        
+        
         
         H <- H+ rbind( cbind( be1.be1        ,   be1.be2      ,      be1.rho    ), 
                        cbind( t(be1.be2)     ,   be2.be2      ,      be2.rho    ), 
@@ -2217,6 +2220,8 @@ if(sum(VC$indUI)>1){
        
         
 }
+
+
 #IU
 if(sum(VC$indIU)>1){
         l.par <- VC$weights*(VC$indIU*( log( mm(c.copula.be2-c.copula.be2.mix2, min.pr = VC$min.pr, max.pr = VC$max.pr) ) + log(-dS2eta2)+log(Xd2P)))
@@ -2300,19 +2305,29 @@ if(sum(VC$indIU)>1){
                                       + rotConst*mm(c.copula.be2-c.copula.be2.mix2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(c.copula2.be2t-c.copula2.be2t.mix2)*der2teta.derteta.stteta.st ) 
                 )
         rho.rho <- crossprod(X3*c(d2l.rho.rho), X3)
-        be1.rho <- -( 
-                #IU
-                crossprod(VC$weights*VC$indIU*c(rotConst*(-mm(c.copula.be2-c.copula.be2.mix2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(c.copula2.be1be2)*(c.copula2.be2t-c.copula2.be2t.mix2) 
-                                                          + mm(c.copula.be2-c.copula.be2.mix2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(der2h.derp1teta))*dS1eta1*derteta.derteta.st)*dereta1derb1, X3)+
-                        
-                        crossprod(VC$weights*VC$indIU*c(rotConst*(-mm(c.copula.be2-c.copula.be2.mix2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(-c.copula2.be1be2.mix2)*(c.copula2.be2t-c.copula2.be2t.mix2) 
-                                                                  + mm(c.copula.be2-c.copula.be2.mix2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(-der2h.derp1teta.mix2))*dS1eta1.2*derteta.derteta.st)*dereta1derb1.2, X3)
-                )
-        be2.rho <- -( 
-                #IU
-                crossprod(VC$weights*VC$indIU*c(rotConst*(-mm(c.copula.be2-c.copula.be2.mix2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(c.copula2.be2-c.copula2.be2.mix2)*(c.copula2.be2t-c.copula2.be2t.mix2) 
-                                                          + mm(c.copula.be2-c.copula.be2.mix2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(der2h.derp2teta-der2h.derp2teta.mix2))*dS2eta2*derteta.derteta.st)*dereta2derb2, X3))
-        
+
+    be1.rho <- -(crossprod(VC$weights * VC$indIU * c( 
+                                                       (rotConst *-mm(c.copula.be2 - c.copula.be2.mix2, min.pr = VC$min.pr, 
+                                                            max.pr = VC$max.pr)^-2 * (c.copula2.be1be2) * 
+                                                          (c.copula2.be2t - c.copula2.be2t.mix2) + mm(c.copula.be2 - 
+                                                                                                        c.copula.be2.mix2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1 * 
+                                                          (der2h.derp1teta)) * dS1eta1 * derteta.derteta.st) * 
+                             dereta1derb1, X3) + crossprod(VC$weights * VC$indIU * 
+                                                             c( (rotConst *-mm(c.copula.be2 - c.copula.be2.mix2, 
+                                                                               min.pr = VC$min.pr, max.pr = VC$max.pr)^-2 * 
+                                                                             (-c.copula2.be1be2.mix2) * (c.copula2.be2t - 
+                                                                                                           c.copula2.be2t.mix2) + mm(c.copula.be2 - c.copula.be2.mix2, 
+                                                                                                                                     min.pr = VC$min.pr, max.pr = VC$max.pr)^-1 * 
+                                                                             (-der2h.derp1teta.mix2)) * dS1eta1.2 * derteta.derteta.st) * 
+                                                             dereta1derb1.2, X3))
+    be2.rho <- -(crossprod(VC$weights * VC$indIU * c( 
+                                                       (rotConst *-mm(c.copula.be2 - c.copula.be2.mix2, min.pr = VC$min.pr, 
+                                                            max.pr = VC$max.pr)^-2 * (c.copula2.be2 - c.copula2.be2.mix2) * 
+                                                          (c.copula2.be2t - c.copula2.be2t.mix2) + mm(c.copula.be2 - 
+                                                                                                        c.copula.be2.mix2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1 * 
+                                                          (der2h.derp2teta - der2h.derp2teta.mix2)) * 
+                                                       dS2eta2 * derteta.derteta.st) * dereta2derb2, X3))
+    
         H <- H+ rbind( cbind( be1.be1        ,   be1.be2      ,      be1.rho    ), 
                        cbind( t(be1.be2)     ,   be2.be2      ,      be2.rho    ), 
                        cbind( t(be1.rho)     ,   t(be2.rho)   ,      rho.rho    ) )

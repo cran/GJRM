@@ -1,5 +1,5 @@
 copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NULL,
-                             BivD = "N", margins = c("probit","N"), dof = 3,
+                             BivD = "N", margins = c("probit","N"), dof = 3, left.trunc1 = 0, left.trunc2 = 0,
                              fp = FALSE, infl.fac = 1, 
                              rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
                              gc.l = FALSE, parscale, extra.regI = "t", knots = NULL,
@@ -16,6 +16,8 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   
   # stop("check next release")
   
+  #if(margins[2] %in% c("tP","tNBI","tNBII","tPIG")) stop("Truncated versions not yet allowed for.")
+    
   i.rho <- sp <- qu.mag <- qu.mag1 <- qu.mag2 <- n.sel <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- inde <- y2m <- NULL  
   end <- X3.d2 <- X4.d2 <- X5.d2 <- X6.d2 <- X7.d2 <- X8.d2 <- l.sp3 <- l.sp4 <- l.sp5 <- l.sp6 <- l.sp7 <- l.sp8 <- l.sp9 <- 0
   ngc <- 2
@@ -47,10 +49,10 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   opc  <- c("N","C0","C90","C180","C270","J0","J90","J180","J270","G0","G90","G180","G270","F","AMH","FGM","T","PL","HO","GAL0", "GAL90", "GAL180", "GAL270")
   scc  <- c("C0", "C180", "GAL0" , "GAL180", "J0", "J180", "G0", "G180", BivD2)
   sccn <- c("C90", "C270", "GAL90", "GAL270", "J90", "J270", "G90", "G270")
-  m2   <- c("N","GU","rGU","LO","LN","WEI","iG","GA","BE","FISK","GP","GPII","GPo")
+  m2   <- c("N","GU","rGU","LO","LN","WEI","IG","GA","BE","FISK","GP","GPII","GPo")
   m3   <- c("DAGUM","SM","TW")
-  m1d  <- c("PO", "ZTP","DGP0")
-  m2d  <- c("NBI","NBII","PIG","DGP", "DGPII")
+  m1d  <- c("P", "tP","DGP0")
+  m2d  <- c("tNBI","tNBII","tPIG","NBI","NBII","PIG","DGP", "DGPII")
   m3d  <- NULL
   bl   <- c("probit", "logit", "cloglog")
 
@@ -88,6 +90,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   
   
 
+  #if(margins[2] == "ZTP") gen.trun(par = 0, family = "PO", name = "tr", type = "left", print = FALSE)
 
 
 
@@ -111,7 +114,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
-  mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$ordinal <- mf$knots <- mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- NULL                           
+  mf$left.trunc1 <- mf$left.trunc2 <- mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$ordinal <- mf$knots <- mf$BivD <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- NULL                           
   mf$drop.unused.levels <- drop.unused.levels 
   mf$na.action <- na.pass
   mf[[1]] <- as.name("model.frame")
@@ -172,7 +175,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
     # TEST
     ######
     X2s <- try(predict.gam(gam2, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
-    if(any(class(X2s)=="try-error")) stop("Check that the numbers of factor variables' levels\nin the selected sample are the same as those in the complete dataset.\nRead the Details section in ?copulaSampleSel for more information.") 
+    if(any(class(X2s)=="try-error")) stop("Check that the numbers of factor variables' levels\nin the selected sample are the same as those in the complete dataset.") 
     ######
     
     gam2$formula <- formula.eq2r  
@@ -193,7 +196,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
        
        formulaTW         <- formula[-c(1,5)]
 
-         gam2TW <- eval(substitute(gamlss(formulaTW, margin = "TW", infl.fac = infl.fac, weights = weights, data = data, subset=inde, knots = knots, drop.unused.levels = drop.unused.levels), list(weights = weights, inde = inde)))
+         gam2TW <- eval(substitute(gamlss(formulaTW, family = "TW", infl.fac = infl.fac, weights = weights, data = data, subset=inde, knots = knots, drop.unused.levels = drop.unused.levels), list(weights = weights, inde = inde)))
     
          y10 <- y2 == 0 
          y1p <- y2  > 0     
@@ -204,7 +207,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
        
       if(l.flist == 2) formulaAUX <- formula[-c(1)] else formulaAUX <- formula[-c(1, l.flist)] 
 
-         gam2AUX <- eval(substitute(gamlss(formulaAUX, margin = margins[2], infl.fac = infl.fac, weights = weights, data = data, subset=inde, knots = knots, drop.unused.levels = drop.unused.levels), list(weights = weights, inde = inde)))
+         gam2AUX <- eval(substitute(gamlss(formulaAUX, family = margins[2], infl.fac = infl.fac, weights = weights, data = data, subset=inde, knots = knots, drop.unused.levels = drop.unused.levels), list(weights = weights, inde = inde)))
          if(l.sp2 != 0) sp2 <- gam2AUX$sp[1:l.sp2]     
     
     }    
@@ -387,7 +390,7 @@ if(missing(parscale)) parscale <- 1
 
   VC <- list(lsgam1 = lsgam1, robust = FALSE, K1 = NULL,
              lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
-             lsgam3 = lsgam3, 
+             lsgam3 = lsgam3, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
              lsgam4 = lsgam4,
              lsgam5 = lsgam5,
              lsgam6 = lsgam6,
@@ -442,7 +445,7 @@ if(missing(parscale)) parscale <- 1
              BivD2 = BivD2, cta = cta, ct = ct, surv.flex = surv.flex, gp2.inf = NULL,
              informative = "no", sp.fixed = NULL,
              zero.tol = 1e-02,
-             min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, y10 = y10, y1p = y1p) 
+             min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, y10 = y10, y1p = y1p, end.surv = FALSE) 
              
   if(gc.l == TRUE) gc()           
              
@@ -538,7 +541,7 @@ L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, mice.formu
           respvec = respvec, inde = inde, 
           qu.mag = qu.mag, 
           sigma2 = SemiParFit.p$sigma2, sigma2.a = SemiParFit.p$sigma2.a,
-          sigma = SemiParFit.p$sigma2, sigma.a = SemiParFit.p$sigma2.a,
+          sigma = SemiParFit.p$sigma, sigma.a = SemiParFit.p$sigma.a,
           nu = SemiParFit.p$nu,     nu.a = SemiParFit.p$nu.a,
           gp1 = gp1, gp2 = gp2, gp3 = gp3, gp4 = gp4, gp5 = gp5, gp6 = gp6, gp7 = gp7, gp8 = gp8, 
           X2s = X2s, 
@@ -546,10 +549,10 @@ L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, mice.formu
           X4s = X4s,
           X5s = X5s,
           p1n=SemiParFit.p$p1n , p2n = SemiParFit.p$p2n, 
-          VC = VC, Model = "B", magpp = SemiParFit$magpp,
+          VC = VC, Model = "B", magpp = SemiParFit$magpp, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
           gamlss = gamlss, Cont = "NO", tau = SemiParFit.p$tau, tau.a = SemiParFit.p$tau.a, 
           l.flist = l.flist, v1 = v1, v2 = v2, triv = FALSE, univar.gamlss = FALSE, BivD2 = BivD2, dof = dof, dof.a = dof, call = cl,
-          surv = FALSE, surv.flex = surv.flex, gam2AUX = gam2AUX)
+          surv = FALSE, surv.flex = surv.flex, gam2AUX = gam2AUX, end.surv = FALSE)
 
 class(L) <- c("copulaSampleSel", "SemiParBIV","gjrm")
 

@@ -68,8 +68,8 @@ if( VC$margins[2] %in% c(bin.link, cont1par) && VC$margins[3] %in% c(bin.link, c
 teta12 <- teta.tr(VC1, VC$X4s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2)])$teta
 teta13 <- teta.tr(VC2, VC$X5s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2)])$teta
 
-ass.msR1 <- ass.ms(VC$BivD1, VC$nCa1, teta12)
-ass.msR2 <- ass.ms(VC$BivD2, VC$nCa2, teta13)
+ass.msR1 <- theta2tau(VC$BivD1, VC$nCa1, teta12)
+ass.msR2 <- theta2tau(VC$BivD2, VC$nCa2, teta13)
 
 }
 
@@ -79,8 +79,8 @@ if( VC$margins[2] %in% c(cont2par) && VC$margins[3] %in% c(cont2par) ){
 teta12 <- teta.tr(VC1, VC$X6s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2)])$teta
 teta13 <- teta.tr(VC2, VC$X7s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2)])$teta
 
-ass.msR1 <- ass.ms(VC$BivD1, VC$nCa1, teta12)
-ass.msR2 <- ass.ms(VC$BivD2, VC$nCa2, teta13)
+ass.msR1 <- theta2tau(VC$BivD1, VC$nCa1, teta12)
+ass.msR2 <- theta2tau(VC$BivD2, VC$nCa2, teta13)
 
 }
 
@@ -90,20 +90,20 @@ if( VC$margins[2] %in% c(cont3par) && VC$margins[3] %in% c(cont3par) ){
 teta12 <- teta.tr(VC1, VC$X8s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 + VC$X8.d2)])$teta
 teta13 <- teta.tr(VC2, VC$X9s%*%SemiParFit$fit$argument[(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 + VC$X8.d2 + 1):(VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 + VC$X8.d2 + VC$X9.d2)])$teta
 
-ass.msR1 <- ass.ms(VC$BivD1, VC$nCa1, teta12)
-ass.msR2 <- ass.ms(VC$BivD2, VC$nCa2, teta13)
+ass.msR1 <- theta2tau(VC$BivD1, VC$nCa1, teta12)
+ass.msR2 <- theta2tau(VC$BivD2, VC$nCa2, teta13)
 
 }
  
 theta12   <- ass.msR1$theta
 theta12.a <- ass.msR1$theta.a
-tau12     <- ass.msR1$tau  
-tau12.a   <- ass.msR1$tau.a
+#tau12     <- ass.msR1$tau  
+#tau12.a   <- ass.msR1$tau.a
 
 theta13   <- ass.msR2$theta
 theta13.a <- ass.msR2$theta.a
-tau13     <- ass.msR2$tau  
-tau13.a   <- ass.msR2$tau.a
+#tau13     <- ass.msR2$tau  
+#tau13.a   <- ass.msR2$tau.a
 
 ######################
 
@@ -115,7 +115,32 @@ edf  <- edf.loopR$edf
 edf1 <- edf.loopR$edf1 
   
 sp <- SemiParFit$sp 
-  
+
+
+if(!is.null(theta12.a)) names(theta12.a) <- "theta12.a"
+if(!is.null(theta13.a)) names(theta13.a) <- "theta13.a"
+if(!is.null(sigma2.a))  names(sigma2.a)  <- "sigma2.a"
+if(!is.null(sigma3.a))  names(sigma3.a)  <- "sigma3.a"
+if(!is.null(nu2.a))     names(nu2.a)     <- "nu2.a"
+if(!is.null(nu3.a))     names(nu3.a)     <- "nu3.a"
+
+
+if(!is.null(theta12)  && length(theta12) == 1) names(theta12)  <- "theta12"
+if(!is.null(theta13)  && length(theta13) == 1) names(theta13)  <- "theta13"
+if(!is.null(sigma2 )  && length(sigma2 ) == 1) names(sigma2 )  <- "sigma2"
+if(!is.null(sigma3 )  && length(sigma3 ) == 1) names(sigma3 )  <- "sigma3"
+if(!is.null(nu2    )  && length(nu2    ) == 1) names(nu2    )  <- "nu2"
+if(!is.null(nu3    )  && length(nu3    ) == 1) names(nu3    )  <- "nu3"
+
+
+if(!is.null(theta12) && length(theta12) > 1){ theta12 <- as.matrix(theta12); dimnames(theta12)[[1]] <- dimnames(VC$X1)[[1]]; dimnames(theta12)[[2]] <- "theta12"}
+if(!is.null(theta13) && length(theta13) > 1){ theta13 <- as.matrix(theta13); dimnames(theta13)[[1]] <- dimnames(VC$X1)[[1]]; dimnames(theta13)[[2]] <- "theta13"}
+if(!is.null(sigma2 ) && length(sigma2 ) > 1){ sigma2  <- as.matrix(sigma2 ); dimnames(sigma2 )[[1]] <- dimnames(VC$X1)[[1]]; dimnames(sigma2 )[[2]] <- "sigma2" }
+if(!is.null(sigma3 ) && length(sigma3 ) > 1){ sigma3  <- as.matrix(sigma3 ); dimnames(sigma3 )[[1]] <- dimnames(VC$X1)[[1]]; dimnames(sigma3 )[[2]] <- "sigma3" }
+if(!is.null(nu2    ) && length(nu2    ) > 1){ nu2     <- as.matrix(nu2    ); dimnames(nu2    )[[1]] <- dimnames(VC$X1)[[1]]; dimnames(nu2    )[[2]] <- "nu2"    }
+if(!is.null(nu3    ) && length(nu3    ) > 1){ nu3     <- as.matrix(nu3    ); dimnames(nu3    )[[1]] <- dimnames(VC$X1)[[1]]; dimnames(nu3    )[[2]] <- "nu3"    }
+
+
 
                  list(SemiParFit = SemiParFit, He = He, logLik = logLik, Vb = Vb, HeSh = HeSh, F = F, F1 = F1, t.edf = t.edf, edf = edf, Vb.t = Vb.t,
                       edf11 = edf1,
@@ -126,7 +151,7 @@ sp <- SemiParFit$sp
                       theta12 = theta12, theta12.a = theta12.a, theta13 = theta13, theta13.a = theta13.a,
                       sigma2 = sigma2, sigma2.a = sigma2.a, sigma3 = sigma3, sigma3.a = sigma3.a,
                       nu2 = nu2, nu2.a = nu2.a, nu3 = nu3, nu3.a = nu3.a, 
-                      tau12 = tau12, tau12.a= tau12.a, tau13 = tau13, tau13.a = tau13.a,
+                      #tau12 = tau12, tau12.a= tau12.a, tau13 = tau13, tau13.a = tau13.a,
                       sp = sp, R = R, Ve = Ve, 
                       dof12.a = VC$dof1, dof12 = VC$dof1, dof13.a = VC$dof2, dof13 = VC$dof2, nCa1 = nCa1, nCa2 = nCa2) 
 

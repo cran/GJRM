@@ -22,7 +22,7 @@ if(rlo > 1) lo <- round(lo*rlo)
 
 
 if( margin %in% c("N","N2","GU","rGU","LO","LN") )                            seq.y <- seq(min(x$VC$y1) - ((max(x$VC$y1) - min(x$VC$y1))/2), max(x$VC$y1) + ((max(x$VC$y1) - min(x$VC$y1))/2), length.out = lo)
-if( margin %in% c("WEI","iG","GA","DAGUM","SM","FISK","GP","GPII","GPo")  )   seq.y <- seq(1e-12, max(x$VC$y1) + ((max(x$VC$y1) - min(x$VC$y1))/2), length.out = lo)
+if( margin %in% c("WEI","IG","GA","DAGUM","SM","FISK","GP","GPII","GPo")  )   seq.y <- seq(1e-12, max(x$VC$y1) + ((max(x$VC$y1) - min(x$VC$y1))/2), length.out = lo)
 if( margin %in% c("TW")  )                                                    seq.y <- seq(0, max(x$VC$y1) + ((max(x$VC$y1) - min(x$VC$y1))/2), length.out = lo)
 if( margin %in% c("BE")  )                                                    seq.y <- seq(1e-12, 0.999999,  length.out = lo)      
 
@@ -83,7 +83,7 @@ if((is.null(posi) || length(posi) < 2) && margin %in% c("N","N2","GU","rGU","LO"
 
 
 
-if((is.null(posi) || length(posi) < 2) && margin %in% c("WEI","iG","GA","DAGUM","TW","SM","FISK","GP","GPII","GPo") ){
+if((is.null(posi) || length(posi) < 2) && margin %in% c("WEI","IG","GA","DAGUM","TW","SM","FISK","GP","GPII","GPo") ){
 
 
 posi <- NULL; j <- 1

@@ -1,11 +1,14 @@
-jc.probs3 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr){
+jc.probs3 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr, tau.res = FALSE){
 
 
 #############################################################################################
 
 nu1 <- nu2 <- nu <- sigma2 <- 1
-CIp12 <- dof <- p12s <- CIkt <- tau <- NULL
+CIp12 <- dof <- p12s <- CIkt <- tau <- theta <- CItheta <- NULL
 dof <- x$dof
+
+p12s  <- matrix(0, 1, 2) 
+
 #############################################################################################
 #############################################################################################
 
@@ -104,9 +107,12 @@ if(y1 == 0 && y2 == 0){
 
 # kendalls' tau
 
-if(x$BivD %in% x$BivD2)    {x$SemiParFit <- x; tau <- Reg2Copost(x$SemiParFit, x$VC, theta)$tau } 
-if(!(x$BivD %in% x$BivD2)) tau <- ass.ms(x$VC$BivD, x$VC$nCa, theta)$tau
+if(x$BivD %in% x$BivD2 && tau.res == TRUE)    {x$SemiParFit <- x; tau <- Reg2Copost(x$SemiParFit, x$VC, theta, tau.res = tau.res)$tau} 
+if(!(x$BivD %in% x$BivD2) && tau.res == TRUE) tau <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = tau.res)$tau
 
+if(x$BivD %in% x$BivD2)    {x$SemiParFit <- x; theta <- Reg2Copost(x$SemiParFit, x$VC, theta, tau.res = FALSE)$theta} 
+if(!(x$BivD %in% x$BivD2)) theta <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = FALSE)$theta
+     
 
 ####
 
@@ -155,14 +161,12 @@ est.RHOb <- teta.tr(x$VC, epds)$teta
 
 if(x$Model == "BPO0") est.RHOb <- rep(0, n.sim )
   
-if( is.null(x$X3) ) est.RHOb <- matrix(rep(est.RHOb, each = dim(p1s)[1]), ncol = n.sim, byrow=FALSE)
 
 
 #############
 
-if(x$VC$BivD %in% c("N","T")) p12s <- matrix(mm(BiCDF(p1s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim) else{
 
-if(!(x$BivD %in% x$BivD2)) p12s <- matrix(mm(BiCDF(p1s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)) p12s <- mm(BiCDF(p1s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
 
 if(x$BivD %in% x$BivD2){
 
@@ -171,13 +175,13 @@ p12s <- matrix(NA, ncol = n.sim, nrow = dim(p1s)[1])
 if( length(x$teta1) != 0) p12s[x$teta.ind1,] <- mm(BiCDF(p1s[x$teta.ind1,], p2s[x$teta.ind1,], nC1,  est.RHOb[x$teta.ind1,]), min.pr = min.pr, max.pr = max.pr  )                
 if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- mm(BiCDF(p1s[x$teta.ind2,], p2s[x$teta.ind2,], nC2, -est.RHOb[x$teta.ind2,]), min.pr = min.pr, max.pr = max.pr  )
                       
-}
+                        }
 
 
 
 
 
-}
+
 
 
 
@@ -232,14 +236,24 @@ BivDt <- x$VC$BivD
   
                          }
   
-ass.msR <- ass.ms(BivDt, nCa, est.RHOb)
-taus    <- ass.msR$tau
-if(!is.null(x$X3) && BivDt %in% c("AMH", "FGM")) taus <- matrix(taus, nrow(x$X3), nrow(bs))
-CIkt <- rowQuantiles(taus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+ass.msR <- theta2tau(BivDt, nCa, est.RHOb, tau.res = tau.res)
+if(tau.res == TRUE) taus <- ass.msR$tau
+thetas <- ass.msR$theta
+
+
+                                                  
+if(tau.res == TRUE){taus <- matrix(taus, 1, n.sim); CIkt <- rowQuantiles(taus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)}
+
+
+thetas <- matrix(thetas, 1, n.sim)
+CItheta <- rowQuantiles(thetas, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+
+
+
 #if( is.null(x$X3) ) CIkt <- t(CIkt) 
 
 
-
+if(tau.res == TRUE){
  if(x$BivD %in% x$BivD2){ 
  
    if(length(x$theta) > 1){
@@ -252,8 +266,21 @@ CIkt <- rowQuantiles(taus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
                                  
                                 }
  }
+}
 
 
+ if(x$BivD %in% x$BivD2){ 
+ 
+   if(length(x$theta) > 1){
+ 
+     if( length(x$teta2) != 0) CItheta[x$teta.ind2, ] <- -CItheta[x$teta.ind2, ]; CItheta[x$teta.ind2, c(1,2)] <- CItheta[x$teta.ind2, c(2,1)] 
+                                 
+                          }else{
+ 
+     if( length(x$teta2) != 0) CItheta <- -CItheta; CItheta[, c(1,2)] <- CItheta[, c(2,1)]
+                                 
+                                }
+ }
 
 
 
@@ -406,7 +433,7 @@ if(y1 == 0 && y2 == 0){
     
   
 
-list(p12 = p12, p12s = p12s, p1 = p1, p2 = p2, p3 = NULL, CIkt = CIkt, tau = tau)
+list(p12 = p12, p12s = matrix(p12s, 1, length(p12s)), p1 = p1, p2 = p2, p3 = NULL, CItau = CIkt, tau = tau, CItheta = CItheta, theta = theta)
 
 
 

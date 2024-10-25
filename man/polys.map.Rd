@@ -5,7 +5,7 @@
 
 \usage{
 
-polys.map(lm, z, scheme = "gray", lab = "", zlim, rev.col = TRUE, ...)
+polys.map(lm, z, scheme = "gray", lab = "", zlim, rev.col = FALSE, ...)
 
 
 
@@ -25,7 +25,7 @@ polys.map(lm, z, scheme = "gray", lab = "", zlim, rev.col = TRUE, ...)
   
   \item{zlim}{If missing then the range of z will be chosen using \code{pretty(z)} otherwise the range provided will be used.}  
    
-  \item{rev.col}{If \code{FALSE} then coloring scheme is not reversed.}  
+  \item{rev.col}{If \code{TRUE} then coloring scheme is reversed.}  
    
   \item{...}{other arguments to pass to plot.}
 

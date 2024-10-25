@@ -13,14 +13,13 @@ effects, copula and marginal distributions.
 
 \usage{
 gjrm(formula, data = list(), weights = NULL, subset = NULL,  
-     copula = "N", copula2 = "N", margins, model, dof = 3, dof2 = 3, ordinal = FALSE,  
-     surv = FALSE, cens1 = NULL, cens2 = NULL, cens3 = NULL, dep.cens = FALSE,
-     upperBt1 = NULL, upperBt2 = NULL,   
-     gamlssfit = FALSE, fp = FALSE, infl.fac = 1, 
-     rinit = 1, rmax = 100, 
-     iterlimsp = 50, tolsp = 1e-07,
-     gc.l = FALSE, parscale, extra.regI = "t",
-     k1.tvc = 0, k2.tvc = 0, knots = NULL,
+     offset1 = NULL, offset2 = NULL,
+     copula = "N", copula2 = "N", margins, model, dof = 3, dof2 = 3,  
+     cens1 = NULL, cens2 = NULL, cens3 = NULL, dep.cens = FALSE,
+     ub.t1 = NULL, ub.t2 = NULL, left.trunc1 = 0, left.trunc2 = 0,  
+     uni.fit = FALSE, fp = FALSE, infl.fac = 1, 
+     rinit = 1, rmax = 100, iterlimsp = 50, tolsp = 1e-07,
+     gc.l = FALSE, parscale, knots = NULL,
      penCor = "unpen", sp.penCor = 3, 
      Chol = FALSE, gamma = 1, w.alasso = NULL,
      drop.unused.levels = TRUE, 
@@ -43,12 +42,13 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
                   the second to the continuous/discrete one. When one outcome is discrete and the other continuous 
                   then the first equation has to be the discrete one.} 
 
-\item{data}{An optional data frame, list or environment containing the variables in the model.  If not found in \code{data}, the
-            variables are taken from \code{environment(formula)}, typically the environment from which \code{gjrm} is called.} 
+\item{data}{A data frame.} 
 
 \item{weights}{Optional vector of prior weights to be used in fitting.} 
 
 \item{subset}{Optional vector specifying a subset of observations to be used in the fitting process.}
+
+\item{offset1, offset2}{They can be used to supply model offsets for use in fitting. These have been introduced for dealing with offsets in the case of discrete marginal distributions.}
 
 \item{copula}{Type of bivariate error distribution employed. Possible choices are "N", "C0", "C90", "C180", "C270", "GAL0", "GAL90", "GAL180", "GAL270", "J0", "J90", "J180", "J270", 
             "G0", "G90", "G180", "G270", "F", "AMH", "FGM", "T", "PL", "HO" which stand for bivariate normal, Clayton, rotated Clayton (90 degrees), 
@@ -63,20 +63,24 @@ family. The options are: "C0C90", "C0C270", "C180C90", "C180C270",  "GAL0GAL90",
 
 \item{copula2}{As above but used only for Roy models.}
 
-\item{margins}{It indicates the distributions used for the two or three margins. Possible distributions are normal ("N"), Tweedie ("TW"), 
-               log-normal ("LN"), Gumbel ("GU"), reverse Gumbel ("rGU"), generelised Pareto ("GP"), 
+\item{margins}{It indicates the distributions used for margins. Possible distributions are normal ("N"), Tweedie ("TW"), 
+               log-normal ("LN"), Gumbel ("GU"), reverse Gumbel ("rGU"), logistic ("LO"), Weibull ("WEI"), Inverse Gaussian ("IG"), gamma ("GA"), Dagum ("DAGUM"), 
+               Singh-Maddala ("SM"), beta ("BE"), Fisk ("FISK", also known as log-logistic distribution), Poisson ("P"), truncated 
+               Poisson ("tP"), negative binomial - type I ("NBI"), negative 
+               binomial - type II ("NBII"), Poisson inverse Gaussian ("PIG"), truncated negative binomial - type I ("tNBI"), truncated negative 
+               binomial - type II ("tNBII"), truncated Poisson inverse Gaussian ("tPIG"). If the responses are binary then
+               possible link functions are "probit", "logit", "cloglog". For survival models, the margins can be "-cloglog" (similar to generalised proportional 
+               hazards), "-logit" (similar to generalised proportional odds), "-probit" (generalised probit). For ordinal marginals, the choices are "ord.probit" and
+               "ord.logit". For extreme value models, there are also options we are working on, which are already implemented in the univariate 
+               gamlss() function. These are the generelised Pareto ("GP"), 
                generelised Pareto II ("GPII") where the shape parameter is forced to be > -0.5,
                generelised Pareto (with orthogonal parametrisation) ("GPo") where the shape parameter is forced to be > -0.5,
                discrete generelised Pareto ("DGP"), 
                discrete generelised Pareto II ("DGPII") where the shape parameter is forced to be positive, discrete generelised Pareto derived
-               under the scenario in which shape = 0 ("DGP0"), logistic ("LO"), Weibull ("WEI"), inverse Gaussian ("iG"), gamma ("GA"), Dagum ("DAGUM"), 
-               Singh-Maddala ("SM"), beta ("BE"), Fisk ("FISK", also known as log-logistic distribution), Poisson ("PO"), zero truncated 
-               Poisson ("ZTP"), negative binomial - type I ("NBI"), negative 
-               binomial - type II ("NBII"), Poisson inverse Gaussian ("PIG"). If the responses are binary then
-               possible link functions are "probit", "logit", "cloglog". For survival models, the margins can be proportional hazars ("PH"), odds ("PO")
-               or "probit".}
+               under the scenario in which shape = 0 ("DGP0"). Regarding the Tweedie, this margin can currently only be used together with a binary margin; we
+               are working on the discrete/continuous margin extension.}
 
-\item{model}{Possible values are "B" (bivariate model), "T" (trivariate model) 
+\item{model}{Possible values are "B" (bivariate model), "T" (trivariate model), 
              "BSS" (bivariate model with non-random sample selection), "TSS" (trivariate model with double non-random sample selection),
              "TESS" (trivariate model with endogeneity and non-random sample selection),
              "BPO" (bivariate model with partial observability)
@@ -90,25 +94,23 @@ family. The options are: "C0C90", "C0C270", "C180C90", "C180C270",  "GAL0GAL90",
                  
 \item{dof2}{As above but used only for Roy models.} 
  
-\item{ordinal}{If \code{TRUE} then the ordinal model is employed.}    
- 
- 
-\item{surv}{If \code{TRUE} then a bivariate survival model is fitted.}    
-
-\item{cens1}{Censoring indicator for the first equation. This is required when \code{surv = TRUE}. For the case of right censored data only, this variable can be equal to 1 if the event occurred 
+\item{cens1}{Censoring indicator for the first equation. For the case of right censored data only, this variable can be equal to 1 if the event occurred 
             and 0 otherwise. However, if there are several censoring mechanisms then \code{cens} will have to be specified as a factor 
             variable made up of four possible categories: \code{I} for interval, \code{L} for left, \code{R} for right, and \code{U} for uncensored.}
 
 \item{cens2}{Same as above but for the second equation.}
 
 
-\item{cens3}{Binary censoring indicator employed only when \code{surv = TRUE}, \code{dep.cens = TRUE} and administrative censoring is present.}
+\item{cens3}{Binary censoring indicator employed only when \code{dep.cens = TRUE} and administrative censoring is present.}
 
 \item{dep.cens}{If TRUE then the dependence censored model is employed.} 
 
-\item{upperBt1, upperBt2}{Variable names of right/upper bounds when interval censoring is present.}
+\item{ub.t1, ub.t2}{Variable names of right/upper bounds when interval censoring is present.}
 
-\item{gamlssfit}{If \code{gamlssfit = TRUE} then gamlss univariate models are also fitted. This is useful for obtaining 
+\item{left.trunc1, left.trunc2}{Values of truncation at left. Currently done for count distributions only.}
+
+
+\item{uni.fit}{If \code{uni.fit = TRUE} then gamlss or gam univariate models are also fitted. This is useful for obtaining 
                  starting values, for instance.}               
 
 
@@ -134,13 +136,7 @@ usually done. This keeps the memory footprint down but it will slow down the rou
 \item{parscale}{The algorithm will operate as if optimizing objfun(x / parscale, ...) where parscale is a scalar. If missing then no 
 rescaling is done. See the 
 documentation of \code{trust} for more details.}    
-
-\item{extra.regI}{If "t" then regularization as from \code{trust} is applied to the information matrix if needed. 
-                  If different from "t" then extra regularization is applied via the options "pC" (pivoted Choleski - this
-                  will only work when the information matrix is semi-positive or positive definite) and "sED" (symmetric eigen-decomposition).}  
      
-\item{k1.tvc, k2.tvc}{Experimental. Only used for tvc ps smoothers when using survival models.}  
- 
 \item{knots}{Optional list containing user specified knot values to be used for basis construction.}
   
 
@@ -235,13 +231,12 @@ the score and information matrix associated with the fitted model. The former sh
 
 Convergence failure may sometimes occur. This is not necessarily a bad thing as it may indicate specific problems 
 with a fitted model.
-In such a situation, the user may use some extra regularisation (see \code{extra.regI}) and/or
-rescaling (see \code{parscale}). Using \code{gamlssfit = TRUE} is typically more effective than the first two options as
+In such a situation, the user may use rescaling (see \code{parscale}). Using \code{uni.fit = TRUE} is typically more effective than the first two options as
 this will provide better calibrated starting values as compared to those obtained from the default starting value procedure.
-The default option is, however, \code{gamlssfit = FALSE} only because it tends to be computationally cheaper and because the 
+The default option is, however, \code{uni.fit = FALSE} only because it tends to be computationally cheaper and because the 
 default procedure has typically been found to do a satisfactory job in most cases. 
 (The results obtained when using 
-\code{gamlssfit = FALSE} and \code{gamlssfit = TRUE} could also be compared to check if starting values make any difference.)
+\code{uni.fit = FALSE} and \code{uni.fit = TRUE} could also be compared to check if starting values make any difference.)
 
 The above suggestions may help, especially the latter option. However, the user should also consider
 re-specifying/simplifying the model, and/or using a diferrent dependence structure and/or checking that the chosen marginal 
@@ -276,16 +271,12 @@ areas, for instance. In any case, a clear rationale is typically needed in such 
 library(GJRM)
 
 ####################################
-####################################
-####################################
 # JOINT MODELS WITH BINARY MARGINS #
 ####################################
-####################################
-####################################
 
-############
-## Example 1
-############
+###############
+## EXAMPLE 1 ##
+
 
 set.seed(0)
 
@@ -331,22 +322,10 @@ summary(out)
 AIC(out)
 
 
-## estimated smooth function plots - red lines are true curves
+## estimated smooth function plots
 
-x2 <- sort(x2)
-f1.x2 <- f1(x2)[order(x2)] - mean(f1(x2))
-f2.x2 <- f2(x2)[order(x2)] - mean(f2(x2))
-f3.x3 <- rep(0, length(x3))
-
-par(mfrow=c(2,2),mar=c(4.5,4.5,2,2))
-plot(out, eq = 1, select = 1, seWithMean = TRUE, scale = 0)
-lines(x2, f1.x2, col = "red")
-plot(out, eq = 1, select = 2, seWithMean = TRUE, scale = 0)
-lines(x3, f3.x3, col = "red")
-plot(out, eq = 2, select = 1, seWithMean = TRUE, scale = 0)
-lines(x2, f2.x2, col = "red")
-plot(out, eq = 2, select = 2, seWithMean = TRUE, scale = 0)
-lines(x3, f3.x3, col = "red")
+plot(out, eq = 1, pages = 1, seWithMean = TRUE, scale = 0)
+plot(out, eq = 2, pages = 1, seWithMean = TRUE, scale = 0)
 
 
 ## BIVARIATE PROBIT with Splines and 
@@ -371,11 +350,12 @@ plot(outD, eq = 2, seWithMean = TRUE)
 plot(outD, eq = 3, seWithMean = TRUE)
 graphics.off()
 
-############
-## Example 2
-############
+
+###############
+## EXAMPLE 2 ##
+
 ## Generate data with one endogenous variable 
-## and exclusion restriction
+## and exclusion restriction (or instrument)
 
 set.seed(0)
 
@@ -408,8 +388,7 @@ LM.bpm(list(y1 ~ x1 + s(x2), y2 ~ y1 + s(x2)), dataSim, model = "B")
 out <- gjrm(list(y1 ~ x1 + x2, 
                  y2 ~ y1 + x2), 
                  data = dataSim,
-                 margins = c("probit", "probit"),
-                 model = "B")
+                 margins = c("probit", "probit"), model = "B")
 conv.check(out)                        
 summary(out)
 AIC(out); BIC(out)
@@ -431,15 +410,14 @@ AIC(out); BIC(out)
 gt.bpm(out)
 
 #
-## treatment effect, risk ratio and odds ratio with CIs
+## Causal effects
+## average treatment effect, risk ratio and odds ratio with CIs 
 
 mb(y1, y2, model = "B")
-AT(out, nm.end = "y1", hd.plot = TRUE) 
-RR(out, nm.end = "y1") 
-OR(out, nm.end = "y1") 
-AT(out, nm.end = "y1", type = "univariate") 
-re.imp <- imputeCounter(out, m = 10, "y1")
-re.imp$AT
+ATE(out, trt = "y1") 
+RR(out, trt = "y1") 
+OR(out, trt = "y1") 
+ATE(out, trt = "y1", joint = FALSE) 
 
 ## try a Clayton copula model... 
 
@@ -450,9 +428,7 @@ outC <- gjrm(list(y1 ~ x1 + s(x2),
                   model = "B")
 conv.check(outC)                         
 summary(outC)
-AT(outC, nm.end = "y1") 
-re.imp <- imputeCounter(outC, m = 10, "y1")
-re.imp$AT
+ATE(outC, trt = "y1") 
 
 ## try a Joe copula model... 
 
@@ -463,9 +439,7 @@ outJ <- gjrm(list(y1 ~ x1 + s(x2),
                   model = "B")
 conv.check(outJ)
 summary(outJ)
-AT(outJ, "y1") 
-re.imp <- imputeCounter(outJ, m = 10, "y1")
-re.imp$AT
+ATE(outJ, "y1") 
 
 VuongClarke(out, outJ)
 
@@ -484,14 +458,9 @@ summary(outFP)
 # in the above examples a third equation could be introduced
 # as illustrated in Example 1
 
-#
-#################
-## See also ?meps
-#################
+###############
+## EXAMPLE 3 ##
 
-############
-## Example 3
-############
 ## Generate data with a non-random sample selection mechanism 
 ## and exclusion restriction
 
@@ -522,7 +491,7 @@ dataSim <- data.frame(y, ys, yo, bi, x1, x2)
 
 LM.bpm(list(ys ~ bi + s(x1) + s(x2), yo ~ bi + s(x1)), dataSim, model = "BSS")
 
-# p-value suggests presence of sample selection, hence fit a bivariate model
+# p-value suggests presence of sample selection
 
 #
 ## SEMIPARAMETRIC SAMPLE SELECTION BIVARIATE PROBIT
@@ -535,7 +504,7 @@ out <- gjrm(list(ys ~ bi + s(x1) + s(x2),
 conv.check(out)                          
 gt.bpm(out)                        
 
-## compare the two summary outputs
+## compare the two summary outputs below
 ## the second output produces a summary of the results obtained when
 ## selection bias is not accounted for
 
@@ -545,8 +514,8 @@ summary(out$gam2)
 ## corrected predicted probability that 'yo' is equal to 1
 
 mb(ys, yo, model = "BSS")
-prev(out, hd.plot = TRUE)
-prev(out, type = "univariate", hd.plot = TRUE)
+prev(out)
+prev(out, joint = FALSE)
 
 ## estimated smooth function plots
 ## the red line is the true curve
@@ -572,39 +541,18 @@ conv.check(outC)
 summary(outC)
 prev(outC)
 
-
-#######################
-# Impute using Mice
-#######################
-
-library(mice)
-
-ys <- dataSim$ys
-
-dataSim$yo[dataSim$ys == FALSE] <- NA  
-dataSim <- dataSim[, -c(1:2)]
-
-imp <- mice(dataSim, m = 1, method = c("copulaSS", "", "", ""),  
-            mice.formula = outC$mice.formula, margins = outC$margins, 
-            copula = outC$BivD, maxit = 1)
-
-comp.yo <- dataSim$yo
-comp.yo[ys == 0] <- imp$imp$yo[[1]]
-mean(comp.yo)
-
-#
 ################
 ## See also ?hiv
 ################
 
-############
-## Example 4
-############
+###############
+## EXAMPLE 4 ##
+
 ## Generate data with partial observability
 
 set.seed(0)
 
-n <- 10000
+n <- 1000
 
 Sigma <- matrix(0.5, 2, 2); diag(Sigma) <- 1
 u     <- rMVN(n, rep(0,2), Sigma)
@@ -633,7 +581,6 @@ cbind(out$p11, out$p10, out$p00, out$p01)[1:10,]
 
 
 # case with smooth function 
-# (more computationally intensive)  
 
 f1 <- function(x) cos(pi*2*x) + sin(pi*x)
 
@@ -651,32 +598,20 @@ out  <- gjrm(list(y ~ x1 + s(x2),
 conv.check(out)
 summary(out)
 
+plot(out, eq = 1, scale = 0)
 
-# plot estimated and true functions
 
-x2 <- sort(x2); f1.x2 <- f1(x2)[order(x2)] - mean(f1(x2))
-plot(out, eq = 1, scale = 0); lines(x2, f1.x2, col = "red")
-
-#
 ################
 ## See also ?war
 ################
-}
 
-\dontrun{
-
-######################################################
-######################################################
 ######################################################
 # JOINT MODELS WITH BINARY AND/OR CONTINUOUS MARGINS #
 ######################################################
-######################################################
-######################################################
 
-library(GJRM)
+###############
+## EXAMPLE 5 ##
 
-############
-## Example 5
 ## Generate data
 ## Correlation between the two equations 0.5 - Sample size 400 
 
@@ -715,15 +650,17 @@ out  <- gjrm(fl, data = dataSim, margins = c("N", "N"),
              model = "B")
 
 conv.check(out)
-post.check(out)
+res.check(out)
 summary(out)
 AIC(out)
 BIC(out)
-copula.prob(out, 1.4, 2.3, intervals = TRUE)[1:4,]
 
-############
-## Example 6
-############
+nd <- data.frame(x1 = 1, x2 = 0.4, x3 = 0.6)
+copula.prob(out, y1 = 1.4, y2 = 2.3, newdata = nd, intervals = TRUE)
+
+###############
+## EXAMPLE 6 ##
+
 ## Generate data with one endogenous binary variable 
 ## and continuous outcome
 
@@ -758,7 +695,7 @@ out <- gjrm(list(y1 ~ x1 + x2,
                  model = "B")
 conv.check(out)                        
 summary(out)
-post.check(out)
+res.check(out)
 
 ## SEMIPARAMETRIC RECURSIVE Model
 
@@ -770,21 +707,20 @@ eq.theta  <-    ~ 1
 fl <- list(eq.mu.1, eq.mu.2, eq.sigma, eq.theta)
 
 out <- gjrm(fl, data = dataSim, 
-            margins = c("probit","N"), gamlssfit = TRUE,
+            margins = c("probit","N"), uni.fit = TRUE,
             model = "B")
 conv.check(out)                        
 summary(out)
-post.check(out)
-copula.prob(out, 1, 1.5, intervals = TRUE)[1:4,]
-AT(out, nm.end = "y1")
-AT(out, nm.end = "y1", type = "univariate")
+res.check(out)
+ATE(out, trt = "y1")
+ATE(out, trt = "y1", joint = FALSE)
 
 #
 #
 
-############
-## Example 7
-############
+###############
+## EXAMPLE 7 ##
+
 ## Generate data with one endogenous continuous exposure 
 ## and binary outcome
 
@@ -819,22 +755,20 @@ out <- gjrm(fl, data = dataSim,
             model = "B")
 conv.check(out)                        
 summary(out)
-post.check(out)
-AT(out, nm.end = "y1")
-AT(out, nm.end = "y1", type = "univariate")
-RR(out, nm.end = "y1", rr.plot = TRUE)
-RR(out, nm.end = "y1", type = "univariate")
-OR(out, nm.end = "y1", or.plot = TRUE)
-OR(out, nm.end = "y1", type = "univariate")
+res.check(out)
+ATE(out, trt = "y1")
+ATE(out, trt = "y1", joint = FALSE)
+RR(out, trt = "y1")
+RR(out, trt = "y1", joint = FALSE)
+OR(out, trt = "y1")
+OR(out, trt = "y1", joint = FALSE)
 
 #
 #
 
-############
-## Example 8
-##################
-## Survival models
-##################
+#####################
+## EXAMPLE 8       ##
+## SURVIVAL MODELS ##
 
 set.seed(0)
 
@@ -896,14 +830,14 @@ eq1 <- u1 ~ s(log(u1), bs = "mpi") + z1 + s(z2)
 eq2 <- u2 ~ s(log(u2), bs = "mpi") + z 
 eq3 <-    ~ s(z2)
 
-out <- gjrm(list(eq1, eq2), data = dataSim, surv = TRUE,
-            margins = c("PH", "PO"), 
+out <- gjrm(list(eq1, eq2), data = dataSim,
+            margins = c("-cloglog", "-logit"), 
             cens1 = delta1, cens2 = delta2, model = "B")
                  
 # PH margin fit can also be compared with cox.ph from mgcv
                  
 conv.check(out)
-res <- post.check(out)
+res <- res.check(out)
 
 ## martingale residuals
 mr1 <- out$cens1 - res$qr1
@@ -929,18 +863,16 @@ AIC(out); BIC(out)
 plot(out, eq = 1, scale = 0, pages = 1)
 plot(out, eq = 2, scale = 0, pages = 1)
 
-hazsurv(out, eq = 1, newdata = data.frame(z1 = 0, z2 = 0), 
+haz.surv(out, eq = 1, newdata = data.frame(z1 = 0, z2 = 0), 
         shade = TRUE, n.sim = 100, baseline = TRUE)
-hazsurv(out, eq = 1, newdata = data.frame(z1 = 0, z2 = 0), 
-        shade = TRUE, n.sim = 100, type = "hazard", baseline = TRUE, 
+haz.surv(out, eq = 1, newdata = data.frame(z1 = 0, z2 = 0), 
+        shade = TRUE, n.sim = 100, type = "haz", baseline = TRUE, 
              intervals = FALSE)
-hazsurv(out, eq = 2, newdata = data.frame(z = 0), 
+haz.surv(out, eq = 2, newdata = data.frame(z = 0), 
         shade = FALSE, n.sim = 100, baseline = TRUE)
-hazsurv(out, eq = 2, newdata = data.frame(z = 0), 
-        shade = TRUE, n.sim = 100, type = "hazard", baseline = TRUE)
- 
-copula.prob(out, intervals = TRUE)[1:5,]
- 
+haz.surv(out, eq = 2, newdata = data.frame(z = 0), 
+        shade = TRUE, n.sim = 100, type = "haz", baseline = TRUE)
+  
 newd0 <- newd1 <- data.frame(z = 0, z1 = mean(dataSim$z1), 
                              z2 = mean(dataSim$z2), 
                              u1 =  mean(dataSim$u1) + 1, 
@@ -950,16 +882,16 @@ newd1$z <- 1
 copula.prob(out, newdata = newd0, intervals = TRUE)
 copula.prob(out, newdata = newd1, intervals = TRUE)
 
-out1 <- gjrm(list(eq1, eq2, eq3), data = dataSim, surv = TRUE,
-                  margins = c("PH", "PO"), 
-                  cens1 = delta1, cens2 = delta2, gamlssfit = TRUE,
+out1 <- gjrm(list(eq1, eq2, eq3), data = dataSim,
+                  margins = c("-cloglog", "-logit"), 
+                  cens1 = delta1, cens2 = delta2, uni.fit = TRUE,
                   model = "B") 
   
                   
-#########################################
+####################################################
 ## Joint continuous and survival outcomes
-#########################################  
-# work in progress
+####################################################  
+# this is complete, just testing, get in touch if interested
 #
 # eq1 <- z2 ~ z1
 # eq2 <- u2 ~ s(u2, bs = "mpi") + z  
@@ -968,13 +900,13 @@ out1 <- gjrm(list(eq1, eq2, eq3), data = dataSim, surv = TRUE,
 #                   
 # f.l <- list(eq1, eq2, eq3, eq4)                  
 #   
-# out3 <- gjrm(f.l, data = dataSim, surv = TRUE,
-#                   margins = c("N", "PO"), 
+# out3 <- gjrm(f.l, data = dataSim,
+#                   margins = c("N", "-logit"), 
 #                   cens1 = NULL, cens2 = delta2, 
-#                   gamlssfit = TRUE, model = "B")   
+#                   uni.fit = TRUE, model = "B")   
 # 
 # conv.check(out3)
-# post.check(out3)
+# res.check(out3)
 # summary(out3)
 # AIC(out3); BIC(out3)
 # plot(out3, eq = 2, scale = 0, pages = 1)
@@ -986,23 +918,14 @@ out1 <- gjrm(list(eq1, eq2, eq3), data = dataSim, surv = TRUE,
 #                              u2 =  mean(dataSim$u2) + 1) 
 # 
 # copula.prob(out3, y1 = 0.6, newdata = newd, intervals = TRUE)                
-}
 
-\dontrun{ 
-
-##########################################
-##########################################
 ##########################################
 # JOINT MODELS WITH THREE BINARY MARGINS #
 ##########################################
-##########################################
-##########################################
 
-library(GJRM)
+###############
+## EXAMPLE 9 ##
 
-############
-## Example 9
-############
 ## Generate data
 ## Correlation between the two equations 0.5 - Sample size 400 
 
@@ -1027,11 +950,11 @@ dataSim <- data.frame(y1, y2, y3, x1, x2)
 f.l <- list(y1 ~ x1 + s(x2), 
             y2 ~ x1 + s(x2),
             y3 ~ x1)  
+            
+margs <- c("probit", "probit", "probit") 
 
-out  <- gjrm(f.l, data = dataSim, model = "T",
-             margins = c("probit", "probit", "probit"))
-out1 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T",
-             margins = c("probit", "probit", "probit"))
+out  <- gjrm(f.l, data = dataSim, model = "T", margins = margs)
+out1 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", margins = margs)
 
 conv.check(out)
 summary(out)
@@ -1040,77 +963,86 @@ plot(out, eq = 2)
 AIC(out)
 BIC(out)
 
-out  <- gjrm(f.l, data = dataSim, model = "T", 
-             margins = c("probit","logit","cloglog"))
-out1 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T",
-             margins = c("probit","logit","cloglog"))                    
+margs <- c("probit","logit","cloglog") 
+
+
+out  <- gjrm(f.l, data = dataSim, model = "T", margins = margs)
+out1 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", margins = margs)                    
 conv.check(out)
 summary(out)
 plot(out, eq = 1)
 plot(out, eq = 2)
 AIC(out)
 BIC(out)
+
+margs <- c("probit", "probit", "probit") 
 
 f.l <- list(y1 ~ x1 + s(x2), 
             y2 ~ x1 + s(x2),
             y3 ~ x1,
                ~ 1, ~ 1, ~ 1) 
                
-out1 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", 
-             margins = c("probit", "probit", "probit"))
+out1 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", margins = margs)
    
 f.l <- list(y1 ~ x1 + s(x2), 
             y2 ~ x1 + s(x2),
             y3 ~ x1,
                ~ 1, ~ s(x2), ~ 1) 
                
-out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", 
-             margins = c("probit", "probit", "probit"))   
+out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", margins = margs)   
 
 f.l <- list(y1 ~ x1 + s(x2), 
             y2 ~ x1 + s(x2),
             y3 ~ x1,
                ~ x1, ~ s(x2), ~ x1 + s(x2)) 
                
-out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", 
-             margins = c("probit", "probit", "probit"))   
+out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", margins = margs)   
 
 f.l <- list(y1 ~ x1 + s(x2), 
             y2 ~ x1 + s(x2),
             y3 ~ x1,
                ~ x1, ~ x1, ~ s(x2)) 
                
-out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", 
-             margins = c("probit", "probit", "probit")) 
+out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", margins = margs) 
 
 f.l <- list(y1 ~ x1 + s(x2), 
             y2 ~ x1 + s(x2),
             y3 ~ x1,
                ~ x1, ~ x1 + x2, ~ s(x2)) 
                
-out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", 
-             margins = c("probit", "probit", "probit")) 
+out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", margins = margs) 
 
 f.l <- list(y1 ~ x1 + s(x2), 
             y2 ~ x1 + s(x2),
             y3 ~ x1,
                ~ x1 + x2, ~ x1 + x2, ~ x1 + x2) 
                
-out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", 
-             margins = c("probit", "probit", "probit")) 
+out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", margins = margs) 
+                 
+nw <- data.frame( x1 = 0, x2 = 0.7 )   
        
-       
-jcres1 <- copula.prob(out2, 1, 1, 1, joint = TRUE, cond = 0, 
-                   intervals = TRUE, n.sim = 100)
-       
-nw <- data.frame( x1 = 0, x2 = seq(0, 1, length.out = 100) )   
-       
-jcres2 <- copula.prob(out2, 1, 1, 1, newdata = nw, 
-                   cond = 0, intervals = TRUE, n.sim = 100)
-      
-#############
-## Example 10
-#############
+copula.prob(out2, 1, 1, 1, newdata = nw, cond = 0, intervals = TRUE, n.sim = 100)
+ 
+
+# with endogenous variable 
+ 
+f.l <- list(y1 ~ x1 + s(x2), 
+            y2 ~ y1 + x1 + s(x2),
+            y3 ~ x1)  
+            
+margs <- c("probit", "probit", "probit") 
+
+out <- gjrm(f.l, data = dataSim, model = "T", margins = margs)
+
+conv.check(out)
+summary(out)
+
+ATE(out, trt = "y1", eq = 2, joint = TRUE)
+ATE(out, trt = "y1", eq = 2, joint = FALSE)
+ 
+################
+## EXAMPLE 10 ##
+
 ## Generate data
 ## with double sample selection
 
@@ -1149,31 +1081,11 @@ summary(out)
 plot(out, eq = 1)
 plot(out, eq = 3)
 prev(out)
-prev(out, type = "univariate")
-prev(out, type = "naive")
-}
+prev(out, joint = FALSE)
 
-\dontrun{ 
-
-###################################################
-###################################################
-###################################################
-# JOINT MODELS WITH BINARY AND CONTINUOUS MARGINS #
-# WITH SAMPLE SELECTION                           #
-###################################################
-###################################################
-###################################################
-
-library(GJRM)
-
-######################################################################
-## Generate data
-## Correlation between the two equations and covariate correlation 0.5 
-## Sample size 2000 
-######################################################################
 #############
-## Example 11
-#############
+## EXAMPLE 11
+
 set.seed(0)
 
 n <- 2000
@@ -1209,7 +1121,7 @@ out <- gjrm(list(ys ~ bi + x1 + x2,
                  data = dataSim, model = "BSS",
                  margins = c("probit", "N"))
 conv.check(out)
-post.check(out)
+res.check(out)
 summary(out)
 
 AIC(out)
@@ -1223,7 +1135,7 @@ out <- gjrm(list(ys ~ bi + s(x1) + s(x2),
                  data = dataSim, model = "BSS",
                  margins = c("probit", "N"))
 conv.check(out) 
-post.check(out)
+res.check(out)
 AIC(out)
 
 ## compare the two summary outputs
@@ -1246,25 +1158,7 @@ plot(out$gam2, se = FALSE, lty = 3, lwd = 2, ylim = c(-1, 0.8),
      ylab = "", rug = FALSE)
 
 
-## IMPUTE MISSING VALUES
-
-n.m <- 10
-res <- imputeSS(out, n.m)
-bet <- NA
-
-for(i in 1:n.m){
-
-dataSim$yo[dataSim$ys == 0] <- res[[i]]
-
-outg <- gamlss(list(yo ~ bi + s(x1)), data = dataSim)
-bet[i] <- coef(outg)["bi"]
-print(i)
-}
-
-mean(bet)
-
 ##
-
 
 ## SEMIPARAMETRIC SAMPLE SELECTION MODEL with association 
 ## and dispersion parameters 
@@ -1280,90 +1174,21 @@ fl <- list(eq.mu.1, eq.mu.2, eq.sigma, eq.theta)
 out <- gjrm(fl, data = dataSim, model = "BSS",
                  margins = c("probit", "N"))
 conv.check(out)   
-post.check(out)
+res.check(out)
 summary(out)
 summary(out$sigma)
 summary(out$theta)
 
-copula.prob(out, 0, 0.3, intervals = TRUE)[1:4,]
+nd <- data.frame(bi = 0, x1 = 0.2, x2 = 0.8)
+copula.prob(out, 0, 0.3, newdata = nd, intervals = TRUE)
 
 outC0 <- gjrm(fl, data = dataSim, copula = "C0", model = "BSS",
               margins = c("probit", "N"))
 conv.check(outC0)
-post.check(outC0)
+res.check(outC0)
 AIC(out, outC0)
 BIC(out, outC0)
 
-## IMPUTE MISSING VALUES
-
-n.m <- 10
-res <- imputeSS(outC0, n.m)
-
-###############
-# or using MICE
-###############
-
-library(mice)
-
-ys <- dataSim$ys
-
-dataSim$yo[dataSim$ys == FALSE] <- NA  
-dataSim <- dataSim[, -1]
-
-imp <- mice(dataSim, m = 1, method = c("copulaSS", "", "", ""),  
-            mice.formula = outC0$mice.formula, margins = outC0$margins, 
-            copula = outC0$BivD, maxit = 1)
-
-comp.yo <- dataSim$yo
-comp.yo[ys == 0] <- imp$imp$yo[[1]]
-mean(comp.yo)
-
-
-#
-#
-#######################################################
-## example using Gumbel copula and normal-gamma margins
-#######################################################
-#############
-## Example 12
-#############
-set.seed(1)
-
-y  <- exp(-0.68 - 1.5*bi + f21(x1) + u[, 2])
-yo <- y*(ys > 0)
-    
-dataSim <- data.frame(ys, yo, bi, x1, x2)
-
-
-out <- gjrm(list(ys ~ bi + s(x1) + s(x2), 
-                 yo ~ bi + s(x1)), 
-                 data = dataSim, copula = "G0", 
-                 margins = c("probit", "GA"),
-                 model = "BSS")
-conv.check(out)
-post.check(out)
-summary(out)
-
-
-ATE <- NA
-n.m <- 10
-res <- imputeSS(out, n.m)
-
-for(i in 1:n.m){
-
-dataSim$yo[dataSim$ys == 0] <- res[[i]]
-
-outg <- gamlss(list(yo ~ bi + s(x1)), margin = "GA", data = dataSim)
-
-out$gamlss <- outg
-ATE[i] <- AT(out, nm.end = "bi", type = "univariate")$res[2]
-
-print(i)
-
-}
-
-AT(out, nm.end = "bi")
-mean(ATE)
 }
 
 }

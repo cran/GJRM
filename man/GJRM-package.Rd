@@ -59,9 +59,8 @@ Giampiero Marra (University College London, Department of Statistical Science) a
 
 with help and contributions from Panagiota Filippou (trivariate binary models), Francesco Donat (bivariate models with ordinal and 
 continuous margins, and ordinal margins), Matteo Fasiolo (pdf and cdf, and related 
-derivatives, of the Tweedie distribution), Alessia Eletti (survival models with mixed censoring and excess hazards), Kiron Das
-(Galambos copula), Eva Cantoni and William Aeberhard (robust gamlss), 
-Alessia Eletti and Danilo Petti (copula survival model with general censoring scheme).
+derivatives, of the Tweedie distribution), Alessia Eletti and Javier Rubio Alvarez (univariate survival models with mixed censoring and excess hazards), Kiron Das
+(Galambos copula), Eva Cantoni and William Aeberhard (robust gamlss).
 
 Thanks to Bear Braumoeller for suggesting the implementation of 
 bivariate models with partial observability, and Carmen Cadarso for suggesting the inclusion of various modelling extensions.
@@ -78,8 +77,6 @@ Key methodological references (ordered by year of publication):
 
 Marra G., Radice R., Zimmer D. (2024), A Unifying Switching Regime Regression Framework with Applications in Health Economics. \emph{Econometric Reviews}, 43(1), 52-70.
 
-Marra G., Fasiolo M., Radice R., Winkelmann R. (2023), A Flexible Copula Regression Model with Bernoulli and Tweedie Margins for Estimating the Effect of Spending on Mental Health. \emph{Health Economics}, 32(6), 1305-1322.
-
 Eletti A., Marra G., Quaresma M., Radice R., Rubio F.J. (2022), A Unifying Framework for Flexible Excess Hazard Modeling with Applications in Cancer Epidemiology. \emph{Journal of the Royal Statistical Society Series C}, 71(4), 1044-1062.
 
 Petti D., Eletti A., Marra G., Radice R. (2022), Copula Link-Based Additive Models for Bivariate Time-to-Event Outcomes with General Censoring Scheme. \emph{Computational Statistics and Data Analysis}, 107550.
@@ -92,19 +89,13 @@ Marra G., Farcomeni A., Radice R. (2021), Link-Based Survival Additive Models un
 
 Hohberg M., Donat F., Marra G., Kneib T. (2021), Beyond Unidimensional Poverty Analysis Using Distributional Copula Models for Mixed Ordered-Continuous Outcomes. \emph{Journal of the Royal Statistical Society Series C}, 70(5), 1365-1390.
 
-Marra G., Radice R., Zimmer D. (2020), Estimating the Binary Endogenous Effect of Insurance on Doctor Visits by Copula-Based Regression Additive Models. \emph{Journal of the Royal Statistical Society Series C}, 69(4), 953-971.
-
 Dettoni R., Marra G., Radice R. (2020), Generalized Link-Based Additive Survival Models with Informative Censoring. \emph{Journal of Computational and Graphical Statistics}, 29(3), 503-512.
 
 Marra G., Radice R. (2020), Copula Link-Based Additive Models for Right-Censored Event Time Data. \emph{Journal of the American Statistical Association}, 115(530), 886-895.
 
 Filippou P., Kneib T., Marra G., Radice R. (2019), A Trivariate Additive Regression Model with Arbitrary Link Functions and Varying Correlation Matrix. \emph{Journal of Statistical Planning and Inference}, 199, 236-248.
 
-Gomes M., Radice R., Camarena-Brenes J., Marra G. (2019), Copula Selection Models for Non-Gaussian Outcomes that Are Missing Not at Random. \emph{Statistics in Medicine}, 38(3), 480-496.
-
 Klein N., Kneib T., Marra G., Radice R., Rokicki S., McGovern M.E. (2019), Mixed Binary-Continuous Copula Regression Models with Application to Adverse Birth Outcomes. \emph{Statistics in Medicine}, 38(3), 413-436.
-
-Wojtys M., Marra G., Radice R. (2018), Copula Based Generalized Additive Models for Location, Scale and Shape with Non-Random Sample Selection. \emph{Computational Statistics and Data Analysis}, 127, 1-14.
 
 Filippou P., Marra G., Radice R. (2017), Penalized Likelihood Estimation of a Trivariate Additive Probit Model. \emph{Biostatistics}, 18(3), 569-585.
 
@@ -113,8 +104,6 @@ Marra G., Radice R. (2017), Bivariate Copula Additive Models for Location, Scale
 Marra G., Radice R., Barnighausen T., Wood S.N., McGovern M.E. (2017), A Simultaneous Equation Approach to Estimating HIV Prevalence with Non-Ignorable Missing Responses. \emph{Journal of the American Statistical Association}, 112(518), 484-496.
 
 Marra G., Radice R., Filippou P. (2017), Testing the Hypothesis of Exogeneity in Regression Spline Bivariate Probit Models. \emph{Communications in Statistics - Simulation and Computation}, 46(3), 2283-2298.
-
-Marra G., Wyszynski K. (2016), Semi-Parametric Copula Sample Selection Models for Count Responses. \emph{Computational Statistics and Data Analysis}, 104, 110-129.
 
 Radice R., Marra G., Wojtys M. (2016), Copula Regression Spline Models for Binary Outcomes. \emph{Statistics and Computing}, 26(5), 981-995. 
 

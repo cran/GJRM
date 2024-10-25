@@ -11,8 +11,7 @@ or non-random sample selection.}
 
 \usage{
 
-LM.bpm(formula, data = list(), weights = NULL, subset = NULL, model, 
-       hess = TRUE)
+LM.bpm(formula, data = list(), weights = NULL, subset = NULL, model, hess = TRUE)
 
 }
 

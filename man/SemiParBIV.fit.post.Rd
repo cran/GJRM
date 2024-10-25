@@ -6,7 +6,7 @@
 \alias{SemiParROY.fit.post}
 \alias{gamlss.fit.post}
 \alias{postVb}
-\alias{ass.ms}
+\alias{theta2tau}
 \alias{edf.loop}
 \alias{form.check}
 \alias{pred.var} 

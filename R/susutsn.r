@@ -2,7 +2,7 @@ susutsn <- function(object, bs, lf, cont1par, cont2par, cont3par, prob.lev, type
 
 
 CIrs1 <- CIrs2 <- CIrs <- CIkt <- CIkt1 <- CIkt2 <- CIsig21 <- CIsig22 <- CInu1 <- CInu2 <- CIdof <- CInu <- CIsig2 <- NULL
-est.RHOb <- mu <- CImu <- est.RHOb1 <- est.RHOb2 <- tau1 <- tau2 <- NULL
+est.RHOb <- mu <- CImu <- est.RHOb1 <- est.RHOb2 <- tau1 <- tau2 <- tau <- NULL
 CIsig1 <- CInu1 <- CIsig2 <- CInu2 <- NULL
 
 
@@ -94,20 +94,20 @@ if(type == "ROY"){
   est.RHOb1 <- teta.tr(VC1, epds1)$teta
   est.RHOb2 <- teta.tr(VC2, epds2)$teta
   
-  est.RES1  <- ass.ms(object$VC$BivD1, object$VC$nCa1, est.RHOb1)
-  est.RES2  <- ass.ms(object$VC$BivD2, object$VC$nCa2, est.RHOb2)
+  est.RES1  <- theta2tau(object$VC$BivD1, object$VC$nCa1, est.RHOb1)
+  est.RES2  <- theta2tau(object$VC$BivD2, object$VC$nCa2, est.RHOb2)
 
   est.RHOb1 <- est.RES1$theta
   est.RHOb2 <- est.RES2$theta  
   
-  tau1      <- est.RES1$tau
-  tau2      <- est.RES2$tau
+  #tau1      <- est.RES1$tau
+  #tau2      <- est.RES2$tau
   
   CIrs1 <- rowQuantiles(est.RHOb1, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
   CIrs2 <- rowQuantiles(est.RHOb2, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
 
-  CIkt1 <- rowQuantiles(tau1, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
-  CIkt2 <- rowQuantiles(tau2, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+  #CIkt1 <- rowQuantiles(tau1, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+  #CIkt2 <- rowQuantiles(tau2, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
   
 
 } # ROY
@@ -509,6 +509,10 @@ if(type == "gamls"){
           
           if(object$VC$margins[1] %in% c("GPII","GPo")){mu <- exp(mu) - 0.5; mus <- exp(mus) - 0.5 }  
           
+          if(!is.null(mu) && length(mu)== 1) names(mu) <- "mu"
+
+          if(!is.null(mu) && length(mu) > 1){ mu <- as.matrix(mu) ; dimnames(mu)[[1]] <- dimnames(object$VC$X1)[[1]]; dimnames(mu)[[2]] <- "mu"    }
+
           CImu <- rowQuantiles(mus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
           
           
@@ -652,7 +656,7 @@ if( !is.null(object$VC$theta.fx) && type == "biv"){
   }else{
          est.RHOb <- teta.tr(object$VC, epds)$teta
          
-         est.RHOb <- ass.ms(object$VC$BivD, object$VC$nCa, est.RHOb)$theta
+         est.RHOb <- theta2tau(object$VC$BivD, object$VC$nCa, est.RHOb)$theta
 
          if( is.null(object$X3) ) est.RHOb <- t(as.matrix(est.RHOb))
        }
@@ -674,23 +678,23 @@ BivDt <- object$VC$BivD
   
                                    }
   
-ass.msR <- ass.ms(BivDt, nCa, est.RHOb)
-tau     <- ass.msR$tau
+ass.msR <- theta2tau(BivDt, nCa, est.RHOb)
+#tau     <- ass.msR$tau
 
 
 if(!is.null(object$X3) && BivDt %in% c("AMH", "FGM")){
 
 if(is.null(object$X3s)) x3ob <- object$X3 else x3ob <- object$X3s 
 
-tau <- matrix(tau, nrow(x3ob), nrow(bs))
+#tau <- matrix(tau, nrow(x3ob), nrow(bs))
 
 
 }
 
 
 
-CIkt <- rowQuantiles(tau, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
-if( is.null(object$X3) ) CIkt <- t(CIkt) 
+#CIkt <- rowQuantiles(tau, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+#if( is.null(object$X3) ) CIkt <- t(CIkt) 
 
 
 
@@ -698,11 +702,11 @@ if( is.null(object$X3) ) CIkt <- t(CIkt)
  
    if(length(object$theta) > 1){
  
-     if( length(object$teta2) != 0){ CIkt[object$teta.ind2, ] <- -CIkt[object$teta.ind2, ]; CIkt[object$teta.ind2, c(1,2)] <- CIkt[object$teta.ind2, c(2,1)] 
+     if( length(object$teta2) != 0){ #CIkt[object$teta.ind2, ] <- -CIkt[object$teta.ind2, ]; CIkt[object$teta.ind2, c(1,2)] <- CIkt[object$teta.ind2, c(2,1)] 
                                      CIrs[object$teta.ind2, ] <- -CIrs[object$teta.ind2, ]; CIrs[object$teta.ind2, c(1,2)] <- CIrs[object$teta.ind2, c(2,1)]} 
                                }else{
  
-     if( length(object$teta2) != 0){ CIkt <- -CIkt; CIkt[, c(1,2)] <- CIkt[, c(2,1)]
+     if( length(object$teta2) != 0){ #CIkt <- -CIkt; CIkt[, c(1,2)] <- CIkt[, c(2,1)]
                                      CIrs <- -CIrs; CIrs[, c(1,2)] <- CIrs[, c(2,1)]} 
                                     }
  }

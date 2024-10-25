@@ -1,9 +1,12 @@
-jc.probs4 <- function(x, y1, y2, newdata, type, cond, sf, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr){
+jc.probs4 <- function(x, y1, y2, newdata, type, cond, sf, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr, tau.res = FALSE){
 
 ######################################################################################################
 
 CIp12 <- p12s <- NULL
-CIkt <- tau <- NULL
+CIkt <- tau <- theta <- CItheta <- NULL
+
+p12s  <- matrix(0, 1, 2) 
+
 
 param1 <- x$coef.t[1:x$X1.d2]
 param2 <- x$coef.t[(x$X1.d2+1):(x$X1.d2+x$X2.d2)]
@@ -14,6 +17,9 @@ if(type == "joint"){
 ######
 
 if(!missing(newdata)){ 
+
+newdata[, x$v1[1]] <- ifelse(newdata[, x$v1[1]] < 0.0001, 0.0001, newdata[, x$v1[1]]) 
+newdata[, x$v2[1]] <- ifelse(newdata[, x$v2[1]] < 0.0001, 0.0001, newdata[, x$v2[1]]) 
 
 X1 <- predict.SemiParBIV(x, eq = 1, newdata = newdata, type = "lpmatrix")
 X2 <- predict.SemiParBIV(x, eq = 2, newdata = newdata, type = "lpmatrix")
@@ -224,9 +230,12 @@ if(length(theta) == 1) p12[x$teta.ind2] <- copgHsCond(p1[x$teta.ind2], p2[x$teta
 
 # kendalls' tau
 
-if(x$BivD %in% x$BivD2)    {x$SemiParFit <- x; tau <- Reg2Copost(x$SemiParFit, x$VC, theta)$tau } 
-if(!(x$BivD %in% x$BivD2)) tau <- ass.ms(x$VC$BivD, x$VC$nCa, theta)$tau
+if(x$BivD %in% x$BivD2 && tau.res == TRUE)    {x$SemiParFit <- x; tau <- Reg2Copost(x$SemiParFit, x$VC, theta, tau.res = tau.res)$tau} 
+if(!(x$BivD %in% x$BivD2) && tau.res == TRUE) tau <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = tau.res)$tau
 
+if(x$BivD %in% x$BivD2)    {x$SemiParFit <- x; theta <- Reg2Copost(x$SemiParFit, x$VC, theta, tau.res = FALSE)$theta} 
+if(!(x$BivD %in% x$BivD2)) theta <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = FALSE)$theta
+     
 
 ############################## 
 
@@ -254,7 +263,7 @@ if( is.null(x$X3)  ) epds <- bs[, lf]
        
                          
 est.RHOb <- teta.tr(x$VC, epds)$teta
-if( is.null(x$X3) ) est.RHOb <- matrix(rep(est.RHOb, each = dim(p1s)[1]), ncol = n.sim, byrow = FALSE)
+
 
 
 
@@ -280,7 +289,7 @@ if(cond == 0){
 
 if(!(x$BivD %in% x$BivD2)){
 
-p12s <- matrix( mm(BiCDF(p1s, p2s, x$nC, est.RHOb, x$dof, test = FALSE), min.pr = min.pr, max.pr = max.pr), dim(p1s)[1], n.sim)
+p12s <- mm(BiCDF(p1s, p2s, x$nC, est.RHOb, x$dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)
 
 if(sf == "cumhaz") p12s <- -log(p12s) 
 
@@ -288,7 +297,7 @@ if(sf == "hazard"){
 
             cps <- copgHs2(p1s, p2s, eta1 = NULL, eta2 = NULL, est.RHOb, est.RHOb, x$BivD, x$dof, min.pr = min.pr, max.pr = max.pr, min.dn = x$VC$min.dn)$c.copula2.be1be2
 
-            p12s <- matrix((cps*Gp1s*Gp2s*Xt1s*Xt2s)/p12s, dim(p1s)[1], n.sim)
+            p12s <- (cps*Gp1s*Gp2s*Xt1s*Xt2s)/p12s
 
                   }
 
@@ -314,18 +323,17 @@ if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- mm(BiCDF(p1s[x$teta.ind2,], p2s[
 if(cond == 1){
 
 
-if(!(x$BivD %in% x$BivD2)) p12s <- matrix( copgHsCond(p1s, p2s, est.RHOb, dof = x$dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be1, dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)) p12s <- copgHsCond(p1s, p2s, est.RHOb, dof = x$dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
 
-if(x$BivD == "T") p12s <- matrix(p12s, dim(p1s)[1], n.sim)
 
 if(sf == "cumhaz") p12s <- -log(p12s) 
 
 
 if(sf == "hazard"){
 
-                    cps <- matrix( copgHs2(p1s, p2s, eta1 = NULL, eta2 = NULL, est.RHOb, est.RHOb, x$BivD, x$dof, min.pr = min.pr, max.pr = max.pr, min.dn = x$VC$min.dn)$c.copula2.be1, dim(p1s)[1], n.sim)
+                    cps <- copgHs2(p1s, p2s, eta1 = NULL, eta2 = NULL, est.RHOb, est.RHOb, x$BivD, x$dof, min.pr = min.pr, max.pr = max.pr, min.dn = x$VC$min.dn)$c.copula2.be1
 
-                    p12s <- matrix( (cps*Gp1s*Xt1s) / p12s, dim(p1s)[1], n.sim)
+                    p12s <- (cps*Gp1s*Xt1s) / p12s
 
 
 }
@@ -353,17 +361,16 @@ if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- copgHsCond(p1s[x$teta.ind2,], p2
 if(cond == 2){
 
 
-if(!(x$BivD %in% x$BivD2)) p12s <- matrix( copgHsCond(p1s, p2s, est.RHOb, dof = x$dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2, dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)) p12s <- copgHsCond(p1s, p2s, est.RHOb, dof = x$dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
 
-if(x$BivD == "T") p12s <- matrix(p12s, dim(p1s)[1], n.sim)
 
 if(sf == "cumhaz") p12s <- -log(p12s)
 
 if(sf == "hazard"){
 
-                    cps <- matrix( copgHs3(p1s, p2s, eta1 = NULL, eta2 = NULL, est.RHOb, est.RHOb, x$BivD, x$dof)$c.copula2.be2, dim(p1s)[1], n.sim)
+                    cps <- copgHs3(p1s, p2s, eta1 = NULL, eta2 = NULL, est.RHOb, est.RHOb, x$BivD, x$dof)$c.copula2.be2
                     
-                    p12s <- matrix( (cps*Gp2s*Xt2s)/p12s, dim(p1s)[1], n.sim)
+                    p12s <- (cps*Gp2s*Xt2s)/p12s
 
 
 }
@@ -405,13 +412,25 @@ BivDt <- x$VC$BivD
   
                          }
   
-ass.msR <- ass.ms(BivDt, nCa, est.RHOb)
-taus    <- ass.msR$tau
-if(!is.null(x$X3) && BivDt %in% c("AMH", "FGM")) taus <- matrix(taus, nrow(x$X3), nrow(bs))
-CIkt <- rowQuantiles(taus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+
+
+ass.msR <- theta2tau(BivDt, nCa, est.RHOb, tau.res = tau.res)
+if(tau.res == TRUE) taus <- ass.msR$tau
+thetas <- ass.msR$theta
+
+
+
+                                                  
+if(tau.res == TRUE){taus <- matrix(taus, 1, n.sim); CIkt <- rowQuantiles(taus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)}
+
+thetas <- matrix(thetas, 1, n.sim)
+CItheta <- rowQuantiles(thetas, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+
+
+
 #if( is.null(x$X3) ) CIkt <- t(CIkt) 
 
-
+if(tau.res == TRUE){
 
  if(x$BivD %in% x$BivD2){ 
  
@@ -426,8 +445,21 @@ CIkt <- rowQuantiles(taus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
                                 }
  }
 
+}
 
 
+ if(x$BivD %in% x$BivD2){ 
+ 
+   if(length(x$theta) > 1){
+ 
+     if( length(x$teta2) != 0) CItheta[x$teta.ind2, ] <- -CItheta[x$teta.ind2, ]; CItheta[x$teta.ind2, c(1,2)] <- CItheta[x$teta.ind2, c(2,1)] 
+                                 
+                          }else{
+ 
+     if( length(x$teta2) != 0) CItheta <- -CItheta; CItheta[, c(1,2)] <- CItheta[, c(2,1)]
+                                 
+                                }
+ }
 
 
 
@@ -648,7 +680,7 @@ if(sf == "hazard"){
 } # independence
 
 
-list(p12 = p12, p12s = p12s, p1 = p1, p2 = p2, p3 = NULL, CIkt = CIkt, tau = tau)
+list(p12 = p12, p12s = matrix(p12s, 1, length(p12s)), p1 = p1, p2 = p2, p3 = NULL, CItau = CIkt, tau = tau, CItheta = CItheta, theta = theta)
 
 
 }

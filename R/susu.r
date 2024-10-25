@@ -26,7 +26,7 @@ if (is_ordcon) {
   
   
   ind1 <- 1:object$gp1
-  ind2 <- object$X1.d2 + (1:object$gp2) + CLM.shift2_1
+  ind2 <- object$X1.d2 + (1:object$gp2) + CLM.shift2_1  
   ind3 <- ind4 <- ind5 <- ind6 <- ind7 <- ind8 <- ind9 <- NULL  
   
   if(informative == "yes"){ index <- 1; ind2 <- NULL }
@@ -192,7 +192,7 @@ if (is_ordcon) {
   }
   
 # In what follows the cut points are removed from the table in the ordinal-ordinal model 
-if (is_ordord) {
+if(is_ordord){
 
         tnas <- dimnames(table[[1]])[[1]][-(1: (K1 + K2 - 2))] 
 
@@ -205,9 +205,24 @@ if (is_ordord) {
 	dimnames( table[[1]] )[[2]] <- tnas 
 	table[[1]] <- t(table[[1]])
 	
-	}
+	                             }	
+                 }  
+                 
+if(is_ordcon){
+
+        tnas <- dimnames(table[[1]])[[1]][-(1: (K1 - 1))] 
+
+
+        table[[1]] <- table[[1]][-(1: (K1 - 1)), ]
+
+        if(is.null(dim(table[[1]]))){
+        
+	table[[1]] <- as.matrix(table[[1]])
+	dimnames( table[[1]] )[[2]] <- tnas 
+	table[[1]] <- t(table[[1]])
 	
-}  
+	                             }	
+                 }                  
 
 list(tableN = tableN, table = table)
 

@@ -6,7 +6,9 @@ bcorR <- NULL
 
 weights <- VC$weights
 
-eta2 <- VC$X1%*%params[1:VC$X1.d2] # this is eta1
+offset <- VC$offset; if(is.null(offset) == TRUE) offset <- 0
+
+eta2 <- offset + VC$X1%*%params[1:VC$X1.d2] # this is eta1
 eta2 <- eta.tr(eta2, VC$margins[1])
     
 if(is.null(VC$X2))  sigma2.st <- params[(VC$X1.d2 + 1)] 
@@ -26,7 +28,8 @@ nu    <- sstr1$vrb
 if(VC$surv == TRUE) naiveind <- FALSE else naiveind <- TRUE   
  
 if(VC$margins[1] %in% VC$m3)  dHs <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[1], naive = naiveind, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-if(VC$margins[1] %in% VC$m3d) dHs <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[2], naive = TRUE, y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+if(VC$margins[1] %in% VC$m3d) dHs <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[2], naive = TRUE, 
+                                                  y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
 
 
 ########################################################################################################

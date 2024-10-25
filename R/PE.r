@@ -1,6 +1,6 @@
 PE <- function(x1, idx, n.sim = 100, prob.lev = 0.05, 
-                  hd.plot = FALSE, 
-                  main = "Histogram and Kernel Density of Simulated Average Effects", 
+                  plot = FALSE, 
+                  main = "Histogram of Simulated Average Effects", 
                   xlab = "Simulated Average Effects", ...){
 
 
@@ -120,7 +120,7 @@ ATs <- C.11s - C.10s
 
 
 
- if(hd.plot == TRUE){
+ if(plot == TRUE){
   
   hist(ATs, freq = FALSE, main = main, xlab = xlab, 
        ylim = c(0, max(density(ATs)$y, hist(ATs, plot = FALSE)$density)), ...)

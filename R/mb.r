@@ -123,8 +123,8 @@ sLBb <- sd(LBb, na.rm = TRUE)
 
 mbfres <- mbf(datato)
 
-avte <- as.numeric(format(mbfres$avte*100, digits = 3, trim=TRUE))
-WCB  <- as.numeric(format(c(mbfres$LB*100, mbfres$UB*100), digits = 3, trim=TRUE))
+avte <- as.numeric(format(mbfres$avte, digits = 3, trim=TRUE))
+WCB  <- as.numeric(format(c(mbfres$LB, mbfres$UB), digits = 3, trim=TRUE))
 
 Cn <- try(uniroot( Cn.fun, interval=c(-5,5), UB = mbfres$UB, LB = mbfres$LB, sigma.UB = sUBb, sigma.LB = sLBb, alpha = sig.lev, n = n), silent = TRUE)
 if( inherits(Cn, "try-error")   ) Cn <- 1.645 else Cn <- abs(Cn$root)  
@@ -132,8 +132,8 @@ if( inherits(Cn, "try-error")   ) Cn <- 1.645 else Cn <- abs(Cn$root)
 
 #Cn <- abs(nleqslv( 0.5, Cn.fun, UB = mbfres$UB, LB = mbfres$LB, sigma.UB = sUBb, sigma.LB = sLBb, alpha = sig.lev, n = n)$x) 
  
-CIb1 <- as.numeric( format((mbfres$LB - Cn*sLBb/sqrt(n))*100, digits = 3, trim=TRUE) )   
-CIb2 <- as.numeric( format((mbfres$UB + Cn*sUBb/sqrt(n))*100, digits = 3, trim=TRUE) )
+CIb1 <- as.numeric( format((mbfres$LB - Cn*sLBb/sqrt(n)), digits = 3, trim=TRUE) )   
+CIb2 <- as.numeric( format((mbfres$UB + Cn*sUBb/sqrt(n)), digits = 3, trim=TRUE) )
 
 out <- list(LB = WCB[1], UB = WCB[2], CI = c(CIb1,CIb2), av.p = avte, Model = Model) 
 
@@ -170,10 +170,10 @@ list(LB = LB, UB = UB)
 
 rei <- mbfIV(datato, IV, lt.s)
 
-LB <- as.numeric(format(rei$LB*100, digits = 3, trim=TRUE))
-UB <- as.numeric(format(rei$UB*100, digits = 3, trim=TRUE))
+LB <- as.numeric(format(rei$LB, digits = 3, trim=TRUE))
+UB <- as.numeric(format(rei$UB, digits = 3, trim=TRUE))
 
-avte <- as.numeric(format(mbf(datato)$avte*100, digits = 3, trim=TRUE))
+avte <- as.numeric(format(mbf(datato)$avte, digits = 3, trim=TRUE))
 
 ########
 # for sd
@@ -204,8 +204,8 @@ Cn <- try(uniroot( Cn.fun, interval=c(-5,5), UB = UB, LB = LB, sigma.UB = sUBb, 
 if(     inherits(Cn, "try-error")       ) Cn <- 1.645 else Cn <- abs(Cn$root)
 
 
-CIb1 <- as.numeric(format((rei$LB - Cn*sLBb/sqrt(n))*100, digits = 3, trim=TRUE))   
-CIb2 <- as.numeric(format((rei$UB + Cn*sUBb/sqrt(n))*100, digits = 3, trim=TRUE))
+CIb1 <- as.numeric(format((rei$LB - Cn*sLBb/sqrt(n)), digits = 3, trim=TRUE))   
+CIb2 <- as.numeric(format((rei$UB + Cn*sUBb/sqrt(n)), digits = 3, trim=TRUE))
 
 out <- list(LB = LB, UB = UB, CI = c(CIb1,CIb2), ate.ra = avte, Model = Model, IV = IV) 
 

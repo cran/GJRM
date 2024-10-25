@@ -23,7 +23,8 @@ bprobgHsDiscr1ROY <- function(params, respvec, VC, ps, AT = FALSE){
     der2p1.dereta1eta1 <- pd1$der2p1.dereta1eta1
 
 
-  dHs <- distrHsDiscr(respvec$y2, eta2, 1, 1, nu = 1, nu.st = 1, margin2=VC$margins[2], naive = FALSE, y2m = VC$y2m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  dHs <- distrHsDiscr(respvec$y2, eta2, 1, 1, nu = 1, nu.st = 1, margin2=VC$margins[2], naive = FALSE, y2m = VC$y2m, min.dn = VC$min.dn, min.pr = VC$min.pr, 
+                      max.pr = VC$max.pr, left.trunc = VC$left.trunc1)
    
    
    pdf2.M2               <- dHs$pdf2
@@ -36,7 +37,8 @@ bprobgHsDiscr1ROY <- function(params, respvec, VC, ps, AT = FALSE){
    
   #******** SET UP y3m  ************ DONE
    
-  dHs <- distrHsDiscr(respvec$y3, eta3, 1, 1, nu = 1, nu.st = 1, margin2=VC$margins[3], naive = FALSE, y2m = VC$y3m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  dHs <- distrHsDiscr(respvec$y3, eta3, 1, 1, nu = 1, nu.st = 1, margin2=VC$margins[3], naive = FALSE, y2m = VC$y3m, min.dn = VC$min.dn, min.pr = VC$min.pr, 
+                      max.pr = VC$max.pr, left.trunc = VC$left.trunc2)
    
    
    pdf2.M3               <- dHs$pdf2

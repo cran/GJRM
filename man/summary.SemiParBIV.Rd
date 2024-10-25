@@ -82,7 +82,7 @@ as well as the odds ratio and gamma measure discussed by Tajar et al. (2001) if 
 \item{GM, CIgm}{Gamma measure and related CI. This measure of association was proposed by Goodman and Kruskal (1954). It is defined as 
                 (\code{OR} - 1)/(\code{OR} + 1), can take values in the range (-1, 1) and does not depend on the marginal probabilities.
                 Interval is calculated using posterior simulation.}
-\item{tau, CItau}{Kendall's tau and respective intervals.}                
+              
 
 }
 
@@ -100,9 +100,8 @@ Tajar M., Denuit M. and Lambert P. (2001), Copula-Type Representation for Random
 
 \section{WARNINGS}{
 
-Note that the summary output will also indeed provide the Kendall's tau and related interval. This is a valid measure of dependence for continuous margins
-but it is typically not for binary margins. However, it is still displayed for the sake of keeping the printed output consistent with that of
-other models in the package.
+Note that the Kendall's tau (and related interval), as implemented here, is a valid measure of dependence for continuous margins and it will only provide a crude 
+indication of dependence in other cases. 
 
 } 
 
@@ -117,7 +116,7 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 
 \seealso{
-\code{\link{AT}}, \code{\link{prev}}
+\code{\link{ATE}}, \code{\link{prev}}
 }
 
 

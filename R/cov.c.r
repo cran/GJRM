@@ -5,7 +5,7 @@ gradi <- round(max(abs(SemiParFit$fit$gradient)), 1)
 
 #if(SemiParFit$conv.sp == FALSE) {cat("Check convergence using conv.check().\n")}
 
-me1 <- "Largest absolute gradient value is not close to 0."
+me1 <- "Maximum absolute gradient value is not close to 0."
 me2 <- "Information matrix is not positive definite."
 me3 <- "Read the WARNINGS section in ?gjrm."
 

@@ -16,7 +16,7 @@ print.summary.gamlss <- function(x, digits = max(3, getOption("digits") - 3),
    
    pscr0(x, type = "gamlss")    
 
-     if(x$robust == TRUE) cat("\nROBUST Fit")
+  #   if(x$robust == TRUE) cat("\nROBUST Fit")
 
 
   
@@ -24,7 +24,7 @@ print.summary.gamlss <- function(x, digits = max(3, getOption("digits") - 3),
   
   
   
-  if(x$margins[1] %in% c(cont2par,cont3par) )  CIsig2 <- colMeans(x$CIsig, na.rm = TRUE)
+  if(x$margins[1] %in% c(cont2par,cont3par) )  CIsig2 <- colMeans(x$CIsigma, na.rm = TRUE)
   if(x$margins[1] %in% cont3par)               CInu   <- colMeans(x$CInu, na.rm = TRUE)
   
   

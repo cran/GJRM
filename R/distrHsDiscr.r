@@ -1,5 +1,5 @@
 distrHsDiscr <- function(y2, eta2, sigma2, sigma2.st, nu, nu.st, margin2, naive = FALSE, y2m,
-                         min.dn, min.pr, max.pr){
+                         min.dn, min.pr, max.pr, left.trunc = 0){
 
 
 p2 <- derp2.dersigma.st <- derp2.dereta2 <- der2p2.dereta2eta2 <- der2p2.dersigma2.st2 <- der2p2.dereta2dersigma2.st <- indx <- 1
@@ -16,8 +16,8 @@ der2p2.dernu.st2            = 1
 der2p2.dereta2dernu.st      = 1
 der2p2.dersigma2.stdernu.st = 1
 
-cont1par <- c("PO","ZTP","DGP0")
-cont2par <- c("NBI","NBII","NBIa","NBIIa","PIG","PO","ZTP","DGP","DGPII","DGP0")
+cont1par <- c("P","tP","DGP0")
+cont2par <- c("tNBI","tNBII","tPIG", "NBI","NBII","NBIa","NBIIa","PIG","P","tP","DGP","DGPII","DGP0")
 cont3par <- c("DEL","SICHEL")
 
 # library(Deriv); library(numDeriv)
@@ -39,12 +39,12 @@ cont3par <- c("DEL","SICHEL")
 
 
 
-if(margin2 %in% c("PIG","NBI","NBII","NBIa","NBIIa")){
+if(margin2 %in% c("P","tP","PIG","NBI","NBII","tNBI","tNBII","tPIG")){
 
-derpdf2.dermu2FUNC2p <- function(func, y2, mu2, sigma) numgh(func, mu2)
-derpdf2.sigma2FUNC2p <- function(func, y2, mu2, sigma) numgh(func, sigma)  
+derpdf2.dermu2FUNC2p <- function(func, y2, mu2, sigma, left.trunc) numgh(func, mu2)
+derpdf2.sigma2FUNC2p <- function(func, y2, mu2, sigma, left.trunc) numgh(func, sigma)  
 
-der2pdf2.mu2dersigma2FUNC2p <- function(func, y2, mu2, sigma) numch(func, mu2, sigma)
+der2pdf2.mu2dersigma2FUNC2p <- function(func, y2, mu2, sigma, left.trunc) numch(func, mu2, sigma)
 
 }
 
@@ -52,116 +52,95 @@ der2pdf2.mu2dersigma2FUNC2p <- function(func, y2, mu2, sigma) numch(func, mu2, s
 
 #######################################################################
 
-if(margin2 == "PO"){
+if(margin2 == "P"){
 
-mu2 <- exp(eta2)
-dermu2.dereta2 <- exp(eta2)
-der2mu2.dereta2eta2 <- exp(eta2)
+
+mu2  <- exp(eta2)
+mu2  <- ifelse(mu2 < 1e-04, 1e-04, mu2) # for numerical dervs
+eta2 <- log(mu2) 
+
+dermu2.dereta2      <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2) 
 
 dersigma2.dersigma2.st  <- 0  
 dersigma2.dersigma2.st2 <- 0
 
+pdf2 <- dPO(y2, mu = mu2)  
 
-if(max(y2) > 170){
+derpdf2.dermu2F <- derpdf2.dermu2FUNC2p(function(mu2) dPO(y2, mu = mu2), y2, mu2) 
+derpdf2.dermu2  <- derpdf2.dermu2F$fi 
+der2pdf2.dermu2 <- derpdf2.dermu2F$se  
 
-prec <- pmax(53, getPrec(mu2), getPrec(y2))
-        
-mu2 <- mpfr(mu2, prec)
-y2  <- mpfr( y2, prec)        
-        
-}        
-        
-        
-# exp(y2*log(mu2) - mu2 - log(gamma(y2 + 1)))
-# should be more stable but looks the same
-# from a few experiments
-        
-        
-pdf2 <-  as.numeric( (exp(-mu2)*mu2^y2)/factorial(y2) )   
-
-derpdf2.dermu2FUNCpo <- function(y2, mu2) exp(-mu2) * (mu2^(y2 - 1) * y2 - mu2^y2)/factorial(y2) 
-derpdf2.dermu2       <- as.numeric( derpdf2.dermu2FUNCpo(y2, mu2) )
-    
-der2pdf2.dermu2FUNCpo <- function(y2, mu2) exp(-mu2) * (mu2^y2 + y2 * (mu2^(y2 - 2) * (y2 - 1) - 2 * mu2^(y2 - 1)))/factorial(y2)  
-der2pdf2.dermu2       <- as.numeric( der2pdf2.dermu2FUNCpo(y2, mu2) )
-    
-derpdf2.sigma2        <- 0
-der2pdf2.dersigma22   <- 0
+derpdf2.sigma2        <- 0      
+der2pdf2.dersigma22   <- 0    
 der2pdf2.mu2dersigma2 <- 0
 
 
 
-if(naive == FALSE){   # needs y2m 
- 
-p2  <- pPO(as.numeric(y2), mu = as.numeric(mu2)) 
- 
-mu2 <- c(mu2)
 
-derp2.dermu2           <- rowSums( matrix(as.numeric(derpdf2.dermu2FUNCpo(y2m, mu2)), dim(y2m)[1],dim(y2m)[2]), na.rm = TRUE ) 
+
+if(naive == FALSE){   
+ 
+p2 <- pPO(y2, mu = mu2)   
+ 
+derp2.dermu2F  <- derpdf2.dermu2FUNC2p(function(mu2) pPO(y2, mu = mu2), y2, mu2)
+derp2.dermu2   <- derp2.dermu2F$fi
+der2p2.dermu22 <- derp2.dermu2F$se
+
 derp2.dersigma2        <- 0
-der2p2.dermu22         <- rowSums( matrix(as.numeric(der2pdf2.dermu2FUNCpo(y2m, mu2)),dim(y2m)[1],dim(y2m)[2]), na.rm = TRUE ) 
 der2p2.dersigma22      <- 0
 der2p2.derdermu2sigma2 <- 0
 
-
-                      
-    
                    }
+
 
 }
 
 
 
-if(margin2 == "ZTP"){
 
-mu2 <- exp(eta2)
-dermu2.dereta2 <- exp(eta2)
+
+if(margin2 == "tP"){ 
+
+mu2  <- exp(eta2)
+mu2  <- ifelse(mu2 < 1e-04, 1e-04, mu2) # for numerical dervs
+eta2 <- log(mu2) 
+
+dermu2.dereta2      <- exp(eta2)
 der2mu2.dereta2eta2 <- exp(eta2) 
 
-dersigma2.dersigma2.st  <- 0
+dersigma2.dersigma2.st  <- 0  
 dersigma2.dersigma2.st2 <- 0
 
-if(max(y2) > 170){
+pdf2 <- dPOtr(y2, mu = mu2, left.trunc)  
 
-prec <- pmax(53, getPrec(mu2), getPrec(y2))
-        
-mu2 <- mpfr(mu2, prec)
-y2  <- mpfr( y2, prec) 
+derpdf2.dermu2F <- derpdf2.dermu2FUNC2p(function(mu2) dPOtr(y2, mu = mu2, left.trunc), y2, mu2, left.trunc) 
+derpdf2.dermu2  <- derpdf2.dermu2F$fi 
+der2pdf2.dermu2 <- derpdf2.dermu2F$se  
 
-}
-
-
-pdf2FUNCztp <- function(y2, mu2) mu2^y2/(exp(mu2)-1)*1/factorial(y2)  
-pdf2        <- as.numeric( pdf2FUNCztp(y2, mu2) )  
-
-derpdf2.dermu2FUNCztp <- function(y2, mu2) (mu2^(y2 - 1) * y2 - mu2^y2 * exp(mu2)/(exp(mu2) - 1))/(factorial(y2) * (exp(mu2) - 1))  
-derpdf2.dermu2        <- as.numeric( derpdf2.dermu2FUNCztp(y2, mu2) )
-    
-der2pdf2.dermu2FUNCztp <- function(y2, mu2) (y2 * (mu2^(y2 - 2) * (y2 - 1) - mu2^(y2 - 1) * exp(mu2)/(exp(mu2) - 
-    1)) - exp(mu2) * (mu2^(y2 - 1) * y2 + mu2^y2 - 2 * (mu2^y2 * 
-    exp(mu2)/(exp(mu2) - 1)))/(exp(mu2) - 1))/(factorial(y2) * (exp(mu2) - 
-    1))   
-der2pdf2.dermu2        <- as.numeric( der2pdf2.dermu2FUNCztp(y2, mu2) ) 
-    
-derpdf2.sigma2        <- 0
-der2pdf2.dersigma22   <- 0
+derpdf2.sigma2        <- 0      
+der2pdf2.dersigma22   <- 0    
 der2pdf2.mu2dersigma2 <- 0
 
 
-if(naive == FALSE){   #needs y2m
 
-mu2 <- c(mu2)
 
-p2  <- rowSums( matrix(as.numeric(pdf2FUNCztp(y2m, mu2)),dim(y2m)[1],dim(y2m)[2]), na.rm = TRUE )
+if(naive == FALSE){   
+ 
+p2 <- pPOtr(y2, mu = mu2, left.trunc)   
+ 
+derp2.dermu2F  <- derpdf2.dermu2FUNC2p(function(mu2) pPOtr(y2, mu = mu2, left.trunc), y2, mu2, left.trunc)
+derp2.dermu2   <- derp2.dermu2F$fi
+der2p2.dermu22 <- derp2.dermu2F$se
 
-derp2.dermu2           <- rowSums( matrix(as.numeric(derpdf2.dermu2FUNCztp(y2m, mu2)), dim(y2m)[1],dim(y2m)[2]), na.rm = TRUE )
 derp2.dersigma2        <- 0
-der2p2.dermu22         <- rowSums( matrix(as.numeric(der2pdf2.dermu2FUNCztp(y2m, mu2)),dim(y2m)[1],dim(y2m)[2]), na.rm = TRUE )
 der2p2.dersigma22      <- 0
 der2p2.derdermu2sigma2 <- 0
-                      
-    
+
                    }
+
+
+
 
 }
 
@@ -251,7 +230,7 @@ mu2  <- ifelse(mu2 < 1e-04, 1e-04, mu2) # for numerical dervs
 eta2 <- log(mu2) 
 
 
-dermu2.dereta2 <- exp(eta2)
+dermu2.dereta2      <- exp(eta2)
 der2mu2.dereta2eta2 <- exp(eta2) 
 
 dersigma2.dersigma2.st  <- exp(sigma2.st)  
@@ -296,6 +275,66 @@ der2p2.derdermu2sigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma) pNBI(
 
 
 
+
+
+if(margin2 == "tNBI"){ 
+
+sigma <- sigma2 <- ifelse(sigma2 < 1e-04, 1e-04, sigma2) # related to gamma function
+sigma2.st <- log(sigma2) 
+
+mu2  <- exp(eta2)
+mu2  <- ifelse(mu2 < 1e-04, 1e-04, mu2) # for numerical dervs
+eta2 <- log(mu2) 
+
+
+dermu2.dereta2      <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)  
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
+
+pdf2 <- dNBItr(y2, mu = mu2, sigma = sigma, left.trunc)  
+
+derpdf2.dermu2F <- derpdf2.dermu2FUNC2p(function(mu2) dNBItr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc) 
+derpdf2.dermu2  <- derpdf2.dermu2F$fi 
+der2pdf2.dermu2 <- derpdf2.dermu2F$se  
+
+
+derpdf2.sigma2F     <- derpdf2.sigma2FUNC2p(function(sigma) dNBItr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc) 
+derpdf2.sigma2      <- derpdf2.sigma2F$fi      
+der2pdf2.dersigma22 <- derpdf2.sigma2F$se    
+
+
+der2pdf2.mu2dersigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma) dNBItr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc)
+
+
+if(naive == FALSE){   
+ 
+p2  <- pNBItr(y2, mu = mu2, sigma = sigma, left.trunc)  
+ 
+derp2.dermu2F  <- derpdf2.dermu2FUNC2p(function(mu2) pNBItr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc)
+derp2.dermu2   <- derp2.dermu2F$fi
+der2p2.dermu22 <- derp2.dermu2F$se
+
+derp2.dersigma2F <- derpdf2.sigma2FUNC2p(function(sigma) pNBItr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc) 
+derp2.dersigma2  <- derp2.dersigma2F$fi 
+der2p2.dersigma22<- derp2.dersigma2F$se 
+
+der2p2.derdermu2sigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma) pNBItr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc) 
+
+  
+                   }
+
+}
+
+
+
+
+
+
+
+
 #######
 
 
@@ -334,7 +373,7 @@ der2pdf2.dersigma22 <- derpdf2.sigma2F$se
 der2pdf2.mu2dersigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma) dNBII(y2, mu = mu2, sigma = sigma), y2, mu2, sigma)
 
 
-if(naive == FALSE){   
+if(naive == FALSE){    # does not need y2m
  
 p2  <- pNBII(y2, mu = mu2, sigma = sigma)  
  
@@ -356,14 +395,67 @@ der2p2.derdermu2sigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma) pNBII
 
 
 
+if(margin2 == "tNBII"){ # all Numerical - does not need y2m
+
+sigma <- sigma2 <- ifelse(sigma2 < 1e-04, 1e-04, sigma2) # related to gamma function
+
+sigma2.st <- log(sigma2) 
+
+mu2  <- exp(eta2)
+mu2  <- ifelse(mu2 < 1e-04, 1e-04, mu2) 
+eta2 <- log(mu2) 
+
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)  
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
+
+pdf2 <- dNBIItr(y2, mu = mu2, sigma = sigma, left.trunc)  
+
+derpdf2.dermu2F <- derpdf2.dermu2FUNC2p(function(mu2) dNBIItr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc) 
+derpdf2.dermu2  <- derpdf2.dermu2F$fi 
+der2pdf2.dermu2 <- derpdf2.dermu2F$se  
+
+
+derpdf2.sigma2F     <- derpdf2.sigma2FUNC2p(function(sigma) dNBIItr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc) 
+derpdf2.sigma2      <- derpdf2.sigma2F$fi      
+der2pdf2.dersigma22 <- derpdf2.sigma2F$se    
+
+
+der2pdf2.mu2dersigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma) dNBIItr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc)
+
+
+if(naive == FALSE){    # does not need y2m
+ 
+p2  <- pNBIItr(y2, mu = mu2, sigma = sigma, left.trunc)  
+ 
+derp2.dermu2F  <- derpdf2.dermu2FUNC2p(function(mu2) pNBIItr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc)
+derp2.dermu2   <- derp2.dermu2F$fi
+der2p2.dermu22 <- derp2.dermu2F$se
+
+derp2.dersigma2F <- derpdf2.sigma2FUNC2p(function(sigma) pNBIItr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc) 
+derp2.dersigma2  <- derp2.dersigma2F$fi 
+der2p2.dersigma22<- derp2.dersigma2F$se 
+
+der2p2.derdermu2sigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma) pNBIItr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc) 
+
+  
+                   }
+
+}
+
+
 
 #############################
 
 if(margin2 == "PIG"){ # K all numerical as well
-                      # sigma <- ifelse(sigma>precision, sigma, precision)
-                      # sigma <- ifelse(sigma<10^7, sigma, 10^7)
+                      # sigma <- ifelse(sigma > precision, sigma, precision)
+                      # sigma <- ifelse(sigma <10^7, sigma, 10^7)
                       # tolerances for derivatives may be changed to get better
                       # performace, difficult to find a general rule here
+                      # one chosen here ok in most cases
     
 sigma <- sigma2 <- ifelse(sigma2 < 1e-04, 1e-04, sigma2) 
 sigma2.st <- log(sigma2) 
@@ -394,7 +486,7 @@ der2pdf2.dersigma22 <- derpdf2.sigma2F$se
 der2pdf2.mu2dersigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma) dPIG(y2, mu = mu2, sigma = sigma), y2, mu2, sigma)
 
 
-if(naive == FALSE){   
+if(naive == FALSE){    # does not need y2m
  
 p2  <- pPIG(y2, mu = mu2, sigma = sigma) 
  
@@ -412,6 +504,69 @@ der2p2.derdermu2sigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma) pPIG(
                    }
 
 }
+
+
+
+
+if(margin2 == "tPIG"){ 
+    
+sigma <- sigma2 <- ifelse(sigma2 < 1e-04, 1e-04, sigma2) 
+sigma2.st <- log(sigma2) 
+    
+
+mu2  <- exp(eta2)
+mu2  <- ifelse(mu2 < 1e-04, 1e-04, mu2) # safety check for num derivs
+eta2 <- log(mu2) 
+
+dermu2.dereta2 <- exp(eta2)
+der2mu2.dereta2eta2 <- exp(eta2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)  
+dersigma2.dersigma2.st2 <- exp(sigma2.st)  
+
+
+pdf2 <- dPIGtr(y2, mu = mu2, sigma = sigma, left.trunc)    
+
+derpdf2.dermu2F <- derpdf2.dermu2FUNC2p(function(mu2) dPIGtr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc) 
+derpdf2.dermu2  <- derpdf2.dermu2F$fi 
+der2pdf2.dermu2 <- derpdf2.dermu2F$se     
+    
+ 
+derpdf2.sigma2F     <- derpdf2.sigma2FUNC2p(function(sigma) dPIGtr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc) 
+derpdf2.sigma2      <- derpdf2.sigma2F$fi      
+der2pdf2.dersigma22 <- derpdf2.sigma2F$se 
+   
+der2pdf2.mu2dersigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma) dPIGtr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc)
+
+
+if(naive == FALSE){    # does not need y2m
+ 
+p2  <- pPIGtr(y2, mu = mu2, sigma = sigma, left.trunc) 
+ 
+derp2.dermu2F  <- derpdf2.dermu2FUNC2p(function(mu2) pPIGtr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc)
+derp2.dermu2   <- derp2.dermu2F$fi
+der2p2.dermu22 <- derp2.dermu2F$se
+    
+derp2.dersigma2F <- derpdf2.sigma2FUNC2p(function(sigma) pPIGtr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc) 
+derp2.dersigma2  <- derp2.dersigma2F$fi 
+der2p2.dersigma22<- derp2.dersigma2F$se 
+   
+der2p2.derdermu2sigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma) pPIGtr(y2, mu = mu2, sigma = sigma, left.trunc), y2, mu2, sigma, left.trunc) 
+  
+
+                   }
+
+}
+
+
+
+
+
+
+
+
+
+######################################################################################
 
 
 

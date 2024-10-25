@@ -1,15 +1,12 @@
-jc.probs2 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr){
+jc.probs2 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev, cont1par, cont2par, cont3par, bin.link, min.pr, max.pr, tau.res = FALSE){
 
 nu1 <- nu2 <- nu <- sigma2 <- 1
 CIp12 <- NULL
-CIkt <- tau <- NULL
+CIkt <- tau <- theta <- CItheta <- NULL
 CLM.shift <- CLM.shift2 <- 0
 dof <- x$dof
 
-p12s <- NULL
-
-
-
+p12s  <- matrix(0, 1, 2) 
 
 
 
@@ -171,7 +168,8 @@ if(y1 == 1) p12  <- 1 - p12 ### y1=1 | y2=x ###
 if(x$margins[2] %in% c(x$VC$m2d, x$VC$m1d)){#*# bin - discr
 
 p0   <- 1 - p1
-ppdf <- distrHsATDiscr(y2, eta2, sigma2, nu = 1, x$margins[2], x$VC$y2m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)
+y2rep <- rep(y2, length(eta2))
+ppdf <- distrHsATDiscr(y2rep, eta2, sigma2, nu = 1, x$margins[2], x$VC$y2m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)
 p2   <- ppdf$p2 
 pdf2 <- ppdf$pdf2
 
@@ -263,11 +261,12 @@ if(cond == 2) p12 <- p12/pdf2
 
 # kendalls' tau
 
-if(x$BivD %in% x$BivD2)    {x$SemiParFit <- x; tau <- Reg2Copost(x$SemiParFit, x$VC, theta)$tau} 
-if(!(x$BivD %in% x$BivD2)) tau <- ass.ms(x$VC$BivD, x$VC$nCa, theta)$tau 
 
+if(x$BivD %in% x$BivD2 && tau.res == TRUE)    {x$SemiParFit <- x; tau <- Reg2Copost(x$SemiParFit, x$VC, theta, tau.res = tau.res)$tau} 
+if(!(x$BivD %in% x$BivD2) && tau.res == TRUE) tau <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = tau.res)$tau
 
-
+if(x$BivD %in% x$BivD2)    {x$SemiParFit <- x; theta <- Reg2Copost(x$SemiParFit, x$VC, theta, tau.res = FALSE)$theta} 
+if(!(x$BivD %in% x$BivD2)) theta <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = FALSE)$theta
            
            
 if(intervals == TRUE){
@@ -390,7 +389,7 @@ sigma2 <- esp.tr(sigma2.star, x$VC$margins[2])$vrb
   
 if( x$VC$margins[2] %in% cont3par ){  
     
-  if( is.null(x$X3)  ) nu.st <- bs[, x$X1.d2 + x$X2.d2 + 2] # t(as.matrix(bs[,  x$X1.d2 + x$X2.d2 + 2]))
+  if( is.null(x$X3)  ) nu.st <- bs[, x$X1.d2 + x$X2.d2 + 2] 
   if( !is.null(x$X3) ){
   
 if(!missing(newdata)){ X4s <- predict.SemiParBIV(x, eq = 4, newdata = newdata, type = "lpmatrix")}                    
@@ -408,23 +407,23 @@ if( missing(newdata)){ if(x$VC$ccss == "yes") X4s <- x$X4s else X4s <- x$X4}
 #################
 
 
-if( is.null(x$X3) ){
-
-est.RHOb <- matrix(rep(est.RHOb, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
-sigma2   <- matrix(rep(sigma2, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
-nu       <- matrix(rep(nu, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
-
-                   }
+#if( is.null(x$X3) ){
+#
+#est.RHOb <- matrix(rep(est.RHOb, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
+#if( x$VC$margins[2] %in% c(cont2par, cont3par)  ) sigma2   <- matrix(rep(sigma2, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
+#if( x$VC$margins[2] %in% cont3par )               nu       <- matrix(rep(nu, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
+#
+#                   }
 
 
 
 
 if((cond == 0 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)) || (cond == 1 && x$margins[2] %in% c(x$VC$m2, x$VC$m3))){#*#
 
-p0s  <- matrix(1 - p1s, dim(p1s)[1], n.sim)         
-p2s  <- matrix( distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2 , dim(p1s)[1], n.sim)
+p0s  <- 1 - p1s         
+p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2 
 
-if(x$VC$BivD %in% c("N","T")) p12s <- matrix(mm(BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim) else{
+if(x$VC$BivD %in% c("N","T")) p12s <- mm(BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ) else{
 
 
 if(x$BivD %in% x$BivD2){
@@ -436,7 +435,7 @@ if( length(x$teta2) != 0) p12s[x$teta.ind2,] <- mm(BiCDF(p0s[x$teta.ind2,], p2s[
                       
                         }
 
-if(!(x$BivD %in% x$BivD2)) p12s <- matrix( mm(BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ) , dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)) p12s <- mm(BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ) 
 
 
 }
@@ -458,12 +457,11 @@ if(cond == 1) p12s <- p12s/p1s
  
 if(cond == 2 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*# bin - cont
 
-p0s  <- matrix( 1 - p1s , dim(p1s)[1], n.sim)        
-p2s  <- matrix( distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2, dim(p1s)[1], n.sim)
+p0s  <- 1 - p1s         
+p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
 
 
-if(!(x$BivD %in% x$BivD2)) p12s <- matrix( copgHsCond(p0s, p2s, est.RHOb, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2, dim(p1s)[1], n.sim)
-         if(x$BivD == "T") p12s <- matrix(p12s, dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)) p12s <- copgHsCond(p0s, p2s, est.RHOb, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
 
 
 if(x$BivD %in% x$BivD2){
@@ -489,12 +487,13 @@ if(y1 == 1) p12s <- 1 - p12s ### y1=1 | y2=x ###
  
 if(x$margins[2] %in% c(x$VC$m2d, x$VC$m1d)){#*#
 
-p0s   <- matrix( 1 - p1s , dim(p1s)[1], n.sim)
-ppdf  <- distrHsATDiscr(y2, eta2s, sigma2, nu = 1, x$margins[2], x$VC$y2m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr) # not sure about y2m
-p2s   <- matrix( ppdf$p2 ,  dim(p1s)[1], n.sim)
-pdf2s <- matrix( ppdf$pdf2, dim(p1s)[1], n.sim)
+p0s   <- 1 - p1s 
+y2rep <- rep(y2, length(eta2s))
+ppdf  <- distrHsATDiscr(y2rep, eta2s, sigma2, nu = 1, x$margins[2], x$VC$y2m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2) # not sure about y2m
+p2s   <- ppdf$p2 
+pdf2s <- ppdf$pdf2
 
-if(x$VC$BivD %in% c("N","T")) C1s <- matrix(mm(BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim) else{
+if(x$VC$BivD %in% c("N","T")) C1s <- mm(BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ) else{
 
 
 if(x$BivD %in% x$BivD2){
@@ -506,7 +505,7 @@ if( length(x$teta2) != 0) C1s[x$teta.ind2,] <- mm(BiCDF(p0s[x$teta.ind2,], p2s[x
                       
                         }
 
-if(!(x$BivD %in% x$BivD2)) C1s <- matrix(mm(BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)) C1s <- mm(BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
 
 
 
@@ -514,7 +513,7 @@ if(!(x$BivD %in% x$BivD2)) C1s <- matrix(mm(BiCDF(p0s, p2s, x$nC, est.RHOb, dof,
 
 
 
-if(x$VC$BivD %in% c("N","T")) C2s <- matrix(mm(BiCDF(p0s, mm(p2s-pdf2s, min.pr, max.pr), x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim) else{
+if(x$VC$BivD %in% c("N","T")) C2s <- mm(BiCDF(p0s, mm(p2s-pdf2s, min.pr, max.pr), x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ) else{
 
 
 if(x$BivD %in% x$BivD2){
@@ -526,7 +525,7 @@ if( length(x$teta2) != 0) C2s[x$teta.ind2,] <- mm(BiCDF(p0s[x$teta.ind2,], mm(p2
                       
                         }
 
-if(!(x$BivD %in% x$BivD2)) C2s <- matrix( mm(BiCDF(p0s, mm(p2s-pdf2s, min.pr, max.pr), x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ), dim(p1s)[1], n.sim)
+if(!(x$BivD %in% x$BivD2)) C2s <-  mm(BiCDF(p0s, mm(p2s-pdf2s, min.pr, max.pr), x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  )
 
 
 }
@@ -573,14 +572,25 @@ BivDt <- x$VC$BivD
   
                          }
   
-ass.msR <- ass.ms(BivDt, nCa, est.RHOb)
-taus    <- ass.msR$tau
-if(!is.null(x$X3) && BivDt %in% c("AMH", "FGM")) taus <- matrix(taus, nrow(x$X3), nrow(bs))
-CIkt <- rowQuantiles(taus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+ass.msR <- theta2tau(BivDt, nCa, est.RHOb, tau.res = tau.res)
+if(tau.res == TRUE) taus <- ass.msR$tau
+thetas <- ass.msR$theta
+
+                                   
+                                                  
+                                                  
+if(tau.res == TRUE){ taus <- matrix(taus, 1, n.sim); CIkt <- rowQuantiles(taus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)}
+
+
+thetas <- matrix(thetas, 1, n.sim)
+CItheta <- rowQuantiles(thetas, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
+
+
+
 #if( is.null(x$X3) ) CIkt <- t(CIkt) 
 
 
-
+if(tau.res == TRUE){
  if(x$BivD %in% x$BivD2){ 
  
    if(length(x$theta) > 1){
@@ -594,7 +604,20 @@ CIkt <- rowQuantiles(taus, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
                                 }
  }
 
-   
+}
+
+ if(x$BivD %in% x$BivD2){ 
+ 
+   if(length(x$theta) > 1){
+ 
+     if( length(x$teta2) != 0) CItheta[x$teta.ind2, ] <- -CItheta[x$teta.ind2, ]; CItheta[x$teta.ind2, c(1,2)] <- CItheta[x$teta.ind2, c(2,1)] 
+                                 
+                          }else{
+ 
+     if( length(x$teta2) != 0) CItheta <- -CItheta; CItheta[, c(1,2)] <- CItheta[, c(2,1)]
+                                 
+                                }
+ }   
    
    
    
@@ -641,8 +664,8 @@ if(x$margins[2] %in% cont3par) nu <- enu.tr(predict.SemiParBIV(x, eq = 4, newdat
 
 if( is.null(x$X3) ){
 
-sigma2 <- x$gamlss$sigma2
-nu     <- x$gamlss$nu 
+if( x$VC$margins[2] %in% c(cont2par,cont3par) ) sigma2 <- x$gamlss$sigma2
+if( x$VC$margins[2] %in% c(cont3par) )          nu     <- x$gamlss$nu 
 
                    }
 
@@ -699,8 +722,10 @@ if(cond == 2) p12 <- p1
 
 if(x$margins[2] %in% c(x$VC$m2d, x$VC$m1d)){#*#
 
-p0   <- 1 - p1
-pdf2 <- distrHsATDiscr(y2, eta2, sigma2, nu = 1, x$margins[2], x$VC$y2m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pdf2  
+p0    <- 1 - p1
+y2rep <- rep(y2, length(eta2))
+pdf2  <- distrHsATDiscr(y2rep, eta2, sigma2, nu = 1, x$margins[2], x$VC$y2m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$pdf2 
+p2    <- distrHsATDiscr(y2rep, eta2, sigma2, nu = 1, x$margins[2], x$VC$y2m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2  
 
 if(y1 == 0){
 p12 <- p0*pdf2
@@ -771,7 +796,7 @@ sigma2 <- esp.tr(sigma2.star, x$VC$margins[2])$vrb
   
 if( x$VC$margins[2] %in% cont3par ){  
     
-  if( is.null(x$X3)  ) nu.st <- bs2[,  x$X2.d2 + 2] # t(as.matrix(bs2[,  x$X2.d2 + 2]))
+  if( is.null(x$X3)  ) nu.st <- bs2[,  x$X2.d2 + 2] 
   
   if( !is.null(x$X3) ){
   
@@ -789,21 +814,21 @@ if( missing(newdata)){ if(x$VC$ccss == "yes") X4s <- x$X4s else X4s <- x$X4}
 #################
 
 
-if( is.null(x$X3) ){
-
-sigma2   <- matrix(rep(sigma2, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
-nu       <- matrix(rep(nu, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
-
-                   }
-
+#if( is.null(x$X3) ){
+#
+#if( x$VC$margins[2] %in% c(cont2par,cont3par) ) sigma2   <- matrix(rep(sigma2, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
+#if( x$VC$margins[2] %in% cont3par ) nu       <- matrix(rep(nu, each = dim(eta2s)[1]), ncol = n.sim, byrow=FALSE)
+#
+#                   }
+#
 
 
 if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*#
 
 if(y1 == 0 || y1 == 1){                              
-p0s  <- matrix(1 - p1s, dim(p1s)[1], n.sim)                     
-p2s  <- matrix( distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2, dim(p1s)[1], n.sim)
-p12s <- matrix( p0s*p2s, dim(p1s)[1], n.sim)
+p0s  <- 1 - p1s                    
+p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
+p12s <- p0s*p2s
 
 if(cond == 1) p12s <- p2s
 if(cond == 2) p12s <- p0s
@@ -828,8 +853,10 @@ if(cond == 2) p12s <- p1s
 
 if(x$margins[2] %in% c(x$VC$m2d, x$VC$m1d)){#*#
 
-p0s   <- matrix( 1 - p1s, dim(p1s)[1], n.sim)
-pdf2s <- matrix( distrHsATDiscr(y2, eta2s, sigma2, nu = 1, x$margins[2], x$VC$y2m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pdf2 , dim(p1s)[1], n.sim)         # not sure about y2m
+p0s   <- 1 - p1s
+y2rep <- rep(y2, length(eta2s))
+pdf2s <- distrHsATDiscr(y2rep, eta2s, sigma2, nu = 1, x$margins[2], x$VC$y2m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$pdf2 
+p2s   <- distrHsATDiscr(y2rep, eta2s, sigma2, nu = 1, x$margins[2], x$VC$y2m, min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2         # not sure about y2m
 
 if(y1 == 0){
 p12s <- p0s*pdf2s
@@ -853,7 +880,7 @@ if(cond == 2) p12s <- p1s
 } # indep
 
 
-list(p12 = p12, p12s = p12s, p1 = p1, p2 = p2, p3 = NULL, CIkt = CIkt, tau = tau)
+list(p12 = p12, p12s = matrix(p12s, 1, length(p12s)), p1 = p1, p2 = p2, p3 = NULL, CItau = CIkt, tau = tau, CItheta = CItheta, theta = theta)
 
 
 }

@@ -76,6 +76,12 @@ if(!is.null(object$X4)){
 
 
 
+dimnames(CI12s)[[1]] <- dimnames(object$theta12)[[1]]
+dimnames(CI13s)[[1]] <- dimnames(object$theta13)[[1]]
+dimnames(CI23s)[[1]] <- dimnames(object$theta23)[[1]]
+
+
+
   if(object$VC$gc.l == TRUE) gc()
   
   susuR <- susu(object, SE, Vb)
@@ -99,7 +105,7 @@ rm(bs, SE, Vb)
               formula1=object$gam1$formula, formula2=object$gam2$formula, formula3=object$gam3$formula,
               formula4=object$gam4$formula, formula5=object$gam5$formula, formula6=object$gam6$formula,
               formula7=object$gam7$formula,formula8=object$gam8$formula,
-              t.edf=object$t.edf, CI12s=CI12s, CI13s=CI13s, CI23s=CI23s,
+              t.edf=object$t.edf, CItheta12 = CI12s, CItheta13 = CI13s, CItheta23 = CI23s,
               l.sp1 = object$l.sp1, l.sp2 = object$l.sp2, l.sp3 = object$l.sp3, 
               l.sp4 = object$l.sp4, l.sp5 = object$l.sp5, l.sp6 = object$l.sp6,
               l.sp7 = object$l.sp7, l.sp8 = object$l.sp8,

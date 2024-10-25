@@ -1,8 +1,19 @@
+version 0.2-6.7
+- Small bug fixed in an internal function. Thanks to Mateus Maia Marques.
+- joint model with survival and binary outcomes.
+- AT function now called ATE and various argument names modified for clarity.
+- surv argument in gjrm() and gamlss() removed as survival models can be identified by the margins chosen.
+
+version 0.2-6.6
+- ordinal argument in gjrm() removed as the ordinal models can be identified by the margins chosen.
+- Poisson is now "P" instead of "PO".
+- gamlssfit is now uni.fit in gjrm().
+
+
 version 0.2-6.5
-- included areds dataset.
 - ordinal model summary fixed. 
-- jc.probs now is copula.prob
-- hazsurv.plot now is hazsurv
+- jc.probs now is copula.prob.
+- hazsurv.plot now is hazsurv.
 
 version 0.2-6.4
 - speed of trivariate binary models improved. 
@@ -19,7 +30,6 @@ version 0.2-6.1
 
 version 0.2-6
 - extended class of ROY models implemented and final checks completed.
-- sample selection model with Tweedie margin implemented.
 - copula survival models with general censoring scheme.
 
 version 0.2-5.1
@@ -34,7 +44,7 @@ version 0.2-4
 
 version 0.2-3
 - function for fitting linear models with positivity and sum-to-one constraints; see lmc().
-- generalized Pareto and discrete generalized Pareto distributions implemented.
+- generalized Pareto and discrete generalized Pareto distributions implemented for univariate modelling.
 - robust gamlss implemented.
 
 version 0.2-2

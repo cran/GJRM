@@ -6,7 +6,7 @@ print.SemiParTRIV <- function(x, ...){
   as.p13 <- x$theta13.a
   as.p23 <- x$theta23.a
   
-  main.t <- "\nCOPULA:  "     
+  main.t <- "\nCOPULA:"     
       
   if(x$margins[1]=="probit")  m1l <- "probit"
   if(x$margins[1]=="logit")   m1l <- "logit"
@@ -27,15 +27,15 @@ print.SemiParTRIV <- function(x, ...){
   cat("\nMARGIN 3: Bernoulli") 
       
   cat("\n\nEQUATION 1")
-  cat("\nLink function for mu.1:",m1l,"\n")
+  cat("\nLink function for mu1:",m1l,"\n")
   cat("Formula: "); print(x$formula[[1]])
 
   cat("\nEQUATION 2")
-  cat("\nLink function for mu.2:",m2l,"\n")
+  cat("\nLink function for mu2:",m2l,"\n")
   cat("Formula: "); print(x$formula[[2]])
   
   cat("\nEQUATION 3")
-  cat("\nLink function for mu.3:",m3l,"\n")
+  cat("\nLink function for mu3:",m3l,"\n")
   cat("Formula: "); print(x$formula[[3]])  
  
 if(!is.null(x$X4)){
@@ -57,8 +57,8 @@ if(!is.null(x$X4)){
  
   cat("\n")
             
-if(x$Model == "T" || x$Model == "TESS")   cat("n = ",x$n,"\ntheta12 = ", format(as.p12, digits=3),"  theta13 = ", format(as.p13, digits=3),"  theta23 = ", format(as.p23, digits=3),"\ntotal edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
-if(x$Model == "TSS") cat("n = ",x$n,"  n.sel1 = ",x$n.sel1,"  n.sel2 = ",x$n.sel2,"\ntheta12 = ", format(as.p12, digits=3),"  theta13 = ", format(as.p13, digits=3),"  theta23 = ", format(as.p23, digits=3),"\ntotal edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
+if(x$Model == "T" || x$Model == "TESS")   cat("theta12 = ", format(as.p12, digits=3),"  theta13 = ", format(as.p13, digits=3),"  theta23 = ", format(as.p23, digits=3),"\nn = ",x$n,"  total edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
+if(x$Model == "TSS") cat("theta12 = ", format(as.p12, digits=3),"  theta13 = ", format(as.p13, digits=3),"  theta23 = ", format(as.p23, digits=3),"\nn = ",x$n,"  n.sel1 = ",x$n.sel1,"  n.sel2 = ",x$n.sel2,"\ntotal edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
 
 # tess can be improved with n.sel
 

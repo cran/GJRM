@@ -236,7 +236,7 @@ der2p2.dery22  <- derp2.dery2  * ( (a + b - 2) * y2 - (a - 1) ) / ( ( y2 - 1 ) *
 
 ####
 
-if(margin2 == "iG"){
+if(margin2 == "IG"){
 
 y2 <- exp(y2.st)
 dery.dery.st <- exp(y2.st)

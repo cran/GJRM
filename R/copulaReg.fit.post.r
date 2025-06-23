@@ -31,6 +31,18 @@ coef.t     <- pVbres$coef.t
 ############################################################################################  
 # this should not bother once we set NULL
   
+  
+  
+if(!is.null(VC$X2s)){ # not sure why we had this but we might need now for BSS
+
+    params2 <- SemiParFit$fit$argument[(VC$X1.d2 + 1):(VC$X1.d2 + VC$X2.d2)] 
+    params2[VC$mono.sm.pos2] <- exp( params2[VC$mono.sm.pos2] ) 
+    eta2 <- VC$X2%*%params2
+    SemiParFit$fit$eta2 <- VC$X2s%*%params2  
+
+}
+
+  
 if(SemiParFit$surv == FALSE){  
   
 sigma1 <- sigma21 <- esp.tr(SemiParFit$fit$etas1, VC$margins[1])$vrb  
@@ -120,7 +132,7 @@ theta.a <- ass.msR$theta.a
 
 BivD <- VC$BivD
 
-if(VC$surv == TRUE) BivD <- "N"
+if(VC$surv == TRUE) BivD <- "N" # because dof is not estimated in surv case
 
 if(BivD == "T" && VC$margins[1] %in% c(VC$m2,VC$m3) && VC$margins[2] %in% c(VC$m2,VC$m3)){ dof <- dof.tr(SemiParFit$fit$etan)$vao  
 
@@ -165,7 +177,10 @@ if(!is.null(nu2)     && length(nu2)    == 1) names(nu2)     <- "nu2"
 if(!is.null(dof)     && length(dof)    == 1) names(dof)     <- "dof"
 
 
-if(!is.null(theta)   && length(theta)  > 1){ theta   <- as.matrix(theta  ); dimnames(theta  )[[1]] <- dimnames(VC$X1)[[1]]; dimnames(theta  )[[2]] <- "theta"  }
+
+# inde introduced for BSS surv
+if(!is.null(theta)   && length(theta)  > 1){ theta   <- as.matrix(theta  ); dimnames(theta  )[[1]] <- dimnames(VC$X1)[[1]][VC$inde]; dimnames(theta  )[[2]] <- "theta"  }
+
 if(!is.null(sigma21) && length(sigma21)> 1){ sigma21 <- as.matrix(sigma21); dimnames(sigma21)[[1]] <- dimnames(VC$X1)[[1]]; dimnames(sigma21)[[2]] <- "sigma21"}
 if(!is.null(sigma22) && length(sigma22)> 1){ sigma22 <- as.matrix(sigma22); dimnames(sigma22)[[1]] <- dimnames(VC$X1)[[1]]; dimnames(sigma22)[[2]] <- "sigma22"}
 if(!is.null(sigma1)  && length(sigma1) > 1){ sigma1  <- as.matrix(sigma1 ); dimnames(sigma1 )[[1]] <- dimnames(VC$X1)[[1]]; dimnames(sigma1 )[[2]] <- "sigma1" }

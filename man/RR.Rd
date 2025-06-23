@@ -11,7 +11,7 @@ corresponding interval obtained using posterior simulation.}
 
 \usage{
 
-RR(x, trt, int.var = NULL, joint = TRUE, n.sim = 100, prob.lev = 0.05, 
+RR(x, trt, trt.val = NULL, int.var = NULL, joint = TRUE, n.sim = 100, prob.lev = 0.05, 
    length.out = NULL)
 
 }
@@ -22,7 +22,10 @@ RR(x, trt, int.var = NULL, joint = TRUE, n.sim = 100, prob.lev = 0.05,
 
 \item{trt}{Name of the treatment variable.} 
 
-\item{int.var}{A vector made up of the name of the variable interacted with \code{nm.end}, and a value for it.} 
+\item{trt.val}{Numeric value for the treatment variable. This is only required when the endogenous variable is Gaussian.} 
+
+
+\item{int.var}{A vector made up of the name of the variable interacted with \code{trt}, and a value for it. It can also be a list.} 
 
 
 \item{joint}{If \code{FALSE} then the effect is obtained from the univariate model 

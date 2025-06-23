@@ -106,8 +106,8 @@ Cop2 <- Cop1Cop2R$Cop2
 ##################
 ##################
 
-  dHs1 <- distrHs(respvec$y1, eta1, sigma21, sigma21.st, nu1, nu1.st, margin2=VC$margins[1], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-  dHs2 <- distrHs(respvec$y2, eta2, sigma22, sigma22.st, nu2, nu2.st, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  dHs1 <- distrHs(respvec$y1, eta1, sigma21, sigma21.st, nu1, nu1.st, margin2=VC$margins[1], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc1)
+  dHs2 <- distrHs(respvec$y2, eta2, sigma22, sigma22.st, nu2, nu2.st, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc2)
 
   pdf1 <- dHs1$pdf2
   pdf2 <- dHs2$pdf2
@@ -121,6 +121,11 @@ Cop2 <- Cop1Cop2R$Cop2
   if( length(teta1) != 0) c.copula2.be1be2[teta.ind1] <- dH1$c.copula2.be1be2
   if( length(teta2) != 0) c.copula2.be1be2[teta.ind2] <- dH2$c.copula2.be1be2
   
+  c.copula.be1 <- c.copula.be2 <- NA
+  if( length(teta1) != 0) c.copula.be1[teta.ind1] <- dH1$c.copula.be1
+  if( length(teta2) != 0) c.copula.be1[teta.ind2] <- dH2$c.copula.be1 
+  if( length(teta1) != 0) c.copula.be2[teta.ind1] <- dH1$c.copula.be2
+  if( length(teta2) != 0) c.copula.be2[teta.ind2] <- dH2$c.copula.be2  
 
   
   l.par <- VC$weights*( log(pdf1) + log(pdf2) + log(c.copula2.be1be2) )
@@ -468,7 +473,7 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
               BivD=VC$BivD, 
               p1 = p1, p2 = p2, pdf1 = pdf1, pdf2 = pdf2,          
               c.copula.be2 = c.copula.be2,
-              c.copula.be1 = c.copula.be1,
+              c.copula.be1 = c.copula.be1, h1 = c.copula.be1, h2 = c.copula.be2,
               c.copula2.be1be2 = c.copula2.be1be2,                             
               dl.dbe1          =dl.dbe1,       
               dl.dbe2          =dl.dbe2,       

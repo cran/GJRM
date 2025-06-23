@@ -44,7 +44,7 @@ gamlss(formula, data = list(), weights = NULL, subset = NULL, offset = NULL,
 
 \item{offset}{Optional vector specifying an offset for use in fitting. Option introduced for dealing with offset with discrete distributions.}
 
-\item{family}{Possible choices are normal ("N"), Tweedie ("TW"),
+\item{family}{Possible choices are Gaussian ("N"), truncated Gaussian ("tN"), Tweedie ("TW"),
                log-normal ("LN"), Gumbel ("GU"), reverse Gumbel ("rGU"), generelised Pareto ("GP"), 
                generelised Pareto II ("GPII") where the shape parameter is forced to be > -0.5, 
                generelised Pareto (with orthogonal parametrisation) ("GPo") where the shape parameter is forced to be > -0.5,

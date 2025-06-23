@@ -98,7 +98,7 @@ Cop2 <- Cop1Cop2R$Cop2
 
   dHs1 <- distrHsDiscr(respvec$y1, eta1, sigma21, sigma21.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = FALSE, y2m = VC$y1m, 
                        min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc1)
-  dHs2 <-      distrHs(respvec$y2, eta2, sigma22, sigma22.st, nu2, nu2.st, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  dHs2 <-      distrHs(respvec$y2, eta2, sigma22, sigma22.st, nu2, nu2.st, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc2)
 
   pdf1 <- dHs1$pdf2
   pdf2 <- dHs2$pdf2

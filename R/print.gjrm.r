@@ -426,10 +426,22 @@ if(x$BivD == "T" && x$VC$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$VC$margins[2] %
   if(x$margins[1] %in% cont1par && x$margins[2] %in% cont2par ) cat( s2, format(s2.p, digits=3),
                                                                      "\n",cp, format(as.p, digits=3),
                                                                      "\nn = ",x$n,"  total edf = ",format(x$t.edf, digits=3),"\n\n", sep="")
-                                                                     
+   
+ 
+ 
+ if(x$model != "BSS"){
   if(x$margins[1] %in% cont1par && x$margins[2] %in% cont1par ) cat( cp, format(as.p, digits=3),
                                                                      "\nn = ",x$n,"  total edf = ",format(x$t.edf, digits=3),"\n\n", sep="")                                                                     
-                                                                     
+   
+}  
+
+ if(x$model == "BSS"){
+  if(x$margins[1] %in% cont1par && x$margins[2] %in% cont1par ) cat( cp, format(as.p, digits=3),
+                                                                     "\nn = ",x$n, "  n.sel = ",x$n.sel, "\ntotal edf = ",format(x$t.edf,digits=3),"\n\n", sep="")
+   
+} 
+   
+   
   if(x$margins[1] %in% cont1par && x$margins[2] %in% cont3par ) cat( s2, format(s2.p, digits=3),
                                                                      "\n",n2, format(n2.p, digits=3),
                                                                      "\n",cp, format(as.p, digits=3),

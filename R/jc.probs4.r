@@ -7,19 +7,20 @@ CIkt <- tau <- theta <- CItheta <- NULL
 
 p12s  <- matrix(0, 1, 2) 
 
-
 param1 <- x$coef.t[1:x$X1.d2]
 param2 <- x$coef.t[(x$X1.d2+1):(x$X1.d2+x$X2.d2)]
+
+newdata[, x$v1[1]] <- ifelse(newdata[, x$v1[1]] < 0.0001, 0.0001, newdata[, x$v1[1]]) 
+newdata[, x$v2[1]] <- ifelse(newdata[, x$v2[1]] < 0.0001, 0.0001, newdata[, x$v2[1]])
+
 ######################################################################################################
+
 
 if(type == "joint"){ 
 
 ######
 
-if(!missing(newdata)){ 
-
-newdata[, x$v1[1]] <- ifelse(newdata[, x$v1[1]] < 0.0001, 0.0001, newdata[, x$v1[1]]) 
-newdata[, x$v2[1]] <- ifelse(newdata[, x$v2[1]] < 0.0001, 0.0001, newdata[, x$v2[1]]) 
+if(!missing(newdata)){  
 
 X1 <- predict.SemiParBIV(x, eq = 1, newdata = newdata, type = "lpmatrix")
 X2 <- predict.SemiParBIV(x, eq = 2, newdata = newdata, type = "lpmatrix")
@@ -76,23 +77,23 @@ if(!(x$BivD %in% x$BivD2)){
 
 p12 <- mm(BiCDF(p1, p2, x$nC, theta, x$dof), min.pr = min.pr, max.pr = max.pr)
 
-if(sf == "cumhaz") p12 <- -log(p12)
-
-if(sf == "hazard"){
-
-                    cp <- copgHs2(p1, p2, eta1 = NULL, eta2 = NULL, theta, theta, x$BivD, x$dof, min.pr = min.pr, max.pr = max.pr, min.dn = x$VC$min.dn)$c.copula2.be1be2
-
-                    Gp1 <- pS1$dS
-                    Gp2 <- pS2$dS
-                    
-                    Xt1 <- Xd1 %*% param1
-                    Xt2 <- Xd2 %*% param2
-                                       
-                    p12 <- (cp*Gp1*Gp2*Xt1*Xt2)/p12
-
-                                      
-                  }
-
+#if(sf == "cumhaz") p12 <- -log(p12)
+#
+#if(sf == "hazard"){
+#
+#                    cp <- copgHs2(p1, p2, eta1 = NULL, eta2 = NULL, theta, theta, x$BivD, x$dof, min.pr = min.pr, max.pr = max.pr, min.dn = x$VC$min.dn)$c.copula2.be1be2
+#
+#                    Gp1 <- pS1$dS
+#                    Gp2 <- pS2$dS
+#                    
+#                    Xt1 <- Xd1 %*% param1
+#                    Xt2 <- Xd2 %*% param2
+#                                       
+#                    p12 <- (cp*Gp1*Gp2*Xt1*Xt2)/p12
+#
+#                                      
+#                  }
+#
 
 
 
@@ -134,20 +135,20 @@ if(!(x$BivD %in% x$BivD2)){
 p12 <- copgHsCond(p1, p2, theta, dof = x$dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
 
 
-if(sf == "cumhaz") p12 <- -log(p12)
-
-if(sf == "hazard"){
-
-                    cp <- copgHs2(p1, p2, eta1 = NULL, eta2 = NULL, theta, theta, x$BivD, x$dof, min.pr = min.pr, max.pr = max.pr, min.dn = x$VC$min.dn)$c.copula2.be1
-
-                    Gp1 <- pS1$dS                  
-                    Xt1 <- Xd1 %*% param1
-                    
-                    
-                    p12 <- (cp*Gp1*Xt1) / p12
-
-
-}
+#if(sf == "cumhaz") p12 <- -log(p12)
+#
+#if(sf == "hazard"){
+#
+#                    cp <- copgHs2(p1, p2, eta1 = NULL, eta2 = NULL, theta, theta, x$BivD, x$dof, min.pr = min.pr, max.pr = max.pr, min.dn = x$VC$min.dn)$c.copula2.be1
+#
+#                    Gp1 <- pS1$dS                  
+#                    Xt1 <- Xd1 %*% param1
+#                    
+#                    
+#                    p12 <- (cp*Gp1*Xt1) / p12
+#
+#
+#}
 
 
 
@@ -185,19 +186,19 @@ if(!(x$BivD %in% x$BivD2)){
 p12 <- copgHsCond(p1, p2, theta, dof = x$dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
 
 
-if(sf == "cumhaz") p12 <- -log(p12)
-
-if(sf == "hazard"){
-
-                    cp <- copgHs3(p1, p2, eta1 = NULL, eta2 = NULL, theta, theta, x$BivD, x$dof)$c.copula2.be2
-
-                    Gp2 <- pS2$dS                  
-                    Xt2 <- Xd2 %*% param2
-                    
-                    p12 <- (cp*Gp2*Xt2)/p12
-
-
-}
+#if(sf == "cumhaz") p12 <- -log(p12)
+#
+#if(sf == "hazard"){
+#
+#                    cp <- copgHs3(p1, p2, eta1 = NULL, eta2 = NULL, theta, theta, x$BivD, x$dof)$c.copula2.be2
+#
+#                    Gp2 <- pS2$dS                  
+#                    Xt2 <- Xd2 %*% param2
+#                    
+#                    p12 <- (cp*Gp2*Xt2)/p12
+#
+#
+#}
 
 
 
@@ -267,16 +268,16 @@ est.RHOb <- teta.tr(x$VC, epds)$teta
 
 
 
-if(sf == "hazard"){
-
-Gp1s <- P1s$dS
-Gp2s <- P2s$dS
-
-Xt1s <- Xd1 %*% param1s
-Xt2s <- Xd2 %*% param2s
-
-                                     
-}
+#if(sf == "hazard"){
+#
+#Gp1s <- P1s$dS
+#Gp2s <- P2s$dS
+#
+#Xt1s <- Xd1 %*% param1s
+#Xt2s <- Xd2 %*% param2s
+#
+#                                     
+#}
 
 
 
@@ -291,16 +292,16 @@ if(!(x$BivD %in% x$BivD2)){
 
 p12s <- mm(BiCDF(p1s, p2s, x$nC, est.RHOb, x$dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)
 
-if(sf == "cumhaz") p12s <- -log(p12s) 
-
-if(sf == "hazard"){
-
-            cps <- copgHs2(p1s, p2s, eta1 = NULL, eta2 = NULL, est.RHOb, est.RHOb, x$BivD, x$dof, min.pr = min.pr, max.pr = max.pr, min.dn = x$VC$min.dn)$c.copula2.be1be2
-
-            p12s <- (cps*Gp1s*Gp2s*Xt1s*Xt2s)/p12s
-
-                  }
-
+#if(sf == "cumhaz") p12s <- -log(p12s) 
+#
+#if(sf == "hazard"){
+#
+#            cps <- copgHs2(p1s, p2s, eta1 = NULL, eta2 = NULL, est.RHOb, est.RHOb, x$BivD, x$dof, min.pr = min.pr, max.pr = max.pr, min.dn = x$VC$min.dn)$c.copula2.be1be2
+#
+#            p12s <- (cps*Gp1s*Gp2s*Xt1s*Xt2s)/p12s
+#
+#                  }
+#
 
 }
 
@@ -326,18 +327,18 @@ if(cond == 1){
 if(!(x$BivD %in% x$BivD2)) p12s <- copgHsCond(p1s, p2s, est.RHOb, dof = x$dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be1
 
 
-if(sf == "cumhaz") p12s <- -log(p12s) 
-
-
-if(sf == "hazard"){
-
-                    cps <- copgHs2(p1s, p2s, eta1 = NULL, eta2 = NULL, est.RHOb, est.RHOb, x$BivD, x$dof, min.pr = min.pr, max.pr = max.pr, min.dn = x$VC$min.dn)$c.copula2.be1
-
-                    p12s <- (cps*Gp1s*Xt1s) / p12s
-
-
-}
-
+#if(sf == "cumhaz") p12s <- -log(p12s) 
+#
+#
+#if(sf == "hazard"){
+#
+#                    cps <- copgHs2(p1s, p2s, eta1 = NULL, eta2 = NULL, est.RHOb, est.RHOb, x$BivD, x$dof, min.pr = min.pr, max.pr = max.pr, min.dn = x$VC$min.dn)$c.copula2.be1
+#
+#                    p12s <- (cps*Gp1s*Xt1s) / p12s
+#
+#
+#}
+#
 
 
 
@@ -364,16 +365,16 @@ if(cond == 2){
 if(!(x$BivD %in% x$BivD2)) p12s <- copgHsCond(p1s, p2s, est.RHOb, dof = x$dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
 
 
-if(sf == "cumhaz") p12s <- -log(p12s)
-
-if(sf == "hazard"){
-
-                    cps <- copgHs3(p1s, p2s, eta1 = NULL, eta2 = NULL, est.RHOb, est.RHOb, x$BivD, x$dof)$c.copula2.be2
-                    
-                    p12s <- (cps*Gp2s*Xt2s)/p12s
-
-
-}
+#if(sf == "cumhaz") p12s <- -log(p12s)
+#
+#if(sf == "hazard"){
+#
+#                    cps <- copgHs3(p1s, p2s, eta1 = NULL, eta2 = NULL, est.RHOb, est.RHOb, x$BivD, x$dof)$c.copula2.be2
+#                    
+#                    p12s <- (cps*Gp2s*Xt2s)/p12s
+#
+#
+#}
 
 
 
@@ -489,11 +490,11 @@ eta1 <- X1%*%param1
 eta2 <- X2%*%param2
 
 
-if(sf == "hazard"){
-                    Xd1 <- Xdpred(x$gam1, newdata, as.character(x$formula[[1]][2]))
-                    Xd2 <- Xdpred(x$gam2, newdata, as.character(x$formula[[2]][2]))
-                   }
-
+#if(sf == "hazard"){
+#                    Xd1 <- Xdpred(x$gam1, newdata, as.character(x$formula[[1]][2]))
+#                    Xd2 <- Xdpred(x$gam2, newdata, as.character(x$formula[[2]][2]))
+#                   }
+#
 
 }
 
@@ -524,18 +525,18 @@ if(cond == 0){
 
 p12 <- mm(p1*p2, min.pr = min.pr, max.pr = max.pr)
 
-if(sf == "cumhaz") p12 <- -log(p12)
-
-if(sf == "hazard"){
-                    Gp1 <- pS1$dS
-                    Gp2 <- pS2$dS
-                    
-                    Xt1 <- Xd1 %*% param1
-                    Xt2 <- Xd2 %*% param2
-                                       
-                    p12 <- (Gp1*Gp2*Xt1*Xt2)/p12
-                   }
-
+#if(sf == "cumhaz") p12 <- -log(p12)
+#
+#if(sf == "hazard"){
+#                    Gp1 <- pS1$dS
+#                    Gp2 <- pS2$dS
+#                    
+#                    Xt1 <- Xd1 %*% param1
+#                    Xt2 <- Xd2 %*% param2
+#                                       
+#                    p12 <- (Gp1*Gp2*Xt1*Xt2)/p12
+#                   }
+#
 
 }
 
@@ -544,15 +545,15 @@ if(cond == 1){
 
                p12 <- p2
 
-if(sf == "cumhaz") p12 <- -log(p12)
-
-
-if(sf == "hazard"){
-                    Gp2 <- pS2$dS                  
-                    Xt2 <- Xd2 %*% param2                   
-                    p12 <- -(Gp2*Xt2)/p12
-                   }
-
+#if(sf == "cumhaz") p12 <- -log(p12)
+#
+#
+#if(sf == "hazard"){
+#                    Gp2 <- pS2$dS                  
+#                    Xt2 <- Xd2 %*% param2                   
+#                    p12 <- -(Gp2*Xt2)/p12
+#                   }
+#
 
 
 }
@@ -565,15 +566,15 @@ if(cond == 2){
 
                p12 <- p1
 
-if(sf == "cumhaz") p12 <- -log(p12)
-
-
-if(sf == "hazard"){
-                    Gp1 <- pS1$dS                  
-                    Xt1 <- Xd1 %*% param1                   
-                    p12 <- -(Gp1*Xt1)/p12
-                   }
-
+#if(sf == "cumhaz") p12 <- -log(p12)
+#
+#
+#if(sf == "hazard"){
+#                    Gp1 <- pS1$dS                  
+#                    Xt1 <- Xd1 %*% param1                   
+#                    p12 <- -(Gp1*Xt1)/p12
+#                   }
+#
 
 
 }
@@ -612,20 +613,20 @@ if(cond == 0){
 
 p12s <- mm(p1s*p2s, min.pr = min.pr, max.pr = max.pr)
 
-if(sf == "cumhaz") p12s <- -log(p12s)
-
-
-if(sf == "hazard"){
-                    Gp1s <- pS1s$dS
-                    Gp2s <- pS2s$dS
-                    
-                    Xt1s <- Xd1 %*% param1s
-                    Xt2s <- Xd2 %*% param2s
-                                       
-                    p12s <- (Gp1s*Gp2s*Xt1s*Xt2s)/p12s
-                   }
-
-
+#if(sf == "cumhaz") p12s <- -log(p12s)
+#
+#
+#if(sf == "hazard"){
+#                    Gp1s <- pS1s$dS
+#                    Gp2s <- pS2s$dS
+#                    
+#                    Xt1s <- Xd1 %*% param1s
+#                    Xt2s <- Xd2 %*% param2s
+#                                       
+#                    p12s <- (Gp1s*Gp2s*Xt1s*Xt2s)/p12s
+#                   }
+#
+#
 
 
 
@@ -635,17 +636,17 @@ if(sf == "hazard"){
 
 if(cond == 1){ p12s <- p2s
 
-if(sf == "cumhaz") p12s <- -log(p12s)
-
-
-if(sf == "hazard"){
-                    Gp2s <- pS2s$dS
-                    
-                    Xt2s <- Xd2 %*% param2s
-                                       
-                    p12s <- -(Gp2s*Xt2s)/p12s
-                   }
-
+#if(sf == "cumhaz") p12s <- -log(p12s)
+#
+#
+#if(sf == "hazard"){
+#                    Gp2s <- pS2s$dS
+#                    
+#                    Xt2s <- Xd2 %*% param2s
+#                                       
+#                    p12s <- -(Gp2s*Xt2s)/p12s
+#                   }
+#
 
 
 }
@@ -655,16 +656,16 @@ if(sf == "hazard"){
 
 if(cond == 2){ p12s <- p1s
 
-if(sf == "cumhaz") p12s <- -log(p12s)
-
-if(sf == "hazard"){
-                    Gp1s <- pS1s$dS
-                    
-                    Xt1s <- Xd1 %*% param1s
-                                       
-                    p12s <- -(Gp1s*Xt1s)/p12s
-                    
-                   }
+#if(sf == "cumhaz") p12s <- -log(p12s)
+#
+#if(sf == "hazard"){
+#                    Gp1s <- pS1s$dS
+#                    
+#                    Xt1s <- Xd1 %*% param1s
+#                                       
+#                    p12s <- -(Gp1s*Xt1s)/p12s
+#                    
+#                   }
 
 }
 

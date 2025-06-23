@@ -61,7 +61,7 @@ sigma2    <- sstr1$vrb
 
 ####
 
-dHs <- distrHs(respvec$y2, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2 = VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) # WHY VC$margins[2]?
+dHs <- distrHs(respvec$y2, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2 = VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc2) # WHY VC$margins[2]?
 
 pdf2                         <- dHs$pdf2
 p2                           <- dHs$p2

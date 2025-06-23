@@ -12,7 +12,7 @@ It produces diagnostic plots based on (randomised) quantile residuals.
 
 \usage{
 
-res.check(x, intervals = FALSE, n.sim = 100, prob.lev = 0.05, ...)
+res.check(x, intervals = FALSE, n.sim = 100, prob.lev = 0.05)
 
 }
 
@@ -25,8 +25,6 @@ res.check(x, intervals = FALSE, n.sim = 100, prob.lev = 0.05, ...)
 \item{n.sim}{Number of replicate datasets used to simulate quantiles of the residual distribution.} 
 
 \item{prob.lev}{Overall probability of the left and right tails of the probabilities' distributions used for interval calculations.} 
-
-\item{...}{Graphics parameters to pass on to plotting commands.}
 
 }
 

@@ -1,3 +1,6 @@
+version 0.2-6.8
+- Vuong and Clarke tests split in two different functions.
+
 version 0.2-6.7
 - Small bug fixed in an internal function. Thanks to Mateus Maia Marques.
 - joint model with survival and binary outcomes.

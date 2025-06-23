@@ -11,6 +11,8 @@ min.dn <- 1e-160 # x$VC$min.dn
 min.pr <- x$VC$min.pr
 max.pr <- x$VC$max.pr 
 
+ltt <- x$VC$left.trunc
+
 
 
 j <- 1; inds <- posi <- NULL 
@@ -21,7 +23,9 @@ rlo <- (max(x$VC$y1) - min(x$VC$y1))/lo
 if(rlo > 1) lo <- round(lo*rlo) 
 
 
-if( margin %in% c("N","N2","GU","rGU","LO","LN") )                            seq.y <- seq(min(x$VC$y1) - ((max(x$VC$y1) - min(x$VC$y1))/2), max(x$VC$y1) + ((max(x$VC$y1) - min(x$VC$y1))/2), length.out = lo)
+if( margin %in% c("tN","N","N2","GU","rGU","LO","LN") )                       seq.y <- seq(min(x$VC$y1) - ((max(x$VC$y1) - min(x$VC$y1))/2), max(x$VC$y1) + ((max(x$VC$y1) - min(x$VC$y1))/2), length.out = lo)
+if( margin %in% c("tN") )                                                     seq.y <- seq(min(x$VC$y1), max(x$VC$y1) + ((max(x$VC$y1) - min(x$VC$y1))/2), length.out = lo)
+
 if( margin %in% c("WEI","IG","GA","DAGUM","SM","FISK","GP","GPII","GPo")  )   seq.y <- seq(1e-12, max(x$VC$y1) + ((max(x$VC$y1) - min(x$VC$y1))/2), length.out = lo)
 if( margin %in% c("TW")  )                                                    seq.y <- seq(0, max(x$VC$y1) + ((max(x$VC$y1) - min(x$VC$y1))/2), length.out = lo)
 if( margin %in% c("BE")  )                                                    seq.y <- seq(1e-12, 0.999999,  length.out = lo)      
@@ -68,7 +72,7 @@ if( margin %in% c("DAGUM","SM","TW") ){
 
 for(i in 1:lo){ 
 
-  ires <- intB(seq.y[i], eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr) 
+  ires <- intB(seq.y[i], eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, left.trunc = ltt) 
   
   if(min(ires) == max(ires) && min(ires) < tol) inds[i] <- TRUE else inds[i] <- FALSE
 
@@ -77,20 +81,20 @@ for(i in 1:lo){
 
 }
 
-if((is.null(posi) || length(posi) < 2) && margin %in% c("N","N2","GU","rGU","LO","LN")) stop("Increase the tolerance value or try a different range.")
+if((is.null(posi) || length(posi) < 2) && margin %in% c("tN","N","N2","GU","rGU","LO","LN")) stop("Increase the tolerance value or try a different range.")
 
 
 
+# tN in two places, perhaps test if/when needed
 
-
-if((is.null(posi) || length(posi) < 2) && margin %in% c("WEI","IG","GA","DAGUM","TW","SM","FISK","GP","GPII","GPo") ){
+if((is.null(posi) || length(posi) < 2) && margin %in% c("tN","WEI","IG","GA","DAGUM","TW","SM","FISK","GP","GPII","GPo") ){
 
 
 posi <- NULL; j <- 1
 
   for(i in 1:lo){ 
 
-    ires <- intB(seq.y[i], eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr) 
+    ires <- intB(seq.y[i], eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, left.trunc = ltt) 
   
     if(min(ires) == max(ires) && min(ires) < tol) inds[i] <- TRUE else inds[i] <- FALSE 
     

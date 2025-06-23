@@ -1,4 +1,4 @@
-distrHsAT1 <- function(y2.st, eta2, sigma2, nu, margin2){
+distrHsAT1 <- function(y2.st, eta2, sigma2, nu, margin2, left.trunc = 0){
  
 
  
@@ -20,6 +20,19 @@ der2y.dery.st2 <- 0
 
 
 }
+
+
+
+if(margin2 %in% c("tN")) stop("Not done yet. Get in touch.")
+
+
+
+
+
+
+
+
+
 
 
 if(margin2 %in% c("LN")){

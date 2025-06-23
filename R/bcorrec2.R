@@ -20,7 +20,8 @@ if(is.null(VC$X2)){VC$X2 <- VC$X3 <- matrix(1, n, 1); VC$X2.d2 <- VC$X3.d2 <- 1}
 
 if(is.null(VC$lB) && is.null(VC$uB)){
 
-if( margin %in% c("N","GU","rGU","LO","LN") )                                     { lB <- -Inf;      uB <- Inf}
+if( margin %in% c("N","tN","GU","rGU","LO","LN") )                                     { lB <- -Inf;      uB <- Inf}
+if( margin %in% c("tN"))                                                                 lB <- VC$left.trunc
 if( margin %in% c("WEI","IG","GA","DAGUM","SM","FISK","GP","GPII","GPo","TW")  )  { lB <- sqrt(.Machine$double.eps); uB <- Inf} # tw should be zero here?
 if( margin %in% c("BE")  )                                                        { lB <- sqrt(.Machine$double.eps); uB <- 0.999999}
 
@@ -44,9 +45,9 @@ for(i in 1:n){
   nu    <- enu.tr(X3%*%params[(1+VC$X1.d2+VC$X2.d2):(VC$X1.d2+VC$X2.d2+VC$X3.d2)], margin)$vrb
   }
 
-  int1[i]  <- integrate(int1f, lB, uB, eta, sigma2, nu, margin, rc, min.dn, min.pr, max.pr)$value
+  int1[i]  <- integrate(int1f, lB, uB, eta, sigma2, nu, margin, rc, min.dn, min.pr, max.pr, left.trunc = VC$left.trunc)$value
 
-    for(j in 1:length(params)) G[i, j] <- integrate(d.bpsi, lB, uB, X1, X2, X3, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, j, min.dn, min.pr, max.pr)$value
+    for(j in 1:length(params)) G[i, j] <- integrate(d.bpsi, lB, uB, X1, X2, X3, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, j, min.dn, min.pr, max.pr, left.trunc = VC$left.trunc)$value
 
 }
 

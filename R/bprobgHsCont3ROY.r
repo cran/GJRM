@@ -64,7 +64,7 @@ bprobgHsCont3ROY <- function(params, respvec, VC, ps, AT = FALSE){
 ########  
 
 
- dHs  <- distrHs(respvec$y2, eta2, sigma1, sigma1.st, nu1, nu1.st, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+ dHs  <- distrHs(respvec$y2, eta2, sigma1, sigma1.st, nu1, nu1.st, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc1)
   
  pdf2.M2                          <- dHs$pdf2
  p2.M2                            <- dHs$p2 
@@ -88,7 +88,7 @@ bprobgHsCont3ROY <- function(params, respvec, VC, ps, AT = FALSE){
  der2pdf2.dersigma2.stdernu.st.M2 <- dHs$der2pdf2.sigma2.st2dernu.st 
  
  
- dHs  <- distrHs(respvec$y3, eta3, sigma2, sigma2.st, nu2, nu2.st, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+ dHs  <- distrHs(respvec$y3, eta3, sigma2, sigma2.st, nu2, nu2.st, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc2)
   
  pdf2.M3                          <- dHs$pdf2
  p2.M3                            <- dHs$p2 

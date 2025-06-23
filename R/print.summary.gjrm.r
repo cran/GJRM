@@ -118,9 +118,21 @@ print.summary.gjrm <- function(x, digits = max(3, getOption("digits") - 3),
                                                                      #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
                                                                      "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
 
+  if(x$model != "BSS"){
+
   if( x$margins[1] %in% cont1par && x$margins[2] %in% cont1par) cat("theta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
                                                                      #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
-                                                                     "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
+                                                                     "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="") 
+}
+
+  if(x$model == "BSS"){
+  
+  if( x$margins[1] %in% cont1par && x$margins[2] %in% cont1par) cat("theta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
+                                                                     #ct,format(kt.p,digits=nodi),"(",format(CIkt[1],digits=nodi),",",format(CIkt[2],digits=nodi),")",
+                                                                     "\nn = ",x$n, "  n.sel = ",x$n.sel, "\ntotal edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="")  
+}
+
+
 
 if( x$margins[1] %in% cont1par && x$margins[2] %in% cont3par) cat(s2,format(s2.p,digits=nodi),"(",format(CIsig22[1],digits=nodi),",",format(CIsig22[2],digits=nodi),")",
                                                                      "\n",n2,format(n2.p,digits=nodi),"(",format(CInu2[1],digits=nodi),",",format(CInu2[2],digits=nodi),")", 

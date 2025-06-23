@@ -55,7 +55,7 @@ if(eq1.binsurv == FALSE){
     #
     #}
      
-    if( margins %in% c("N","LO","GU","rGU","GAi")      )                       formula.eq1 <- update(formula.eq1, (. + mean(.))/2 ~ . ) 
+    if( margins %in% c("tN","N","LO","GU","rGU","GAi")      )                       formula.eq1 <- update(formula.eq1, (. + mean(.))/2 ~ . ) 
     if( margins %in% c(m1d, m2d) && margins != "GEVlink" && margins != "DGP")  formula.eq1 <- update(formula.eq1, log((. + mean(.))/2) ~ . )  
     if( margins %in% c("LN") )                                                 formula.eq1 <- update(formula.eq1, (log(.) + mean(log(.)))/2 ~ . )
     #if( margins %in% c("GO","GA2") )                            	       formula.eq1 <- update(formula.eq1, -(log(.) + mean(log(.)))/2 ~ . ) 

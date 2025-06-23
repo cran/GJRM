@@ -15,6 +15,8 @@ pVbres <- postVb(SemiParFit, VC)
 
 He         <- pVbres$He    
 Vb.t       <- pVbres$Vb.t
+coef.t     <- pVbres$coef.t
+
 
 Vb         <- pVbres$Vb        
 HeSh       <- pVbres$HeSh      
@@ -142,7 +144,7 @@ if(!is.null(nu3    ) && length(nu3    ) > 1){ nu3     <- as.matrix(nu3    ); dim
 
 
 
-                 list(SemiParFit = SemiParFit, He = He, logLik = logLik, Vb = Vb, HeSh = HeSh, F = F, F1 = F1, t.edf = t.edf, edf = edf, Vb.t = Vb.t,
+                 list(SemiParFit = SemiParFit, He = He, logLik = logLik, Vb = Vb, HeSh = HeSh, F = F, F1 = F1, t.edf = t.edf, edf = edf, Vb.t = Vb.t,coef.t = coef.t,
                       edf11 = edf1,
                       edf1 = edf[[1]], edf2 = edf[[2]], edf3 = edf[[3]], edf4 = edf[[4]], edf5 = edf[[5]], edf6 = edf[[6]],
                       edf7 = edf[[7]], edf8 = edf[[8]], edf9 = edf[[9]],

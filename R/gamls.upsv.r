@@ -15,7 +15,7 @@ sp9 <- SP$sp9
 if(type == "ROY"){
 
    
-      if(margins[2] %in% c(M$m1d) && margins[3] %in% c(M$m1d)){
+      if(margins[2] %in% c(M$m1d,M$bl) && margins[3] %in% c(M$m1d,M$bl)){
     
         b2 <- gamlss1$coefficients[1:VC$X2.d2] # this is actually gamlss2, done to avoid changing arguments of the function
         b3 <- gamlss2$coefficients[1:VC$X3.d2] # this is actually gamlss3

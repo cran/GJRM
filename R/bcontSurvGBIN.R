@@ -185,10 +185,10 @@ der2h.derp1teta.st  <- der2h.derp1teta*derteta.derteta.st
 p01 <- c.copula.be2*-dS2eta2*Xd2P
 p11 <- -dS2eta2*Xd2P - p01
 
-p00 <- ifelse(p00 < 0, VC$min.pr, p00)  
-p01 <- ifelse(p01 < 0, VC$min.pr, p01)
-p11 <- ifelse(p11 < 0, VC$min.pr, p11)
-p10 <- ifelse(p10 < 0, VC$min.pr, p10)
+p00 <- ifelse(p00 < VC$min.pr, VC$min.pr, p00)  
+p01 <- ifelse(p01 < VC$min.pr, VC$min.pr, p01)
+p11 <- ifelse(p11 < VC$min.pr, VC$min.pr, p11)
+p10 <- ifelse(p10 < VC$min.pr, VC$min.pr, p10)
 
 
 der.par2 <- der2.par2 <- params2

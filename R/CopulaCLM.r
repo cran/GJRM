@@ -45,7 +45,7 @@ scc  <- c("C0" , "C180","GAL0" , "GAL180", "J0" , "J180", "G0","G180",BivD2)
 sccn <- c("C90", "C270", "GAL90", "GAL270","J90", "J270", "G90", "G270")
 
 mb   <- c("B", "BSS", "BPO", "BPO0")
-m2   <- c("N", "GU", "rGU", "LO", "LN", "WEI", "IG", "GA", "BE", "FISK","GP","GPII","GPo")
+m2   <- c("tN","N", "GU", "rGU", "LO", "LN", "WEI", "IG", "GA", "BE", "FISK","GP","GPII","GPo")
 m3   <- c("DAGUM", "SM","TW")
 m1d  <- c("P", "tP","DGP0") 
 m2d  <- c("tNBI", "tNBII", "tPIG","NBI", "NBII", "PIG","DGP","DGPII") 
@@ -89,6 +89,10 @@ pream.wm(formula, margins, M, l.flist, type = "ord")
 form.check(formula, l.flist)   
   
 
+  data$weights <- weights
+  data$subset  <- subset  
+    
+
 ################################################## 
 
 
@@ -114,7 +118,7 @@ mf$ind.ord <- NULL
 #if(Model=="BSS") mf$na.action <- na.pass
   
 mf[[1]] <- as.name("model.frame")
-data    <- eval(mf, parent.frame())
+data    <- eval(mf)#, parent.frame())
   
 if(gc.l == TRUE) gc()  
 
@@ -315,8 +319,8 @@ if(is.null(theta.fx)){
     
 if(Model == "B"){ 
 
-res1 <- residuals(gam1)
-res2 <- residuals(gam2)
+res1 <- residuals(gam1); res1 <- res1 + rnorm(length(res1), sd = 0.01)
+res2 <- residuals(gam2); res2 <- res2 + rnorm(length(res2), sd = 0.01)
 
 ass.s <- cor(res1, res2, method = "kendall")
 ass.s <- sign(ass.s) * ifelse(abs(ass.s) > 0.9, 0.9, abs(ass.s))  

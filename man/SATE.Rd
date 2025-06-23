@@ -12,7 +12,7 @@ corresponding interval obtained using posterior simulation.}
 \usage{
 
 SATE(x, trt, surv.t = NULL, int.var = NULL, joint = TRUE,
-     n.sim = 100, prob.lev = 0.05, ls = 10, plot.type = "survival", ...)
+     n.sim = 100, prob.lev = 0.05, ls = 10, plot.type = "none", ...)
 
 }
 
@@ -24,10 +24,10 @@ SATE(x, trt, surv.t = NULL, int.var = NULL, joint = TRUE,
 
 \item{trt}{Name of the treatment variable.} 
 
-\item{surv.t}{Numeric value for time. If not provided, the function will be calculate the SATE for each time point of a grid of 
-              lenght \code{ls}.} 
+\item{surv.t}{Numeric value or vector for time. If not provided, the function will be calculate the SATE for each time point of a grid of 
+              lenght \code{ls}, calculated from the observed outcome.} 
 
-\item{int.var}{A vector made up of the name of the variable interacted with \code{nm.end}, and a value for it.} 
+\item{int.var}{A vector made up of the name of the variable interacted with \code{trt}, and a value for it. It can also be a list.} 
 
 \item{joint}{If \code{FALSE} then the effects are obtained from the univariate model 
             which neglects the presence of unobserved confounders. When \code{TRUE}, the effects are obtained from 
@@ -40,7 +40,7 @@ SATE(x, trt, surv.t = NULL, int.var = NULL, joint = TRUE,
 
 \item{ls}{Length of sequence to use for time variable. Only used when \code{surv.t = NULL}.}
 
-\item{plot.type}{Used when \code{surv.t = NULL}. Values allowed are: "survival" (for survival plots under treatment = 0 (grey lines)
+\item{plot.type}{Values allowed are: "none", "survival" (for survival plots under treatment = 0 (grey lines)
                  and treatment = 1 (black lines)) and "sate" (SATE evaluated at several time points).}
 
 \item{...}{Other graphics parameters to pass on to plotting commands.}

@@ -1,5 +1,5 @@
 distrHs <- function(y2, eta2, sigma2, sigma2.st, nu, nu.st, margin2, naive = FALSE,
-                    min.dn, min.pr, max.pr){
+                    min.dn, min.pr, max.pr, left.trunc = 0){
 
 # sigma2 here means sigma, it was just a typo
 
@@ -16,7 +16,7 @@ der2p2.dernu.st2            = 1
 der2p2.dereta2dernu.st      = 1
 der2p2.dersigma2.stdernu.st = 1
 
-cont2par <- c("WEI","IG","LO","rGU","GU","GA","GAi","BE","FISK", "N","LN","GP","GPII","GPo") 
+cont2par <- c("WEI","IG","LO","rGU","GU","GA","GAi","BE","FISK", "N","tN","LN","GP","GPII","GPo") 
 cont3par <- c("DAGUM", "SM", "TW")
 
 ############################################################################
@@ -78,11 +78,73 @@ der2p2.derdermu2sigma2 <- (1 - (y2 - mu2)^2/sigma^2) * exp(-(0.5 * ((y2 - mu2)^2
 
 
 
+if(margin2 %in% c("tN")){
+
+                   mu2 <- eta2
+                 sigma <- sigma2
+                                      
+dermu2.dereta2         <- 1
+der2mu2.dereta2eta2    <- 0 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)   
+dersigma2.dersigma2.st2 <- exp(sigma2.st)   
+
+ltr <- rep(left.trunc, length(mu2))
+pe1 <- se1 <- te2 <- ie1 <- 1 - pnorm(ltr, mean = mu2, sd = sigma)
+se2 <- te12 <- ie8 <- sigma^2
+se3 <- te3 <- ie3 <- dnorm(ltr, mu2, sigma)
+se4 <- se5 <- te8 <- te11 <- ie4 <- ie6 <- dnorm(y2, mu2, sigma)
+se6 <- te5 <- ie2 <- y2 - mu2
+
+te1 <- pnorm(ltr, mean = mu2, sd = sigma)
+te4 <- ie7 <- mu2 - ltr
+te7 <- (te5/sigma)^2 - 1
+te9 <- te7 * te8
+te10 <- te3 * te4
+
+ie5 <- (ie2/sigma)^2
+
+  pdf2                <- dnorm(y2, mean = mu2, sd = sigma)/(1 - pnorm(ltr, mean = mu2, sd = sigma))  
+derpdf2.dermu2        <- (dnorm(y2, mu2, sigma) * (y2 - mu2)/sigma^2 - dnorm(ltr, mu2, sigma) * dnorm(y2, mean = mu2, sd = sigma)/pe1)/pe1   
+der2pdf2.dermu2       <- ((se6^2/se2 - 1) * se5/se2 - ((2 * (se5 * se6) + se4 * (ltr - mu2))/se2 - 2 * (se3 * se4/se1)) * se3/se1)/se1
+
+derpdf2.sigma2        <- ((((y2 - mu2)/sigma)^2 - 1) * dnorm(y2, mu2, sigma) + dnorm(ltr, mu2, sigma) * dnorm(y2, mean = mu2, sd = sigma) * (mu2 - ltr)/pe1)/(sigma * pe1)
+der2pdf2.dersigma22   <- (((((ltr - mu2)/sigma)^2 + te10/te2 - 1) * te11 + te9) * te3 * te4/te2 + (te7^2 - 2 * (te5^2/te12)) * te8)/(te12 * te2) - (te9 + te3 * te11 * te4/te2) * (1 - (te10 + te1))/(sigma * te2)^2
+
+der2pdf2.mu2dersigma2 <- ((ie5 - 3) * ie4 * ie2/ie8 - ((((ltr - mu2)/sigma)^2 + ie3 * ie7/ie1 - 1) * ie6 + (ie5 - 1) * ie4 - (ie4 * ie2/ie8 - ie3 * ie6/ie1) * ie7) * ie3/ie1)/(sigma * ie1)
 
 
+ 
+  
+if(naive == FALSE){  
+
+    pe1 <- se1 <- te1 <- ze1 <- ie1 <- pnorm(ltr, mean = mu2, sd = sigma)
+    pe2 <- se2 <- te2 <- ze2 <- ie2 <- 1 - pe1
+
+    se3 <- ze5 <- (pnorm(y2, mean = mu2, sd = sigma) - se1)/se2
+    se4 <- ze3 <- ie6 <- dnorm(ltr, mu2, sigma)
+    se5 <- ze6 <- ie3 <- dnorm(y2, mu2, sigma)
+    se6 <- sigma^2
+ 
+    ze4 <- mu2 - ltr
+    ze7 <- mu2 - y2
+    ze8 <- ze5 - 1
+    ze9 <- ze6 * ze7
+    
+    ie5 <- 1 - (pnorm(y2, mean = mu2, sd = sigma) - ie1)/ie2
+        
+    p2                 <- (pnorm(y2, mean = mu2, sd = sigma) - pnorm(ltr, mean = mu2, sd = sigma))/(1 - pnorm(ltr, mean = mu2, sd = sigma))
+derp2.dermu2           <- ((1 - (pnorm(y2, mean = mu2, sd = sigma) - pe1)/pe2) * dnorm(ltr, mu2, sigma) - dnorm(y2, mu2, sigma))/pe2                
+ der2p2.dermu22        <- ((((2 * se3 - 2) * se4 + 2 * se5)/se2 + (1 - se3) * (ltr - mu2)/se6) * se4 - se5 * (y2 - mu2)/se6)/se2 
+ 
+derp2.dersigma2        <- (((pnorm(y2, mean = mu2, sd = sigma) - te1)/te2 - 1) * dnorm(ltr, mu2, sigma) * (mu2 - ltr) + dnorm(y2, mu2, sigma) * (mu2 - y2))/(sigma * te2)  
+der2p2.dersigma22      <- (((((ltr - mu2)/sigma)^2 - 1) * ze8 + (ze9 - (1 - ze5) * ze3 * ze4)/ze2) * ze3 * ze4 + (((y2 - mu2)/sigma)^2 - 1) * ze6 * ze7)/(sigma^2 * ze2) - (ze8 * ze3 * ze4 + ze9) * (1 - (ze3 * ze4 + ze1))/(sigma * ze2)^2
+der2p2.derdermu2sigma2 <- (((((ltr - mu2)/sigma)^2 - 1) * ie5 + ((2 * (ie5 * ie6) - ie3) * (mu2 - ltr) - ie3 * (mu2 - y2))/ie2) * ie6 - (((y2 - mu2)/sigma)^2 - 1) * ie3)/(sigma * ie2)
+               
+                }
 
 
-
+}
 
 
 

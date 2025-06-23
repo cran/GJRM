@@ -1,8 +1,8 @@
 Package: GJRM
 Type: Package
-Version: 0.2-6.7
+Version: 0.2-6.8
 Title: Generalised Joint Regression Modelling
-Description: Routines for fitting various joint (and univariate) regression models, with several types of covariate effects, in the presence of equations' errors association, endogeneity, non-random sample selection or partial observability.
+Description: Routines for fitting various joint (and univariate) regression models, with several types of covariate effects, in the presence of equations' errors association.
 Authors@R: c(person(given = "Giampiero", family = "Marra", role = c("aut", "cre"), email = "giampiero.marra@ucl.ac.uk"),
              person(given = "Rosalba", family = "Radice", role = "aut", email = "rosalba.radice@city.ac.uk"))    
 Author: Giampiero Marra [aut, cre],
@@ -18,6 +18,6 @@ LazyLoad: yes
 License: GPL (>= 2)
 URL: https://www.ucl.ac.uk/statistics/people/giampieromarra
 Repository: CRAN
-Date/Publication: 2024-10-25 09:10:13 UTC
+Date/Publication: 2025-06-23 21:20:02 UTC
 NeedsCompilation: no
-Packaged: 2024-10-24 06:01:57 UTC; Giampiero
+Packaged: 2025-06-23 20:04:25 UTC; Giampiero

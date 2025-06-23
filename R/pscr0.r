@@ -3,6 +3,8 @@ pscr0 <- function(x, type = "copR"){
 if(type == "copR"){
 
   if(x$margins[1]%in%c("N"))              cat("\nMARGIN 1: Gaussian")  
+  if(x$margins[1]%in%c("tN"))             cat("\nMARGIN 1: Truncated Gaussian")  
+  
   if(x$margins[1]=="GU")                  cat("\nMARGIN 1: Gumbel")    
   if(x$margins[1]=="GP")                  cat("\nMARGIN 1: Generalised Pareto")   
   if(x$margins[1]=="GPII")                cat("\nMARGIN 1: Generalised Pareto II")    
@@ -47,6 +49,8 @@ if(x$surv.flex == FALSE){
   
   
   if(x$margins[2]%in%c("N"))              cat("\nMARGIN 2: Gaussian")  
+  if(x$margins[2]%in%c("tN"))             cat("\nMARGIN 2: Truncated Gaussian")  
+  
   if(x$margins[2]=="GP")                  cat("\nMARGIN 2: Generalised Pareto")  
   if(x$margins[2]=="GPII")                cat("\nMARGIN 2: Generalised Pareto II")  
   if(x$margins[2]=="GPo")                 cat("\nMARGIN 2: Generalised Pareto (Orthogonal Parameterisation)")    
@@ -126,7 +130,8 @@ if(type == "gamlss"){
   if(x$margins[1]=="DGP0")             cat("\nDistribution: Discrete Generalised Pareto (shape = 0)")  
   
   
-  if(x$margins[1]%in%c("N","N2"))      cat("\nDistribution: Gaussian")  
+  if(x$margins[1]%in%c("N","N2"))      cat("\nDistribution: Gaussian") 
+  if(x$margins[1]%in%c("tN"))          cat("\nDistribution: Truncated Gaussian")  
   if(x$margins[1]=="GU")               cat("\nDistribution: Gumbel")    
   if(x$margins[1]=="rGU")              cat("\nDistribution: Reverse Gumbel")  
   if(x$margins[1]=="LO")               cat("\nDistribution: Logistic")   
@@ -177,6 +182,8 @@ if(x$margins[2] %in% x$bl && !is.null(x$K2)) cat("\nMARGIN 2: Ordinal")
 if(is.null(x$K2)){
 
 if(x$margins[2]%in%c("N"))           cat("\nMARGIN 2: Gaussian")  
+if(x$margins[2]%in%c("tN"))          cat("\nMARGIN 2: Truncated Gaussian")  
+
 if(x$margins[2]=="GP")               cat("\nMARGIN 2: Generalised Pareto")  
 if(x$margins[2]=="GPII")             cat("\nMARGIN 2: Generalised Pareto II")  
 if(x$margins[2]=="GPo")              cat("\nMARGIN 2: Generalised Pareto (Orthogonal Parameterisation)")    
@@ -226,12 +233,25 @@ if(type == "ROY"){
 
 if(x$margins[1] %in% x$bl &&  is.null(x$K1)) cat("\nMARGIN 1: Switching Mechanism - Bernoulli") 
 if(x$margins[1] %in% x$bl && !is.null(x$K1)) cat("\nMARGIN 1: Switching Mechanism - Ordinal") 
-if(x$margins[2] %in% x$bl                  ) cat("\nMARGIN 2: Regime 0 - Bernoulli") 
-if(x$margins[3] %in% x$bl                  ) cat("\nMARGIN 3: Regime 1 - Bernoulli") 
+if(x$margins[2] %in% x$bl && x$surv == FALSE) cat("\nMARGIN 2: Regime 0 - Bernoulli") 
+if(x$margins[3] %in% x$bl && x$surv == FALSE) cat("\nMARGIN 3: Regime 1 - Bernoulli") 
 
+
+if(x$surv == TRUE){
+ 
+ if(x$margins[2] == "probit")  cat("\nMARGIN 2: Regime 0 - Survival with -probit link") 
+ if(x$margins[2] == "logit")   cat("\nMARGIN 2: Regime 0 - Survival with -logit link") 
+ if(x$margins[2] == "cloglog") cat("\nMARGIN 2: Regime 0 - Survival with -cloglog link") 
+ 
+ if(x$margins[3] == "probit")  cat("\nMARGIN 3: Regime 1 - Survival with -probit link") 
+ if(x$margins[3] == "logit")   cat("\nMARGIN 3: Regime 1 - Survival with -logit link") 
+ if(x$margins[3] == "cloglog") cat("\nMARGIN 3: Regime 1 - Survival with -cloglog link") 
+ 
+}
 
 
 if(x$margins[2] %in% c("N"))            cat("\nMARGIN 2: Regime 0 - Gaussian")  
+if(x$margins[2] %in% c("tN"))           cat("\nMARGIN 2: Regime 0 - Truncated Gaussian")  
 if(x$margins[2] == "GP")                cat("\nMARGIN 2: Regime 0 - Generalised Pareto")  
 if(x$margins[2] == "GPII")              cat("\nMARGIN 2: Regime 0 - Generalised Pareto II")  
 if(x$margins[2] == "GPo")               cat("\nMARGIN 2: Regime 0 - Generalised Pareto (Orthogonal Parameterisation)")    
@@ -263,6 +283,7 @@ if(x$margins[2] == "tP")    	        cat("\nMARGIN 2: Regime 0 - Truncated Poiss
 
 
 if(x$margins[3] %in% c("N"))            cat("\nMARGIN 3: Regime 1 - Gaussian")  
+if(x$margins[3] %in% c("tN"))           cat("\nMARGIN 3: Regime 1 - Truncated Gaussian")  
 if(x$margins[3] == "GP")                cat("\nMARGIN 3: Regime 1 - Generalised Pareto")  
 if(x$margins[3] == "GPII")              cat("\nMARGIN 3: Regime 1 - Generalised Pareto II")  
 if(x$margins[3] == "GPo")               cat("\nMARGIN 3: Regime 1 - Generalised Pareto (Orthogonal Parameterisation)")    

@@ -10,6 +10,9 @@ gamlss <- function (formula, data = list(), weights = NULL, subset = NULL,
           d.lchrate.td = NULL, d.rchrate.td = NULL, truncation.time = NULL, 
           min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.9999999, ygrid.tol = 1e-08){
           
+          
+  if(length(data) == 0) stop("A data frame must be provided.")
+
   surv <- FALSE        
   extra.regI <- "t" # default
   k.tvc <- 0 # default
@@ -42,11 +45,14 @@ gamlss <- function (formula, data = list(), weights = NULL, subset = NULL,
   tempb <- NULL
   D <- pos.pb <- list()
   Gmat12 <- Hmat12 <- NULL
-  m2 <- c("N", "GU", "rGU", "LO", "LN", "WEI", "IG", "GA", "BE", "FISK", "GP", "GPII", "GPo")
+  m2 <- c("tN", "N", "GU", "rGU", "LO", "LN", "WEI", "IG", "GA", "BE", "FISK", "GP", "GPII", "GPo")
   m3 <- c("DAGUM", "SM", "TW")
   m1d <- c("P", "tP", "GEVlink", "DGP0")
   m2d <- c("tNBI", "tNBII", "tPIG", "NBI", "NBII", "PIG", "DGP", "DGPII")
   m3d <- c("DEL", "SICHEL")
+  
+  
+  if(left.trunc > 0 && family %in% c("DGP0", "DGP", "DGPII")) stop("left.trunc option not implemented yet for the chosen distribution. \nGet in touch for more info.")
   
   if( family %in% c("-cloglog", "-logit", "-probit") ) surv <- TRUE
   

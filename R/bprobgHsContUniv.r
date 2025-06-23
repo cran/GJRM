@@ -30,7 +30,7 @@ if(VC$margins[1] %in% VC$m1d) sigma2.st <- 0
 
 if(VC$surv == TRUE) naiveind <- FALSE else naiveind <- TRUE  
 
-if(VC$margins[1] %in% VC$m2)            dHs  <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = naiveind, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+if(VC$margins[1] %in% VC$m2)            dHs  <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = naiveind, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
 if(VC$margins[1] %in% c(VC$m1d,VC$m2d)) dHs  <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = TRUE, y2m = VC$y1m, min.dn = VC$min.dn, 
                                                              min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
 

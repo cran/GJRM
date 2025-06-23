@@ -19,7 +19,7 @@ log.nu.1 <- NULL
         
  		if( margins %in% c("NBI","PIG","tNBI","tPIG") )  log.sig2.1 <- log( max( sqrt((var(y1) - mean(y1))/mean(y1)^2), 0.1)   )
  		if( margins %in% c("NBII","tNBII") )      log.sig2.1 <- log( max( sqrt((var(y1)/mean(y1)) - 1), 0.1)            ) 		
- 		if( margins %in% c("N","LN") )            log.sig2.1 <- log( sqrt( var(y1) )                                      )  
+ 		if( margins %in% c("tN","N","LN") )            log.sig2.1 <- log( sqrt( var(y1) )                                      )  
 		if( margins %in% c("LO") )                log.sig2.1 <- log( sqrt( 3*var(y1)/pi^2 )                              )   
 		if( margins %in% c("IG") )                log.sig2.1 <- log( sqrt( var(y1)/mean(y1)^3 )                           )      
 		if( margins %in% c("GU","rGU") )          log.sig2.1 <- log( sqrt( 6*var(y1)/pi^2 )                               )    

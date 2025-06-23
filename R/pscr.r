@@ -21,7 +21,10 @@ if(type == "ROY"){
 
 
   cat("\nEQUATION 2 - Regime 0")
-  cat("\nLink function for mu2:",m2l,"\n")
+  if(x$surv == FALSE) cat("\nLink function for mu2:",m2l,"\n")
+  if(x$surv == TRUE)  cat("\n")  
+
+  
   cat("Formula: "); print(x$formula[[2]])
   cat("\n")
   cat("Parametric coefficients:\n")
@@ -37,7 +40,8 @@ if(type == "ROY"){
     
 
   cat("\nEQUATION 3 - Regime 1")
-  cat("\nLink function for mu3:",m3l,"\n")
+  if(x$surv == FALSE) cat("\nLink function for mu3:",m3l,"\n")
+  if(x$surv == TRUE)  cat("\n")
   cat("Formula: "); print(x$formula[[3]])
   cat("\n")
   cat("Parametric coefficients:\n")

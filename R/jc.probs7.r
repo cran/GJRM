@@ -60,7 +60,7 @@ if( is.null(x$X3) ){
 
 if(cond == 0 || cond == 1 ){ 
 
-p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
+p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2
 
 if(y1 > 1){
             p12.f <- mm(BiCDF(pk,  p2, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr)
@@ -82,7 +82,7 @@ if(cond == 1) p12 <- p12/p1m
 if(cond == 2){ 
 
    
-p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
+p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2
 
 if(y1 > 1){
             p12.f <- copgHsCond(pk,  p2, theta, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
@@ -251,7 +251,7 @@ if( x$VC$margins[2] %in% cont2par ){
 
 if(cond == 0 || cond == 1){  
        
-p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
+p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2
 
 if(y1 > 1){ 
             p12s.f <- mm(BiCDF(pks,  p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr )
@@ -275,7 +275,7 @@ if(cond == 1) p12s <- p12s/(pks - pks1)
 if(cond == 2){
      
      
-p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
+p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2
 
 
 if(y1 > 1){
@@ -347,7 +347,7 @@ if( is.null(xx$X3) ){
 
 
 
-p2 <- distrHsAT(y2, eta2, sigma2, nu, xx$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2  
+p2 <- distrHsAT(y2, eta2, sigma2, nu, xx$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2  
 
 if(cond == 0) p12 <- p1m*p2                             
 if(cond == 1) p12 <- p2
@@ -445,7 +445,7 @@ sigma2 <- esp.tr(sigma2.star, xx$VC$margins[2])$vrb
     
                          }   
 
-p2s  <- distrHsAT(y2, eta2s, sigma2, nu, xx$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2  
+p2s  <- distrHsAT(y2, eta2s, sigma2, nu, xx$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2  
 
 if(cond == 0) p12s <- (pks - pks1)*p2s                             
 if(cond == 1) p12s <- p2s 

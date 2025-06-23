@@ -132,7 +132,7 @@ if(l.flist == 3){
 if(l.flist > 3){##
 
 
-      if(M$margins[2] %in% c(M$m1d) && M$margins[2] %in% c(M$m1d)){
+      if(M$margins[2] %in% c(M$bl, M$m1d) && M$margins[2] %in% c(M$m1d, M$bl)){
     
         formula.gamlss2 <- list(formula[[2]])
         formula.gamlss3 <- list(formula[[3]])
@@ -146,7 +146,7 @@ if(l.flist > 3){##
     
                                                                             }       
                                                                             
-      if(M$margins[2] %in% c(M$m1d) && M$margins[2] %in% c(M$m2d)){
+      if(M$margins[2] %in% c(M$bl, M$m1d) && M$margins[2] %in% c(M$m2d)){
     
         formula.gamlss2 <- list(formula[[2]])
         formula.gamlss3 <- list(formula[[3]],formula[[4]])
@@ -154,7 +154,7 @@ if(l.flist > 3){##
                                                                    }    
                                                                    
                                                                             
-      if(M$margins[2] %in% c(M$m2d) && M$margins[2] %in% c(M$m1d)){
+      if(M$margins[2] %in% c(M$m2d) && M$margins[2] %in% c(M$bl, M$m1d)){
     
         formula.gamlss2 <- list(formula[[2]],formula[[4]])
         formula.gamlss3 <- list(formula[[3]])

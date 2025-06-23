@@ -735,7 +735,7 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
 list(value = res, gradient = G, hessian = H, S.h = S.h, S.h1 = S.h1, S.h2 = S.h2, l = S.res, l.ln = l.ln, l.par = l.par, ps = ps,
      eta1 = eta1, eta2 = eta2, etad = etad, lp1 = lp1, lp2 = lp2,
      dl.dbe1 = dl.dbe1, dl.dbe2 = dl.dbe2, dl.dteta.st = dl.dteta.st,
-     BivD = VC$BivD, p1.p = p1.p, p1.m = p1.m, p2 = p2, theta.star = teta.st,
+     BivD = VC$BivD, p1.p = p1.p, p1.m = p1.m, p2 = p2, theta.star = teta.st, p2.p = p2.p, p2.m = p2.m,
      teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,
      Cop1 = Cop1, Cop2 = Cop2, teta1 = teta1, teta2 = teta2)
 

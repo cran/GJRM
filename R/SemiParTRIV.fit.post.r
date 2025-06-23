@@ -1,6 +1,6 @@
 SemiParTRIV.fit.post <- function(SemiParFit, VC, Model, GAM){
 
-Ve <- R <- X2s <- X3s <- eta1S <- eta2S <- theta <- edf <- edf1 <- theta.a <- p1n <- p2n <- p3n <- NULL
+Ve <- R <- X2s <- X3s <- eta1S <- eta2S <- theta <- edf <- edf1 <- theta.a <- p1n <- p2n <- p3n <- coef.t <- NULL
 
 logLik <- -SemiParFit$fit$l
 
@@ -87,7 +87,7 @@ sp <- SemiParFit$sp
 
 
   
-                 list(SemiParFit = SemiParFit, He = He, logLik = logLik, Vb = Vb, Vb.t = Vb.t,
+                 list(SemiParFit = SemiParFit, He = He, logLik = logLik, Vb = Vb, Vb.t = Vb.t, 
                       HeSh = HeSh, F = F, F1 = F1, t.edf = t.edf, edf = edf, 
                       edf11 = edf1,
                       edf1 = edf[[1]], edf2 = edf[[2]], edf3 = edf[[3]], edf4 = edf[[4]], 

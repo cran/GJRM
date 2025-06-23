@@ -9,7 +9,9 @@ conv.check <- function(x, blather = FALSE){
 est.probs <- c(x$fit$p1, x$fit$p2, x$fit$p3, x$fit$c.copula.be2, x$fit$c.copula.be1)
 est.dens  <- c(x$fit$pdf1, x$fit$pdf2, x$fit$pdf3, x$fit$c.copula2.be1be2)
 
-e.v <- eigen(x$fit$hessian, symmetric = TRUE, only.values = TRUE)$values
+#e.v <- eigen(x$fit$hessian, symmetric = TRUE, only.values = TRUE)$values
+e.v <- eigen(x$fit$hessian)$values
+
 
 cat("\nMaximum absolute gradient value:",max(abs(x$fit$gradient)))
 

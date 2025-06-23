@@ -67,8 +67,8 @@ teta    <- resT$teta
 ##################
 ##################
 
-  dHs1 <- distrHs(respvec$y1, eta1, sigma21, sigma21.st, nu1, nu1.st, margin2=VC$margins[1], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-  dHs2 <- distrHs(respvec$y2, eta2, sigma22, sigma22.st, nu2, nu2.st, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  dHs1 <- distrHs(respvec$y1, eta1, sigma21, sigma21.st, nu1, nu1.st, margin2=VC$margins[1], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc1)
+  dHs2 <- distrHs(respvec$y2, eta2, sigma22, sigma22.st, nu2, nu2.st, margin2=VC$margins[2], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc2)
 
   pdf1 <- dHs1$pdf2
   pdf2 <- dHs2$pdf2

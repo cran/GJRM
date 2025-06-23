@@ -27,7 +27,7 @@ nu    <- sstr1$vrb
   
 if(VC$surv == TRUE) naiveind <- FALSE else naiveind <- TRUE   
  
-if(VC$margins[1] %in% VC$m3)  dHs <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[1], naive = naiveind, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+if(VC$margins[1] %in% VC$m3)  dHs <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[1], naive = naiveind, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
 if(VC$margins[1] %in% VC$m3d) dHs <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[2], naive = TRUE, 
                                                   y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
 

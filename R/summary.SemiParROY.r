@@ -81,7 +81,7 @@ rm(bs, SE, Vb, et1s, et2s, p1s, p2s, p11s, p10s, p00s, p01s, ORs, GMs)
               sigma2.a = object$sigma2.a, sigma3.a = object$sigma3.a, sigma2 = object$sigma2, sigma3 = object$sigma3, 
               nu2.a = object$nu2.a, nu3.a = object$nu3.a, nu2 = object$nu2, nu3 = object$nu3, 
               CIsigma2 = CIsig1, CInu2  = CInu1, CIsigma3 = CIsig2, CInu3  = CInu2,
-              CItheta12 = CIrs1, CItheta13 = CIrs2)#, CItau12 = CIkt1, CItau13 = CIkt2)
+              CItheta12 = CIrs1, CItheta13 = CIrs2, surv = object$surv)#, CItau12 = CIkt1, CItau13 = CIkt2)
 
 class(res) <- "summary.SemiParROY"
                                              

@@ -1,5 +1,5 @@
 distrHsAT <- function(y2, eta2, sigma2, nu, margin2,
-                      min.dn, min.pr, max.pr){
+                      min.dn, min.pr, max.pr, left.trunc = 0){
 
 
 
@@ -53,6 +53,24 @@ if(margin2 == "N"){
     p2          <- pnorm(y2, mean = eta2, sd = sigma)
      
 }
+
+
+
+
+if(margin2 %in% c("tN")){
+
+
+  ltr <- rep(left.trunc, length(eta2))
+
+  pdf2          <- dnorm(y2, mean = eta2, sd = sigma)/(1 - pnorm(ltr, mean = eta2, sd = sigma))   
+    p2          <- (pnorm(y2, mean = eta2, sd = sigma) - pnorm(ltr, mean = eta2, sd = sigma))/(1 - pnorm(ltr, mean = eta2, sd = sigma))
+   
+              
+
+}
+
+
+
 
 
 if(margin2 == "LN"){

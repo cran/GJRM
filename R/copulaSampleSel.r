@@ -49,7 +49,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   opc  <- c("N","C0","C90","C180","C270","J0","J90","J180","J270","G0","G90","G180","G270","F","AMH","FGM","T","PL","HO","GAL0", "GAL90", "GAL180", "GAL270")
   scc  <- c("C0", "C180", "GAL0" , "GAL180", "J0", "J180", "G0", "G180", BivD2)
   sccn <- c("C90", "C270", "GAL90", "GAL270", "J90", "J270", "G90", "G270")
-  m2   <- c("N","GU","rGU","LO","LN","WEI","IG","GA","BE","FISK","GP","GPII","GPo")
+  m2   <- c("tN","N","GU","rGU","LO","LN","WEI","IG","GA","BE","FISK","GP","GPII","GPo")
   m3   <- c("DAGUM","SM","TW")
   m1d  <- c("P", "tP","DGP0")
   m2d  <- c("tNBI","tNBII","tPIG","NBI","NBII","PIG","DGP", "DGPII")
@@ -100,6 +100,12 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
  M$l.flist <- l.flist <- length(formula) 
  pream.wm(formula, margins, M, l.flist, type = "copSS")
  form.check(formula, l.flist)
+
+
+  data$weights <- weights
+  data$subset  <- subset  
+  
+
  
   cl <- match.call()
   mf <- match.call(expand.dots = FALSE)
@@ -118,7 +124,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   mf$drop.unused.levels <- drop.unused.levels 
   mf$na.action <- na.pass
   mf[[1]] <- as.name("model.frame")
-  data <- eval(mf, parent.frame())
+  data <- eval(mf)#, parent.frame())
   
   if(gc.l == TRUE) gc()
         

@@ -13,7 +13,8 @@
 \alias{bcontSurvGunivMIXED_LeftTruncation}
 \alias{bcontSurvGunivMIXED_ExcessHazard_LeftTruncation}
 \alias{bcontSurvG_extended}
-
+\alias{bcontSurvGBINROY}
+\alias{bcontSurvGBINss}
 
 
 

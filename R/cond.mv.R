@@ -35,7 +35,9 @@ if(margin %in% x$VC$bl)                                    stop("This function i
 if(margin %in% c("GP","GPII","GPo","DGP","DGPII","DGP0") ) stop("Function not ready yet for the chosen distribution(s).")
 
 
-if( margin %in% c("N","GU","rGU","LO") )                            { lB <- -Inf;                      uB <- Inf}
+if( margin %in% c("N","tN","GU","rGU","LO") )                       { lB <- -Inf;                      uB <- Inf}
+if( margin %in% c("tN") ){if(eq == 1) lB <- lt1; if(eq == 2) lB <- lt2}
+
 if( margin %in% c("LN","WEI","IG","GA","DAGUM","SM","FISK","TW")  ) { lB <- sqrt(.Machine$double.eps); uB <- Inf} 
 if( margin %in% c("BE")  )                                          { lB <- sqrt(.Machine$double.eps); uB <- 0.999999}
 
@@ -95,13 +97,13 @@ if( is.null(x$X3) ){
 
 	res.m <- distrExIntegrate(ordcont.m, lower = lB, upper = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
 	                          margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1)            
+	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)            
 
 if(fun == "variance"){
 
         res.v <- distrExIntegrate(ordcont.v, lower = lB, upper = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
 	                          margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1)
+	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)
 	                          
         res.v <- res.v - res.m^2 
         
@@ -168,7 +170,7 @@ if( is.null(xx$X3) ){
 
 res.mCITemp <- suppressMessages(try(distrExIntegrate(ordcont.m, lower = lB, upper = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
 	                          margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1), silent = TRUE))
+	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2), silent = TRUE))
 
    if( is.numeric(res.mCITemp) == FALSE ) next
    res.mCI[ii] <- as.numeric(res.mCITemp)
@@ -177,7 +179,7 @@ if(fun == "variance"){
 
 res.vCITemp <- suppressMessages(try(distrExIntegrate(ordcont.v, lower = lB, upper = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
 	                          margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1), silent = TRUE) )   
+	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2), silent = TRUE) )   
                                      
    if( is.numeric(res.vCITemp) == FALSE ) next
    res.vCI[ii] <- as.numeric(res.vCITemp)
@@ -432,13 +434,13 @@ if(eq == 2){ ##### equation of interest is no. 2 so contin. variable ####
 
 	res.m <- distrExIntegrate(discrcont.m, lower = lB, upper = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
 	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1)            
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2)            
 
 if(fun == "variance"){
 
         res.v <- distrExIntegrate(discrcont.v, lower = lB, upper = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
 	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1) 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2) 
         res.v <- res.v - res.m^2 
         
                       }
@@ -451,7 +453,7 @@ for(i in 1:n.sim){
 
 res.mCITemp <- suppressMessages(try(distrExIntegrate(discrcont.m, lower = lB, upper = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
 	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1), silent = TRUE))
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2), silent = TRUE))
 
    if( is.numeric(res.mCITemp) == FALSE ) next 
    res.mCI[i] <- as.numeric(res.mCITemp)
@@ -462,7 +464,7 @@ if(fun == "variance"){
 
 res.vCITemp <- suppressMessages(try(distrExIntegrate(discrcont.v, lower = lB, upper = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
 	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1), silent = TRUE))
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2), silent = TRUE))
 
 
    if( is.numeric(res.vCITemp) == FALSE ) next
@@ -503,7 +505,7 @@ while ( tl > 0  ){
 
 res.m[i] <- tl <- dicont.m(y, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
 	                     nu2 = nu2, theta = thet, margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
-	                     max.pr = x$VC$max.pr, nC = nC, left.trunc1 = lt1)           
+	                     max.pr = x$VC$max.pr, nC = nC, left.trunc1 = lt1, left.trunc2 = lt2)           
 Stemp[i] <- sum(res.m)
 if(i > 1){ if( (Stemp[i] - Stemp[i - 1])/Stemp[i - 1]*100 < eps ) break }
 if(y > m.y) break
@@ -524,7 +526,7 @@ y <- i <- tl <- 1
 	while ( tl > 0  ){
 		res.v[i] <- tl <- dicont.v(y, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
 	                     nu2 = nu2, theta = thet, margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
-	                     max.pr = x$VC$max.pr, nC = nC, left.trunc1 = lt1)           
+	                     max.pr = x$VC$max.pr, nC = nC, left.trunc1 = lt1, left.trunc2 = lt2)           
 
                 Stemp[i] <- sum(res.v)
                 if(i > 1){ if( (Stemp[i] - Stemp[i - 1])/Stemp[i - 1]*100 < eps ) break}		
@@ -553,7 +555,7 @@ while ( tl > 0 ){
 
 res.mCITemp[j] <- tl <- dicont.m(y, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
 	                     nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
-	                     max.pr = x$VC$max.pr, nC = nC, left.trunc1 = lt1)           
+	                     max.pr = x$VC$max.pr, nC = nC, left.trunc1 = lt1, left.trunc2 = lt2)           
 
 Stemp[j] <- sum(res.mCITemp)
 if(j > 1){ if( (Stemp[j] - Stemp[j - 1])/Stemp[j - 1]*100 < eps ) break}
@@ -578,7 +580,7 @@ while ( tl > eps  ){
 
 res.vCITemp[j] <- tl <- dicont.v(y, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
 	                     nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
-	                     max.pr = x$VC$max.pr, nC = nC, left.trunc1 = lt1)          
+	                     max.pr = x$VC$max.pr, nC = nC, left.trunc1 = lt1, left.trunc2 = lt2)          
 
 Stemp[j] <- sum(res.vCITemp)
 if(j > 1){ if( (Stemp[j] - Stemp[j - 1])/Stemp[j - 1]*100 < eps ) break}
@@ -858,13 +860,13 @@ if(is.null(x$VC$K1) && x$margins[1] %in% c(x$VC$bl) && x$margins[2] %in% c(x$VC$
 
 	res.m <- distrExIntegrate(bincont.m, lower = lB, upper = uB, p0 = p0, eta.mu = eta.mu, sigma = sigma, nu = nu, theta = theta, 
 	                                margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1)            
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)            
 
 if(fun == "variance"){
 
         res.v <- distrExIntegrate(bincont.v, lower = lB, upper = uB, p0 = p0, eta.mu = eta.mu, sigma = sigma, nu = nu, theta = theta, 
                                         margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-                                        min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1) 
+                                        min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2) 
         res.v <- res.v - res.m^2 
         
                       }
@@ -908,7 +910,7 @@ for(i in 1:n.sim){
 
 res.mCITemp <- suppressMessages(try(distrExIntegrate(bincont.m, lower = lB, upper = uB, p0 = p0[i], eta.mu = eta.mu[i], sigma = sigma[i], nu = nu[i], theta = theta[i], 
                                      margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-                                     min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1), silent = TRUE))
+                                     min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2), silent = TRUE))
 
    if( is.numeric(res.mCITemp) == FALSE ) next
    res.mCI[i] <- as.numeric(res.mCITemp)
@@ -917,7 +919,7 @@ if(fun == "variance"){
 
 res.vCITemp <- suppressMessages(try(distrExIntegrate(bincont.v, lower = lB, upper = uB, p0 = p0[i], eta.mu = eta.mu[i], sigma = sigma[i], nu = nu[i], theta = theta[i], 
                                      margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-                                     min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1), silent = TRUE) )   
+                                     min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2), silent = TRUE) )   
                                      
    if( is.numeric(res.vCITemp) == FALSE ) next
    res.vCI[i] <- as.numeric(res.vCITemp)
@@ -1374,13 +1376,13 @@ if(eq == 2){
 
 	res.m <- distrExIntegrate(contcont.m, lower = lB, upper = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
 	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond)            
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2)            
 
 if(fun == "variance"){
 
         res.v <- distrExIntegrate(contcont.v, lower = lB, upper = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
 	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond) 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2) 
         res.v <- res.v - res.m^2 
         
                       }
@@ -1393,7 +1395,7 @@ for(i in 1:n.sim){
 
 res.mCITemp <- suppressMessages(try(distrExIntegrate(contcont.m, lower = lB, upper = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
 	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = x$BivD, par2 = dofS[i], min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond), silent = TRUE))
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2), silent = TRUE))
 
    if( is.numeric(res.mCITemp) == FALSE ) next 
    res.mCI[i] <- as.numeric(res.mCITemp)
@@ -1404,7 +1406,7 @@ if(fun == "variance"){
 
 res.vCITemp <- suppressMessages(try(distrExIntegrate(contcont.v, lower = lB, upper = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
 	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = x$BivD, par2 = dofS[i], min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond), silent = TRUE))
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2), silent = TRUE))
 
 
    if( is.numeric(res.vCITemp) == FALSE ) next

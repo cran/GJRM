@@ -51,7 +51,7 @@ marg.mv <- function(x, eq, newdata, fun = "mean", n.sim = 100, prob.lev = 0.05, 
  if(eq == 2){ mar <- x$margins[2]; ltt <- x$left.trunc2} 
  
  if( mar %in% c("GP","GPII","GPo","DGP","DGPII","DGP0") ) stop("Function not ready yet for the chosen distribution(s).")
- if( mar %in% c("logit","probit","cloglog") )             stop("Function not suitable for binary margin(s).")
+ #if( mar %in% c("logit","probit","cloglog") )             stop("Function not suitable for binary margin(s).")
 
  
  
@@ -202,7 +202,7 @@ if( x$margins[2] %in% c(x$VC$m3)) fit3Sim <- Xfit3%*%t(bs[, ind3])
 
 
 
-if( x$margins[1] %in% c(x$VC$bl, x$VC$m1d) && x$margins[2] %in% c(x$VC$m1d, x$VC$m2, x$VC$m3, x$VC$m2d) ){ #############  1-1/2/3 params
+if( x$margins[1] %in% c(x$VC$bl, x$VC$m1d) && x$margins[2] %in% c(x$VC$bl, x$VC$m1d, x$VC$m2, x$VC$m3, x$VC$m2d) ){ #############  1-1/2/3 params
  
 
 
@@ -215,7 +215,7 @@ if(!is.null(x$VC$K1)) CLM.shift <- x$VC$K1 - 1
  if(eq == 2){ind1 <- (x$X1.d2 + 1 + CLM.shift):(x$X1.d2 + x$X2.d2 + CLM.shift) 
  
      
-    if( !(x$margins[2] %in% c(x$VC$m1d)) ){
+    if( !(x$margins[2] %in% c(x$VC$bl, x$VC$m1d)) ){
      if(is.null(x$X3)) ind2 <- x$X1.d2 + x$X2.d2 + 1 + CLM.shift           else ind2 <- (x$X1.d2 + x$X2.d2 + 1 + CLM.shift):(x$X1.d2 + x$X2.d2 + x$X3.d2 + CLM.shift) 
      if(is.null(x$X4)) ind3 <- x$X1.d2 + x$X2.d2 + 1 + 1 + CLM.shift else       ind3 <- (x$X1.d2 + x$X2.d2 + x$X3.d2 + 1 + CLM.shift):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + CLM.shift)
                                            }
@@ -234,7 +234,7 @@ if(eq == 2){
  fit1  <- predict(x, eq = 2, newdata = newdata, type = "link")
  
  
- if( !(x$margins[2] %in% c(x$VC$m1d))) { ###
+ if( !(x$margins[2] %in% c(x$VC$bl, x$VC$m1d))) { ###
  
  if(!is.null(x$X3)){
  
@@ -271,7 +271,7 @@ fit1Sim <- Xfit1%*%t(bs[, ind1])
 
 if(eq == 2){ 
 
-     if( !(x$margins[2] %in% c(x$VC$m1d))) {
+     if( !(x$margins[2] %in% c(x$VC$bl, x$VC$m1d))) {
 
        if(!is.null(x$X3)) fit2Sim <- Xfit2%*%t(bs[, ind2]) else fit2Sim <- bs[, ind2]
        if(!is.null(x$X4)) fit3Sim <- Xfit3%*%t(bs[, ind3]) else fit3Sim <- bs[, ind3]
@@ -349,7 +349,22 @@ if(  is.null(x$X3) ) ind3 <- x$X1.d2 + 1 + 1
 
                                            }
                           
-} ############### 
+} #################################################
+
+
+ if(mar %in% c(x$VC$bl)){ 
+ 
+    if(mar == "probit" ){ t.fit <- pnorm(fit1);       t.fitS <- pnorm(fit1Sim)      }  
+    if(mar == "logit"  ){ t.fit <- plogis(fit1);      t.fitS <- plogis(fit1Sim)     }
+    if(mar == "cloglog"){ t.fit <- 1-exp(-exp(fit1)); t.fitS <- 1-exp(-exp(fit1Sim))}
+ 
+    if(fun == "mean")     { fit <- t.fit;           fitSim <- t.fitS             } 
+    if(fun == "variance") { fit <- t.fit*(1-t.fit); fitSim <- t.fitS*(1-t.fitS)  }
+                                                                         
+ } 
+ 
+ 
+ 
 
 
 
@@ -482,7 +497,7 @@ if(  is.null(x$X3) ) ind3 <- x$X1.d2 + 1 + 1
  if(mar %in% c("N")){
  
     if(fun == "mean")     {fit <- fit1;      fitSim <- fit1Sim            } 
-    if(fun == "variance") {fit <- exp(fit2); fitSim <- exp(fit2Sim)       }
+    if(fun == "variance") {fit <- exp(fit2)^2; fitSim <- exp(fit2Sim)^2       }
                                      
  } 
  
@@ -640,6 +655,33 @@ if(  is.null(x$X3) ) ind3 <- x$X1.d2 + 1 + 1
 
  
  }   
+ 
+ 
+ 
+
+  if(mar %in% c("tN")){
+  
+  lttr <- rep(ltt, length(fit1))  
+  alpha  <- (lttr - fit1) / exp(fit2) 
+  alphaS <- (lttr - fit1Sim) / exp(fit2Sim)
+  
+
+     if(fun == "mean"){
+     
+             fit    <- fit1    + exp(fit2)*(dnorm(alpha)/(1 - pnorm(alpha)))
+             fitSim <- fit1Sim + exp(fit2Sim)*(dnorm(alphaS)/(1 - pnorm(alphaS)))                
+             
+             } 
+     
+     if(fun == "variance"){
+     
+             fit    <- exp(fit2)^2 * (1 + (alpha * dnorm(alpha)) / (1 - pnorm(alpha)) - (dnorm(alpha) / (1 - pnorm(alpha)))^2) 
+             fitSim <- exp(fit2Sim)^2 * (1 + (alphaS * dnorm(alphaS)) / (1 - pnorm(alphaS)) - (dnorm(alphaS) / (1 - pnorm(alphaS)))^2)   
+             
+             }
+                                     
+ }  
+ 
  
  
 # if(mar %in% c("tP")){ # 

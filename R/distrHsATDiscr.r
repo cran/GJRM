@@ -60,23 +60,38 @@ if( margin2 %in% c("DGP","DGPII") ){
 if( margin2 == "DGP" )   mu2 <- c(eta2)
 if( margin2 == "DGPII" ) mu2 <- c(exp(eta2)) # mu2 <- c(eta2^2)
 
-
-
-
 sigma <- sigma2 <- c(sigma2)
 
+pdf2F1 <- function(y2, mu2, sigma){ (1 + mu2 * y2 / sigma)^(-1 / mu2) - (1 + mu2 * (y2 + 1) / sigma)^(-1 / mu2) }
+pdf2  <- as.numeric( pdf2F1(y2, mu2, sigma) )
+
+
+
      
-pdf2FUNC <- function(y2, mu2, sigma) suppressWarnings(   (1 + mu2*y2/sigma)^(-1/mu2) - (1 + mu2*(1+y2)/sigma)^(-1/mu2)    )
-pdf2     <-   as.numeric( pdf2FUNC(y2, mu2, sigma) )  
+# pdf2FUNC <- function(y2, mu2, sigma) suppressWarnings(   (1 + mu2*y2/sigma)^(-1/mu2) - (1 + mu2*(1+y2)/sigma)^(-1/mu2)    )
+# pdf2     <-   as.numeric( pdf2FUNC(y2, mu2, sigma) )  
+# p2  <- suppressWarnings(     rowSums( matrix(as.numeric( pdf2FUNC(y2m, mu2, sigma)),dim(y2m)[1],dim(y2m)[2]), na.rm = TRUE )      )
 
-if(robust == FALSE) p2  <- suppressWarnings(     rowSums( matrix(as.numeric( pdf2FUNC(y2m, mu2, sigma)),dim(y2m)[1],dim(y2m)[2]), na.rm = TRUE )      )
 
+if(robust == FALSE){
+
+  cdfF1 <- function(y2, mu2, sigma) {
+
+     cumulative_prob <- sum(sapply(0:y2, function(i) pdf2F1(i, mu2, sigma)))
+     return(cumulative_prob)
+     
+                                   }
+
+  cdf_vectorized <- Vectorize(cdfF1, vectorize.args = c("y2", "mu2","sigma"))
+
+  p2 <- cdf_vectorized(y2, mu2, sigma)
+
+
+}
 
 indx1 <- as.numeric( ((1 + mu2*y2/sigma)     > 0) == FALSE ) 
 indx2 <- as.numeric( ((1 + mu2*(y2+1)/sigma) > 0) == FALSE ) # not needed
 indx  <- rowSums(cbind(indx1, indx2))
-
-
 
 pdf2 <- ifelse( indx == 0, pdf2, 0)                 #
 if(robust == FALSE) p2 <- ifelse( indx == 0, p2, 0) #
@@ -204,10 +219,30 @@ y2  <- mpfr( y2, prec)
 } 
 
 
-pdf2FUNC2 <- function(y2, mu2) exp(-y2/mu2) - exp(-(y2+1)/mu2) 
-pdf2     <- as.numeric( pdf2FUNC2(y2, mu2) ) 
+pdf2F <- function(y2, mu2) exp(-y2/mu2) - exp(-(y2+1)/mu2) 
+pdf2  <- as.numeric( pdf2F(y2, mu2) ) 
 
-if(robust == FALSE) p2  <- rowSums( matrix(as.numeric( pdf2FUNC2(y2m, mu2)),dim(y2m)[1],dim(y2m)[2]), na.rm = TRUE ) 
+
+
+if(robust == FALSE){
+
+  cdfF <- function(y2, mu2) {
+
+     cumulative_prob <- sum(sapply(0:y2, function(i) pdf2F(i, mu2)))
+     return(cumulative_prob)
+     
+                                   }
+
+  cdf_vectorized <- Vectorize(cdfF, vectorize.args = c("y2", "mu2"))
+
+  p2 <- cdf_vectorized(y2, mu2)
+
+
+#p2  <- rowSums( matrix(as.numeric( pdf2FUNC2(y2m, mu2)),dim(y2m)[1],dim(y2m)[2]), na.rm = TRUE ) 
+
+
+
+}
 
 
 }

@@ -537,7 +537,7 @@ if(type == "biv"){
   
   
    
-if(M$Model == "BSS") start.v  <- c( gam1$coefficients, c.gam2, gam3$coefficients )           
+if(M$Model == "BSS"){if(is.null(c.gam2)) c.gam2 <- gam2$coefficients; start.v  <- c( gam1$coefficients, c.gam2, gam3$coefficients )}           
 if(M$Model != "BSS") start.v  <- c( gam1$coefficients, gam2$coefficients, gam3$coefficients )
 
   }

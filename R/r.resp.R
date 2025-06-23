@@ -24,6 +24,7 @@ if(margin %in% c("DGP","DGPII","DGP0")){
 
 
 if(margin == "N")     y <- rNO(   rsim,    mu =     eta1,     sigma = esp.tr(eta2, margin)$vrb) 
+if(margin == "tN")    y <- rNtr(  rsim,    mu =     eta1,     sigma = esp.tr(eta2, margin)$vrb, left.trunc = left.trunc) 
 if(margin == "GU")    y <- rGU(   rsim,    mu =     eta1,     sigma = esp.tr(eta2, margin)$vrb) 
 if(margin == "rGU")   y <- rRG(   rsim,    mu =     eta1,     sigma = esp.tr(eta2, margin)$vrb) 
 if(margin == "LO")    y <- rLO(   rsim,    mu =     eta1,     sigma = esp.tr(eta2, margin)$vrb) 

@@ -3,7 +3,7 @@ resp.check <- function(y, margin = "N", print.par = FALSE, plots = TRUE,
                            i.f = FALSE, 
                            min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999, left.trunc = 0){
 
-m2 <- c("N","GU","rGU","LO","LN","WEI","IG","GA","GAi","BE","FISK","GP","GPII","GPo")
+m2 <- c("tN","N","GU","rGU","LO","LN","WEI","IG","GA","GAi","BE","FISK","GP","GPII","GPo")
 m3 <- c("DAGUM","SM","TW")
 nu <- NULL
 m1d  <- c("P","tP","DGP0")
@@ -13,7 +13,7 @@ m3d  <- c("DEL","SICHEL")
 y1m <- NA
 y <- as.numeric( na.omit(y) )
 
-if(!(margin %in% c(m2,m3,m1d,m2d)) ) stop("Error in margin value. It should be one of:\nN, GU, rGU, LO, LN, WEI, IG, GA, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, P, tP, tNBI, tNBII, tPIG, GP, GPII, GPo, DGP, DGPII, DGP0.") 
+if(!(margin %in% c(m2,m3,m1d,m2d)) ) stop("Error in margin value. It should be one of:\nN, tN, GU, rGU, LO, LN, WEI, IG, GA, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, P, tP, tNBI, tNBII, tPIG, GP, GPII, GPo, DGP, DGPII, DGP0.") 
 
 if(margin %in% c("LN","WEI","IG","GA","GAi","DAGUM","SM","FISK") && min(y, na.rm = TRUE) <= 0) stop("The response must be positive.")
 if(margin %in% c("TW") && min(y, na.rm = TRUE) < 0) stop("The response must be > = 0.")
@@ -55,7 +55,7 @@ if( margin %in% c("NBI","PIG","tNBI","tPIG") ) st.v <- c( log(mean((y + mean(y))
 if( margin %in% c("NBII","tNBII") )     st.v <- c( log(mean((y + mean(y))/2)), log( max( (var(y)/mean(y)) - 1, 0.1) ) )    
 if( margin %in% c("DEL") )              st.v <- c( log(mean((y + mean(y))/2)), log( max( (var(y) - mean(y))/mean(y)^2, 0.1) ), qlogis(0.5) )  
 if( margin %in% c("SICHEL") )           st.v <- c( log(mean((y + mean(y))/2)), log( max( (var(y) - mean(y))/mean(y)^2, 0.1) ), -0.5 )    
-if( margin %in% c("N","LN") )           st.v <- c( mean((y + mean(y))/2) ,           log( var(y) ) )  
+if( margin %in% c("N","LN", "tN") )     st.v <- c( mean((y + mean(y))/2) ,           log( var(y) ) )  
 if( margin %in% c("N2") )               st.v <- c( mean((y + mean(y))/2) ,           log( sqrt(var(y)) ) )  
 if( margin %in% c("LO") )               st.v <- c( mean((y + mean(y))/2) ,           log(  3*var(y)/pi^2 ) )  
 if( margin %in% c("IG") )               st.v <- c( log( mean((y + mean(y))/2) ) , log( var(y)/mean(y)^3)  )    
@@ -150,8 +150,8 @@ if(margin == "LN") y <- exp(y)
     
 
 
-if(margin %in% m2)   pp <-      distrHsAT(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, 1, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
-if(margin %in% m3)   pp <-      distrHsAT(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, enu.tr(univfit$argument[3], margin)$vrb, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+if(margin %in% m2)   pp <-      distrHsAT(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, 1, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
+if(margin %in% m3)   pp <-      distrHsAT(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, enu.tr(univfit$argument[3], margin)$vrb, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
 if(margin %in% m1d)  pp <- distrHsATDiscr(y, univfit$argument[1], 1, 1, margin2 = margin, y2m = y1m, robust = FALSE, min.dn = min.dn, min.pr = min.pr, 
                                           max.pr = max.pr, left.trunc = left.trunc)
 if(margin %in% m2d)  pp <- distrHsATDiscr(y, univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, 1, margin2 = margin, y2m = y1m, robust = FALSE, 
@@ -235,7 +235,7 @@ if(loglik == TRUE){ ##
 
 if(margin == "LN"){ 
 
-if(plots == FALSE) d <- distrHsAT(exp(y), univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, 1, margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)$pdf2
+if(plots == FALSE) d <- distrHsAT(exp(y), univfit$argument[1], esp.tr(univfit$argument[2], margin)$vrb, 1, margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)$pdf2
 lk <- sum(log(d))
 
                   }

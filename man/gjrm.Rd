@@ -23,7 +23,8 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
      penCor = "unpen", sp.penCor = 3, 
      Chol = FALSE, gamma = 1, w.alasso = NULL,
      drop.unused.levels = TRUE, 
-     min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999)
+     min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999, 
+     h.margins = FALSE)
 }
 
 
@@ -63,7 +64,7 @@ family. The options are: "C0C90", "C0C270", "C180C90", "C180C270",  "GAL0GAL90",
 
 \item{copula2}{As above but used only for Roy models.}
 
-\item{margins}{It indicates the distributions used for margins. Possible distributions are normal ("N"), Tweedie ("TW"), 
+\item{margins}{It indicates the distributions used for margins. Possible distributions are Gaussian ("N"), truncated Gaussian ("tN"), Tweedie ("TW"), 
                log-normal ("LN"), Gumbel ("GU"), reverse Gumbel ("rGU"), logistic ("LO"), Weibull ("WEI"), Inverse Gaussian ("IG"), gamma ("GA"), Dagum ("DAGUM"), 
                Singh-Maddala ("SM"), beta ("BE"), Fisk ("FISK", also known as log-logistic distribution), Poisson ("P"), truncated 
                Poisson ("tP"), negative binomial - type I ("NBI"), negative 
@@ -86,7 +87,7 @@ family. The options are: "C0C90", "C0C270", "C180C90", "C180C270",  "GAL0GAL90",
              "BPO" (bivariate model with partial observability)
              and "BPO0" (bivariate model with partial observability and zero correlation).
              Options "T", "TESS" and "TSS" are currently for trivariate binary models only. "BPO" and "BPO0" are for bivariate binary models only.    
-             "ROY" is for the Roy switching regression model.
+             "SWITCH" is for the switching regression model.
              } 
   
 \item{dof}{If \code{copula = "T"} then the degrees of freedom can be set to a value greater than 2 and smaller than 249. Only for continuous margins,
@@ -165,6 +166,8 @@ documentation of \code{trust} for more details.}
                               values bigger than the default ones. Bear in mind that the bounds can be reached for ill-defined models. For 
                               certain distributions/models, if convergence failure occurs and the bounds have been reached then the user
                               can try a sensitivity analysis as mentioned above.}
+                              
+ \item{h.margins}{If \code{TRUE} then the marginal distributions are treated as copula h-functions. This is still experimental.}                              
 
  
 }
@@ -263,7 +266,7 @@ areas, for instance. In any case, a clear rationale is typically needed in such 
 } 
 
 \seealso{
-\code{\link{adjCov}}, \code{\link{VuongClarke}}, \code{\link{GJRM-package}}, \code{\link{gjrmObject}}, \code{\link{conv.check}}, \code{\link{summary.gjrm}}
+\code{\link{adjCov}}, \code{\link{vuong.test}}, \code{\link{clarke.test}}, \code{\link{GJRM-package}}, \code{\link{gjrmObject}}, \code{\link{conv.check}}, \code{\link{summary.gjrm}}
 }
 
 \examples{
@@ -391,7 +394,6 @@ out <- gjrm(list(y1 ~ x1 + x2,
                  margins = c("probit", "probit"), model = "B")
 conv.check(out)                        
 summary(out)
-AIC(out); BIC(out)
 
 ## FLEXIBLE RECURSIVE BIVARIATE PROBIT
 
@@ -402,7 +404,6 @@ out <- gjrm(list(y1 ~ x1 + s(x2),
                  model = "B")
 conv.check(out)                        
 summary(out)
-AIC(out); BIC(out)
 
 #
 ## Testing the hypothesis of absence of endogeneity post estimation... 
@@ -441,7 +442,9 @@ conv.check(outJ)
 summary(outJ)
 ATE(outJ, "y1") 
 
-VuongClarke(out, outJ)
+vuong.test(out, outJ)
+clarke.test(out, outJ)
+
 
 #
 ## recursive bivariate probit modelling with unpenalized splines 
@@ -541,10 +544,6 @@ conv.check(outC)
 summary(outC)
 prev(outC)
 
-################
-## See also ?hiv
-################
-
 ###############
 ## EXAMPLE 4 ##
 
@@ -599,11 +598,6 @@ conv.check(out)
 summary(out)
 
 plot(out, eq = 1, scale = 0)
-
-
-################
-## See also ?war
-################
 
 ######################################################
 # JOINT MODELS WITH BINARY AND/OR CONTINUOUS MARGINS #
@@ -686,9 +680,6 @@ dataSim <- data.frame(y1, y2, x1, x2)
 
 ## RECURSIVE Model
 
-rc <- resp.check(y2, margin = "N", print.par = TRUE, loglik = TRUE)
-AIC(rc); BIC(rc)
-
 out <- gjrm(list(y1 ~ x1 + x2, 
                  y2 ~ y1 + x2), 
                  data = dataSim, margins = c("probit","N"),
@@ -756,12 +747,12 @@ out <- gjrm(fl, data = dataSim,
 conv.check(out)                        
 summary(out)
 res.check(out)
-ATE(out, trt = "y1")
-ATE(out, trt = "y1", joint = FALSE)
-RR(out, trt = "y1")
-RR(out, trt = "y1", joint = FALSE)
-OR(out, trt = "y1")
-OR(out, trt = "y1", joint = FALSE)
+ATE(out, trt = "y1", trt.val = 1)
+ATE(out, trt = "y1", trt.val = 1, joint = FALSE)
+ RR(out, trt = "y1", trt.val = 1)
+ RR(out, trt = "y1", trt.val = 1, joint = FALSE)
+ OR(out, trt = "y1", trt.val = 1)
+ OR(out, trt = "y1", trt.val = 1, joint = FALSE)
 
 #
 #
@@ -972,8 +963,6 @@ conv.check(out)
 summary(out)
 plot(out, eq = 1)
 plot(out, eq = 2)
-AIC(out)
-BIC(out)
 
 margs <- c("probit", "probit", "probit") 
 
@@ -1186,8 +1175,6 @@ outC0 <- gjrm(fl, data = dataSim, copula = "C0", model = "BSS",
               margins = c("probit", "N"))
 conv.check(outC0)
 res.check(outC0)
-AIC(out, outC0)
-BIC(out, outC0)
 
 }
 

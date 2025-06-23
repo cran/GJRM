@@ -1,4 +1,4 @@
-SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
+SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL, surv = FALSE, cens = NULL,
                        BivD1 = "N", BivD2 = "N", margins = c("probit","P","P"), 
                        dof1 = 3, dof2 = 3, left.trunc2 = 0, left.trunc3 = 0, gamlssfit = FALSE,
                        fp = FALSE, infl.fac = 1, 
@@ -12,12 +12,9 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
   ##########################################################################################################################
   
   i.rho <- sp <- qu.mag <- n.sel <- y1.y2 <- y1.cy2 <- cy1.y2 <- cy1.cy2 <- cy <- cy1 <- inde <- y2m <- y3m <- theta.fx <- c.gam2 <- Sl.sf <- y23 <- NULL  
-  
-  X4s <- X5s <- X6s <- X7s <- X8s <- X9s <- NULL
-  
+  X4s <- X5s <- X6s <- X7s <- X8s <- X9s <- Xd2 <- Xd3 <- NULL
   y10.y20 <- y10.y21 <- y11.y30 <- y11.y31 <- NULL
-  
-  y10.y20R <- y10.y21R <- y11.y30R <- y11.y31R <- NULL
+  y10.y20R <- y10.y21R <- y11.y30R <- y11.y31R <- X2s <- X3s <- NULL
   
   left.trunc1 <- left.trunc2
   left.trunc2 <- left.trunc3
@@ -27,6 +24,8 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
   hess <- TRUE
   intf <- surv.flex <- FALSE
   sp.method <- "perf"
+  
+  mono.sm.pos2 <- mono.sm.pos3 <- NULL
 
   
   # **** clean up the NULL stuff above?
@@ -55,7 +54,7 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
   scc  <- c("C0", "C180", "GAL0" , "GAL180","J0", "J180", "G0", "G180")
   sccn <- c("C90", "C270", "GAL90", "GAL270","J90", "J270", "G90", "G270")
     
-  m2   <- c("N","GU","rGU","LO","LN","WEI","IG","GA","BE","FISK","GP","GPII","GPo")
+  m2   <- c("tN","N","GU","rGU","LO","LN","WEI","IG","GA","BE","FISK","GP","GPII","GPo")
   m3   <- c("DAGUM","SM","TW")
   m1d  <- c("P", "tP","DGP0") 
   m2d  <- c("tNBI", "tNBII", "tPIG","NBI", "NBII", "PIG","DGP","DGPII") 
@@ -70,8 +69,9 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
   
   M    <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, BivD1 = BivD1, BivD2 = BivD2, 
                opc = opc, extra.regI = extra.regI, margins = margins, bl = bl, intf = intf,
-               theta.fx = theta.fx, Model = "ROY", mb = NULL, dof1 = dof1, dof2 = dof2, K1 = NULL)  
-                 
+               theta.fx = theta.fx, Model = "ROY", mb = NULL, dof1 = dof1, dof2 = dof2, K1 = NULL, surv = surv)  
+  
+
   ct  <- data.frame( c(opc),
                      c(1:14,55,56,57,60,61,62:65) 
                      )
@@ -96,7 +96,12 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
   pream.wm(formula, margins, M, l.flist, type = "ROY")
   form.check(formula, l.flist, ROY = TRUE)   
   
- #######################################################################################    
+
+ #######################################################################################
+  if(surv == TRUE) data$cens <- cens
+  data$weights <- weights
+  data$subset  <- subset # ok if null so no change here
+  
   
   cl <- match.call()
   mf <- match.call(expand.dots = FALSE)
@@ -111,17 +116,33 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
   fake.formula <- paste(v1[1], "~", paste(pred.n, collapse = " + ")) 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
-  mf$left.trunc2 <- mf$left.trunc3 <- mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$ordinal <- mf$knots <- mf$dof1 <- mf$dof2 <- mf$intf <- mf$theta.fx <- mf$BivD1 <- mf$BivD2 <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
+ 
+  mf$surv <- mf$left.trunc2 <- mf$left.trunc3 <- mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$ordinal <- mf$knots <- mf$dof1 <- mf$dof2 <- mf$intf <- mf$theta.fx <- mf$BivD1 <- mf$BivD2 <- mf$margins <- mf$fp <- mf$hess <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
+  if(surv == FALSE) mf$cens <- NULL
+  
   mf$drop.unused.levels <- drop.unused.levels  
   mf[[1]] <- as.name("model.frame")
-  data <- eval(mf, parent.frame())
   
-  if(gc.l == TRUE) gc()  
+  #data <- eval(mf, parent.frame())
+  data <- eval(mf)
+  
+  
+    if(!("(weights)" %in% names(data))) {weights <- rep(1,dim(data)[1]) 
+                          data$weights <- weights
+                          names(data)[length(names(data))] <- "(weights)"} else weights <- data[,"(weights)"] 
+ 
+ if(surv == TRUE){
+ 
+    if(!("(cens)" %in% names(data))) {cens <- rep(0,dim(data)[1]) 
+                          data$cens <- cens
+                          names(data)[length(names(data))] <- "(cens)"}  else cens <- data[,"(cens)"]   
+                          
+    cens.t <- ifelse(cens == 0, 1e-07, cens)                      
+ }
+ 
 
-  if(!("(weights)" %in% names(data))) {weights <- rep(1,dim(data)[1]) 
-                        data$weights <- weights
-                        names(data)[length(names(data))] <- "(weights)"} else weights <- data[,"(weights)"]    
-  
+  if(gc.l == TRUE) gc()  
+                                                                          
   formula.eq1 <- formula[[1]]
   formula.eq2 <- formula[[2]] 
   formula.eq3 <- formula[[3]] 
@@ -142,12 +163,166 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
   cy    <- 1 - y1
   inde0 <- !as.logical(y1)
   inde1 <-  as.logical(y1)
+  
+  n.se0 <- sum(as.numeric(inde0))
+  n.se1 <- sum(as.numeric(inde1))
+
+
+##############################################################
+# Equations 2 and 3 for Survival outcomes 
+##############################################################  
+
+if(surv == TRUE){
+
+ data[, v2[1]] <- ifelse(data[, v2[1]] < 0.0001, 0.0001, data[, v2[1]]) # only need once, so not also for v3[1] as variable is the same
+
+ ###############################################################################
+ ################
+ # second margin
+ ################
+
+
+ form.eq12R   <- form.eq12(formula.eq2, data, v2, margins[2], m1d, m2d, eq1.binsurv = FALSE)   
+ formula.eq2  <- form.eq12R$formula.eq1
+ formula.eq2r <- form.eq12R$formula.eq1r 
+ f.eq2        <- form.eq12R$f.eq1
+ 
+ data$urcfcphmwicu <- seq(-10, 10, length.out = dim(data)[1])
+ tempb <- eval(substitute(gam(f.eq2, family = cox.ph(), data = data, weights = cens, subset = inde0, drop.unused.levels = drop.unused.levels),list(cens = cens, inde0 = inde0)))
+ data$Sh[inde0] <- as.vector(mm(predict(tempb, type = "response"), min.pr = min.pr, max.pr = max.pr))
+  
+  
+ gam2  <- eval(substitute(scam(formula.eq2, gamma = infl.fac, weights = weights[inde0]*cens.t[inde0], data = data[inde0,]), list(weights = weights, cens.t = cens.t, inde0 = inde0)))
+ l.sp2 <- length(gam2$sp) 
+  
+  
+ lsgam2 <- length(gam2$smooth)
+ if(lsgam2 == 0) stop("You must at least use a monotonic smooth function of time in the second equation.")
+  
+ clsm <- ggr <- NA 
+ for(i in 1:lsgam2) clsm[i] <- class(gam2$smooth[[i]])[1] 
+                    
+ if( sum(as.numeric(clsm %in% c("mpi.smooth")))==0 ) stop("You must have a monotonic smooth of time, mpi, in the second equation.")
+ pos.mpi <- which(clsm == "mpi.smooth")
+  
+     
+ ###########################################################  
+ 
+ if(l.sp2 != 0) sp2 <- gam2$sp 
+ sp2[pos.mpi] <- 1 
+
+ gam.call <- gam2$call
+ gam.call$sp <- sp2
+ gam2 <- eval(gam.call)
+  
+ ###########################################################
+
+  for(i in 1:lsgam2){ 
+    if( max(as.numeric(grepl(v2[1], gam2$smooth[[i]]$term))) != 0 && clsm[i] == "mpi.smooth" ) mono.sm.pos2 <- c(mono.sm.pos2, c(gam2$smooth[[i]]$first.para:gam2$smooth[[i]]$last.para) )    
+                    }
+       
+  X2  <- predict(gam2, type = "lpmatrix")
+  Xd2 <- Xdpred(gam2, data[inde0,], v2[1])
+
+  gam2$y <- data[inde0, v2[1]]
+  gam2$formula <- formula.eq2r 
+ 
+  attr(data,"terms") <- NULL ## to make it work when using log(y1) for instance, this will have to be checked if we need it or not ##
+ 
+  gp2 <- gam2$nsdf 
+  X2.d2 <- dim(X2)[2]
+
+  X2s <- try(predict(gam2, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
+  if(any(class(X2s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the second margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
+  
+  y2 <- gam2$y 
+  
+ ###############################################################################
+ ###############################################################################
+ # third margin
+ ################
+
+ form.eq12R   <- form.eq12(formula.eq3, data, v3, margins[3], m1d, m2d, eq1.binsurv = FALSE)   
+ formula.eq3  <- form.eq12R$formula.eq1
+ formula.eq3r <- form.eq12R$formula.eq1r 
+ f.eq3        <- form.eq12R$f.eq1
+ 
+ data$urcfcphmwicu <- seq(-10, 10, length.out = dim(data)[1])
+ tempb <- eval(substitute(gam(f.eq3, family = cox.ph(), data = data, weights = cens, subset = inde1, drop.unused.levels = drop.unused.levels),list(cens = cens, inde1 = inde1)))
+ data$Sh[inde1] <- as.vector(mm(predict(tempb, type = "response"), min.pr = min.pr, max.pr = max.pr))
+  
+  
+ gam3  <- eval(substitute(scam(formula.eq3, gamma = infl.fac, weights = weights[inde1]*cens.t[inde1], data = data[inde1,]), list(weights = weights, cens.t = cens.t, inde1 = inde1)))
+ l.sp3 <- length(gam3$sp) 
+  
+  
+ lsgam3 <- length(gam3$smooth)
+ if(lsgam3 == 0) stop("You must at least use a monotonic smooth function of time in the third equation.")
+  
+ clsm <- ggr <- NA 
+ for(i in 1:lsgam3) clsm[i] <- class(gam3$smooth[[i]])[1] 
+                    
+ if( sum(as.numeric(clsm %in% c("mpi.smooth")))==0 ) stop("You must have a monotonic smooth of time, mpi, in the third equation.")
+ pos.mpi <- which(clsm == "mpi.smooth")
+  
+     
+ ###########################################################  
+ 
+ if(l.sp3 != 0) sp3 <- gam3$sp 
+ sp3[pos.mpi] <- 1 
+
+ gam.call <- gam3$call
+ gam.call$sp <- sp3
+ gam3 <- eval(gam.call)
+  
+ ###########################################################
+
+  for(i in 1:lsgam3){ 
+    if( max(as.numeric(grepl(v3[1], gam3$smooth[[i]]$term))) != 0 && clsm[i] == "mpi.smooth" ) mono.sm.pos3 <- c(mono.sm.pos3, c(gam3$smooth[[i]]$first.para:gam3$smooth[[i]]$last.para) )    
+                    }
+       
+  X3  <- predict(gam3, type = "lpmatrix")
+  Xd3 <- Xdpred(gam3, data[inde1,], v3[1])
+
+  gam3$y <- data[inde1, v3[1]]
+  gam3$formula <- formula.eq3r 
+ 
+  attr(data,"terms") <- NULL ## to make it work when using log(y1) for instance, this will have to be checked if we need it or not ##
+ 
+  gp3 <- gam3$nsdf 
+  X3.d2 <- dim(X3)[2]
+
+  X3s <- try(predict(gam3, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
+  if(any(class(X3s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the third margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
+  
+  y3 <- gam3$y 
+  
+############################
+# SET UP indicator variables 
+############################
+
+# cens = 1 event occured, 0 event did not occur
+# cbind(y10.y20, y10.y21,y11.y30,y11.y31)[1:10,] for testing
+# cbind(VC$y10.y20, VC$y10.y21,VC$y11.y30,VC$y11.y31)[1:10,]
+
+    y10.y20 <- y10.y21 <- y11.y30 <- y11.y31 <- rep(FALSE, n)  
+    
+    y10.y20[inde0] <- y10.y20R <- as.logical( (1 - y1)[inde0]*(1 - cens[inde0]) )
+    y10.y21[inde0] <- y10.y21R <- as.logical( (1 - y1)[inde0]*cens[inde0]       )
+    y11.y30[inde1] <- y11.y30R <- as.logical( y1[inde1]*(1 - cens[inde1])       )
+    y11.y31[inde1] <- y11.y31R <- as.logical( y1[inde1]*cens[inde1]             )
+
+
+}
+
+
+
 
  ##############################################################
  # Equations 2 and 3 for continuous/discrete response 
  ##############################################################  
 
- if( margins[2] %in% bl ){
+ if( margins[2] %in% bl && surv == FALSE){
 
  gam2 <- eval(substitute(gam(formula.eq2, binomial(link = margins[2]), gamma=infl.fac, weights=weights, 
                              data=data, subset=inde0, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights,inde0=inde0)))  
@@ -158,9 +333,6 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
     gp2   <- gam2$nsdf
     y2 <- gam2$y
 
-    
-    n.se0 <- sum(as.numeric(inde0))
-
     #* this will be useful for prediction, to calculate effects, not required for fitting *#
     
     X2s <- try(predict.gam(gam2, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
@@ -169,7 +341,7 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
   }
  
  
-  if( margins[3] %in% bl ){
+  if( margins[3] %in% bl && surv == FALSE){
  
   gam3 <- eval(substitute(gam(formula.eq3, binomial(link = margins[3]), gamma=infl.fac, weights=weights, 
                               data=data, subset=inde1, knots = knots, drop.unused.levels = drop.unused.levels),list(weights=weights,inde1=inde1)))  
@@ -179,8 +351,6 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
     l.sp3 <- length(gam3$sp); if(l.sp3 != 0) sp3 <- gam3$sp
     gp3   <- gam3$nsdf
     y3 <- gam3$y
-
-    n.se1 <- sum(as.numeric(inde1))
     
     X3s <- try(predict.gam(gam3, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
     if(any(class(X3s)=="try-error")) stop("Check that the factor variables' levels\nin the selected sample for the third margin are the same as those in the complete dataset.\nRead the Details section in ?gjrm for more details.") 
@@ -193,10 +363,6 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
     y11.y31[inde1] <- y11.y31R <- as.logical( y1[inde1]*y3             )
     
     
-    
-    
-  
-  
   }
   
   
@@ -223,8 +389,6 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
     l.sp2 <- length(gam2$sp); if(l.sp2 != 0) sp2 <- gam2$sp
     gp2   <- gam2$nsdf
     
-    n.se0 <- sum(as.numeric(inde0))
-
     #* this will be useful for prediction, to calculate effects, not required for fitting *#
     
     X2s <- try(predict.gam(gam2, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
@@ -255,8 +419,6 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL,
     l.sp3 <- length(gam3$sp); if(l.sp3 != 0) sp3 <- gam3$sp
     gp3   <- gam3$nsdf
     
-    n.se1 <- sum(as.numeric(inde1))
-
     #* this will be useful for prediction, to calculate effects, not required for fitting *#
     
     X3s <- try(predict.gam(gam3, newdata = data[,-dim(data)[2]], type = "lpmatrix"), silent = TRUE)
@@ -328,15 +490,15 @@ if( margins[2] %in% c(m3) && margins[3] %in% c(m2) ){
 ##############################################################
 # Starting values for dependence parameter
 ##############################################################
-res1 <- residuals(gam1)
-res2 <- residuals(gam2)
-res3 <- residuals(gam3)
+res1 <- residuals(gam1); res1 <- res1 + rnorm(length(res1), sd = 0.01)
+res2 <- residuals(gam2); res2 <- res2 + rnorm(length(res2), sd = 0.01)
+res3 <- residuals(gam3); res3 <- res3 + rnorm(length(res3), sd = 0.01)
 
-ass.s  <- cor(res1[inde0], res2, method = "kendall")
+ass.s  <- cor(res1[inde0], res2)#, method = "kendall")
 ass.s  <- sign(ass.s)*ifelse(abs(ass.s) > 0.9, 0.9, abs(ass.s))                
 i.rho1 <- ass.dp(ass.s, BivD1, scc, sccn, nCa1)
 
-ass.s  <- cor(res1[inde1], res3, method = "kendall")
+ass.s  <- cor(res1[inde1], res3)#, method = "kendall")
 ass.s  <- sign(ass.s)*ifelse(abs(ass.s) > 0.9, 0.9, abs(ass.s))                
 i.rho2 <- ass.dp(ass.s, BivD2, scc, sccn, nCa2)
 
@@ -543,10 +705,10 @@ if(missing(parscale)) parscale <- 1
   lsgam9 <- length(gam9$smooth)
 
 
-  VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL, K1 = NULL,
+  VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL, K1 = NULL, 
              lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
              lsgam3 = lsgam3, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
-             lsgam4 = lsgam4,
+             lsgam4 = lsgam4, mono.sm.pos2 = mono.sm.pos2, mono.sm.pos3 = mono.sm.pos3, Xd3 = Xd3, Xd2 = Xd2,
              lsgam5 = lsgam5,
              lsgam6 = lsgam6,
              lsgam7 = lsgam7,
@@ -622,7 +784,7 @@ if(missing(parscale)) parscale <- 1
              y10.y20R = y10.y20R,             
              y10.y21R = y10.y21R,            
              y11.y30R = y11.y30R,            
-             y11.y31R = y11.y31R, end.surv = FALSE ) # original n only needed in SemiParBIV.fit
+             y11.y31R = y11.y31R, end.surv = FALSE, surv = surv ) # original n only needed in SemiParBIV.fit
              
   if(gc.l == TRUE) gc()           
              
@@ -661,6 +823,46 @@ if(gamlssfit == TRUE && margins[2] %in% c(m1d, m2d, m2, m3) && margins[3] %in% c
  
   
   }  
+  
+  
+  if(surv == TRUE){ # should also work with varying theta although never tried, also in the case above, I think it was tested at some point
+  
+    nstv <- names(start.v) 
+    
+    form.gamlR <- form.gaml(formula, l.flist, M, type = "ROY")
+  
+    marginss <- margins
+    marginss[2] <- paste("-", marginss[2], sep = "")
+    marginss[3] <- paste("-", marginss[3], sep = "")
+  
+    gamlss2 <- eval(substitute(gamlss(form.gamlR$formula.gamlss2, data = data, weights = weights, subset = inde0,  
+                     family = marginss[2], infl.fac = infl.fac, cens = cens,
+                     rinit = rinit, rmax = rmax, iterlimsp = iterlimsp, tolsp = tolsp,
+                     gc.l = gc.l, parscale = 1, drop.unused.levels = drop.unused.levels), list(inde0 = inde0, weights = weights, cens = cens)))   
+                     
+    gamlss3 <- eval(substitute(gamlss(form.gamlR$formula.gamlss3, data = data, weights = weights, subset = inde1,  
+                     family = marginss[3], infl.fac = infl.fac, cens = cens,
+                     rinit = rinit, rmax = rmax, iterlimsp = iterlimsp, tolsp = tolsp,
+                     gc.l = gc.l, parscale = 1, drop.unused.levels = drop.unused.levels), list(inde1 = inde1, weights = weights, cens = cens)))                    
+                        
+    # updated starting values                   
+    
+    SP <- list(sp1 = sp1, sp2 = sp2, sp3 = sp3, sp4 = sp4, sp5 = sp5, sp6 = sp6, sp7 = sp7, sp8 = sp8, sp9 = sp9)
+    
+    gamls.upsvR <- gamls.upsv(gamlss1 = gamlss2, gamlss2 = gamlss3, margins, M, l.flist, nstv = NULL, VC, GAM, SP, type = "ROY")
+    
+    
+    main.sv                    <- c(gam1$coefficients, gamls.upsvR$start.v) 
+    start.v[1:length(main.sv)] <- main.sv
+    names(start.v)             <- nstv                                           # this really needed? does not hurt
+    
+    sp <- gamls.upsvR$sp
+   
+    
+  }
+  
+  
+  
   
   
   ##########################################################################################################################
@@ -715,7 +917,7 @@ if( !(Model=="B" && !(margins[2] %in% bl) && end == 2) ) {dataset <- NULL; rm(da
 L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, SemiParFit = SemiParFit, 
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, robust = FALSE,
           gam7 = gam7, gam8 = gam8, gam9 = gam9, gam2TW = gam2TW,
-          coefficients = SemiParFit$fit$argument, coef.t = NULL, iterlimsp = iterlimsp,
+          coefficients = SemiParFit$fit$argument, coef.t = SemiParFit.p$coef.t, iterlimsp = iterlimsp,
           weights = weights, 
           sp = SemiParFit.p$sp, iter.sp = SemiParFit$iter.sp, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
           l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3, 
@@ -766,7 +968,7 @@ L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, SemiParFit
           l.flist = l.flist, v1 = v1, v2 = v2, v3 = v3, triv = FALSE, univar.gamlss = FALSE,
           gamlss2 = gamlss2, gamlss3 = gamlss3, BivD1 = BivD1, BivD2 = BivD2, dof12 = dof1, dof13 = dof2, 
           dof12.a = dof1, dof13.a = dof2, call = cl,
-          surv = FALSE, surv.flex = surv.flex, end.surv = FALSE)
+          surv = surv, surv.flex = surv.flex, end.surv = FALSE)
 
 class(L) <- c("SemiParROY", "SemiParBIV", "gjrm") 
 

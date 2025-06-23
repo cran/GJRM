@@ -78,7 +78,7 @@ theta <- x$theta
 
 ######
 
-p1 <- as.numeric(distrHsAT(y1, eta1, sigma21, nu1, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2) 
+p1 <- as.numeric(distrHsAT(y1, eta1, sigma21, nu1, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc1)$p2) 
 p2 <- as.numeric(probmS(eta2, x$VC$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr)  
 theta <- as.numeric(theta)
 ###### 
@@ -212,7 +212,7 @@ if(  is.null(x$X3) ){
                     }                     
    
                        
-p1s <- distrHsAT(y1, eta1s, sigma21s, nu1s, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
+p1s <- distrHsAT(y1, eta1s, sigma21s, nu1s, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc1)$p2
 p2s <- probmS( X2%*%t(bs[,(x$X1.d2+1):(x$X1.d2+x$X2.d2)]) , x$VC$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr
 
   
@@ -414,7 +414,7 @@ if(x$margins[1] %in% c(cont3par)) nu <- x$gamlss1$nu
 
 
 
-p1 <- as.numeric(distrHsAT(y1, eta1, sigma2, nu, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2) 
+p1 <- as.numeric(distrHsAT(y1, eta1, sigma2, nu, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc1)$p2) 
 p2 <- as.numeric(probmS(eta2, x$VC$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr)  
   
 
@@ -458,7 +458,7 @@ if(  is.null(x$X3) ){
                     }                     
    
                        
-p1s <- distrHsAT(y1, eta1s, sigma2s, nus, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2   
+p1s <- distrHsAT(y1, eta1s, sigma2s, nus, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc1)$p2   
 p2s <- probmS( X2%*%t(bs2[,1:x$X2.d2]), x$VC$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$pr 
 
 p12s <- p1s*p2s

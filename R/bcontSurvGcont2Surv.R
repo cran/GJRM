@@ -94,7 +94,7 @@ nC2 <- VC$ct[which(VC$ct[,1] == Cop2),2]
 
 ##################
 
-  dHs1 <- distrHs(respvec$y1, eta1, sigma21, sigma21.st, nu = 1, nu.st = 1, margin2 = VC$margins[1], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  dHs1 <- distrHs(respvec$y1, eta1, sigma21, sigma21.st, nu = 1, nu.st = 1, margin2 = VC$margins[1], naive = FALSE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc1)
   pdf1 <- dHs1$pdf2
   p1   <- dHs1$p2
   derp1.dersigma21.st   <- dHs1$derp2.dersigma.st

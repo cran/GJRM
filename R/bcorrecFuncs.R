@@ -1,4 +1,13 @@
 
+rNtr <- function(n, mu, sigma, left.trunc){
+               
+              n  <- ceiling(n)
+              p  <- runif(n)
+              pp <- pnorm(rep(left.trunc, length(mu)), mu, sigma)
+              p  <- (pp + p * (1 - pp))
+              qnorm(p, mean = mu, sd = sigma, lower.tail = TRUE)
+
+}
 
 
 
@@ -89,12 +98,12 @@ rPIGtr <- function(n, mu, sigma, left.trunc){
 
 
 
-ordcont.m <- function(y, pk, pk1, eta.mu, sigma, nu, theta, margin, BivD, par2, min.dn, min.pr, max.pr, y1){           
+ordcont.m <- function(y, pk, pk1, eta.mu, sigma, nu, theta, margin, BivD, par2, min.dn, min.pr, max.pr, y1, left.trunc2){           
      
 
 p12.s <- 0
 
-pd2  <- distrHsAT(y, eta2 = eta.mu, sigma2 = sigma, nu = NULL, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+pd2  <- distrHsAT(y, eta2 = eta.mu, sigma2 = sigma, nu = NULL, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc2)
 p2   <- pd2$p2
 pdf2 <- pd2$pdf2
 
@@ -115,12 +124,12 @@ y*(p12.f - p12.s)*pdf2/(pk - pk1)
 }
 
 
-ordcont.v <- function(y, pk, pk1, eta.mu, sigma, nu, theta, margin, BivD, par2, min.dn, min.pr, max.pr, y1){           
+ordcont.v <- function(y, pk, pk1, eta.mu, sigma, nu, theta, margin, BivD, par2, min.dn, min.pr, max.pr, y1, left.trunc2){           
      
 
 p12.s <- 0
 
-pd2  <- distrHsAT(y, eta2 = eta.mu, sigma2 = sigma, nu = NULL, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+pd2  <- distrHsAT(y, eta2 = eta.mu, sigma2 = sigma, nu = NULL, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc2)
 p2   <- pd2$p2
 pdf2 <- pd2$pdf2
 
@@ -146,7 +155,7 @@ y^2*(p12.f - p12.s)*pdf2/(pk - pk1)
 
 
 
-dicont.m <- function(y, y12, eta1, eta2, sig1, sig2, nu1 = NULL, nu2 = NULL, theta, margins, BivD, par2, min.dn, min.pr, max.pr, nC, left.trunc1){           
+dicont.m <- function(y, y12, eta1, eta2, sig1, sig2, nu1 = NULL, nu2 = NULL, theta, margins, BivD, par2, min.dn, min.pr, max.pr, nC, left.trunc1, left.trunc2){           
  
 y1m <- y2m <- NA
 
@@ -156,7 +165,7 @@ p1     <- as.numeric(p1pdf1$p2)
 pmf1   <- as.numeric(p1pdf1$pdf2)
 
 
-rpd2 <- distrHsAT(y12,   eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)     
+rpd2 <- distrHsAT(y12,   eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc2)     
 p2   <- rpd2$p2
 pdf2 <- rpd2$pdf2
 
@@ -179,7 +188,7 @@ pdf2 <- rpd2$pdf2
 
 
 
-dicont.v <- function(y, y12, eta1, eta2, sig1, sig2, nu1 = NULL, nu2 = NULL, theta, margins, BivD, par2, min.dn, min.pr, max.pr, nC, left.trunc1){           
+dicont.v <- function(y, y12, eta1, eta2, sig1, sig2, nu1 = NULL, nu2 = NULL, theta, margins, BivD, par2, min.dn, min.pr, max.pr, nC, left.trunc1, left.trunc2){           
  
 y1m <- y2m <- NA
 
@@ -189,7 +198,7 @@ p1     <- as.numeric(p1pdf1$p2)
 pmf1   <- as.numeric(p1pdf1$pdf2)
 
 
-rpd2 <- distrHsAT(y12,   eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)     
+rpd2 <- distrHsAT(y12,   eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc2)     
 p2   <- rpd2$p2
 pdf2 <- rpd2$pdf2
 
@@ -215,7 +224,7 @@ pdf2 <- rpd2$pdf2
 
 
 
-discrcont.m <- function(y, y12, eta1, eta2, sig1, sig2, nu1 = NULL, nu2 = NULL, theta, margins, BivD, par2, min.dn, min.pr, max.pr, left.trunc1){           
+discrcont.m <- function(y, y12, eta1, eta2, sig1, sig2, nu1 = NULL, nu2 = NULL, theta, margins, BivD, par2, min.dn, min.pr, max.pr, left.trunc1, left.trunc2){           
  
 y1m <- y2m <- NA
  
@@ -226,7 +235,7 @@ y1m <- y2m <- NA
   pmf1   <- as.numeric(p1pdf1$pdf2)   
    
 
-  rpd2 <- distrHsAT(y,   eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)     
+  rpd2 <- distrHsAT(y,   eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc2)     
   p2   <- rpd2$p2
   pdf2 <- rpd2$pdf2
 
@@ -245,7 +254,7 @@ y1m <- y2m <- NA
 }
 
 
-discrcont.v <- function(y, y12, eta1, eta2, sig1, sig2, nu1 = NULL, nu2 = NULL, theta, margins, BivD, par2, min.dn, min.pr, max.pr, left.trunc1){           
+discrcont.v <- function(y, y12, eta1, eta2, sig1, sig2, nu1 = NULL, nu2 = NULL, theta, margins, BivD, par2, min.dn, min.pr, max.pr, left.trunc1, left.trunc2){           
  
 y1m <- y2m <- NA
  
@@ -256,7 +265,7 @@ y1m <- y2m <- NA
   pmf1   <- as.numeric(p1pdf1$pdf2)   
    
 
-  rpd2 <- distrHsAT(y,   eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)     
+  rpd2 <- distrHsAT(y,   eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc2)     
   p2   <- rpd2$p2
   pdf2 <- rpd2$pdf2
 
@@ -468,20 +477,20 @@ pmf2   <- as.numeric(p2pdf2$pdf2)
 
 
 
-contcont.m <- function(y, y12, eta1, eta2, sig1, sig2, nu1 = NULL, nu2 = NULL, theta, margins, BivD, par2, min.dn, min.pr, max.pr, cond){           
+contcont.m <- function(y, y12, eta1, eta2, sig1, sig2, nu1 = NULL, nu2 = NULL, theta, margins, BivD, par2, min.dn, min.pr, max.pr, cond, left.trunc1, left.trunc2){           
      
      
  if(cond == 1){    
      
- rpd1 <- distrHsAT(y12, eta2 = eta1, sigma2 = sig1, nu = nu1, margin2 = margins[1], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
- rpd2 <- distrHsAT(y,   eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)     
+ rpd1 <- distrHsAT(y12, eta2 = eta1, sigma2 = sig1, nu = nu1, margin2 = margins[1], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc1)
+ rpd2 <- distrHsAT(y,   eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc2)     
 
               }
               
  if(cond == 2){    
      
- rpd1 <- distrHsAT(y,   eta2 = eta1, sigma2 = sig1, nu = nu1, margin2 = margins[1], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
- rpd2 <- distrHsAT(y12, eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)     
+ rpd1 <- distrHsAT(y,   eta2 = eta1, sigma2 = sig1, nu = nu1, margin2 = margins[1], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc1)
+ rpd2 <- distrHsAT(y12, eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc2)     
  
               }             
 
@@ -498,20 +507,20 @@ contcont.m <- function(y, y12, eta1, eta2, sig1, sig2, nu1 = NULL, nu2 = NULL, t
 }
 
 
-contcont.v <- function(y, y12, eta1, eta2, sig1, sig2, nu1 = NULL, nu2 = NULL, theta, margins, BivD, par2, min.dn, min.pr, max.pr, cond){           
+contcont.v <- function(y, y12, eta1, eta2, sig1, sig2, nu1 = NULL, nu2 = NULL, theta, margins, BivD, par2, min.dn, min.pr, max.pr, cond, left.trunc1, left.trunc2){           
      
      
  if(cond == 1){    
      
- rpd1 <- distrHsAT(y12, eta2 = eta1, sigma2 = sig1, nu = nu1, margin2 = margins[1], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
- rpd2 <- distrHsAT(y,   eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)     
+ rpd1 <- distrHsAT(y12, eta2 = eta1, sigma2 = sig1, nu = nu1, margin2 = margins[1], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc1)
+ rpd2 <- distrHsAT(y,   eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc2)     
 
               }
               
  if(cond == 2){    
      
- rpd1 <- distrHsAT(y,   eta2 = eta1, sigma2 = sig1, nu = nu1, margin2 = margins[1], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
- rpd2 <- distrHsAT(y12, eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)     
+ rpd1 <- distrHsAT(y,   eta2 = eta1, sigma2 = sig1, nu = nu1, margin2 = margins[1], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc1)
+ rpd2 <- distrHsAT(y12, eta2 = eta2, sigma2 = sig2, nu = nu2, margin2 = margins[2], min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc2)     
  
               }             
 
@@ -535,9 +544,9 @@ contcont.v <- function(y, y12, eta1, eta2, sig1, sig2, nu1 = NULL, nu2 = NULL, t
 
 
 
-bincont.m <- function(y, p0, eta.mu, sigma, nu, theta, margin, BivD, par2, min.dn, min.pr, max.pr, y1){           
+bincont.m <- function(y, p0, eta.mu, sigma, nu, theta, margin, BivD, par2, min.dn, min.pr, max.pr, y1, left.trunc2){           
      
- rpd <- distrHsAT(y, eta2 = eta.mu, sigma2 = sigma, nu = nu, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)     
+ rpd <- distrHsAT(y, eta2 = eta.mu, sigma2 = sigma, nu = nu, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc2)     
      
  p2 <- rpd$p2; pdf2 <- rpd$pdf2
  
@@ -554,9 +563,9 @@ bincont.m <- function(y, p0, eta.mu, sigma, nu, theta, margin, BivD, par2, min.d
 
 
 
-bincont.v <- function(y, p0, eta.mu, sigma, nu, theta, margin, BivD, par2, min.dn, min.pr, max.pr, y1){           
+bincont.v <- function(y, p0, eta.mu, sigma, nu, theta, margin, BivD, par2, min.dn, min.pr, max.pr, y1, left.trunc2){           
      
- rpd <- distrHsAT(y, eta2 = eta.mu, sigma2 = sigma, nu = nu, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)     
+ rpd <- distrHsAT(y, eta2 = eta.mu, sigma2 = sigma, nu = nu, margin2 = margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc2)     
      
  p2 <- rpd$p2; pdf2 <- rpd$pdf2
  
@@ -583,7 +592,7 @@ ifef <- function(dv){ # this will only work for ill-defined models that will res
 
 intB <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL, left.trunc = 0){           
                                        
- if(discr == FALSE) pdf <- distrHsAT(y, eta, sigma2, nu, margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)$pdf2
+ if(discr == FALSE) pdf <- distrHsAT(y, eta, sigma2, nu, margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)$pdf2
  if(discr == TRUE)  pdf <- distrHsDiscr(y, eta, sigma2, 1, 1, 1, margin, naive = TRUE, ym, min.dn = min.dn, 
                                         min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)$pdf2
 
@@ -609,7 +618,7 @@ gradBbit1 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, 
 
  
 
-       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
        if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym, min.dn = min.dn, 
                                               min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
 
@@ -632,7 +641,7 @@ gradBbit2 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, 
 
 
 
-       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
        if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym, min.dn = min.dn, 
                                               min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
 
@@ -651,11 +660,11 @@ gradBbit2 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, 
 
 
 
-gradBbit3 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL){ 
+gradBbit3 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL, left.trunc = 0){ 
 
  
 
-       dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+       dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
 
        pdf2                 <- dHs$pdf2
        derpdf2.dernu.st     <- dHs$derpdf2.dernu.st  
@@ -677,7 +686,7 @@ hessBbit1 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, 
 
 
 
-       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
        if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym, min.dn = min.dn, 
                                               min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
 
@@ -703,7 +712,7 @@ hessBbit2 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, 
 
 
 
-       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
        if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym, min.dn = min.dn, 
                                               min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
 
@@ -730,7 +739,7 @@ hessBbit3 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, 
 
 
 
-       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+       if(discr == FALSE) dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
        if(discr == TRUE)  dHs <- distrHsDiscr(y, eta, sigma2, sigma2.st, 1, 1, margin, naive = TRUE, ym, min.dn = min.dn, 
                                               min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
 
@@ -755,11 +764,11 @@ hessBbit3 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, 
 
 
 
-hessBbit4 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL){ 
+hessBbit4 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL, left.trunc = 0){ 
 
  
 
-        dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+        dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
 
         pdf2               <- dHs$pdf2
         derpdf2.dernu.st   <- dHs$derpdf2.dernu.st           
@@ -779,11 +788,11 @@ hessBbit4 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, 
 
 
 
-hessBbit5 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL){ 
+hessBbit5 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL, left.trunc = 0){ 
 
  
 
-        dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+        dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
 
         pdf2                     <- dHs$pdf2
         derpdf2.dereta2          <- dHs$derpdf2.dereta2
@@ -805,11 +814,11 @@ hessBbit5 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, 
 
 
 
-hessBbit6 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL){ 
+hessBbit6 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, min.pr, max.pr, discr = FALSE, ym = NULL, left.trunc = 0){ 
 
 
 
-        dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+        dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
 
         pdf2                          <- dHs$pdf2
         derpdf2.dersigma2.st          <- dHs$derpdf2.dersigma2.st
@@ -833,11 +842,11 @@ hessBbit6 <- function(y, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, min.dn, 
 ###################################################################################################
 ###################################################################################################
 
-int1f <- function(y, eta, sigma2, nu, margin, rc, min.dn, min.pr, max.pr){ 
+int1f <- function(y, eta, sigma2, nu, margin, rc, min.dn, min.pr, max.pr, left.trunc = 0){ 
 
 
 
-   pdf <- distrHsAT(y, eta, sigma2, nu, margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)$pdf2
+   pdf <- distrHsAT(y, eta, sigma2, nu, margin, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)$pdf2
    
    log( 1 + exp( log( pdf ) + rc ) )
    
@@ -846,10 +855,10 @@ int1f <- function(y, eta, sigma2, nu, margin, rc, min.dn, min.pr, max.pr){
 
 
 
-d.bpsi <- function(y, X1, X2, X3, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, j, min.dn, min.pr, max.pr){ 
+d.bpsi <- function(y, X1, X2, X3, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, j, min.dn, min.pr, max.pr, left.trunc = 0){ 
 
 
-       dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr)
+       dHs <- distrHs(y, eta, sigma2, sigma2.st, nu, nu.st, margin, naive = TRUE, min.dn = min.dn, min.pr = min.pr, max.pr = max.pr, left.trunc = left.trunc)
 
        pdf2                 <- dHs$pdf2
        derpdf2.dereta2      <- dHs$derpdf2.dereta2 
@@ -901,7 +910,7 @@ for(i in 1:n){
   sigma2.st <- ss$vrb.st
   sigma2    <- ss$vrb
                                     
-  for(j in 1:length(params)) G[i, j] <- integrate(d.bpsi, lB, uB, X1, X2, X3, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, j, min.dn, min.pr, max.pr)$value
+  for(j in 1:length(params)) G[i, j] <- integrate(d.bpsi, lB, uB, X1, X2, X3, eta, sigma2, sigma2.st, nu, nu.st, margin, rc, j, min.dn, min.pr, max.pr, left.trunc = VC$left.trunc)$value
 
              }
              

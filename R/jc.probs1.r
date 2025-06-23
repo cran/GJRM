@@ -118,8 +118,8 @@ dof   <- as.numeric(dof)
 
 
 
-if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1 <- as.numeric(distrHsAT(y1, eta1, sigma21, nu1, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2) 
-if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)) p2 <- as.numeric(distrHsAT(y2, eta2, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2) 
+if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1 <- as.numeric(distrHsAT(y1, eta1, sigma21, nu1, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc1)$p2) 
+if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)) p2 <- as.numeric(distrHsAT(y2, eta2, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2) 
 
 if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d)) {y1rep <- rep(y1, length(eta1))
                                              p1pdf1 <- distrHsATDiscr(y1rep, eta1, sigma21, nu = 1, x$margins[1], x$VC$y1m, min.dn = min.pr, min.pr = min.pr, 
@@ -811,8 +811,8 @@ if(is.null(nu2))     nu2 <- 1
 
 if(x$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$margins[2] %in% c(x$VC$m2,x$VC$m3)){
 
-p1s  <- distrHsAT(y1, eta1s, sigma21, nu1, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
-p2s  <- distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
+p1s  <- distrHsAT(y1, eta1s, sigma21, nu1, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc1)$p2
+p2s  <- distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2
 
 }
 
@@ -824,7 +824,7 @@ ppdf1 <- distrHsATDiscr(y1rep, eta1s, sigma21, nu = 1, x$margins[1], x$VC$y1m, m
 p1s   <- ppdf1$p2
 pdf1s <- ppdf1$pdf2
 
-p2s  <- distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2 
+p2s  <- distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2 
 
 }
 
@@ -1240,8 +1240,8 @@ nu2 <- x$gamlss2$nu
 
 
 
-if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1 <- p1a <- as.numeric(distrHsAT(y1, eta1, sigma21, nu1, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2) 
-if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)) p2 <- p2a <- as.numeric(distrHsAT(y2, eta2, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2) 
+if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1 <- p1a <- as.numeric(distrHsAT(y1, eta1, sigma21, nu1, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc1)$p2) 
+if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)) p2 <- p2a <- as.numeric(distrHsAT(y2, eta2, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2) 
 
 if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d)){ 
                                            y1rep <- rep(y1, length(eta1))
@@ -1437,8 +1437,8 @@ if(x$VC$margins[1] %in% cont3par && x$VC$margins[2] %in% cont2par ){
 
 
 
-if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1s <- p1sa <- distrHsAT(y1, eta1s, sigma21, nu1, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
-if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)) p2s <- p2sa <- distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
+if(x$margins[1] %in% c(x$VC$m2, x$VC$m3)) p1s <- p1sa <- distrHsAT(y1, eta1s, sigma21, nu1, x$margins[1], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc1)$p2
+if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)) p2s <- p2sa <- distrHsAT(y2, eta2s, sigma22, nu2, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2
 
 if(x$margins[1] %in% c(x$VC$m1d, x$VC$m2d)){ 
                                            y1rep <- rep(y1, length(eta1s))

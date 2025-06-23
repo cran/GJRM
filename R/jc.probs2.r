@@ -84,7 +84,7 @@ if((cond == 0 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)) || (cond == 1 && x$margi
 
 
 p0  <- 1 - p1         
-p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
+p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2
 
 if(!(x$BivD %in% x$BivD2)) p12 <- mm(BiCDF(p0, p2, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr  )
 
@@ -130,7 +130,7 @@ if(cond == 2 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*# bin - cont
 
 
 p0  <- 1 - p1         
-p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
+p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2
 
 
 if(!(x$BivD %in% x$BivD2)) p12 <- copgHsCond(p0, p2, theta, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
@@ -421,7 +421,7 @@ if( missing(newdata)){ if(x$VC$ccss == "yes") X4s <- x$X4s else X4s <- x$X4}
 if((cond == 0 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)) || (cond == 1 && x$margins[2] %in% c(x$VC$m2, x$VC$m3))){#*#
 
 p0s  <- 1 - p1s         
-p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2 
+p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2 
 
 if(x$VC$BivD %in% c("N","T")) p12s <- mm(BiCDF(p0s, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr  ) else{
 
@@ -458,7 +458,7 @@ if(cond == 1) p12s <- p12s/p1s
 if(cond == 2 && x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*# bin - cont
 
 p0s  <- 1 - p1s         
-p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
+p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2
 
 
 if(!(x$BivD %in% x$BivD2)) p12s <- copgHsCond(p0s, p2s, est.RHOb, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
@@ -694,7 +694,7 @@ if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*#
 if(y1 == 0 || y1 == 1){  
 
 p0  <- 1 - p1                     
-p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
+p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2
 p12 <- p0*p2
 
 if(cond == 1) p12 <- p2
@@ -827,7 +827,7 @@ if(x$margins[2] %in% c(x$VC$m2, x$VC$m3)){#*#
 
 if(y1 == 0 || y1 == 1){                              
 p0s  <- 1 - p1s                    
-p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr)$p2
+p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2
 p12s <- p0s*p2s
 
 if(cond == 1) p12s <- p2s

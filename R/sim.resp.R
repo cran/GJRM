@@ -30,6 +30,7 @@ if(margin %in% c("DGP","DGPII","DGP0")){
 if(setseed == TRUE) set.seed(1)
 
 if(margin == "N")     y <- rNO(   rsim,    mu =     eta,     sigma = sigma2) 
+if(margin == "tN")    y <- rNtr(  rsim,    mu =     eta,     sigma = sigma2, left.trunc = left.trunc) 
 if(margin == "GU")    y <- rGU(   rsim,    mu =     eta,     sigma = sigma2) 
 if(margin == "rGU")   y <- rRG(   rsim,    mu =     eta,     sigma = sigma2) 
 if(margin == "LO")    y <- rLO(   rsim,    mu =     eta,     sigma = sigma2) 

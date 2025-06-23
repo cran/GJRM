@@ -55,6 +55,12 @@ SemiParTRIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   
   ###################################
   
+  data$weights <- weights
+  data$subset  <- subset # ok if null so no change here  
+  
+  
+  
+  
   if(penCor != "unpen"){ spCor <- sp.penCor; names(spCor) <- "spCor"} 
  
   M <- list(mb = c("T", "TSS", "TESS"), margins = margins, penCor = penCor, w.alasso = w.alasso, 
@@ -89,7 +95,10 @@ SemiParTRIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   
   
   mf[[1]] <- as.name("model.frame")
-  data <- eval(mf, parent.frame())
+  #data <- eval(mf, parent.frame())
+   data <- eval(mf)
+
+
   
   if(gc.l == TRUE) gc()  
   
@@ -127,6 +136,7 @@ if(Model=="TESS"){
      
                    }
   
+
 
   if(!("(weights)" %in% names(data))) {weights <- rep(1,dim(data)[1]) 
                         data$weights <- weights

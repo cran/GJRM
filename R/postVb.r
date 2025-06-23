@@ -24,7 +24,7 @@ if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || 
     HeSh <- He - SemiParFit$fit$S.h
     
     
-    if(VC$surv.flex == TRUE){
+    if( VC$surv.flex == TRUE || (VC$Model == "ROY" && VC$surv == TRUE) ){
     
     
 
@@ -34,7 +34,11 @@ if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || 
 
     if(VC$informative == "no"){
     
-        if(!is.null(VC$mono.sm.pos)) mono.sm.pos <- VC$mono.sm.pos else mono.sm.pos <- c(VC$mono.sm.pos1, VC$mono.sm.pos2 + VC$X1.d2)  
+        if(!is.null(VC$mono.sm.pos)) mono.sm.pos <- VC$mono.sm.pos else{
+                                                                         
+                                                                        if(VC$Model != "ROY") mono.sm.pos <- c(VC$mono.sm.pos1, VC$mono.sm.pos2 + VC$X1.d2) 
+                                                                        if(VC$Model == "ROY") mono.sm.pos <- c(VC$X1.d2 + VC$mono.sm.pos2, VC$X1.d2 + VC$X2.d2 + VC$mono.sm.pos3) 
+                                                                        } 
     
     }
     

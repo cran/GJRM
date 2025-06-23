@@ -78,7 +78,7 @@ rm(bs, SE, Vb, XX, Xt, V)
               l.sp4 = object$l.sp4, l.sp5 = object$l.sp5, l.sp6 = object$l.sp6, 
               l.sp7 = object$l.sp7, l.sp8 = object$l.sp8,
               X3.null = is.null(object$X3), univar.gamlss = FALSE, m2 = object$VC$m2, m3 = object$VC$m3, surv = object$surv,
-              surv.flex = object$surv.flex, K1 = NULL, end.surv = object$end.surv)
+              surv.flex = object$surv.flex, K1 = NULL, end.surv = object$end.surv, n.sel = object$n.sel, model = object$model)
               
               
               

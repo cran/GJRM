@@ -145,16 +145,16 @@ if(Model=="BSS" || Model=="BPO" || Model=="BPO0"){
 
 if(VC$BivD %in% VC$BivD2){
 
-Reg2CopostR <- Reg2Copost(SemiParFit, VC, theta)
+#Reg2CopostR <- Reg2Copost(SemiParFit, VC, theta)
 
-theta   <- Reg2CopostR$theta
-theta.a <- Reg2CopostR$theta.a
+#theta   <- Reg2CopostR$theta
+theta.a <- mean(theta) # Reg2CopostR$theta.a
 #tau     <- Reg2CopostR$tau  
 #tau.a   <- Reg2CopostR$tau.a
 
 } 
 
-if(!(VC$BivD %in% VC$BivD2)){
+if(!(VC$BivD %in% VC$BivD2)){ # this should not be needed
 
 ass.msR <- theta2tau(VC$BivD, VC$nCa, theta)
 theta <- ass.msR$theta

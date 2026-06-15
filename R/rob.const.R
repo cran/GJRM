@@ -1,8 +1,10 @@
 rob.const <- function(x, B = 100, left.trunc = 0){
 
 cont <- c("tN","N", "N2", "GU", "rGU", "LO", "LN", "WEI","IG", "GA", "DAGUM", "SM", "TW","BE", "FISK","GP","GPII","GPo")
-disc <- c("tNBI", "tNBII", "tPIG", "NBI", "NBII", "PIG", "P", "tP","DGP","DGPII","DGP0") 
+disc <- c("tNBI", "tNBII", "tPIG", "NBI", "NBII", "PIG", "P", "tP","DGP","DGPII","DGP0","BB") 
 margin <- x$margin[1]
+
+if(margin %in% c("BB")) stop("BB distribution not available yet, Get in touch to check progress.")
 
 n <- x$n
 

@@ -1,6 +1,7 @@
 \name{res.check}
 \alias{res.check}
-\alias{int.rescheck}
+\alias{.qqenv.chisq2}
+
 
 \title{Diagnostic plots for discrete/continuous response margins}
 
@@ -12,7 +13,7 @@ It produces diagnostic plots based on (randomised) quantile residuals.
 
 \usage{
 
-res.check(x, intervals = FALSE, n.sim = 100, prob.lev = 0.05)
+res.check(x, joint = FALSE, intervals = FALSE, n.sim = 1000, prob.lev = 0.05)
 
 }
 
@@ -20,9 +21,11 @@ res.check(x, intervals = FALSE, n.sim = 100, prob.lev = 0.05)
 
 \item{x}{A fitted \code{gjrm} object.}
 
+\item{joint}{If \code{TRUE} then a qqplot for overall model adequacy is produced, otherwise qqplots for the marginal models are displayed.}   
+
 \item{intervals}{If \code{TRUE} then intervals for the qqplots are produced.}   
   
-\item{n.sim}{Number of replicate datasets used to simulate quantiles of the residual distribution.} 
+\item{n.sim}{Number of simulated variates from the assumed distribution.} 
 
 \item{prob.lev}{Overall probability of the left and right tails of the probabilities' distributions used for interval calculations.} 
 

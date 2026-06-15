@@ -48,7 +48,7 @@ gamlss <- function (formula, data = list(), weights = NULL, subset = NULL,
   m2 <- c("tN", "N", "GU", "rGU", "LO", "LN", "WEI", "IG", "GA", "BE", "FISK", "GP", "GPII", "GPo")
   m3 <- c("DAGUM", "SM", "TW")
   m1d <- c("P", "tP", "GEVlink", "DGP0")
-  m2d <- c("tNBI", "tNBII", "tPIG", "NBI", "NBII", "PIG", "DGP", "DGPII")
+  m2d <- c("tNBI", "tNBII", "tPIG", "NBI", "NBII", "PIG", "DGP", "DGPII","BB")
   m3d <- c("DEL", "SICHEL")
   
   
@@ -619,7 +619,7 @@ gamlss <- function (formula, data = list(), weights = NULL, subset = NULL,
       if (LSl.sf1 != 0 && LSl.sf2 == 0) attr(Sl.sf, "E") <- adiag(attr(Sl.sf, "E"), pa2, attr(Sl.sf3, "E"))
     }
   }
-  VC <- list(lsgam1 = lsgam1, ygrid = ygrid, lsgam2 = lsgam2, end.surv = FALSE,
+  VC <- list(lsgam1 = lsgam1, ygrid = ygrid, lsgam2 = lsgam2, end.surv = FALSE, fixed.margins = FALSE,
              indexT = indexT, D = D, my.env = my.env, k = k.tvc, 
              pos.pb = pos.pb, lsgam3 = lsgam3, r.type = r.type, Sl.sf = Sl.sf, 
              sp.method = sp.method, lsgam4 = lsgam4, gam1TW = gam1TW, 
@@ -673,7 +673,7 @@ gamlss <- function (formula, data = list(), weights = NULL, subset = NULL,
   cov.c(SemiParFit)
   gam1$call$data <- gam2$call$data <- gam3$call$data <- gam4$call$data <- gam5$call$data <- gam6$call$data <- gam7$call$data <- gam8$call$data <- cl$data
   rm(gam1TW)
-  L <- list(fit = SemiParFit$fit, dataset = NULL, n = n, formula = formula, 
+  L <- list(fit = SemiParFit$fit, p = SemiParFit$fit$p, dataset = NULL, n = n, formula = formula, 
             robust = robust, edf11 = SemiParFit.p$edf11, gam1 = gam1, 
             gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, 
             gam6 = gam6, gam7 = gam7, gam8 = gam8, coefficients = SemiParFit$fit$argument, 

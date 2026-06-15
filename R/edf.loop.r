@@ -2,6 +2,10 @@ edf.loop <- function(VC, F, F1, GAM){
 
 # CLM.shift accounts for the presence of the cut-points and the removed intercept in the ordinal model
 
+cms <- 0
+
+if(VC$fixed.margins == TRUE) cms <- 4
+
 is_ordcon <- !is.null(VC$K1) & is.null(VC$K2)
 is_ordord <- !is.null(VC$K1) & !is.null(VC$K2)
 
@@ -44,7 +48,7 @@ if( (VC$l.sp1!=0 || VC$l.sp2!=0 || VC$l.sp3!=0 || VC$l.sp4!=0 || VC$l.sp5!=0 || 
               if(i==2){ gam <- GAM$gam2; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + VC$X1.d2 } 
               if(i==3){ gam <- GAM$gam3; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + VC$X1.d2 + VC$X2.d2 } 
               if(i==4){ gam <- GAM$gam4; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 } 
-              if(i==5){ gam <- GAM$gam5; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 } 
+              if(i==5){ gam <- GAM$gam5; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 - cms } 
               if(i==6){ gam <- GAM$gam6; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 } 
               if(i==7){ gam <- GAM$gam7; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 } 
               if(i==8){ gam <- GAM$gam8; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + VC$X1.d2 + VC$X2.d2 + VC$X3.d2 + VC$X4.d2 + VC$X5.d2 + VC$X6.d2 + VC$X7.d2 } 

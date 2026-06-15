@@ -9,7 +9,8 @@
 
 \usage{
 
-marg.mv(x, eq, newdata, fun = "mean", n.sim = 100, prob.lev = 0.05, bin.model = NULL)
+marg.mv(x, eq, newdata, fun = "mean", n.sim = 100, prob.lev = 0.05, 
+        bin.model = NULL, bd = NULL)
 
 }
 
@@ -17,7 +18,7 @@ marg.mv(x, eq, newdata, fun = "mean", n.sim = 100, prob.lev = 0.05, bin.model = 
 
 \item{x}{A fitted \code{marg.mv} object as produced by the respective fitting function.}
 
-\item{eq}{Number of equation of interest.} 
+\item{eq}{Margin of interest.} 
 
 \item{newdata}{A data frame with one row, which must be provided.}
 
@@ -29,6 +30,8 @@ marg.mv(x, eq, newdata, fun = "mean", n.sim = 100, prob.lev = 0.05, bin.model = 
 \item{prob.lev}{Overall probability of the left and right tails of the simulated distribution used for interval calculations.} 
 
 \item{bin.model}{If a two part or hurdle model is used then this is the object of a binary regression model fitted using gam() from mgcv.} 
+
+\item{bd}{Binomial denominator. To be supplied when using a distribution that requires it (e.g., BB).} 
 
 
 }

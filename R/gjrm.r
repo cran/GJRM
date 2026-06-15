@@ -10,7 +10,8 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL, offset1 
                              sp.penCor = 3, Chol = FALSE, gamma = 1, w.alasso = NULL,
                              drop.unused.levels = TRUE, 
                              min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999,
-                             h.margins = FALSE){
+                             fixed.margins = FALSE, fixed.margins.type = c("continuous", "continuous"),
+                             pf.margin1 = NULL, pf.margin2 = NULL){
 
 
 
@@ -24,11 +25,14 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL, offset1 
   n.sel <- c0 <- c11 <- c10 <- NA
   inde <- X2s <- X3s <- NULL
   
-  if(missing(margins) && h.margins == FALSE) stop("You must choose the margins' values.")
-  if(missing(model)   && h.margins == FALSE)   stop("You must choose a model type.")
-  if(h.margins == TRUE){ margins <- c("N", "N"); model = "B"} # trick to fool the program
-  
+  if(missing(margins) && fixed.margins == FALSE) stop("You must choose the margins' values.")
+  if(missing(model)   && fixed.margins == FALSE)   stop("You must choose a model type.")
+  if(fixed.margins == TRUE){ margins <- c("N", "N"); model <- "B"; uni.fit <- FALSE} # trick to fool the program in certain steps
   Model <- model  
+  BivD2mixed <- c("C0C90","C0C270","C180C90","C180C270", "J0J90","J0J270","J180J90","J180J270", "G0G90","G0G270","G180G90","G180G270", "GAL0GAL90", "GAL0GAL270", "GAL180GAL90", "GAL180GAL270") 
+  Mchoice <- c("B", "T", "BSS", "TSS", "TESS", "BPO", "BPO0", "T", "TESS", "TSS", "SWITCH")
+  if(!(Model %in% Mchoice)) stop("Invalid model option.") 
+  if(Model == "BSS" && (copula %in% BivD2mixed || copula2 %in% BivD2mixed)) stop("Mixed copulae are currently not allowed for sample selection models.") 
   
   if(model == "SWITCH") model <- "ROY"
   
@@ -105,6 +109,8 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL, offset1 
 #}
 
 ###################################################################################### 
+  
+if(margins[2] == "TW" & !(margins[1] %in% bl)) stop("When using a Tweedie margin, the other margin must currently be binary.")
   
   
   
@@ -265,7 +271,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL, offset1 
   m2   <- c("tN","N","GU","rGU","LO","LN","WEI","IG","GA","BE","FISK","GP","GPII","GPo")
   m3   <- c("DAGUM","SM","TW")
   m1d  <- c("P", "tP","DGP0")
-  m2d  <- c("tNBI", "tNBII","tPIG","NBI", "NBII","PIG","DGP","DGPII")
+  m2d  <- c("tNBI", "tNBII","tPIG","NBI", "NBII","PIG","DGP","DGPII","BB")
   m3d  <- c("DEL","SICHEL")
   
   if( margins[1] %in% c(m2d, m1d) && margins[2] %in% bl ) stop("Please swap the two equations (and hence margins' specification).\nThe second instead of the first margin has to refer to the discrete distribution.")
@@ -275,7 +281,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL, offset1 
   cta <- data.frame( c(opc), c(1,3,23,13,33,6,26,16,36,4,24,14,34,5,55,56,2,60,61,62:65) )     
   
   
-  if(BivD %in% BivD2){
+  if(BivD %in% BivD2){ # sort of obsolete but overwritten in relevant files
   
   if(BivD %in% BivD2[1:4])  BivDt <- "C0" 
   if(BivD %in% BivD2[5:12]) BivDt <- "J0"
@@ -301,7 +307,24 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL, offset1 
   if(!is.list(formula)) stop("You must specify a list of equations.")
   l.flist <- length(formula)
 
+  if(fixed.margins == TRUE){ 
+  
+       if( !(l.flist %in% c(2, 3)) ) stop("You can provide two or three equations.")
+       
+       if( l.flist == 3 ) formula <- append(formula, list(~ 1, ~ 1), after = 2) # to make it become 5  
+                          l.flist <- length(formula)
+       
+                         }
+
+
   form.check(formula, l.flist) 
+  
+  if(fixed.margins == TRUE){
+                          if(!identical(formula[[1]][[3]], 1)) stop("The first and second equations can only be specified in terms of intercepts.")
+                          if(!identical(formula[[2]][[3]], 1)) stop("The first and second equations can only be specified in terms of intercepts")  
+                    }
+  
+  
   cl <- match.call()       
   mf <- match.call(expand.dots = FALSE)
             
@@ -322,7 +345,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL, offset1 
   environment(fake.formula) <- environment(formula[[1]])
   mf$formula <- fake.formula 
   
-  mf$h.margins <- mf$left.trunc1 <- mf$left.trunc2 <- mf$ub.t1 <- mf$ub.t2 <- mf$uni.fit <- mf$upperBt1 <- mf$upperBt2 <- mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$dep.cens <- mf$ordinal <- mf$Model <- mf$model <- mf$knots <- mf$k1.tvc <- mf$k2.tvc <- mf$surv <- mf$BivD <- mf$copula <- mf$copula2 <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
+  mf$pf.margin1 <- mf$pf.margin2 <- mf$fixed.margins.type <- mf$fixed.margins <- mf$left.trunc1 <- mf$left.trunc2 <- mf$ub.t1 <- mf$ub.t2 <- mf$uni.fit <- mf$upperBt1 <- mf$upperBt2 <- mf$min.dn <- mf$min.pr <- mf$max.pr <- mf$dep.cens <- mf$ordinal <- mf$Model <- mf$model <- mf$knots <- mf$k1.tvc <- mf$k2.tvc <- mf$surv <- mf$BivD <- mf$copula <- mf$copula2 <- mf$margins <- mf$fp <- mf$dof <- mf$infl.fac <- mf$rinit <- mf$rmax <- mf$iterlimsp <- mf$tolsp <- mf$gc.l <- mf$parscale <- mf$extra.regI <- mf$gamlssfit <- NULL                           
   mf$drop.unused.levels <- drop.unused.levels 
   
   
@@ -466,7 +489,7 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL, offset1 
 
 
                   
-  M <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, m3d = m3d, BivD = BivD, bl = bl, h.margins = h.margins,
+  M <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, m3d = m3d, BivD = BivD, bl = bl, fixed.margins = fixed.margins,fixed.margins.type = fixed.margins.type,
             robust = robust, opc = opc, extra.regI = extra.regI, margins = margins, BivD2 = BivD2, dof = dof, 
             left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
             surv = surv, c1 = cens1, c2 = cens2, c3 = cens3, dep.cens = dep.cens, end.surv = end.surv, Model = Model, l.flist = l.flist) 
@@ -475,7 +498,10 @@ gjrm <- function(formula, data = list(), weights = NULL, subset = NULL, offset1 
   
   M$type.cens1 <- M$type.cens2 <- "R"
  
-  pream.wm(formula, margins, M, l.flist)
+ 
+  if(fixed.margins == TRUE && copula == "T"){M$BivD <- "N"; pream.wm(formula, margins, M, l.flist); M$BivD <- copula}else{pream.wm(formula, margins, M, l.flist)}
+  
+  
   
   formula.eq1 <- formula[[1]]
   formula.eq2 <- formula[[2]] 
@@ -747,13 +773,20 @@ if( margins[2] %in% c(m3) ){ log.nu.2   <- start.snR$log.nu.1;   names(log.nu.2)
 vo <- list(gam1 = gam1, gam2 = gam2, i.rho = i.rho, log.sig2.2 = log.sig2.2, log.nu.2 = log.nu.2, log.nu.1 = log.nu.1, log.sig2.1 = log.sig2.1, 
            dof.st = dof.st, n = n, drop.unused.levels = drop.unused.levels )
 
-start.v <- overall.sv(margins, M, vo)
+
+
+if(fixed.margins == TRUE && copula == "T"){M$BivD <- "N"; start.v <- overall.sv(margins, M, vo); M$BivD <- copula}else{start.v <- overall.sv(margins, M, vo)}
+
+
    			
 ##############################################################  
 # starting values for case of predictors on all parameters
 ##############################################################  
   
     if(l.flist > 2){
+    
+    
+    if(fixed.margins == TRUE && copula == "T") M$BivD <- "N"
     
     overall.svGR <- overall.svG(formula, data, ngc = 2, margins, M, vo, gam1, gam2, knots = knots)
                                 
@@ -781,6 +814,9 @@ start.v <- overall.sv(margins, M, vo)
          l.sp3 = overall.svGR$l.sp3
          sp3 = overall.svGR$sp3
                       }
+    
+    
+    if(fixed.margins == TRUE && copula == "T") M$BivD <- copula
     
     }
     
@@ -819,8 +855,6 @@ if(missing(parscale)) parscale <- 1
                                           cy1.y2 = NULL, cy1.cy2 = NULL, 
                                           cy1 = NULL, cy = NULL, univ = 0)
  
-  my.env <- new.env()
-  my.env$signind <- 1 # this is for mixed copulae
 
   lsgam3 <- length(gam3$smooth)
   lsgam4 <- length(gam4$smooth)
@@ -928,20 +962,20 @@ c00 <- cens3 # NULL, in case of A cens then 1 - cens1 - cens2
 
 
 
-#my.env      <- new.env()
+my.env      <- new.env()
 my.env$k1   <- k1.tvc
 my.env$k2   <- k2.tvc
 
 
-  VC <- list(lsgam1 = lsgam1, indexTeq1 = indexTeq1, indexTeq2 = indexTeq2, h.margins = h.margins,
+  VC <- list(lsgam1 = lsgam1, indexTeq1 = indexTeq1, indexTeq2 = indexTeq2, fixed.margins = fixed.margins, pdf1 = data$pdf1, pdf2 = data$pdf2, 
              lsgam2 = lsgam2, Deq1 = Deq1, pos.pbeq1 = pos.pbeq1, Deq2 = Deq2, pos.pbeq2 = pos.pbeq2,
              lsgam3 = lsgam3, robust = FALSE, sp.fixed = NULL,
              lsgam4 = lsgam4, Sl.sf = Sl.sf, sp.method = sp.method,
              lsgam5 = lsgam5, K1 = NULL, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
              lsgam6 = lsgam6, 
-             lsgam7 = lsgam7,
+             lsgam7 = lsgam7, 
              lsgam8 = lsgam8, lsgam9 = lsgam9, n.sel = n.sel, inde = inde,
-             X1 = X1, X3s = X3s,
+             X1 = X1, X3s = X3s, pf.margin1 = pf.margin1, pf.margin2 = pf.margin2,
              X2 = X2, 
              X3 = X3,
              X4 = X4, 
@@ -1132,6 +1166,9 @@ if(gamlssfit == TRUE){
   
   func.opt <- func.OPT(margins, M)  # NAME of NEW FUNCTION HERE
   
+  
+  if(fixed.margins == TRUE) start.v <- start.v[-c(1:4)]
+  
   SemiParFit <- SemiParBIV.fit(func.opt = func.opt, start.v = start.v, 
                          rinit = rinit, rmax = rmax, iterlim = 100, iterlimsp = iterlimsp, tolsp = tolsp,
                          respvec = respvec, VC = VC, sp = sp, qu.mag = qu.mag) 
@@ -1164,7 +1201,12 @@ gam1$call$data <- gam2$call$data <- gam3$call$data <- gam4$call$data <- gam5$cal
   ##########################################################################################################################
 
 
-L <- list(fit = SemiParFit$fit, dataset = NULL, n = n, gamlss1 = gamlss1, gamlss2 = gamlss2, formula = formula, robust = FALSE, h.margins = h.margins,   
+if( fixed.margins == TRUE && all(fixed.margins.type == "count")) margins <- VC$margins <- c("P", "P") # trick to make res.check work properly when using count margins
+# if( fixed.margins == TRUE ) margins <- NULL # this ok I guess, if I do this some stuff will not work
+
+
+
+L <- list(fit = SemiParFit$fit, dataset = NULL, n = n, gamlss1 = gamlss1, gamlss2 = gamlss2, formula = formula, robust = FALSE, fixed.margins = fixed.margins,   
           edf11 = SemiParFit.p$edf11, surv = surv, n.sel = n.sel, inde = inde, X2s=X2s,
           gam1 = gam1, gam2 = gam2, gam3 = gam3, gam4 = gam4, gam5 = gam5, gam6 = gam6, gam7 = gam7, gam8 = gam8,  
           coefficients = SemiParFit$fit$argument, coef.t = SemiParFit.p$coef.t, c0=c0,

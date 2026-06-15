@@ -1,11 +1,14 @@
 bcontSurvG_extended <- function(params, respvec, VC, ps, AT = FALSE){
         
-        p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+        p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- c.copula.be1.mix1 <- NA
+        Cop1 <- Cop2 <- nC1 <- nC2 <- teta.ind1 <- teta.ind2 <- teta1 <- teta2 <- p1.2 <- p2.2 <- NA
+        
+        p00 <- p00.mix1 <- p00.mix2 <- p00.2 <- NA
         
         monP <- monP1 <- k1 <- k2 <- 0; Veq1 <- Veq2 <- list()
         monP2 <- matrix(0, length(params),length(params))
         
-        rotConst <- 1
+        rotConst <- c(1)
         
         params1 <- params[1:VC$X1.d2]
         params2 <- params[(VC$X1.d2 + 1):(VC$X1.d2 + VC$X2.d2)]
@@ -68,52 +71,73 @@ bcontSurvG_extended <- function(params, respvec, VC, ps, AT = FALSE){
         
         ##################
         
-        Cop1 <- Cop2 <- VC$BivD
-        nC1 <- nC2 <- VC$nC
-        
-        teta.ind1 <- as.logical(c(1,0,round(runif(VC$n-2))) )
-        teta.ind2 <- teta.ind1 == FALSE
-        
-        
-        if(!(VC$BivD %in% VC$BivD2) && length(teta.st) > 1){
-                
-                teta.st1 <- teta.st[teta.ind1]
-                teta.st2 <- teta.st[teta.ind2]
-                
-                teta1 <- teta[teta.ind1]
-                teta2 <- teta[teta.ind2]
-                
-        }
-        
-        ###
-        
-        if(VC$BivD %in% VC$BivD2){
-                
-                if(VC$BivD %in% VC$BivD2[c(1:4,13:16)])  teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov), TRUE, FALSE)
-                if(VC$BivD %in% VC$BivD2[5:12]) teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov) + 1, TRUE, FALSE)
-                teta.ind2 <- teta.ind1 == FALSE
-                
-                VC$my.env$signind <- ifelse(teta.ind1 == TRUE,  1, -1)
-                
-                teta1 <-  teta[teta.ind1]
-                teta2 <- -teta[teta.ind2]
-                
-                teta.st1 <- teta.st[teta.ind1]
-                teta.st2 <- teta.st[teta.ind2]
-                
-                if(length(teta) == 1) teta.ind2 <- teta.ind1 <- rep(TRUE, VC$n)
-                
-                Cop1Cop2R <- Cop1Cop2(VC$BivD)
-                Cop1 <- Cop1Cop2R$Cop1
-                Cop2 <- Cop1Cop2R$Cop2
-                
-                nC1 <- VC$ct[which(VC$ct[,1] == Cop1),2]
-                nC2 <- VC$ct[which(VC$ct[,1] == Cop2),2]
-                
-        }
-        
-        
-        
+Cop1 <- Cop2 <- VC$BivD 
+nC1 <- nC2 <- VC$nC 
+
+teta.ind1 <- as.logical(c(1,0,round(runif(VC$n-2))) ) # just random split here
+teta.ind2 <- teta.ind1 == FALSE 
+
+
+if(!(VC$BivD %in% VC$BivD2) && length(teta.st) > 1){ # not the best choice but implemented like this many years ago...for clarity
+
+teta.st1 <- teta.st[teta.ind1]
+teta.st2 <- teta.st[teta.ind2]
+
+teta1 <- teta[teta.ind1]
+teta2 <- teta[teta.ind2]
+
+}
+
+
+ 
+if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1){
+
+Cop1Cop2R <- Cop1Cop2(VC$BivD)
+Cop1 <- Cop1Cop2R$Cop1
+Cop2 <- Cop1Cop2R$Cop2
+nC1  <- VC$ct[which(VC$ct[,1] == Cop1), 2] 
+nC2  <- VC$ct[which(VC$ct[,1] == Cop2), 2]
+
+teta.ind1 <- as.logical( etad >= 0 ) # for + coefs
+teta.ind2 <- teta.ind1 == FALSE      # for - coefs
+
+
+if(VC$BivD %in% VC$BivD2[c(1:4,13:16)]){
+  teta1 <- teta.st1 <- etad[teta.ind1]
+  teta2 <- teta.st2 <- etad[teta.ind2]
+                                       }
+
+if(VC$BivD %in% VC$BivD2[5:12]){
+  teta1 <- teta.st1 <- sign(etad[teta.ind1]) * (abs(etad[teta.ind1]) + 1)
+  teta2 <- teta.st2 <- sign(etad[teta.ind2]) * (abs(etad[teta.ind2]) + 1)
+                                       }
+
+} 
+
+if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1){
+
+
+Cop1Cop2R <- Cop1Cop2(VC$BivD)
+Cop1 <- Cop1Cop2R$Cop1
+Cop2 <- Cop1Cop2R$Cop2
+nC1  <- VC$ct[which(VC$ct[,1] == Cop1), 2] 
+nC2  <- VC$ct[which(VC$ct[,1] == Cop2), 2]
+
+teta.i1 <- as.logical( etad >= 0 ) # this becomes an index for + and - coefs
+
+if(teta.i1 == TRUE){  Cop2 <- Cop1; nC2 <- nC1}
+if(teta.i1 == FALSE){ Cop1 <- Cop2; nC1 <- nC2}   
+
+if(VC$BivD %in% VC$BivD2[c(1:4,13:16)]) teta1 <- teta.st1 <- teta2 <- teta.st2 <- etad                                     
+if(VC$BivD %in% VC$BivD2[5:12])         teta1 <- teta.st1 <- teta2 <- teta.st2 <- sign(etad) * (abs(etad) + 1)
+
+
+teta.ind1 <- as.logical(c(1,0,round(runif(VC$n-2))) ) # again not the best choice but to make things run
+teta.ind2 <- teta.ind1 == FALSE 
+
+} 
+    
+
         ##################
         
         pd1 <- probmS(eta1, VC$margins[1], min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
@@ -180,8 +204,8 @@ bcontSurvG_extended <- function(params, respvec, VC, ps, AT = FALSE){
         
         ##################
         
-        if( length(teta1) != 0) dH1 <- copgHs(p1[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-        if( length(teta2) != 0) dH2 <- copgHs(p1[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+        if( length(teta1) != 0) dH1 <- copgHs(p1[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+        if( length(teta2) != 0) dH2 <- copgHs(p1[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
         
         ## NEW####
         ## Quantities addded
@@ -195,16 +219,16 @@ bcontSurvG_extended <- function(params, respvec, VC, ps, AT = FALSE){
         #dH2.mix2 {p.1[theta2], p2[theta2]}
         
         
-        if( length(teta1) != 0) dH1.2 <- copgHs(p1.2[teta.ind1], p2.2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-        if( length(teta2) != 0) dH2.2 <- copgHs(p1.2[teta.ind2], p2.2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+        if( length(teta1) != 0) dH1.2 <- copgHs(p1.2[teta.ind1], p2.2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+        if( length(teta2) != 0) dH2.2 <- copgHs(p1.2[teta.ind2], p2.2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
         
         ##NEW##########
         ####### queste sono le quantita miste
-        if( length(teta1) != 0) dH1.mix1 <- copgHs(p1[teta.ind1], p2.2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-        if( length(teta2) != 0) dH2.mix1 <- copgHs(p1[teta.ind2], p2.2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+        if( length(teta1) != 0) dH1.mix1 <- copgHs(p1[teta.ind1], p2.2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+        if( length(teta2) != 0) dH2.mix1 <- copgHs(p1[teta.ind2], p2.2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
         
-        if( length(teta1) != 0) dH1.mix2 <- copgHs(p1.2[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-        if( length(teta2) != 0) dH2.mix2 <- copgHs(p1.2[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+        if( length(teta1) != 0) dH1.mix2 <- copgHs(p1.2[teta.ind1], p2[teta.ind1], eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+        if( length(teta2) != 0) dH2.mix2 <- copgHs(p1.2[teta.ind2], p2[teta.ind2], eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
         
         
         c.copula2.be1be2 <- c.copula.be1 <- c.copula.be2 <- p00 <- c.copula.theta <- c.copula.thet <- bit1.th2ATE <- NA
@@ -347,29 +371,29 @@ bcontSurvG_extended <- function(params, respvec, VC, ps, AT = FALSE){
         ##################
         
         # STANDARD
-        if( length(teta1) != 0) BITS1 <- copgHsCont(p1[teta.ind1], p2[teta.ind1], teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2))
-        if( length(teta2) != 0) BITS2 <- copgHsCont(p1[teta.ind2], p2[teta.ind2], teta2, teta.st2, Cop2, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2))
+        if( length(teta1) != 0) BITS1 <- copgHsCont(p1[teta.ind1], p2[teta.ind1], teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)
+        if( length(teta2) != 0) BITS2 <- copgHsCont(p1[teta.ind2], p2[teta.ind2], teta2, teta.st2, Cop2, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)
         
         ###NEW####
         # p1 p2.2
         # prefix :     SOMETHING.mix1
-        if( length(teta1) != 0) BITS1.mix1 <- copgHsCont(p1[teta.ind1], p2.2[teta.ind1], teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2))
-        if( length(teta2) != 0) BITS2.mix1 <- copgHsCont(p1[teta.ind2], p2.2[teta.ind2], teta2, teta.st2, Cop2, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2))
+        if( length(teta1) != 0) BITS1.mix1 <- copgHsCont(p1[teta.ind1], p2.2[teta.ind1], teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)
+        if( length(teta2) != 0) BITS2.mix1 <- copgHsCont(p1[teta.ind2], p2.2[teta.ind2], teta2, teta.st2, Cop2, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)
         
         
         ###NEW####
         # p1.2 p2
         # prefix :     SOMETHING.mix2
-        if( length(teta1) != 0) BITS1.mix2 <- copgHsCont(p1.2[teta.ind1], p2[teta.ind1], teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2))
-        if( length(teta2) != 0) BITS2.mix2 <- copgHsCont(p1.2[teta.ind2], p2[teta.ind2], teta2, teta.st2, Cop2, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2))
+        if( length(teta1) != 0) BITS1.mix2 <- copgHsCont(p1.2[teta.ind1], p2[teta.ind1], teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)
+        if( length(teta2) != 0) BITS2.mix2 <- copgHsCont(p1.2[teta.ind2], p2[teta.ind2], teta2, teta.st2, Cop2, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)
         
         
         ###NEW####
         # p1.2 p2.2
         # prefix :     SOMETHING.2
         
-        if( length(teta1) != 0) BITS1.2 <- copgHsCont(p1.2[teta.ind1], p2.2[teta.ind1], teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2))
-        if( length(teta2) != 0) BITS2.2 <- copgHsCont(p1.2[teta.ind2], p2.2[teta.ind2], teta2, teta.st2, Cop2, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2))
+        if( length(teta1) != 0) BITS1.2 <- copgHsCont(p1.2[teta.ind1], p2.2[teta.ind1], teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)
+        if( length(teta2) != 0) BITS2.2 <- copgHsCont(p1.2[teta.ind2], p2.2[teta.ind2], teta2, teta.st2, Cop2, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)
         
         ######## Modifica der2h.derp1p1 ##########
         der2h.derp1p1 <- NA
@@ -435,6 +459,9 @@ bcontSurvG_extended <- function(params, respvec, VC, ps, AT = FALSE){
         if( length(teta1) != 0) derteta.derteta.st[teta.ind1] <- BITS1$derteta.derteta.st
         if( length(teta2) != 0) derteta.derteta.st[teta.ind2] <- BITS2$derteta.derteta.st
         
+        
+
+        
         der2h.derp1teta.st  <- der2h.derp1teta * derteta.derteta.st # new bit
         
         # NEW ##
@@ -446,7 +473,10 @@ bcontSurvG_extended <- function(params, respvec, VC, ps, AT = FALSE){
         if( length(teta2) != 0) der2h.derp1teta.mix1[teta.ind2]    <- BITS2.mix1$der2h.derp1teta
         if( length(teta1) != 0) derteta.derteta.st.mix1[teta.ind1] <- BITS1.mix1$derteta.derteta.st
         if( length(teta2) != 0) derteta.derteta.st.mix1[teta.ind2] <- BITS2.mix1$derteta.derteta.st
-        
+  
+  
+
+  
         der2h.derp1teta.st.mix1  <- der2h.derp1teta.mix1 * derteta.derteta.st.mix1 # new bit
         
         # NEW ##
@@ -458,7 +488,10 @@ bcontSurvG_extended <- function(params, respvec, VC, ps, AT = FALSE){
         if( length(teta2) != 0) der2h.derp1teta.mix2[teta.ind2]    <- BITS2.mix2$der2h.derp1teta
         if( length(teta1) != 0) derteta.derteta.st.mix2[teta.ind1] <- BITS1.mix2$derteta.derteta.st
         if( length(teta2) != 0) derteta.derteta.st.mix2[teta.ind2] <- BITS2.mix2$derteta.derteta.st
-        
+ 
+ 
+
+ 
         der2h.derp1teta.st.mix2  <- der2h.derp1teta.mix2 * derteta.derteta.st.mix2 # new bit
         
         #New##
@@ -470,6 +503,8 @@ bcontSurvG_extended <- function(params, respvec, VC, ps, AT = FALSE){
         if( length(teta2) != 0) der2h.derp1teta.2[teta.ind2]    <- BITS2.2$der2h.derp1teta
         if( length(teta1) != 0) derteta.derteta.st.2[teta.ind1] <- BITS1.2$derteta.derteta.st
         if( length(teta2) != 0) derteta.derteta.st.2[teta.ind2] <- BITS2.2$derteta.derteta.st
+        
+        
         
         der2h.derp1teta.st.2  <- der2h.derp1teta.2 * derteta.derteta.st.2 # new bit
         
@@ -751,6 +786,11 @@ bcontSurvG_extended <- function(params, respvec, VC, ps, AT = FALSE){
         if( length(teta2) != 0) der2teta.derteta.stteta.st.2[teta.ind2] <- BITS2.2$der2teta.derteta.stteta.st 
         ########################
         
+        
+      
+        
+        
+        
         der3C.derp1p1p1 <- der3C.derp1tetateta <- der2h.derteta.teta.st <- der3C.p1p1teta <- der2h.derp2teta <- der2h.derp2p2 <- NA
         
         der3C.derp1p1p1.mix1 <- der3C.derp1tetateta.mix1 <- der2h.derteta.teta.st.mix1 <- der3C.p1p1teta.mix1 <- der2h.derp2teta.mix1 <- der2h.derp2p2.mix1 <- NA
@@ -996,9 +1036,19 @@ if(sum(VC$indRR)>1){
                                                  + mm(p00,min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*c.copula2.be1be2)*dS1eta1*dS2eta2)*dereta1derb1, dereta2derb2)
                 
         )
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
-        
+   
+   
+    
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )    
+  
+   
+   
+   
         d2l.rho.rho <- -( 
                     
                 VC$weights*VC$indRR*( -mm(p00,min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*c.copula.thet^2*derteta.derteta.st^2 
@@ -1068,8 +1118,18 @@ if(sum(VC$indLL)>1){
                 crossprod(VC$weights*VC$indLL*c((-mm(1-p1-p2+p00, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*((c.copula.be2-1)*(c.copula.be1-1)) 
                                                  + mm(1-p1-p2+p00, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*c.copula2.be1be2)*dS2eta2*dS1eta1)*dereta1derb1, dereta2derb2)
         )
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+        
+        
+        
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )       
+        
+        
+        
         d2l.rho.rho <- -(
                 
                 VC$weights*VC$indLL*( -mm(1-p1-p2+p00, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*c.copula.thet^2*derteta.derteta.st^2 
@@ -1153,8 +1213,17 @@ if(sum(VC$indUR)>1){
                   
                 crossprod(VC$weights*VC$indUR*c((-mm(c.copula.be1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*c.copula2.be1be2*c.copula2.be1 + mm(c.copula.be1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*der2h.derp1p1)*dS1eta1*dS2eta2)*dereta1derb1, dereta2derb2)
         )
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+        
+        
+        
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )     
+        
+        
         d2l.rho.rho <- -(
                       
                 VC$weights*VC$indUR*( -mm(c.copula.be1, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*c.copula2.be1t^2*derteta.derteta.st^2  
@@ -1237,8 +1306,17 @@ if(sum(VC$indRU)>1){
                                                  + mm(c.copula.be2 , min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*der2h.derp1p2)*dS1eta1*dS2eta2)*dereta1derb1, dereta2derb2)
                 
         )
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+        
+        
+        
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )       
+        
+        
         d2l.rho.rho <- -( 
                      
                 VC$weights*VC$indRU*( -mm(c.copula.be2 , min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*c.copula2.be2t^2*derteta.derteta.st^2  
@@ -1324,8 +1402,14 @@ if(sum(VC$indUL)>1){
                 crossprod(VC$weights*VC$indUL*c((-(c.copula.be1-1)^-2*c.copula2.be1*c.copula2.be1be2 + (c.copula.be1-1)^-1*der2h.derp1p1)*dS1eta1*dS2eta2)*dereta1derb1, dereta2derb2)
         )
         
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+        
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )       
+        
         
         d2l.rho.rho <- -( 
                
@@ -1405,8 +1489,15 @@ if(sum(VC$indLU)>1){
                                                  + (c.copula.be2-1)^-1*der2h.derp1p2)*dS1eta1*dS2eta2)*dereta1derb1, dereta2derb2)
         )
         
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+        
+        
+        
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )        
         
         d2l.rho.rho <- -( 
                 
@@ -1480,8 +1571,17 @@ if(sum(VC$indRL)>1){
                                                  + mm(p1-p00, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(-c.copula2.be1be2))*dS1eta1*dS2eta2)*dereta1derb1, dereta2derb2)
         
                 )
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+        
+        
+        
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )  
+        
+        
         d2l.rho.rho <- -(
                 
                 VC$weights*VC$indRL*( -mm(p1-p00, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(-c.copula.thet)^2*derteta.derteta.st^2 
@@ -1558,8 +1658,15 @@ if(sum(VC$indLR)>1){
                                                  + mm(p2-p00, min.pr = VC$min.pr, max.pr = VC$max.pr)^-1*(-c.copula2.be1be2))*dS1eta1*dS2eta2)*dereta1derb1, dereta2derb2)
                 
         )
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+        
+       
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )       
+        
         d2l.rho.rho <- -( 
         
                 VC$weights*VC$indLR*( -mm(p2-p00, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(-c.copula.thet)^2*derteta.derteta.st^2 
@@ -1659,8 +1766,18 @@ if(sum(VC$indRI)>1){
                                                         mm(p00-p00.mix1, min.pr = VC$min.pr, max.pr = VC$max.pr)^(-1)*(-c.copula2.be1be2.mix1))*dS1eta1*dS2eta2.2)*dereta1derb1, dereta2derb2.2)
                 
         )
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+        
+        
+        
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )  
+
+        
+        
         d2l.rho.rho <- -(
                 
                 
@@ -1755,8 +1872,19 @@ if(sum(VC$indIR)>1){
                                                          +mm(p00-p00.mix2, min.pr = VC$min.pr, max.pr = VC$max.pr)^(-1)*(-c.copula2.be1be2.mix2) )*dS1eta1.2*dS2eta2)*dereta1derb1.2, dereta2derb2)
                 
         )
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+        
+        
+        
+	 
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )        
+        
+        
+        
         
         d2l.rho.rho <- -( 
                 
@@ -1855,8 +1983,19 @@ if(sum(VC$indLI)>1){
                                                          +mm(p2-p2.2+p00.mix1-p00, min.pr = VC$min.pr, max.pr = VC$max.pr)^(-1)*(c.copula2.be1be2.mix1))*dS1eta1*dS2eta2.2)*dereta1derb1, dereta2derb2.2)
                 
         )
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+        
+        
+        
+	
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )  
+        
+        
+        
         d2l.rho.rho <- -( 
                 
                 VC$weights*VC$indLI*( -mm(p2-p2.2+p00.mix1-p00, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(c.copula.thet.mix1*derteta.derteta.st-c.copula.thet*derteta.derteta.st)^2 
@@ -1953,8 +2092,17 @@ if(sum(VC$indIL)>1){
                                                                  mm(p1-p1.2+p00.mix2-p00, min.pr = VC$min.pr, max.pr = VC$max.pr)^(-1)*(c.copula2.be1be2.mix2))*dS1eta1.2*dS2eta2)*dereta1derb1.2, dereta2derb2)
                 
         )
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+        
+        
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )   
+
+        
+        
         d2l.rho.rho <- -( 
                 
                 VC$weights*VC$indIL*( -mm(p1-p1.2+p00.mix2-p00, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(c.copula.thet.mix2*derteta.derteta.st-c.copula.thet*derteta.derteta.st)^2 
@@ -2073,8 +2221,19 @@ if(sum(VC$indII)>1){
                                                                  mm(p00-p00.mix1-p00.mix2+p00.2, min.pr = VC$min.pr, max.pr = VC$max.pr)^(-1)*(c.copula2.be1be2.2) )*dS1eta1.2*dS2eta2.2)*dereta1derb1.2, dereta2derb2.2)
                 
         )
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+        
+        
+        
+	 
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )  
+
+        
+        
         d2l.rho.rho <- -(
                 #II
                 VC$weights*VC$indII*( -mm(p00-p00.mix1-p00.mix2+p00.2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(c.copula.thet*derteta.derteta.st-c.copula.thet.mix1*derteta.derteta.st-c.copula.thet.mix2*derteta.derteta.st+c.copula.thet.2*derteta.derteta.st)^2 
@@ -2178,8 +2337,18 @@ if(sum(VC$indUI)>1){
                                                          +mm(c.copula.be1-c.copula.be1.mix1, min.pr = VC$min.pr, max.pr = VC$max.pr)^(-1)*(-der2h.derp1p1.mix1))*dS1eta1*dS2eta2.2)*dereta1derb1, dereta2derb2.2) 
                 
         )
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+        
+        
+        
+        
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )  
+        
+        
         
         d2l.rho.rho <- -( 
                 #UI
@@ -2296,8 +2465,18 @@ if(sum(VC$indIU)>1){
                 
                 
         )
-        if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
-        if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+        
+        
+ rotatedSet <- c("GAL90","C90","J90","G90","GAL180","C180","J180","G180","GAL270","C270","J270","G270") 
+ posrotaSet <- c("GAL180", "C180", "J180", "G180") 
+ 
+ if(VC$BivD %in% rotatedSet)                                               rotConst <- c(-1) ## whether cov dependent or not, it is -1
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1 && Cop1 %in% rotatedSet) rotConst <- c(-1) ## as above + for the scalar case Cop1 = Cop2                                                                                           
+ if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1)                          rotConst <- c( ifelse((teta.ind1 & Cop1 %in% posrotaSet) | teta.ind2, -1, 1) )  
+  
+
+        
+        
         d2l.rho.rho <- -( 
                 #IU
                 VC$weights*VC$indIU*( -mm(c.copula.be2-c.copula.be2.mix2, min.pr = VC$min.pr, max.pr = VC$max.pr)^-2*(c.copula2.be2t*derteta.derteta.st-c.copula2.be2t.mix2*derteta.derteta.st)^2 
@@ -2358,18 +2537,18 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
 list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, 
      l=S.res, l.ln = l.ln, l.par=l.par,ps = ps, 
      eta1=eta1, eta2=eta2, etad=etad, etas1 = 1, etas2 = 1, 
-     BivD=VC$BivD,               p1 = p1, p2 = p2, pdf1 = -dS1eta1, pdf2 = -dS2eta2,          
+     BivD=VC$BivD,               p1 = p1, p2 = p2, pdf1 = -dS1eta1, pdf2 = -dS2eta2, p1.2 = p1.2, p2.2 = p2.2,          
      c.copula.be2 = c.copula.be2,
-     c.copula.be1 = c.copula.be1,
+     c.copula.be1 = c.copula.be1, c.copula.be1.mix1 = c.copula.be1.mix1,
      c.copula2.be1be2 = c.copula2.be1be2, 
      dl.dbe1          = NULL,       
      dl.dbe2          = NULL,       
      dl.dteta.st      = NULL, 
      teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,
-     Cop1 = Cop1, Cop2 = Cop2, teta1 = teta1, teta2 = teta2,
+              Cop1 = Cop1, Cop2 = Cop2, nC1 = nC1, nC2 = nC2, teta1 = teta1, teta2 = teta2,
      indNeq1 = indNeq1, indNeq2 = indNeq2,
      Veq1 = Veq1, Veq2 = Veq2, 
-     k1 = VC$my.env$k1, k2 = VC$my.env$k2, monP2 = monP2) 
+     k1 = VC$my.env$k1, k2 = VC$my.env$k2, monP2 = monP2, p00 = p00, p00.mix1 = p00.mix1, p00.mix2 = p00.mix2, p00.2 = p00.2) 
 
 }
 

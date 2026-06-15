@@ -1,4 +1,4 @@
-marg.mv <- function(x, eq, newdata, fun = "mean", n.sim = 100, prob.lev = 0.05, bin.model = NULL){
+marg.mv <- function(x, eq, newdata, fun = "mean", n.sim = 100, prob.lev = 0.05, bin.model = NULL, bd = NULL){
 
 
  pb <- pbS <- 1
@@ -54,7 +54,8 @@ marg.mv <- function(x, eq, newdata, fun = "mean", n.sim = 100, prob.lev = 0.05, 
  #if( mar %in% c("logit","probit","cloglog") )             stop("Function not suitable for binary margin(s).")
 
  
- 
+ if(mar == "BB" & is.null(bd)) stop("Binomial denominator not supplied.") 
+
 
 if( x$margins[1] %in% c(x$VC$m2, x$VC$m2d, x$VC$m3) && x$margins[2] %in% c(x$VC$m2, x$VC$m2d, x$VC$m3) ){ ############### 2/3-2/3 params
  
@@ -306,6 +307,7 @@ ltt <- x$left.trunc
 mar <- x$margins[1]
 
 if( mar %in% c("GP","GPII","GPo","DGP","DGPII") ) stop("Function not ready yet for the chosen distribution.")
+if(mar == "BB" & is.null(bd)) stop("Binomial denominator not supplied.") 
  
  
                      ind1 <- (1:x$X1.d2)
@@ -408,7 +410,19 @@ if(  is.null(x$X3) ) ind3 <- x$X1.d2 + 1 + 1
     if(fun == "mean")     {fit <- plogis(fit1);             fitSim <- plogis(fit1Sim)                } 
     if(fun == "variance") {fit <- plogis(fit1)*(1-plogis(fit1))*plogis(fit2)^2; fitSim <- plogis(fit1Sim)*(1-plogis(fit1Sim))*plogis(fit2Sim)^2 }
                                      
- } 
+ }
+ 
+
+ if(mar %in% c("BB")){
+ 
+    if(fun == "mean")     {fit <- bd*plogis(fit1);             fitSim <- bd*plogis(fit1Sim)                } 
+
+    if(fun == "variance") { mubb <- plogis(fit1); sigbb <- exp(fit2); mubbS <- plogis(fit1Sim); sigbbS <- exp(fit2Sim)  
+                            fit    <- bd*mubb*(1-mubb)*( 1 + (bd-1)*sigbb/(1+sigbb) )
+                            fitSim <- bd*mubbS*(1-mubbS)*( 1 + (bd-1)*sigbbS/(1+sigbbS) )  
+                           }                                    
+ }  
+ 
  
  
  if(mar %in% c("FISK")){

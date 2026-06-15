@@ -1,5 +1,7 @@
-bcontROB <- function(params, respvec, VC, ps, AT = FALSE){
+bcontROB <- function(params, respvec, VC, ps, AT = FALSE){ #*************** this function is not done yet *****************#
 p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+Cop1 <- Cop2 <- nC1 <- nC2 <- teta.ind1 <- teta.ind2 <- teta1 <- teta2 <- NA
+
 
     eta1 <- VC$X1%*%params[1:VC$X1.d2]
     eta2 <- VC$X2%*%params[(VC$X1.d2 + 1):(VC$X1.d2 + VC$X2.d2)]
@@ -82,7 +84,7 @@ teta    <- resT$teta
  derp2.dersigma22.st          <- dHs2$derp2.dersigma.st 
  
  
- BITS <- copgHsCont(p1, p2, teta, teta.st, VC$BivD, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2))
+ BITS <- copgHsCont(p1, p2, teta, teta.st, VC$BivD, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)
  
  
    der2h.derp1p1              <- BITS$der2h.derp1p1
@@ -313,7 +315,8 @@ if( VC$margins[1] == "LN" || VC$margins[2] == "LN"){
               dl.dbe2          =dl.dbe2,       
               dl.dsigma21.st   =dl.dsigma21.st,
               dl.dsigma22.st   =dl.dsigma22.st,
-              dl.dteta.st      =dl.dteta.st) 
+              dl.dteta.st      =dl.dteta.st, teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,
+              Cop1 = Cop1, Cop2 = Cop2, nC1 = nC1, nC2 = nC2, teta1 = teta1, teta2 = teta2) 
               
               
 

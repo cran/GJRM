@@ -1,5 +1,5 @@
 bcontSurvGunivL_ExcessHazard <- function(params, respvec, VC, ps, AT = FALSE){
-  p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+  p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- p <- NA
 
   n <- VC$n
   
@@ -182,7 +182,7 @@ bcontSurvGunivL_ExcessHazard <- function(params, respvec, VC, ps, AT = FALSE){
   
   list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, indN = indN, V = V, 
        l=S.res, l.ln = l.ln, l.par=l.par, ps = ps, k = VC$my.env$k, monP2 = monP2, params1 = params1,
-       eta1=eta1, 
+       eta1=eta1, p = p,
                                           p1 = p1, p2 = p2, pdf1 = -dS1eta1, pdf2 = pdf2,          
        	      	                           c.copula.be2 = c.copula.be2,
 	      	                           c.copula.be1 = c.copula.be1,

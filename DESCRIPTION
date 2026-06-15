@@ -1,6 +1,6 @@
 Package: GJRM
 Type: Package
-Version: 0.2-6.8
+Version: 0.2-6.9
 Title: Generalised Joint Regression Modelling
 Description: Routines for fitting various joint (and univariate) regression models, with several types of covariate effects, in the presence of equations' errors association.
 Authors@R: c(person(given = "Giampiero", family = "Marra", role = c("aut", "cre"), email = "giampiero.marra@ucl.ac.uk"),
@@ -11,13 +11,14 @@ Maintainer: Giampiero Marra <giampiero.marra@ucl.ac.uk>
 Depends: R (>= 3.6.0)
 Imports: mgcv, magic, VGAM, survey, trust, VineCopula, graphics, stats,
         utils, grDevices, ggplot2, matrixStats, mnormt, gamlss.dist,
-        Rmpfr, scam, survival, psych, copula, numDeriv, evd, ismev,
-        methods, distrEx
+        Rmpfr, scam, psych, copula, numDeriv, evd, ismev, methods,
+        distrEx, pracma
 Enhances: sp
 LazyLoad: yes
 License: GPL (>= 2)
-URL: https://www.ucl.ac.uk/statistics/people/giampieromarra
+URL:
+        https://www.ucl.ac.uk/mathematical-physical-sciences/statistics/people/academic-and-lecturing-staff/professor-giampiero-marra
 Repository: CRAN
-Date/Publication: 2025-06-23 21:20:02 UTC
+Date/Publication: 2026-06-15 12:30:12 UTC
 NeedsCompilation: no
-Packaged: 2025-06-23 20:04:25 UTC; Giampiero
+Packaged: 2026-06-15 08:52:28 UTC; Giampiero

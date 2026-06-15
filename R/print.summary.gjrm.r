@@ -1,6 +1,37 @@
 print.summary.gjrm <- function(x, digits = max(3, getOption("digits") - 3),
                                              signif.stars = getOption("show.signif.stars"),...){
 
+  nodi <- 3
+
+if(x$fixed.margins == TRUE){
+
+
+  ppR <- pp(x)  
+  cp <- "\ntheta = "; as.p <- x$theta.a
+  CIrs    <- colMeans(x$CItheta, na.rm = TRUE)
+
+  cat("\nCOPULA:",ppR$cop)
+  
+  cat("\n\nLink function for theta:",ppR$lind,"\n") 
+  if( !is.null(x$X5) ){ cat("Formula: "); print(x$formula[[5]])  
+  cat("\n")
+  cat("Parametric coefficients:\n")
+  printCoefmat(x$tableP5,digits = digits, signif.stars = signif.stars,na.print = "NA",...)
+  cat("\n")}
+
+    if(x$l.sp5!=0){
+    cat("Approximate significance of smooth terms:\n")
+    printCoefmat(x$tableNP5,digits = digits, signif.stars = signif.stars,has.Pvalue = TRUE,na.print = "NA",cs.ind = 1,...)
+    cat("\n")
+    }else{cat("\n")}   
+    
+
+cat("theta = ",format(as.p,digits=nodi),"(",format(CIrs[1],digits=nodi),",",format(CIrs[2],digits=nodi),")",
+     "\nn = ",x$n, "  total edf = ",format(x$t.edf,digits=nodi),"\n\n", sep="") 
+
+
+}else{
+
 
  ppR <- pp(x)  
  
@@ -40,11 +71,7 @@ print.summary.gjrm <- function(x, digits = max(3, getOption("digits") - 3),
  BivD <- x$BivD 
  if(x$surv == TRUE) BivD <- "N" 
   
- if(BivD == "T" && x$margins[1] %in% c(x$m2,x$m3) && x$margins[2] %in% c(x$m2,x$m3)) CIdof <- colMeans(x$CIdof, na.rm = TRUE)
-
-
-  nodi <- 3
- 
+ if(BivD == "T" && x$margins[1] %in% c(x$m2,x$m3) && x$margins[2] %in% c(x$m2,x$m3)) CIdof <- colMeans(x$CIdof, na.rm = TRUE) 
  
  
  if(BivD == "T" && x$margins[1] %in% c(x$m2,x$m3) && x$margins[2] %in% c(x$m2,x$m3)){
@@ -166,7 +193,11 @@ if( x$margins[1] %in% cont2par && x$margins[2] %in% cont3par) cat(  s1,format(s1
 
          
 
-}  
+} 
+
+
+
+} # else cond form fixed.margins
   
 invisible(x)
                 

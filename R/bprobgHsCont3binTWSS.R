@@ -3,6 +3,7 @@ bprobgHsCont3binTWSS <- function(params, respvec, VC, ps, AT = FALSE){
 ###################################################################################
 
 p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+Cop1 <- Cop2 <- nC1 <- nC2 <- teta.ind1 <- teta.ind2 <- teta1 <- teta2 <- NA
 
 y1p <- respvec$y1p
 y10 <- respvec$y10
@@ -76,7 +77,7 @@ nu        <- sstr1$vrb
      
 ########################################################################################################  
  
- dH <- copgHs(p1[VC$inde], p2, eta1 = NULL, eta2 = NULL, teta, teta.st, VC$BivD, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+ dH <- copgHs(p1[VC$inde], p2, eta1 = NULL, eta2 = NULL, teta, teta.st, VC$BivD, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
  
  p00 <- mm(BiCDF(p1[VC$inde], p2, VC$nC, teta, VC$dof), min.pr = VC$min.pr, max.pr = VC$max.pr) # needed for operation below, p10                 
  p10 <- mm(p2 - p00, min.pr = VC$min.pr, max.pr = VC$max.pr) 
@@ -102,7 +103,7 @@ nu        <- sstr1$vrb
  
 ######################################################################################################## 
   
-  BITS <- copgHsCont(p1[VC$inde], p2, teta, teta.st, VC$BivD, par2 = VC$dof, nu.st = log(VC$dof-2))
+  BITS <- copgHsCont(p1[VC$inde], p2, teta, teta.st, VC$BivD, par2 = VC$dof, nu.st = log(VC$dof-2), T.BivD = VC$BivD)
  
   der2h.derp2p2              <- BITS$der2h.derp2p2 
   der2h.derteta.teta.st      <- BITS$der2h.derteta.teta.st  

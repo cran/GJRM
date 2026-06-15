@@ -1,9 +1,11 @@
-bcontSurvGBINROY <- function(params, respvec, VC, ps, AT = FALSE){
+bcontSurvGBINROY <- function(params, respvec, VC, ps, AT = FALSE){ #******* Bivd2 messy to use here and not done as advantage is not clear *****#
 
 p1 <- p2 <- p3 <- pdf1 <- pdf2 <- pdf3 <- NA
 etad <- etas1 <- etas2 <- etas3 <- l.ln <- l.par <- NULL 
+Cop1 <- Cop2 <- nC1 <- nC2 <- teta.ind1 <- teta.ind2 <- teta1 <- teta2 <- NA
 
-rotConst1 <- rotConst2 <- 1
+
+rotConst1 <- rotConst2 <- c(1)
 
 ##################
 
@@ -49,8 +51,8 @@ rotConst1 <- rotConst2 <- 1
     
 ##################
 
-if(VC$BivD1 %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst1 <- -1
-if(VC$BivD2 %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst2 <- -1
+if(VC$BivD1 %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst1 <- c(-1)
+if(VC$BivD2 %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst2 <- c(-1)
 
 ##################
 
@@ -104,8 +106,8 @@ if(VC$BivD2 %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL2
 
 ##################
 
-dH1.0   <- copgHs(p1[VC$inde0], p2, eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-BITS1.0 <- copgHsCont(p1[VC$inde0], p2, teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2))
+dH1.0   <- copgHs(p1[VC$inde0], p2, eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+BITS1.0 <- copgHsCont(p1[VC$inde0], p2, teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)
   
   c.copula2.be1be2.0 <- dH1.0$c.copula2.be1be2
   c.copula.be1.0     <- dH1.0$c.copula.be1
@@ -131,8 +133,8 @@ BITS1.0 <- copgHsCont(p1[VC$inde0], p2, teta1, teta.st1, Cop1, Cont = TRUE, par2
   der2h.derp1teta.st.0  <- der2h.derp1teta.0*derteta.derteta.st.0  
 
 
-dH1.1   <- copgHs(p1[VC$inde1], p3, eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-BITS1.1 <- copgHsCont(p1[VC$inde1], p3, teta2, teta.st2, Cop2, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2))
+dH1.1   <- copgHs(p1[VC$inde1], p3, eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+BITS1.1 <- copgHsCont(p1[VC$inde1], p3, teta2, teta.st2, Cop2, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)
   
   c.copula2.be1be2.1 <- dH1.1$c.copula2.be1be2
   c.copula.be1.1     <- dH1.1$c.copula.be1
@@ -553,7 +555,8 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
               dl.dbe1          = NULL,       
               dl.dbe2          = NULL,       
               dl.dteta.st      = NULL, 
-              Cop1 = Cop1, Cop2 = Cop2, teta1 = teta1, teta2 = teta2,
+              teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,
+              Cop1 = Cop1, Cop2 = Cop2, nC1 = nC1, nC2 = nC2, teta1 = teta1, teta2 = teta2,
               indNeq2 = indNeq2, indNeq3 = indNeq3) 
               
   }

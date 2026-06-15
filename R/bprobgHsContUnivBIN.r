@@ -1,5 +1,5 @@
 bprobgHsContUnivBIN <- function(params, respvec, VC, ps, AT = FALSE){
-p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- p <- NA
 
 weights <- VC$weights
 
@@ -60,7 +60,7 @@ list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l
                                  p1 = pr, p2 = d.n, pdf1 = pdf1, pdf2 = pdf2,          
 	      	                    c.copula.be2 = c.copula.be2,
 	      	                    c.copula.be1 = c.copula.be1,
-              c.copula2.be1be2 = c.copula2.be1be2)      
+              c.copula2.be1be2 = c.copula2.be1be2, p = pr)      
 
 
 }

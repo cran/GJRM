@@ -1,4 +1,6 @@
-sim.resp <- function(margin, rsim, eta, sigma2, nu, setseed = TRUE, left.trunc = 0){
+sim.resp <- function(margin, rsim, eta, sigma2, nu, setseed = FALSE, left.trunc = 0, bd = NULL){
+
+if(margin == "BB" & is.null(bd)) stop("Vector of binomial denominators not supplied.") 
 
 
 
@@ -28,6 +30,7 @@ if(margin %in% c("DGP","DGPII","DGP0")){
 
 
 if(setseed == TRUE) set.seed(1)
+
 
 if(margin == "N")     y <- rNO(   rsim,    mu =     eta,     sigma = sigma2) 
 if(margin == "tN")    y <- rNtr(  rsim,    mu =     eta,     sigma = sigma2, left.trunc = left.trunc) 
@@ -85,7 +88,7 @@ if(margin %in% c("GP","GPII","GPo")){
              }
 }
 
-
+if(margin == "BB")    y <- rBB(rsim, mu = plogis(eta), sigma = sigma2, bd = bd, fast = FALSE)
 if(margin == "DAGUM") y <- rGB2(  rsim,    mu = exp(eta),    sigma = sigma2, nu = nu, tau = 1) 
 if(margin == "SM")    y <- rGB2(  rsim,    mu = exp(eta),    sigma = sigma2, nu = 1 , tau = nu) 
 if(margin == "BE")    y <- rBE(   rsim,    mu = plogis(eta), sigma = sigma2) 

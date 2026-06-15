@@ -1,8 +1,14 @@
 predict.SemiParBIV <- function(object, eq, ...){
 
-if(missing(eq)) stop("You must provide the equation number.")
 
-if(eq > object$l.flist) stop("The fitted model has a smaller number of equations.") 
+ cms <- 0
+ 
+ if(missing(eq) && object$VC$fixed.margins == FALSE) stop("You must provide the equation number.")
+ 
+ if(missing(eq) && object$VC$fixed.margins == TRUE){ eq <- 5; cms <- 4 }
+ 
+if(eq > object$l.flist && object$VC$fixed.margins == FALSE) stop("The fitted model has a smaller number of equations.") 
+if(eq > object$l.flist && object$VC$fixed.margins == TRUE) stop("No terms to predict.") 
 
                          
  if(eq==1){ ss.pred <- object$gam1
@@ -23,7 +29,8 @@ if(eq > object$l.flist) stop("The fitted model has a smaller number of equations
             ind <- (object$X1.d2+object$X2.d2+object$X3.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2) }             
 
  if(eq==5){ ss.pred <- object$gam5
-            ind <- (object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2) }             
+            ind <- (object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2) 
+            ind <- ind - cms }             
   
  if(eq==6){ ss.pred <- object$gam6
             ind <- (object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2+1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2+object$X6.d2) }             

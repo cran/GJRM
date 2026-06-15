@@ -35,15 +35,15 @@ para <- c(para)
 
 if(length(para) == 1){
 
-fi <- jacobian(function(para) funcD(para), para)
-se <- jacobian(function(para) jacobian(function(para) funcD(para), para), para)
+fi <- jacobian(function(para) funcD(para), para, method = "simple")
+se <- jacobian(function(para) jacobian(function(para) funcD(para), para, method = "simple"), para, method = "simple")
 
                      }
 
 if(length(para) > 1){
 
-fi <- grad(function(para) funcD(para), para)
-se <- grad(function(para) grad(function(para) funcD(para), para), para)
+fi <- grad(function(para) funcD(para), para, method = "simple")
+se <- grad(function(para) grad(function(para) funcD(para), para, method = "simple"), para, method = "simple")
 
                     }
 

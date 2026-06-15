@@ -1,5 +1,6 @@
 bdiscrdiscr11 <- function(params, respvec, VC, ps, AT = FALSE){
 p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+Cop1 <- Cop2 <- nC1 <- nC2 <- teta.ind1 <- teta.ind2 <- teta1 <- teta2 <- NA
 
 
 offset1 <- VC$offset1; if(is.null(offset1) == TRUE) offset1 <- 0
@@ -50,15 +51,14 @@ teta1 <- teta2 <- teta <- resT$teta
     
 ##################
 
-Cop1 <- Cop2 <- VC$BivD
+Cop1 <- Cop2 <- VC$BivD 
 nC1 <- nC2 <- VC$nC 
 
+teta.ind1 <- as.logical(c(1,0,round(runif(VC$n-2))) ) # just random split here
+teta.ind2 <- teta.ind1 == FALSE 
 
-teta.ind1 <- as.logical(c(1,0,round(runif(VC$n-2))) ) 
-teta.ind2 <- teta.ind1 == FALSE  
 
-
-if(!(VC$BivD %in% VC$BivD2) && length(teta.st) > 1){
+if(!(VC$BivD %in% VC$BivD2) && length(teta.st) > 1){ # not the best choice but implemented like this many years ago...for clarity
 
 teta.st1 <- teta.st[teta.ind1]
 teta.st2 <- teta.st[teta.ind2]
@@ -68,32 +68,56 @@ teta2 <- teta[teta.ind2]
 
 }
 
+
  
- 
-if(VC$BivD %in% VC$BivD2){
-
-if(VC$BivD %in% VC$BivD2[c(1:4,13:16)])  teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov), TRUE, FALSE)
-if(VC$BivD %in% VC$BivD2[5:12]) teta.ind1 <- ifelse(VC$my.env$signind*teta > exp(VC$zerov) + 1, TRUE, FALSE) 
-teta.ind2 <- teta.ind1 == FALSE 
-
-VC$my.env$signind <- ifelse(teta.ind1 == TRUE,  1, -1) 
-
-teta1 <-  teta[teta.ind1]
-teta2 <- -teta[teta.ind2]
-
-teta.st1 <- teta.st[teta.ind1]
-teta.st2 <- teta.st[teta.ind2]
-
-if(length(teta) == 1) teta.ind2 <- teta.ind1 <- rep(TRUE, VC$n)  
+if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1){
 
 Cop1Cop2R <- Cop1Cop2(VC$BivD)
 Cop1 <- Cop1Cop2R$Cop1
 Cop2 <- Cop1Cop2R$Cop2
+nC1  <- VC$ct[which(VC$ct[,1] == Cop1), 2] 
+nC2  <- VC$ct[which(VC$ct[,1] == Cop2), 2]
 
-nC1 <- VC$ct[which(VC$ct[,1] == Cop1),2] 
-nC2 <- VC$ct[which(VC$ct[,1] == Cop2),2]
+teta.ind1 <- as.logical( etad >= 0 ) # for + coefs
+teta.ind2 <- teta.ind1 == FALSE      # for - coefs
+
+
+if(VC$BivD %in% VC$BivD2[c(1:4,13:16)]){
+  teta1 <- teta.st1 <- etad[teta.ind1]
+  teta2 <- teta.st2 <- etad[teta.ind2]
+                                       }
+
+if(VC$BivD %in% VC$BivD2[5:12]){
+  teta1 <- teta.st1 <- sign(etad[teta.ind1]) * (abs(etad[teta.ind1]) + 1)
+  teta2 <- teta.st2 <- sign(etad[teta.ind2]) * (abs(etad[teta.ind2]) + 1)
+                                       }
 
 } 
+
+if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1){
+
+
+Cop1Cop2R <- Cop1Cop2(VC$BivD)
+Cop1 <- Cop1Cop2R$Cop1
+Cop2 <- Cop1Cop2R$Cop2
+nC1  <- VC$ct[which(VC$ct[,1] == Cop1), 2] 
+nC2  <- VC$ct[which(VC$ct[,1] == Cop2), 2]
+
+teta.i1 <- as.logical( etad >= 0 ) # this becomes an index for + and - coefs
+
+if(teta.i1 == TRUE){  Cop2 <- Cop1; nC2 <- nC1}
+if(teta.i1 == FALSE){ Cop1 <- Cop2; nC1 <- nC2}   
+
+if(VC$BivD %in% VC$BivD2[c(1:4,13:16)]) teta1 <- teta.st1 <- teta2 <- teta.st2 <- etad                                     
+if(VC$BivD %in% VC$BivD2[5:12])         teta1 <- teta.st1 <- teta2 <- teta.st2 <- sign(etad) * (abs(etad) + 1)
+
+
+teta.ind1 <- as.logical(c(1,0,round(runif(VC$n-2))) ) # again not the best choice but to make things run
+teta.ind2 <- teta.ind1 == FALSE 
+
+} 
+ 
+
 ##################
 
   dHs1 <- distrHsDiscr(respvec$y1, eta1, sigma21, sigma21.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = FALSE, y2m = VC$y1m, 
@@ -135,20 +159,20 @@ if( length(teta2) != 0){
 
 if( length(teta1) != 0){  
 
-  dHC11F <- copgHs(p1[teta.ind1], p2[teta.ind1],                   eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-  dHC01F <- copgHs(mm(p1[teta.ind1]-pdf1[teta.ind1], min.pr = VC$min.pr, max.pr = VC$max.pr), p2[teta.ind1],          eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-  dHC10F <- copgHs(p1[teta.ind1], mm(p2[teta.ind1]-pdf2[teta.ind1], min.pr = VC$min.pr, max.pr = VC$max.pr),          eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-  dHC00F <- copgHs(mm(p1[teta.ind1]-pdf1[teta.ind1], min.pr = VC$min.pr, max.pr = VC$max.pr), mm(p2[teta.ind1]-pdf2[teta.ind1], min.pr = VC$min.pr, max.pr = VC$max.pr), eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  dHC11F <- copgHs(p1[teta.ind1], p2[teta.ind1],                   eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+  dHC01F <- copgHs(mm(p1[teta.ind1]-pdf1[teta.ind1], min.pr = VC$min.pr, max.pr = VC$max.pr), p2[teta.ind1],          eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+  dHC10F <- copgHs(p1[teta.ind1], mm(p2[teta.ind1]-pdf2[teta.ind1], min.pr = VC$min.pr, max.pr = VC$max.pr),          eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+  dHC00F <- copgHs(mm(p1[teta.ind1]-pdf1[teta.ind1], min.pr = VC$min.pr, max.pr = VC$max.pr), mm(p2[teta.ind1]-pdf2[teta.ind1], min.pr = VC$min.pr, max.pr = VC$max.pr), eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
  
 } 
  
  
 if( length(teta2) != 0){  
 
-  dHC11S <- copgHs(p1[teta.ind2], p2[teta.ind2],                   eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-  dHC01S <- copgHs(mm(p1[teta.ind2]-pdf1[teta.ind2], min.pr = VC$min.pr, max.pr = VC$max.pr), p2[teta.ind2],          eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-  dHC10S <- copgHs(p1[teta.ind2], mm(p2[teta.ind2]-pdf2[teta.ind2], min.pr = VC$min.pr, max.pr = VC$max.pr),          eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-  dHC00S <- copgHs(mm(p1[teta.ind2]-pdf1[teta.ind2], min.pr = VC$min.pr, max.pr = VC$max.pr), mm(p2[teta.ind2]-pdf2[teta.ind2], min.pr = VC$min.pr, max.pr = VC$max.pr), eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+  dHC11S <- copgHs(p1[teta.ind2], p2[teta.ind2],                   eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+  dHC01S <- copgHs(mm(p1[teta.ind2]-pdf1[teta.ind2], min.pr = VC$min.pr, max.pr = VC$max.pr), p2[teta.ind2],          eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+  dHC10S <- copgHs(p1[teta.ind2], mm(p2[teta.ind2]-pdf2[teta.ind2], min.pr = VC$min.pr, max.pr = VC$max.pr),          eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+  dHC00S <- copgHs(mm(p1[teta.ind2]-pdf1[teta.ind2], min.pr = VC$min.pr, max.pr = VC$max.pr), mm(p2[teta.ind2]-pdf2[teta.ind2], min.pr = VC$min.pr, max.pr = VC$max.pr), eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
  
 } 
   
@@ -205,7 +229,7 @@ if( length(teta2) != 0){
   
   
   
-  
+
   
   
   
@@ -309,7 +333,7 @@ if( length(teta2) != 0){
   
  } 
   
-    
+   
   
 
   der2pdf1.dereta1     <- dHs1$der2pdf2.dereta2 
@@ -459,8 +483,8 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
               dl.dbe1          =dl.dbe1,       
               dl.dbe2          =dl.dbe2,       
               dl.dteta.st      =dl.dteta.st,
-                            teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,
-              Cop1 = Cop1, Cop2 = Cop2, teta1 = teta1, teta2 = teta2) 
+              teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,
+              Cop1 = Cop1, Cop2 = Cop2, nC1 = nC1, nC2 = nC2, teta1 = teta1, teta2 = teta2, C11 = C11, C01 = C01, C10 = C10, C00 = C00) 
               
               
 

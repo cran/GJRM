@@ -3,7 +3,8 @@ jc.probs8 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev
 if(!(y1 >= range(x$y1)[1] && y1 <= range(x$y1)[2])) stop("y1 is not within its observed range.") 
 if(!(y2 >= range(x$y2)[1] && y2 <= range(x$y2)[2])) stop("y2 is not within its observed range.") 
 
-if(x$BivD %in% x$BivD2) stop("The chosen copula is not supported by this function.")
+nC   <- x$nC
+BivD <- x$BivD
 
 # Ordinal-Ordinal case
 
@@ -41,34 +42,45 @@ if(!is.null(x$X3)) theta <- teta.tr(x$VC, predict(x, eq = 3, newdata = newdata, 
 if( is.null(x$X3)) theta <- x$theta 
 
 
+if(x$BivD %in% x$BivD2){ 
+
+if(theta >= 0){ nC <- x$fit$nC1; BivD <- x$fit$Cop1 } else{ nC <- x$fit$nC2; BivD <- x$fit$Cop2} 
+
+}
+
+
+
+
+
+
 if(y1 > 1 && y2 > 1){
 
-p12.f <- mm(BiCDF(pk1,  pk2,  x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
-p12.s <- mm(BiCDF(pk11, pk2,  x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
-p12.t <- mm(BiCDF(pk1,  pk22, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
-p12.z <- mm(BiCDF(pk11, pk22, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
+p12.f <- mm(BiCDF(pk1,  pk2,  nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
+p12.s <- mm(BiCDF(pk11, pk2,  nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
+p12.t <- mm(BiCDF(pk1,  pk22, nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
+p12.z <- mm(BiCDF(pk11, pk22, nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
 
                     }
 
 if(y1 == 1 && y2 == 1){
 
-p12.f <- mm(BiCDF(pk1,  pk2,  x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
+p12.f <- mm(BiCDF(pk1,  pk2,  nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
 
                        }
 
 
 if(y1 > 1 && y2 == 1){
 
-p12.f <- mm(BiCDF(pk1,  pk2,  x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
-p12.s <- mm(BiCDF(pk11, pk2,  x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
+p12.f <- mm(BiCDF(pk1,  pk2,  nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
+p12.s <- mm(BiCDF(pk11, pk2,  nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
 
                      }
 
 
 if(y1 == 1 && y2 > 1){
 
-p12.f <- mm(BiCDF(pk1,  pk2,  x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
-p12.t <- mm(BiCDF(pk1,  pk22, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
+p12.f <- mm(BiCDF(pk1,  pk2,  nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
+p12.t <- mm(BiCDF(pk1,  pk22, nC, theta, dof), min.pr = min.pr, max.pr = max.pr) 
 
                      }
 
@@ -80,8 +92,8 @@ if(cond == 2) p12 <- p12/p2m
 #######################################################################################
 ### kendalls' tau and theta ###
 
-if(tau.res == TRUE) tau   <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = tau.res)$tau
-                    theta <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = FALSE)$theta
+if(tau.res == TRUE) tau   <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = tau.res, t.theta = theta)$tau
+                    theta <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = FALSE,   t.theta = theta)$theta
      
      
      
@@ -183,7 +195,7 @@ if( !is.null(x$X3) ){
                     est.RHOb <- teta.tr(x$VC, epds)$teta   
 
 
-                    ass.msR <- theta2tau(x$VC$BivD, x$VC$nCa, est.RHOb, tau.res = tau.res)
+                    ass.msR <- theta2tau(x$VC$BivD, x$VC$nCa, est.RHOb, tau.res = tau.res, t.theta = theta)
 if(tau.res == TRUE) taus    <- ass.msR$tau
                     thetas  <- ass.msR$theta
 
@@ -206,33 +218,33 @@ if(tau.res == TRUE){ taus <- matrix(taus, 1, n.sim)
 
 if(y1 > 1 && y2 > 1){
 
-p12sf <- mm(BiCDF(pk1s,  pk2s,  x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)    
-p12ss <- mm(BiCDF(pk1s1, pk2s,  x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)    
-p12st <- mm(BiCDF(pk1s,  pk2s1, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)    
-p12sz <- mm(BiCDF(pk1s1, pk2s1, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)    
+p12sf <- mm(BiCDF(pk1s,  pk2s,  nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)    
+p12ss <- mm(BiCDF(pk1s1, pk2s,  nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)    
+p12st <- mm(BiCDF(pk1s,  pk2s1, nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)    
+p12sz <- mm(BiCDF(pk1s1, pk2s1, nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)    
 	
 }	
 	
 
 if(y1 == 1 && y2 == 1){
 
-p12sf <- mm(BiCDF(pk1s,  pk2s,  x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)      
+p12sf <- mm(BiCDF(pk1s,  pk2s,  nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)      
 	
 }	
 		
 
 if(y1 > 1 && y2 == 1){
 
-p12sf <- mm(BiCDF(pk1s,  pk2s,  x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)    
-p12ss <- mm(BiCDF(pk1s1, pk2s,  x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)      
+p12sf <- mm(BiCDF(pk1s,  pk2s,  nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)    
+p12ss <- mm(BiCDF(pk1s1, pk2s,  nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)      
 	
 }
 
 
 if(y1 == 1 && y2 > 1){
 
-p12sf <- mm(BiCDF(pk1s,  pk2s,  x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)    
-p12st <- mm(BiCDF(pk1s,  pk2s1, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)    
+p12sf <- mm(BiCDF(pk1s,  pk2s,  nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)    
+p12st <- mm(BiCDF(pk1s,  pk2s1, nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr)    
 	
 }	
 	

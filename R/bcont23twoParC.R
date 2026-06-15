@@ -1,5 +1,7 @@
 bcont23twoParC <- function(params, respvec, VC, ps, AT = FALSE){
 p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+Cop1 <- Cop2 <- nC1 <- nC2 <- teta.ind1 <- teta.ind2 <- teta1 <- teta2 <- NA
+
 
     l.ln <- NULL
 
@@ -97,7 +99,7 @@ teta    <- resT$teta
  derp2.dernu2.st              <- dHs2$derp2.nu.st
  
  
- BITS <- copgHsCont(p1, p2, teta, teta.st, VC$BivD, Cont = TRUE, par2 = nu, nu.st = nu.st)
+ BITS <- copgHsCont(p1, p2, teta, teta.st, VC$BivD, Cont = TRUE, par2 = nu, nu.st = nu.st, T.BivD = VC$BivD)
  
  
    der2h.derp1p1              <- BITS$der2h.derp1p1

@@ -26,6 +26,15 @@ p2   <- pNBII(y2, mu = exp(eta2), sigma = sigma)
 
 
 
+if(margin2 %in% c("BB")){
+
+pdf2 <- dBB(y2[, 1], mu = plogis(eta2), sigma = sigma, bd = y2[, 1] + y2[, 2])
+p2   <- pBB(y2[, 1], mu = plogis(eta2), sigma = sigma, bd = y2[, 1] + y2[, 2])  
+
+
+}
+
+
 
 
 

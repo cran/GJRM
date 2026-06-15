@@ -7,13 +7,13 @@ m2 <- c("tN","N","GU","rGU","LO","LN","WEI","IG","GA","GAi","BE","FISK","GP","GP
 m3 <- c("DAGUM","SM","TW")
 nu <- NULL
 m1d  <- c("P","tP","DGP0")
-m2d  <- c("tNBI", "tNBII","tPIG","NBI", "NBII","PIG","DGP","DGPII")
+m2d  <- c("tNBI", "tNBII","tPIG","NBI", "NBII","PIG","DGP","DGPII","BB")
 m3d  <- c("DEL","SICHEL")
 
 y1m <- NA
-y <- as.numeric( na.omit(y) )
+if( !(margin %in% c("BB")) ) y <- as.numeric( na.omit(y) )
 
-if(!(margin %in% c(m2,m3,m1d,m2d)) ) stop("Error in margin value. It should be one of:\nN, tN, GU, rGU, LO, LN, WEI, IG, GA, DAGUM, TW, SM, BE, FISK, NBI, NBII, PIG, P, tP, tNBI, tNBII, tPIG, GP, GPII, GPo, DGP, DGPII, DGP0.") 
+if(!(margin %in% c(m2,m3,m1d,m2d)) ) stop("Error in margin value. It should be one of:\nN, tN, GU, rGU, LO, LN, WEI, IG, GA, DAGUM, TW, SM, BE, FISK, BB, NBI, NBII, PIG, P, tP, tNBI, tNBII, tPIG, GP, GPII, GPo, DGP, DGPII, DGP0.") 
 
 if(margin %in% c("LN","WEI","IG","GA","GAi","DAGUM","SM","FISK") && min(y, na.rm = TRUE) <= 0) stop("The response must be positive.")
 if(margin %in% c("TW") && min(y, na.rm = TRUE) < 0) stop("The response must be > = 0.")
@@ -53,6 +53,40 @@ respvec <- list(y1 = y)
 if( margin %in% c("P","tP") )          st.v <- c( log( mean((y + mean(y))/2) ) )           
 if( margin %in% c("NBI","PIG","tNBI","tPIG") ) st.v <- c( log(mean((y + mean(y))/2)), log( max( (var(y) - mean(y))/mean(y)^2, 0.1) ) )
 if( margin %in% c("NBII","tNBII") )     st.v <- c( log(mean((y + mean(y))/2)), log( max( (var(y)/mean(y)) - 1, 0.1) ) )    
+
+
+
+if (margin %in% c("BB")) {
+
+    # y1 is the two-column matrix: cbind(successes, failures)
+    y1  <- y[,1]
+    m  <- rowSums(y)
+
+    # mean start: rescaled proportion (same as GAMLSS mu.initial)
+    p  <- (y1 + 0.5) / (m + 1)
+    mu_start <- p
+
+    # dispersion start: method-of-moments (better than GAMLSS)
+    var_y   <- var(y1)
+    bin_var <- mean(m * mu_start * (1 - mu_start))
+    R       <- var_y / bin_var
+    m_bar   <- mean(m)
+
+    phi_start <- (m_bar - R) / (R - 1)
+    if (!is.finite(phi_start) || phi_start <= 0) phi_start <- 20
+
+    # st.v must be on link scale: logit(mu), log(phi)
+    st.v <- c(qlogis(mean(mu_start)), log(phi_start))
+
+}
+
+
+
+
+
+
+
+
 if( margin %in% c("DEL") )              st.v <- c( log(mean((y + mean(y))/2)), log( max( (var(y) - mean(y))/mean(y)^2, 0.1) ), qlogis(0.5) )  
 if( margin %in% c("SICHEL") )           st.v <- c( log(mean((y + mean(y))/2)), log( max( (var(y) - mean(y))/mean(y)^2, 0.1) ), -0.5 )    
 if( margin %in% c("N","LN", "tN") )     st.v <- c( mean((y + mean(y))/2) ,           log( var(y) ) )  
@@ -134,18 +168,7 @@ if(margin == "LN") y <- exp(y)
 
     if(margin %in% c("DGP","DGPII","DGP0")) stop("This function is not suitable for the chosen distribution. \nGet in touch for more info.")
 
-    #if(margin %in% c("ZTP","DGP","DGPII","DGP0")){
-    # 
-    #ly1 <- length(y)
-    #y1m <- list()
-    #my1 <- max(y)
-    #for(i in 1:ly1){ y1m[[i]] <- seq(1, y[i]); length(y1m[[i]]) <- my1} 
-    #y1m <- do.call(rbind, y1m)  
-    #
-    #if(max(y) > 170) y1m <- mpfr( y1m, pmax(53, getPrec(y))) 
-    #
-    # 
-    #}
+
 
     
 
@@ -161,29 +184,23 @@ if(margin %in% m2d)  pp <- distrHsATDiscr(y, univfit$argument[1], esp.tr(univfit
 p <- pp$p2
 d <- pp$pdf2
 
-if(margin %in% c(m1d,m2d)) p <- runif(y, p - d, p)
+if(margin %in% c(m1d,m2d)) p <- runif(length(p), p - d, p)
 
 
-#par(mfrow = c(1, 2))
-#hist(y, freq = FALSE, ylim=c(0, max(d, hist(y, plot = FALSE)$density) ),
-#     main=main,
-#     xlab=xlab, ...)
-#
-#lines(sort(y),d[order(y)],lwd=2)
+
 
 
 if(any(is.na(p)) == TRUE) stop("It is not possible to produce a QQ-plot.\nThe chosen distribution (unconditional on covariates)\nis not probably a good fit.")
 
 
 #if(intervals == FALSE){
-qqnorm(qnorm(p)); abline(0, 1, col = "red")
-#}
-#if(intervals == TRUE) {univfit$y2 <- y
-#                       univfit$Cont <- "NO" 
-#                       univfit$VC$ccss <- "no"
-#                       univfit$univar.gamlss <- FALSE
-#                       univfit$n <- length(y) 
-#                       int.postcheck(univfit, margin, n.rep = n.sim, prob.lev = prob.lev, y2m = y1m)}
+
+qnp <- qnorm(p)
+
+qqplot(qnorm((1:length(qnp) - 0.5) / length(qnp)), sort(qnp), xlab = "Theoretical Quantiles", ylab = "Sample Quantiles")
+abline(0, 1)
+
+
 
 
 
@@ -203,7 +220,7 @@ if(print.par == TRUE && os == TRUE && i.f == FALSE){
          
 mu    <- eta.tr(univfit$argument[1], margin)
 mupos <- c("LN","WEI","IG","GA","DAGUM","SM","TW","FISK",m1d,m2d,m3d)
-mub   <- c("BE")
+mub   <- c("BE","BB")
 if(margin %in% mupos) mu <- exp(mu)
 if(margin %in% mub)   mu <- plogis(mu)
 

@@ -2,6 +2,7 @@ bprobgHsBinROY <- function(params, respvec, VC, ps, AT = FALSE){
 
  p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- l.par <- dl.dbe1 <- d2l.be1.be1 <- NA
  etad1 <- etad2 <- etas1 <- etas2 <- etan1 <- etan2 <- l.ln <- NULL 
+Cop1 <- Cop2 <- nC1 <- nC2 <- teta.ind1 <- teta.ind2 <- teta1 <- teta2 <- NA
 
 
    eta1 <- VC$X1%*%params[1:VC$X1.d2]
@@ -62,7 +63,7 @@ bprobgHsBinROY <- function(params, respvec, VC, ps, AT = FALSE){
 
   ########################################################################################################
   
- dH <- copgHs(1 - p1[VC$inde0], 1 - p2, eta1 = NULL, eta2 = NULL, teta1, teta.st1, Cop1, VC$dof1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+ dH <- copgHs(1 - p1[VC$inde0], 1 - p2, eta1 = NULL, eta2 = NULL, teta1, teta.st1, Cop1, VC$dof1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
  
  c.copula.be1.M2     <- dH$c.copula.be1
  c.copula.be2.M2     <- dH$c.copula.be2
@@ -74,7 +75,7 @@ bprobgHsBinROY <- function(params, respvec, VC, ps, AT = FALSE){
  c.copula2.be2th.M2  <- dH$c.copula2.be2th
  bit1.th2.M2         <- dH$bit1.th2       # second deriv with star in it
  
- dH <- copgHs(1 - p1[VC$inde1], 1 - p3, eta1 = NULL, eta2 = NULL, teta2, teta.st2, Cop2, VC$dof2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+ dH <- copgHs(1 - p1[VC$inde1], 1 - p3, eta1 = NULL, eta2 = NULL, teta2, teta.st2, Cop2, VC$dof2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
  
  c.copula.be1.M3     <- dH$c.copula.be1
  c.copula.be2.M3     <- dH$c.copula.be2
@@ -248,8 +249,8 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
               dl.dbe1 = dl.dbe1, dl.dbe2 = dl.dbe2, dl.dbe3 = dl.dbe3, dl.dteta1.st = dl.dteta1.st, dl.dteta2.st = dl.dteta2.st,
               BivD1 = VC$BivD1, BivD2 = VC$BivD2,                              
               p1 = p1, p2 = p2, p3 = p3, c.copula2.be1be2 = c(c.copula2.be1be2.M2, c.copula2.be1be2.M3),          
-              teta.st1 = teta.st1, teta.st2 = teta.st2,
-              Cop1 = Cop1, Cop2 = Cop2, teta1 = teta1, teta2 = teta2)    
+teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,
+              Cop1 = Cop1, Cop2 = Cop2, nC1 = nC1, nC2 = nC2, teta1 = teta1, teta2 = teta2)    
 
 }
 

@@ -1,3 +1,6 @@
+version 0.2-6.9
+- PCC trivariate models introduced. 
+
 version 0.2-6.8
 - Vuong and Clarke tests split in two different functions.
 

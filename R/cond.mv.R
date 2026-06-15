@@ -1,8 +1,8 @@
-cond.mv <- function(x, eq, y1 = NULL, y2 = NULL, newdata, fun = "mean", n.sim = 100, prob.lev = 0.05){# , bin.model = NULL){
+cond.mv <- function(x, eq, y1 = NULL, y2 = NULL, newdata, fun = "mean", n.sim = 100, prob.lev = 0.05, method = "adaptive"){
 
 nu <- res.mCI <- res.mCITemp <- res.vCI <- res.vCITemp <- nu1 <- nu2 <- dof <- dofS <- thetS <- nu1S <- nu2S <- sig1S <- sig2S <- sig1 <- sig2 <- sigma <- NULL
 pb <- pbS <- 1
-
+res.relerr <- res.niter <- NA 
 
 if(class(x)[1] == "gamlss")              stop("Function not suitable for univariate models.")
 
@@ -19,15 +19,16 @@ if(!missing(newdata)){
 if( !(fun %in% c("mean", "variance")) ) stop("The value for fun can be either mean or variance.")
 
 
+if (!(method %in% c("adaptive", "quad"))) stop("Invalid 'method'. Must be one of 'adaptive' or 'quad'.")
+
+
 m2  <- x$VC$m2
 m3  <- x$VC$m3
 m1d <- c("P", "tP")
-m2d <- c("NBI", "NBII", "PIG","tNBI", "tNBII", "tPIG")
+m2d <- c("NBI", "NBII", "PIG","tNBI", "tNBII", "tPIG","BB")
 
 lt1 <- x$VC$left.trunc1
 lt2 <- x$VC$left.trunc2
-
-
 
 margin <- x$margins[eq]
 
@@ -35,11 +36,11 @@ if(margin %in% x$VC$bl)                                    stop("This function i
 if(margin %in% c("GP","GPII","GPo","DGP","DGPII","DGP0") ) stop("Function not ready yet for the chosen distribution(s).")
 
 
-if( margin %in% c("N","tN","GU","rGU","LO") )                       { lB <- -Inf;                      uB <- Inf}
-if( margin %in% c("tN") ){if(eq == 1) lB <- lt1; if(eq == 2) lB <- lt2}
-
+if( margin %in% c("N","tN","GU","rGU","LO") )                       { lB <- -Inf; uB <- Inf}
 if( margin %in% c("LN","WEI","IG","GA","DAGUM","SM","FISK","TW")  ) { lB <- sqrt(.Machine$double.eps); uB <- Inf} 
 if( margin %in% c("BE")  )                                          { lB <- sqrt(.Machine$double.eps); uB <- 0.999999}
+
+if( margin %in% c("tN") ){if(eq == 1) lB <- lt1; if(eq == 2) lB <- lt2}
 
 
 
@@ -60,12 +61,11 @@ if( margin %in% c("BE")  )                                          { lB <- sqrt
  #
  #} 
  
-
-
+ 
 ########################################################################################################################################
 
 
-if( !is.null(x$VC$K1) && x$margins[2] %in% m2){ # ord-cont
+if( !is.null(x$VC$K1) && x$margins[2] %in% m2){ ######********** ord-cont
 
    if( is.null(y1) )                                   stop("A value for y1 must be provided.")
    if(!(y1 >= range(x$y1)[1] && y1 <= range(x$y1)[2])) stop("y1 is not within its observed range.") 
@@ -95,15 +95,50 @@ if( is.null(x$X3) ){
                    }
 
 
-	res.m <- distrExIntegrate(ordcont.m, lower = lB, upper = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
-	                          margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)            
+
+sI <- 1; BivD <- x$BivD; nC <- x$nC
+
+if(x$BivD %in% x$BivD2){ 
+
+if(theta >= 0){ nC <- x$fit$nC1; BivD <- x$fit$Cop1; sI <- 1} else{ nC <- x$fit$nC2; BivD <- x$fit$Cop2; sI <- -1} 
+
+}
+
+
+
+
+
+
+	if(method=="adaptive"){res.m <- distrExIntegrate(ordcont.m, lower = lB, upper = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
+	                          margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)  
+                                   }else{
+                                   
+	          res.I <- quadinf(ordcont.m, xa = lB, xb = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
+	                           margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+	                           min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)
+	res.m      <- res.I$Q  
+	res.relerr <- res.I$relerr
+	res.niter  <- res.I$niter
+}
+
+ 
+
+
+
+	                          
+	                          
 
 if(fun == "variance"){
 
-        res.v <- distrExIntegrate(ordcont.v, lower = lB, upper = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
-	                          margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)
+        if(method=="adaptive"){res.v <- distrExIntegrate(ordcont.v, lower = lB, upper = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
+	                          margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)}else{
+	                          
+        res.v <- quadinf(ordcont.v, xa = lB, xb = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
+	                          margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)$Q	                          
+	                          }
 	                          
         res.v <- res.v - res.m^2 
         
@@ -167,19 +202,35 @@ if( is.null(xx$X3) ){
                    }
 
 
+if(x$BivD %in% x$BivD2) theta <- sI*abs(theta)
 
-res.mCITemp <- suppressMessages(try(distrExIntegrate(ordcont.m, lower = lB, upper = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
-	                          margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2), silent = TRUE))
+
+
+if(method=="adaptive"){res.mCITemp <- suppressMessages(try(distrExIntegrate(ordcont.m, lower = lB, upper = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
+	                          margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2), silent = TRUE))}else{
+
+res.mCITemp <- suppressMessages(try(quadinf(ordcont.m, xa = lB, xb = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
+	                          margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)$Q, silent = TRUE))
+	                          }
+	                          
+	                          
+	                          
 
    if( is.numeric(res.mCITemp) == FALSE ) next
    res.mCI[ii] <- as.numeric(res.mCITemp)
                                      
 if(fun == "variance"){
 
-res.vCITemp <- suppressMessages(try(distrExIntegrate(ordcont.v, lower = lB, upper = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
-	                          margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2), silent = TRUE) )   
+if(method=="adaptive"){res.vCITemp <- suppressMessages(try(distrExIntegrate(ordcont.v, lower = lB, upper = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
+	                          margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2), silent = TRUE) ) }else{
+	                          
+res.vCITemp <- suppressMessages(try(quadinf(ordcont.v, xa = lB, xb = uB, pk = pk, pk1 = pk1, eta.mu = eta2, sigma = sigma, nu = NULL, theta = theta, 
+	                          margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+	                          min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)$Q, silent = TRUE) ) 	                          
+                                     }
                                      
    if( is.numeric(res.vCITemp) == FALSE ) next
    res.vCI[ii] <- as.numeric(res.vCITemp)
@@ -205,23 +256,52 @@ rm(xx)
 #######
 
 
+
+
+
+
 if( x$margins[1] %in% c(m1d, m2d) && x$margins[2] %in% c(m2, m3) ){ ### discr 1/2 - cont 2/3 ### 
 
 
-if(eq == 1){ 
-    if( is.null(y2) )                                     stop("A value for y2 must be provided.")
-    if( !(y2 >= range(x$y2)[1] && y2 <= range(x$y2)[2]) ) stop("A value for y2, in its observed range, must be provided.")
-    y12 <- y2 
-    } 
 
-if(eq == 2){ 
-    if( is.null(y1) )                                     stop("A value for y1 must be provided.")
-    if( !(y1 >= range(x$y1)[1] && y1 <= range(x$y1)[2]) ) stop("A value for y1, in its observed range, must be provided.")
-    y12 <- y1  
+if(x$margins[1] == "BB") bd.t <- sum(y1)
+
+if (eq == 1){
+
+    if (is.null(y2)) stop("A value for y2 must be provided.")
+
+        if (!(y2 >= range(x$y2)[1] && y2 <= range(x$y2)[2]))
+            stop("A value for y2, in its observed range, must be provided.")
+
+        y12 <- y2
+    
+}
+
+
+if (eq == 2) {
+
+    if (is.null(y1))
+        stop("A value for y1 must be provided.")
+
+    if (x$margins[1] == "BB") {
+
+        if (!is.matrix(y1) || ncol(y1) != 2)
+            stop("For BB margins, y1 must be a 2-column matrix: cbind(successes, failures).")
+
+
+        if (y1[1] < 0 || y1[2] < 0)
+            stop("For BB margins, both entries of y1 must be non-negative.")
+
+        y12 <- y1
+        
+    } else {
+
+        if (!(y1 >= range(x$y1)[1] && y1 <= range(x$y1)[2]))
+            stop("A value for y1, in its observed range, must be provided.")
+
+        y12 <- y1
     }
-
-
-
+}
 
  fit1  <- c(eta.tr(predict(x, eq = 1, newdata = newdata, type = "link"), x$margins[1]))    
  fit2  <- c(eta.tr(predict(x, eq = 2, newdata = newdata, type = "link"), x$margins[2]))
@@ -429,18 +509,54 @@ if(eq == 2){
 #######################
 
 
+
+sI <- 1; BivD <- x$BivD; nC <- x$nC 
+
+if(x$BivD %in% x$BivD2){ 
+
+if(thet >= 0){ nC <- x$fit$nC1; BivD <- x$fit$Cop1; sI <- 1} else{ nC <- x$fit$nC2; BivD <- x$fit$Cop2; sI <- -1} 
+
+thetS <- sI*abs(thetS)
+
+}
+
+
+
+
 if(eq == 2){ ##### equation of interest is no. 2 so contin. variable ####
 
 
-	res.m <- distrExIntegrate(discrcont.m, lower = lB, upper = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
-	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2)            
+
+
+	if(method=="adaptive"){res.m <- distrExIntegrate(discrcont.m, lower = lB, upper = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
+	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2)   }else{         
+
+	res.I <- quadinf(discrcont.m, xa = lB, xb = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
+	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2)                                 
+
+	res.m      <- res.I$Q  
+	res.relerr <- res.I$relerr
+	res.niter  <- res.I$niter
+}
+
+
+
+
+
 
 if(fun == "variance"){
 
-        res.v <- distrExIntegrate(discrcont.v, lower = lB, upper = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
-	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2) 
+ if(method=="adaptive"){       res.v <- distrExIntegrate(discrcont.v, lower = lB, upper = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
+	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2) }else{
+	                                
+        res.v <- quadinf(discrcont.v, xa = lB, xb = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
+	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2)$Q 
+	     	                                }
+                         
         res.v <- res.v - res.m^2 
         
                       }
@@ -451,9 +567,15 @@ if(fun == "variance"){
 
 for(i in 1:n.sim){
 
-res.mCITemp <- suppressMessages(try(distrExIntegrate(discrcont.m, lower = lB, upper = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
-	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2), silent = TRUE))
+if(method=="adaptive"){res.mCITemp <- suppressMessages(try(distrExIntegrate(discrcont.m, lower = lB, upper = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
+	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2), silent = TRUE))}else{
+
+res.mCITemp <- suppressMessages(try(quadinf(discrcont.m, xa = lB, xb = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
+	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2)$Q, silent = TRUE))
+}
+
 
    if( is.numeric(res.mCITemp) == FALSE ) next 
    res.mCI[i] <- as.numeric(res.mCITemp)
@@ -462,9 +584,14 @@ res.mCITemp <- suppressMessages(try(distrExIntegrate(discrcont.m, lower = lB, up
                                      
 if(fun == "variance"){
 
-res.vCITemp <- suppressMessages(try(distrExIntegrate(discrcont.v, lower = lB, upper = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
-	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2), silent = TRUE))
+if(method=="adaptive"){res.vCITemp <- suppressMessages(try(distrExIntegrate(discrcont.v, lower = lB, upper = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
+	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2), silent = TRUE))}else{
+
+res.vCITemp <- suppressMessages(try(quadinf(discrcont.v, xa = lB, xb = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
+	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, left.trunc1 = lt1, left.trunc2 = lt2)$Q, silent = TRUE))
+}
 
 
    if( is.numeric(res.vCITemp) == FALSE ) next
@@ -497,18 +624,27 @@ if(eq == 1){ ##### EQUAT of interest is no. 1 so count variable ####
 eps <- 1e-05                  
 m.y <- max(c(x$y1, x$y2))*5 # arbitrary, generous enough but might be changed in future
 
+if(x$margins[1] == "BB") m.y <- bd.t
+
+
+
 
 res.m <- Stemp <- NA
 y <- i <- tl <- 1 
 
 while ( tl > 0  ){
 
+
+if(x$margins[1] == "BB") y <- cbind(y, bd.t - y)
+
+
 res.m[i] <- tl <- dicont.m(y, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
-	                     nu2 = nu2, theta = thet, margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
+	                     nu2 = nu2, theta = thet, margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
 	                     max.pr = x$VC$max.pr, nC = nC, left.trunc1 = lt1, left.trunc2 = lt2)           
+y <- y[1]
 Stemp[i] <- sum(res.m)
 if(i > 1){ if( (Stemp[i] - Stemp[i - 1])/Stemp[i - 1]*100 < eps ) break }
-if(y > m.y) break
+if(y >= m.y) break
 y <- y + 1; i <- i + 1
 
                    }
@@ -524,13 +660,18 @@ res.v <- Stemp <- NA
 y <- i <- tl <- 1
 
 	while ( tl > 0  ){
+	
+if(x$margins[1] == "BB") y <- cbind(y, bd.t - y)
+	
+	
 		res.v[i] <- tl <- dicont.v(y, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
-	                     nu2 = nu2, theta = thet, margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
+	                     nu2 = nu2, theta = thet, margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
 	                     max.pr = x$VC$max.pr, nC = nC, left.trunc1 = lt1, left.trunc2 = lt2)           
-
+                
+                y <- y[1]
                 Stemp[i] <- sum(res.v)
                 if(i > 1){ if( (Stemp[i] - Stemp[i - 1])/Stemp[i - 1]*100 < eps ) break}		
-		if(y > m.y) break
+		if(y >= m.y) break
 		y <- y + 1; i <- i + 1		
                            }
                     
@@ -553,13 +694,18 @@ y <- j <- tl <- 1
 
 while ( tl > 0 ){
 
+
+if(x$margins[1] == "BB") y <- cbind(y, bd.t - y)
+
+
 res.mCITemp[j] <- tl <- dicont.m(y, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
-	                     nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
+	                     nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
 	                     max.pr = x$VC$max.pr, nC = nC, left.trunc1 = lt1, left.trunc2 = lt2)           
 
+y <- y[1]
 Stemp[j] <- sum(res.mCITemp)
 if(j > 1){ if( (Stemp[j] - Stemp[j - 1])/Stemp[j - 1]*100 < eps ) break}
-if(y > m.y) break
+if(y >= m.y) break
 y <- y + 1; j <- j + 1
 
                     }
@@ -578,13 +724,17 @@ y <- j <- tl <- 1
 
 while ( tl > eps  ){
 
+if(x$margins[1] == "BB") y <- cbind(y, bd.t - y)
+
+
 res.vCITemp[j] <- tl <- dicont.v(y, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
-	                     nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
+	                     nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
 	                     max.pr = x$VC$max.pr, nC = nC, left.trunc1 = lt1, left.trunc2 = lt2)          
 
+y <- y[1]
 Stemp[j] <- sum(res.vCITemp)
 if(j > 1){ if( (Stemp[j] - Stemp[j - 1])/Stemp[j - 1]*100 < eps ) break}
-if(y > m.y) break
+if(y >= m.y) break
 y <- y + 1; j <- j + 1
                     }
 
@@ -651,10 +801,12 @@ if( x$margins[1] %in% c(x$VC$bl) && x$margins[2] %in% c(x$VC$m1d, x$VC$m2d) ){ #
  if( !(y1 %in% c(0,1)) ) stop("y1 can be either 0 or 1.")
 
  eq <- 2
- nC <- x$nC
  eps <- 1e-05                  
  m.y <- max(x$y2)*5 # arbitrary, generous enough but might be changed in future
  
+ if(x$margins[2] == "BB") m.y <- bd.t <- sum(y2)
+
+
 
  fit0 <- predict(x, eq = eq - 1, newdata = newdata, type = "link")           # binary eq.
  fit1 <- predict(x, eq = eq,     newdata = newdata, type = "link") 
@@ -678,17 +830,38 @@ if( x$margins[1] %in% c(x$VC$bl) && x$margins[2] %in% c(x$VC$m1d, x$VC$m2d) ){ #
  
 
 
+
+
+sI <- 1; BivD <- x$BivD; nC <- x$nC 
+
+if(x$BivD %in% x$BivD2){ 
+
+if(theta >= 0){ nC <- x$fit$nC1; BivD <- x$fit$Cop1; sI <- 1} else{ nC <- x$fit$nC2; BivD <- x$fit$Cop2; sI <- -1} 
+
+
+}
+
+
+
+
+
+
 res.m <- Stemp <- NA
 y <- i <- tl <- 1 
 
 while ( tl > 0  ){
 
-res.m[i] <- tl <- bindisc.m(y1 = y1, y12 = y, eta2 = fit1, sig2 = sigma, nu2 = NULL, theta = theta, margins = x$margins, BivD = x$BivD, par2 = x$dof, 
+
+if(x$margins[2] == "BB") y <- cbind(y, bd.t - y)
+
+
+res.m[i] <- tl <- bindisc.m(y1 = y1, y12 = y, eta2 = fit1, sig2 = sigma, nu2 = NULL, theta = theta, margins = x$margins, BivD = BivD, par2 = x$dof, 
                             min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, nC = nC, p0 = p0, left.trunc2 = lt2)
          
+y <- y[1]
 Stemp[i] <- sum(res.m)
 if(i > 1){ if( (Stemp[i] - Stemp[i - 1])/Stemp[i - 1]*100 < eps ) break }
-if(y > m.y) break
+if(y >= m.y) break
 y <- y + 1; i <- i + 1
 
                    }
@@ -704,12 +877,17 @@ res.v <- Stemp <- NA
 y <- i <- tl <- 1
 
 	while ( tl > 0  ){
-		res.v[i] <- tl <- bindisc.v(y1 = y1, y12 = y, eta2 = fit1, sig2 = sigma, nu2 = NULL, theta = theta, margins = x$margins, BivD = x$BivD, par2 = x$dof, 
+	
+if(x$margins[2] == "BB") y <- cbind(y, bd.t - y)
+	
+	
+		res.v[i] <- tl <- bindisc.v(y1 = y1, y12 = y, eta2 = fit1, sig2 = sigma, nu2 = NULL, theta = theta, margins = x$margins, BivD = BivD, par2 = x$dof, 
                                             min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, nC = nC, p0 = p0, left.trunc2 = lt2)         
 
+                y <- y[1]
                 Stemp[i] <- sum(res.v)
                 if(i > 1){ if( (Stemp[i] - Stemp[i - 1])/Stemp[i - 1]*100 < eps ) break}		
-		if(y > m.y) break
+		if(y >= m.y) break
 		y <- y + 1; i <- i + 1		
                            }
                     
@@ -753,6 +931,11 @@ if( margin %in% m2d){sigma <- c(esp.tr(eta.2, margin)$vrb); theta <- c(teta.tr(x
 
 
  
+
+if(x$BivD %in% x$BivD2) theta <- sI*abs(theta)
+
+ 
+ 
  
  
  for(i in 1:n.sim){ # INTERVALS
@@ -765,12 +948,16 @@ if( margin %in% m2d){sigma <- c(esp.tr(eta.2, margin)$vrb); theta <- c(teta.tr(x
  
  while ( tl > 0 ){
  
- res.mCITemp[j] <- tl <- bindisc.m(y1 = y1, y12 = y, eta2 = eta.mu[i], sig2 = sigma[i], nu2 = NULL, theta = theta[i], margins = x$margins, BivD = x$BivD, par2 = x$dof, 
+ if(x$margins[2] == "BB") y <- cbind(y, bd.t - y)
+
+ 
+ res.mCITemp[j] <- tl <- bindisc.m(y1 = y1, y12 = y, eta2 = eta.mu[i], sig2 = sigma[i], nu2 = NULL, theta = theta[i], margins = x$margins, BivD = BivD, par2 = x$dof, 
                                    min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, nC = nC, p0 = p0[i], left.trunc2 = lt2)           
  
+ y <- y[1]
  Stemp[j] <- sum(res.mCITemp)
  if(j > 1){ if( (Stemp[j] - Stemp[j - 1])/Stemp[j - 1]*100 < eps ) break}
- if(y > m.y) break
+ if(y >= m.y) break
  y <- y + 1; j <- j + 1
  
                      }
@@ -789,12 +976,16 @@ if( margin %in% m2d){sigma <- c(esp.tr(eta.2, margin)$vrb); theta <- c(teta.tr(x
  
  while ( tl > eps  ){
  
- res.vCITemp[j] <- tl <- bindisc.v(y1 = y1, y12 = y, eta2 = eta.mu[i], sig2 = sigma[i], nu2 = NULL, theta = theta[i], margins = x$margins, BivD = x$BivD, par2 = x$dof, 
+ if(x$margins[2] == "BB") y <- cbind(y, bd.t - y)
+
+ 
+ res.vCITemp[j] <- tl <- bindisc.v(y1 = y1, y12 = y, eta2 = eta.mu[i], sig2 = sigma[i], nu2 = NULL, theta = theta[i], margins = x$margins, BivD = BivD, par2 = x$dof, 
                                    min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, nC = nC, p0 = p0[i], left.trunc2 = lt2)         
  
+ y <- y[1]
  Stemp[j] <- sum(res.vCITemp)
  if(j > 1){ if( (Stemp[j] - Stemp[j - 1])/Stemp[j - 1]*100 < eps ) break}
- if(y > m.y) break
+ if(y >= m.y) break
  y <- y + 1; j <- j + 1
                      }
  
@@ -857,16 +1048,52 @@ if(is.null(x$VC$K1) && x$margins[1] %in% c(x$VC$bl) && x$margins[2] %in% c(x$VC$
  eta.mu <- c(eta.tr(fit1, margin)) # no need for original scale here as distrHsAT will do it
  p0 <- 1 - probm(fit0, margin = x$margins[eq - 1], only.pr = TRUE, bc = FALSE, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, max.pr = x$VC$max.pr)$pr 
  
+ 
 
-	res.m <- distrExIntegrate(bincont.m, lower = lB, upper = uB, p0 = p0, eta.mu = eta.mu, sigma = sigma, nu = nu, theta = theta, 
-	                                margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)            
+
+sI <- 1; BivD <- x$BivD; nC <- x$nC 
+
+if(x$BivD %in% x$BivD2){ 
+
+if(theta >= 0){ nC <- x$fit$nC1; BivD <- x$fit$Cop1; sI <- 1} else{ nC <- x$fit$nC2; BivD <- x$fit$Cop2; sI <- -1} 
+
+
+}
+
+ 
+ 
+ 
+ 
+
+	if(method=="adaptive"){res.m <- distrExIntegrate(bincont.m, lower = lB, upper = uB, p0 = p0, eta.mu = eta.mu, sigma = sigma, nu = nu, theta = theta, 
+	                                margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)  }else{          
+
+	res.I <- quadinf(bincont.m, xa = lB, xb = uB, p0 = p0, eta.mu = eta.mu, sigma = sigma, nu = nu, theta = theta, 
+	                                margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)           
+
+	res.m      <- res.I$Q  
+	res.relerr <- res.I$relerr
+	res.niter  <- res.I$niter
+                                                                                                                       }
+
+
+
+
 
 if(fun == "variance"){
 
-        res.v <- distrExIntegrate(bincont.v, lower = lB, upper = uB, p0 = p0, eta.mu = eta.mu, sigma = sigma, nu = nu, theta = theta, 
-                                        margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-                                        min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2) 
+       if(method=="adaptive"){ res.v <- distrExIntegrate(bincont.v, lower = lB, upper = uB, p0 = p0, eta.mu = eta.mu, sigma = sigma, nu = nu, theta = theta, 
+                                        margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+                                        min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2) }else{
+                                        
+       res.v <- quadinf(bincont.v, xa = lB, xb = uB, p0 = p0, eta.mu = eta.mu, sigma = sigma, nu = nu, theta = theta, 
+                                        margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+                                        min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)$Q                                        
+                                        }
+                                        
+                                        
         res.v <- res.v - res.m^2 
         
                       }
@@ -904,23 +1131,40 @@ eta.mu <- eta.tr(eta.mu, margin)
 if( margin %in% m3 ) nu     <- enu.tr(eta.3, margin)$vrb
 if( margin %in% m2 ) theta  <- teta.tr(x$VC, eta.3)$teta else theta <- teta.tr(x$VC, eta.4)$teta
 
+
+
+
+if(x$BivD %in% x$BivD2) theta <- sI*abs(theta)
+
  
  
 for(i in 1:n.sim){
 
-res.mCITemp <- suppressMessages(try(distrExIntegrate(bincont.m, lower = lB, upper = uB, p0 = p0[i], eta.mu = eta.mu[i], sigma = sigma[i], nu = nu[i], theta = theta[i], 
-                                     margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-                                     min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2), silent = TRUE))
+if(method=="adaptive"){res.mCITemp <- suppressMessages(try(distrExIntegrate(bincont.m, lower = lB, upper = uB, p0 = p0[i], eta.mu = eta.mu[i], sigma = sigma[i], nu = nu[i], theta = theta[i], 
+                                     margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+                                     min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2), silent = TRUE))}else{
+                                     
+res.mCITemp <- suppressMessages(try(quadinf(bincont.m, xa = lB, xb = uB, p0 = p0[i], eta.mu = eta.mu[i], sigma = sigma[i], nu = nu[i], theta = theta[i], 
+                                     margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+                                     min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)$Q, silent = TRUE))                                     
+}
 
    if( is.numeric(res.mCITemp) == FALSE ) next
    res.mCI[i] <- as.numeric(res.mCITemp)
                                      
 if(fun == "variance"){
 
-res.vCITemp <- suppressMessages(try(distrExIntegrate(bincont.v, lower = lB, upper = uB, p0 = p0[i], eta.mu = eta.mu[i], sigma = sigma[i], nu = nu[i], theta = theta[i], 
-                                     margin = margin, BivD = x$BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
-                                     min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2), silent = TRUE) )   
+if(method=="adaptive"){res.vCITemp <- suppressMessages(try(distrExIntegrate(bincont.v, lower = lB, upper = uB, p0 = p0[i], eta.mu = eta.mu[i], sigma = sigma[i], nu = nu[i], theta = theta[i], 
+                                     margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+                                     min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2), silent = TRUE) )  }else{ 
                                      
+res.vCITemp <- suppressMessages(try(quadinf(bincont.v, xa = lB, xb = uB, p0 = p0[i], eta.mu = eta.mu[i], sigma = sigma[i], nu = nu[i], theta = theta[i], 
+                                     margin = margin, BivD = BivD, par2 = x$dof, min.dn = x$VC$min.dn, 
+                                     min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, y1 = y1, left.trunc2 = lt2)$Q, silent = TRUE) )                                        
+          }
+          
+          
+          
    if( is.numeric(res.vCITemp) == FALSE ) next
    res.vCI[i] <- as.numeric(res.vCITemp)
 
@@ -1374,15 +1618,48 @@ if(eq == 2){
 
 
 
-	res.m <- distrExIntegrate(contcont.m, lower = lB, upper = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
-	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2)            
+sI <- 1; BivD <- x$BivD; nC <- x$nC 
+
+if(x$BivD %in% x$BivD2){ 
+
+if(thet >= 0){ nC <- x$fit$nC1; BivD <- x$fit$Cop1; sI <- 1} else{ nC <- x$fit$nC2; BivD <- x$fit$Cop2; sI <- -1} 
+
+thetS <- sI*abs(thetS)
+
+}
+
+ 
+
+
+
+
+
+	if(method=="adaptive"){res.m <- distrExIntegrate(contcont.m, lower = lB, upper = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
+	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2)   }else{         
+
+	res.I <- quadinf(contcont.m, xa = lB, xb = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
+	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2)    
+
+	res.m      <- res.I$Q  
+	res.relerr <- res.I$relerr
+	res.niter  <- res.I$niter
+													}
+
+
 
 if(fun == "variance"){
 
-        res.v <- distrExIntegrate(contcont.v, lower = lB, upper = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
-	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2) 
+        if(method=="adaptive"){res.v <- distrExIntegrate(contcont.v, lower = lB, upper = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
+	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2) }else{
+
+        res.v <- quadinf(contcont.v, xa = lB, xb = uB, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = nu1, 
+	                                nu2 = nu2, theta = thet, margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2)$Q 
+	                                }
+	                                
         res.v <- res.v - res.m^2 
         
                       }
@@ -1393,9 +1670,14 @@ if(fun == "variance"){
 
 for(i in 1:n.sim){
 
-res.mCITemp <- suppressMessages(try(distrExIntegrate(contcont.m, lower = lB, upper = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
-	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = x$BivD, par2 = dofS[i], min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2), silent = TRUE))
+if(method=="adaptive"){res.mCITemp <- suppressMessages(try(distrExIntegrate(contcont.m, lower = lB, upper = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
+	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = BivD, par2 = dofS[i], min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2), silent = TRUE))}else{
+	                                
+res.mCITemp <- suppressMessages(try(quadinf(contcont.m, xa = lB, xb = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
+	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = BivD, par2 = dofS[i], min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2)$Q, silent = TRUE))
+	                                }
 
    if( is.numeric(res.mCITemp) == FALSE ) next 
    res.mCI[i] <- as.numeric(res.mCITemp)
@@ -1404,9 +1686,15 @@ res.mCITemp <- suppressMessages(try(distrExIntegrate(contcont.m, lower = lB, upp
                                      
 if(fun == "variance"){
 
-res.vCITemp <- suppressMessages(try(distrExIntegrate(contcont.v, lower = lB, upper = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
-	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = x$BivD, par2 = dofS[i], min.dn = x$VC$min.dn, 
-	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2), silent = TRUE))
+if(method=="adaptive"){res.vCITemp <- suppressMessages(try(distrExIntegrate(contcont.v, lower = lB, upper = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
+	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = BivD, par2 = dofS[i], min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2), silent = TRUE))}else{
+
+res.vCITemp <- suppressMessages(try(quadinf(contcont.v, xa = lB, xb = uB, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = nu1S[i], 
+	                                nu2 = nu2S[i], theta = thetS[i], margins = x$margins, BivD = BivD, par2 = dofS[i], min.dn = x$VC$min.dn, 
+	                                min.pr = x$VC$min.pr, max.pr = x$VC$max.pr, cond = cond, left.trunc1 = lt1, left.trunc2 = lt2)$Q, silent = TRUE))
+}
+
 
 
    if( is.numeric(res.vCITemp) == FALSE ) next
@@ -1438,20 +1726,81 @@ res.vCI[i] <- res.vCI[i] - res.mCI[i]^2
 if( x$margins[1] %in% c(m1d, m2d) && x$margins[2] %in% c(m1d, m2d) ){ ### DISCR - DISCR ### 
 
 
-if(eq == 1){ 
-    cond <- 2
-    if( is.null(y2) )                                     stop("A value for y2 must be provided.")
-    if( !(y2 >= range(x$y2)[1] && y2 <= range(x$y2)[2]) ) stop("A value for y2, in its observed range, must be provided.")
-    y12 <- y2 
-    
-    } 
+if(eq == 1 && x$margins[1] == "BB") bd.t <- sum(y1)
+if(eq == 2 && x$margins[2] == "BB") bd.t <- sum(y2)
 
-if(eq == 2){ 
-    cond <- 1
-    if( is.null(y1) )                                     stop("A value for y1 must be provided.")
-    if( !(y1 >= range(x$y1)[1] && y1 <= range(x$y1)[2]) ) stop("A value for y1, in its observed range, must be provided.")
-    y12 <- y1  
+
+
+    if (eq == 1) {
+        cond <- 2
+
+        if (is.null(y2))
+            stop("A value for y2 must be provided.")
+
+        if(x$margins[2] == "BB") {
+
+            if (!is.matrix(y2) || ncol(y2) != 2)
+                stop("For BB margins, y2 must be a 2-column matrix: cbind(successes, failures).")
+
+            if (any(y2 < 0))
+                stop("For BB margins, both entries of y2 must be non-negative.")
+
+            y12 <- y2
+
+        } else {
+
+            if (!(y2 >= range(x$y2)[1] && y2 <= range(x$y2)[2]))
+                stop("A value for y2, in its observed range, must be provided.")
+
+            y12 <- y2
+        }
     }
+
+
+    if (eq == 2) {
+        cond <- 1
+
+        if (is.null(y1))
+            stop("A value for y1 must be provided.")
+
+        if (x$margins[1] == "BB") {
+
+            if (!is.matrix(y1) || ncol(y1) != 2)
+                stop("For BB margins, y1 must be a 2-column matrix: cbind(successes, failures).")
+
+            if (any(y1 < 0))
+                stop("For BB margins, both entries of y1 must be non-negative.")
+
+            y12 <- y1
+            
+        } else {
+
+            if (!(y1 >= range(x$y1)[1] && y1 <= range(x$y1)[2]))
+                stop("A value for y1, in its observed range, must be provided.")
+
+            y12 <- y1
+        }
+    }
+
+
+
+
+
+
+#if(eq == 1){ 
+#    cond <- 2
+#    if( is.null(y2) )                                     stop("A value for y2 must be provided.")
+#    if( !(y2 >= range(x$y2)[1] && y2 <= range(x$y2)[2]) ) stop("A value for y2, in its observed range, must be provided.")
+#    y12 <- y2 
+#    
+#    } 
+#
+#if(eq == 2){ 
+#    cond <- 1
+#    if( is.null(y1) )                                     stop("A value for y1 must be provided.")
+#    if( !(y1 >= range(x$y1)[1] && y1 <= range(x$y1)[2]) ) stop("A value for y1, in its observed range, must be provided.")
+#    y12 <- y1  
+#    }
 
 
  fit1  <- c(eta.tr(predict(x, eq = 1, newdata = newdata, type = "link"), x$margins[1]))    
@@ -1466,7 +1815,7 @@ if(eq == 2){
  fit1S <- Xfit1%*%t(bs[, 1:x$X1.d2]) 
  fit2S <- Xfit2%*%t(bs[, (x$X1.d2 + 1):(x$X1.d2 + x$X2.d2)]) 
  
- nC <- x$nC
+
  
 
 #######################
@@ -1580,6 +1929,22 @@ if(eq == 2){
 
 
 
+
+sI <- 1; BivD <- x$BivD; nC <- x$nC 
+
+if(x$BivD %in% x$BivD2){ 
+
+if(thet >= 0){ nC <- x$fit$nC1; BivD <- x$fit$Cop1; sI <- 1} else{ nC <- x$fit$nC2; BivD <- x$fit$Cop2; sI <- -1} 
+
+thetS <- sI*abs(thetS)
+
+}
+
+ 
+
+
+
+
 eps <- 1e-05                  
 m.y <- max(c(x$y1, x$y2))*5 # arbitrary, generous enough but might be changed in future
 
@@ -1589,12 +1954,17 @@ y <- i <- tl <- 1
 
 while ( tl > 0  ){
 
+
+if(x$margins[1] == "BB" || x$margins[2] == "BB"){ y <- cbind(y, bd.t - y); m.y <- bd.t} 
+
+
 res.m[i] <- tl <- discdisc.m(y, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = NULL, 
-	                     nu2 = NULL, theta = thet, margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
+	                     nu2 = NULL, theta = thet, margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
 	                     max.pr = x$VC$max.pr, cond = cond, nC = nC, left.trunc1 = lt1, left.trunc2 = lt2)           
+y <- i
 Stemp[i] <- sum(res.m)
 if(i > 1){ if( (Stemp[i] - Stemp[i - 1])/Stemp[i - 1]*100 < eps ) break }
-if(y > m.y) break
+if(y >= m.y) break
 y <- y + 1; i <- i + 1
 
                    }
@@ -1609,14 +1979,17 @@ if(fun == "variance"){
 res.v <- Stemp <- NA
 y <- i <- tl <- 1
 
+if(x$margins[1] == "BB" || x$margins[2] == "BB"){ y <- cbind(y, bd.t - y); m.y <- bd.t} 
+
+
 	while ( tl > 0  ){
 		res.v[i] <- tl <- discdisc.v(y, y12 = y12, eta1 = fit1, eta2 = fit2, sig1 = sig1, sig2 = sig2, nu1 = NULL, 
-			                     nu2 = NULL, theta = thet, margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
+			                     nu2 = NULL, theta = thet, margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
 			                     max.pr = x$VC$max.pr, cond = cond, nC = nC, left.trunc1 = lt1, left.trunc2 = lt2)           
-
+                y <- i
                 Stemp[i] <- sum(res.v)
                 if(i > 1){ if( (Stemp[i] - Stemp[i - 1])/Stemp[i - 1]*100 < eps ) break}		
-		if(y > m.y) break
+		if(y >= m.y) break
 		y <- y + 1; i <- i + 1		
                            }
                     
@@ -1639,13 +2012,16 @@ y <- j <- tl <- 1
 
 while ( tl > 0 ){
 
-res.mCITemp[j] <- tl <- discdisc.m(y, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = NULL, 
-	                     nu2 = NULL, theta = thetS[i], margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
-	                     max.pr = x$VC$max.pr, cond = cond, nC = nC, left.trunc1 = lt1, left.trunc2 = lt2)           
+if(x$margins[1] == "BB" || x$margins[2] == "BB"){ y <- cbind(y, bd.t - y); m.y <- bd.t} 
 
+
+res.mCITemp[j] <- tl <- discdisc.m(y, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = NULL, 
+	                     nu2 = NULL, theta = thetS[i], margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
+	                     max.pr = x$VC$max.pr, cond = cond, nC = nC, left.trunc1 = lt1, left.trunc2 = lt2)           
+y <- j
 Stemp[j] <- sum(res.mCITemp)
 if(j > 1){ if( (Stemp[j] - Stemp[j - 1])/Stemp[j - 1]*100 < eps ) break}
-if(y > m.y) break
+if(y >= m.y) break
 y <- y + 1; j <- j + 1
 
                     }
@@ -1664,13 +2040,16 @@ y <- j <- tl <- 1
 
 while ( tl > eps  ){
 
-res.vCITemp[j] <- tl <- discdisc.v(y, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = NULL, 
-	                     nu2 = NULL, theta = thetS[i], margins = x$margins, BivD = x$BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
-	                     max.pr = x$VC$max.pr, cond = cond, nC = nC, left.trunc1 = lt1, left.trunc2 = lt2)           
+if(x$margins[1] == "BB" || x$margins[2] == "BB"){ y <- cbind(y, bd.t - y); m.y <- bd.t} 
 
+
+res.vCITemp[j] <- tl <- discdisc.v(y, y12 = y12, eta1 = fit1S[i], eta2 = fit2S[i], sig1 = sig1S[i], sig2 = sig2S[i], nu1 = NULL, 
+	                     nu2 = NULL, theta = thetS[i], margins = x$margins, BivD = BivD, par2 = dof, min.dn = x$VC$min.dn, min.pr = x$VC$min.pr, 
+	                     max.pr = x$VC$max.pr, cond = cond, nC = nC, left.trunc1 = lt1, left.trunc2 = lt2)           
+y <- j
 Stemp[j] <- sum(res.vCITemp)
 if(j > 1){ if( (Stemp[j] - Stemp[j - 1])/Stemp[j - 1]*100 < eps ) break}
-if(y > m.y) break
+if(y >= m.y) break
 y <- y + 1; j <- j + 1
                     }
 
@@ -1721,7 +2100,8 @@ res.mvCIss <- as.numeric(quantile(pbS*res.mvCIs, c(prob.lev/2, 1 - prob.lev/2), 
 
 
 
-out <- list(res = res, sim.mv = pbS*res.mvCIs, prob.lev = prob.lev, margins = x$margins, fun = fun)
+out <- list(res = res, sim.mv = pbS*res.mvCIs, prob.lev = prob.lev, margins = x$margins, fun = fun, 
+            int.relerr = res.relerr, int.niter = res.niter)
  							 
 class(out) <- "cond.mv"
 

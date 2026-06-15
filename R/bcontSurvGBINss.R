@@ -1,9 +1,11 @@
 bcontSurvGBINss <- function(params, respvec, VC, ps, AT = FALSE){
 
 p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+Cop1 <- Cop2 <- nC1 <- nC2 <- teta.ind1 <- teta.ind2 <- teta1 <- teta2 <- NA
+
 etad <- etas1 <- etas2 <- l.ln <- NULL 
 
-    rotConst <- 1
+    rotConst <- c(1)
 
     params1 <- params[1:VC$X1.d2]
     params2 <- params[(VC$X1.d2 + 1):(VC$X1.d2 + VC$X2.d2)] 
@@ -62,8 +64,8 @@ nC1 <- nC2 <- VC$nC
 
 ##################
 
- dH1 <- copgHs(p1[VC$inde], p2, eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
- BITS1 <- copgHsCont(p1[VC$inde], p2, teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2))
+ dH1 <- copgHs(p1[VC$inde], p2, eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+ BITS1 <- copgHsCont(p1[VC$inde], p2, teta1, teta.st1, Cop1, Cont = TRUE, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)
    
  c.copula2.be1be2 <- dH1$c.copula2.be1be2
  c.copula.be1     <- dH1$c.copula.be1
@@ -239,9 +241,14 @@ G <- c( dl.dbe1, dl.dbe2, dl.dteta.st )
  
  #######################################################################################################################################
  
- if(VC$BivD %in% c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") ) rotConst <- -1
- if(VC$BivD %in% VC$BivD2) rotConst <- VC$my.env$signind
+
  
+rotatedSet <- c("GAL180","C180","J180","G180","GAL90","C90","J90","G90","GAL270","C270","J270","G270") 
+if(VC$BivD %in% rotatedSet) rotConst <- c(-1)
+
+
+
+
  #######################################################################################################################################
  
  p00.der2.derthstar <- bit1.th2ATE*derteta.derteta.st^2 + rotConst*c.copula.thet*der2teta.derteta.stteta.st
@@ -311,7 +318,8 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
               dl.dbe1          = NULL,       
               dl.dbe2          = NULL,       
               dl.dteta.st      = NULL, 
-              Cop1 = Cop1, Cop2 = Cop2, teta1 = teta1, teta2 = teta2,
+              teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,
+              Cop1 = Cop1, Cop2 = Cop2, nC1 = nC1, nC2 = nC2, teta1 = teta1, teta2 = teta2,
               indNeq2 = indNeq2) 
               
   }

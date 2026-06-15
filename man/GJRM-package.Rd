@@ -75,6 +75,10 @@ Part funded by EPSRC: EP/J006742/1 and EP/T033061/1
 
 Key methodological references (ordered by year of publication):
 
+Marra G, Radice R (in press), Joint Modeling of In-Hospital Mortality and Length of Stay: A Copula Additive Distributional Regression Analysis of COVID-19 Patient Data. \emph{Journal of the Royal Statistical Society Series A}.
+
+Marra G, Radice R (2026), Modeling Physician Visit Frequency and Costs Using a Copula Additive Distributional Regression Approach. \emph{Journal of the Royal Statistical Society Series C}, 75(2), 431-447.
+
 Marra G., Radice R., Zimmer D. (2024), A Unifying Switching Regime Regression Framework with Applications in Health Economics. \emph{Econometric Reviews}, 43(1), 52-70.
 
 Eletti A., Marra G., Quaresma M., Radice R., Rubio F.J. (2022), A Unifying Framework for Flexible Excess Hazard Modeling with Applications in Cancer Epidemiology. \emph{Journal of the Royal Statistical Society Series C}, 71(4), 1044-1062.

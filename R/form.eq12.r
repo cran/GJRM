@@ -56,13 +56,16 @@ if(eq1.binsurv == FALSE){
     #}
      
     if( margins %in% c("tN","N","LO","GU","rGU","GAi")      )                       formula.eq1 <- update(formula.eq1, (. + mean(.))/2 ~ . ) 
-    if( margins %in% c(m1d, m2d) && margins != "GEVlink" && margins != "DGP")  formula.eq1 <- update(formula.eq1, log((. + mean(.))/2) ~ . )  
+    if( margins %in% c(m1d, m2d) && margins != "GEVlink" && margins != "DGP" && margins != "BB")  formula.eq1 <- update(formula.eq1, log((. + mean(.))/2) ~ . )  
     if( margins %in% c("LN") )                                                 formula.eq1 <- update(formula.eq1, (log(.) + mean(log(.)))/2 ~ . )
     #if( margins %in% c("GO","GA2") )                            	       formula.eq1 <- update(formula.eq1, -(log(.) + mean(log(.)))/2 ~ . ) 
     if( margins %in% c("IG","GA","GGA","DAGUM","SM","FISK","TW") )             formula.eq1 <- update(formula.eq1, log((. + mean(.))/2) ~ . )    
     if( margins %in% c("WEI") )                                                formula.eq1 <- update(formula.eq1, log( exp(log(.) + 0.5772/(1.283/sqrt(var(log(.)))))  ) ~ . )     
     if( margins %in% c("BE") )                                                 formula.eq1 <- update(formula.eq1, qlogis((. + mean(.))/2) ~ . )    
-    
+    if( margins %in% c("BB") )                                                 formula.eq1 <- update(formula.eq1, transform_bb(.) ~ .)
+
+
+ 
     
     # changed 19/3/2019
    # if( margins %in% c("GP","GPII","GPo","DGP","DGPII","DGP0") ) formula.eq1 <- update(formula.eq1, estobXiGP ~ . ) 

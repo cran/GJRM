@@ -8,6 +8,10 @@
 \alias{jc.probs6}
 \alias{jc.probs7}
 \alias{jc.probs8}
+\alias{jc.probs9}
+\alias{jointCDF}
+\alias{jointPDF}
+
 
 
 
@@ -23,7 +27,8 @@ via posterior simulation.}
 
 copula.prob(x, y1, y2, y3 = NULL, newdata, joint = TRUE, cond = 0,
             intervals = FALSE, n.sim = 100, prob.lev = 0.05, 
-            theta = FALSE, tau = FALSE, min.pr = 1e-323, max.pr = 1)
+            theta = FALSE, tau = FALSE, min.pr = 1e-323, max.pr = 1, 
+            method = "adaptive", cumul = "no", tail = c("lower","lower"))
 
 }
 
@@ -63,6 +68,27 @@ copula.prob(x, y1, y2, y3 = NULL, newdata, joint = TRUE, cond = 0,
              a function of covariate effects, with an interest in analysing a more interpretable measure of dependence for certain copulae.} 
 
  \item{min.pr, max.pr}{Allowed minimum and maximum for estimated probabities.}
+
+ \item{method}{For PCC model only, this indicates the numerical integration method to be used. Options are:
+\code{"adaptive"} (default), which performs adaptive quadrature with fallback to Gauss-Legendre integration if necessary, or 
+\code{"quad"} (which is slower and tends to be less reliable), a transformation-based quadrature approach designed for integrals with infinite 
+or semi-infinite limits. This method does not implement 
+truncation or fallback. \code{"quad"} is often used as sensitivity analysis tool.}
+
+
+\item{cumul}{Currently only for the count-continuous margin case, if set to a character different from \code{"no"} then the joint probability will refer to the case in which both outcomes are smaller or equal to 
+             the specified values.} 
+
+
+\item{tail}{A character vector of length two indicating which tail of each margin 
+is used when computing the joint probability. Possible values are 
+\code{"lower"} and \code{"upper"}. The default is \code{c("lower","lower")}, 
+which corresponds to the probability \eqn{P(Y_1 \le y_1, Y_2 \le y_2)}. The option \code{c("upper","upper")} returns the joint upper-tail probability 
+\eqn{P(Y_1 > y_1, Y_2 > y_2)}. At present, this option is implemented only for 
+copula models with continuous margins. Also, mixed tail combinations such as 
+\code{c("lower","upper")} or \code{c("upper","lower")} are not currently 
+supported. Users interested in these or other extensions are welcome to 
+contact the package authors.}
 
 
 

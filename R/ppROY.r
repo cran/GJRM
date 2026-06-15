@@ -1,7 +1,7 @@
 ppROY <- function(x){
 
   cont1par <- c("P","tP","DGP0","probit","logit","cloglog","GEVlink")  
-  cont2par <- c("tN","N","N2","GU","rGU","LO","LN","WEI","GO","IG","GA","GA2","GAi","BE","FISK","tNBI", "tNBII","tPIG","NBI", "NBII","PIG","GP","GPII","GPo","DGP","DGPII")  
+  cont2par <- c("tN","N","N2","GU","rGU","LO","LN","WEI","GO","IG","GA","GA2","GAi","BE","FISK","BB","tNBI", "tNBII","tPIG","NBI", "NBII","PIG","GP","GPII","GPo","DGP","DGPII")  
   cont3par <- c("DAGUM","SM","DEL","SICHEL","GGA","TW")   
 
   if(x$BivD1=="FGM")          {cop1 <- "FGM"                                     ;lind1 <- "atanh"} 
@@ -115,9 +115,9 @@ ppROY <- function(x){
   if(x$margins[2] %in% c("GPII","GPo") )                    m2l <- "log(\u00B7 + 0.5)"    
   if(x$margins[3] %in% c("GPII","GPo") )                    m3l <- "log(\u00B7 + 0.5)"     
   
-  if(x$margins[1] %in% c("BE") )                            m1l <- "qlogis" 
-  if(x$margins[2] %in% c("BE") )                            m2l <- "qlogis"   
-  if(x$margins[3] %in% c("BE") )                            m3l <- "qlogis"   
+  if(x$margins[1] %in% c("BE","BB") )                            m1l <- "qlogis" 
+  if(x$margins[2] %in% c("BE","BB") )                            m2l <- "qlogis"   
+  if(x$margins[3] %in% c("BE","BB") )                            m3l <- "qlogis"   
   
 
   if(x$margins[1] == "probit")  m1l <- "probit"

@@ -1,6 +1,5 @@
 \name{rob.const}
 \alias{rob.const}
-\alias{rob.const}
 
 \title{Bootstrap procedure to help select the robust constant in a GAMLSS}
 

@@ -24,7 +24,8 @@ gjrm(formula, data = list(), weights = NULL, subset = NULL,
      Chol = FALSE, gamma = 1, w.alasso = NULL,
      drop.unused.levels = TRUE, 
      min.dn = 1e-40, min.pr = 1e-16, max.pr = 0.999999, 
-     h.margins = FALSE)
+     fixed.margins = FALSE, fixed.margins.type = c("continuous", "continuous"),
+     pf.margin1 = NULL, pf.margin2 = NULL)
 }
 
 
@@ -79,7 +80,9 @@ family. The options are: "C0C90", "C0C270", "C180C90", "C180C270",  "GAL0GAL90",
                discrete generelised Pareto ("DGP"), 
                discrete generelised Pareto II ("DGPII") where the shape parameter is forced to be positive, discrete generelised Pareto derived
                under the scenario in which shape = 0 ("DGP0"). Regarding the Tweedie, this margin can currently only be used together with a binary margin; we
-               are working on the discrete/continuous margin extension.}
+               are working on the discrete/continuous margin extension. Another avaialble distribution is the Beta Binomial ("BB"). Here, note that the response 
+               variable should be a matrix containing two columns, the first 
+               with the count of successes and the second with the count of failures.}
 
 \item{model}{Possible values are "B" (bivariate model), "T" (trivariate model), 
              "BSS" (bivariate model with non-random sample selection), "TSS" (trivariate model with double non-random sample selection),
@@ -167,7 +170,23 @@ documentation of \code{trust} for more details.}
                               certain distributions/models, if convergence failure occurs and the bounds have been reached then the user
                               can try a sensitivity analysis as mentioned above.}
                               
- \item{h.margins}{If \code{TRUE} then the marginal distributions are treated as copula h-functions. This is still experimental.}                              
+\item{fixed.margins}{
+If \code{TRUE}, the marginal distributions are treated as fixed and are not
+estimated when fitting the dependence structure. This affects the form of
+the likelihood used for estimating the copula parameter. Not currently
+implemented for all model types.
+}
+
+\item{fixed.margins.type}{
+Specifies the type of marginal distributions assumed when
+\code{fixed.margins = TRUE}. The default is \code{"continuous"}, which uses
+the continuous-margin copula likelihood based on marginal CDFs. When set to
+\code{"count"}, the likelihood is computed using rectangle probabilities
+appropriate for count-valued margins. Ignored if \code{fixed.margins = FALSE}.
+}
+
+\item{pf.margin1, pf.margin2}{Probability mass functions. Required as additional inputs for models with count margins.}
+
 
  
 }
@@ -348,11 +367,7 @@ conv.check(outD)
 summary(outD)
 summary(outD$theta)
 
-plot(outD, eq = 1, seWithMean = TRUE)
-plot(outD, eq = 2, seWithMean = TRUE)
 plot(outD, eq = 3, seWithMean = TRUE)
-graphics.off()
-
 
 ###############
 ## EXAMPLE 2 ##
@@ -644,7 +659,8 @@ out  <- gjrm(fl, data = dataSim, margins = c("N", "N"),
              model = "B")
 
 conv.check(out)
-res.check(out)
+res.check(out, intervals = TRUE)
+res.check(out, joint = TRUE, intervals = TRUE)
 summary(out)
 AIC(out)
 BIC(out)
@@ -686,7 +702,7 @@ out <- gjrm(list(y1 ~ x1 + x2,
                  model = "B")
 conv.check(out)                        
 summary(out)
-res.check(out)
+res.check(out, intervals = TRUE)
 
 ## SEMIPARAMETRIC RECURSIVE Model
 
@@ -702,7 +718,7 @@ out <- gjrm(fl, data = dataSim,
             model = "B")
 conv.check(out)                        
 summary(out)
-res.check(out)
+res.check(out, intervals = TRUE)
 ATE(out, trt = "y1")
 ATE(out, trt = "y1", joint = FALSE)
 
@@ -746,7 +762,6 @@ out <- gjrm(fl, data = dataSim,
             model = "B")
 conv.check(out)                        
 summary(out)
-res.check(out)
 ATE(out, trt = "y1", trt.val = 1)
 ATE(out, trt = "y1", trt.val = 1, joint = FALSE)
  RR(out, trt = "y1", trt.val = 1)
@@ -824,30 +839,9 @@ eq3 <-    ~ s(z2)
 out <- gjrm(list(eq1, eq2), data = dataSim,
             margins = c("-cloglog", "-logit"), 
             cens1 = delta1, cens2 = delta2, model = "B")
-                 
-# PH margin fit can also be compared with cox.ph from mgcv
-                 
+                                  
 conv.check(out)
-res <- res.check(out)
-
-## martingale residuals
-mr1 <- out$cens1 - res$qr1
-mr2 <- out$cens2 - res$qr2
-
-# can be plotted against covariates
-# obs index, survival time, rank order of
-# surv times
-
-# to determine func form, one may use
-# res from null model against covariate
-
-# to test for PH, use:
-# library(survival)
-# fit <- coxph(Surv(u1, delta1) ~ z1 + z2, data = dataSim) 
-# temp <- cox.zph(fit) 
-# print(temp)                  
-# plot(temp, resid = FALSE)     
-
+res.check(out, intervals = TRUE)
 
 summary(out)
 AIC(out); BIC(out)
@@ -1008,7 +1002,7 @@ f.l <- list(y1 ~ x1 + s(x2),
                
 out2 <- gjrm(f.l, data = dataSim, Chol = TRUE, model = "T", margins = margs) 
                  
-nw <- data.frame( x1 = 0, x2 = 0.7 )   
+nw <- data.frame(x1 = 1, x2 = 0.7)   
        
 copula.prob(out2, 1, 1, 1, newdata = nw, cond = 0, intervals = TRUE, n.sim = 100)
  
@@ -1110,7 +1104,7 @@ out <- gjrm(list(ys ~ bi + x1 + x2,
                  data = dataSim, model = "BSS",
                  margins = c("probit", "N"))
 conv.check(out)
-res.check(out)
+res.check(out, intervals = TRUE)
 summary(out)
 
 AIC(out)
@@ -1124,7 +1118,7 @@ out <- gjrm(list(ys ~ bi + s(x1) + s(x2),
                  data = dataSim, model = "BSS",
                  margins = c("probit", "N"))
 conv.check(out) 
-res.check(out)
+res.check(out, intervals = TRUE)
 AIC(out)
 
 ## compare the two summary outputs

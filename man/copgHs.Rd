@@ -5,6 +5,8 @@
 \alias{copgHsAT}
 \alias{copgHsCont}
 \alias{copgHsCond}
+\alias{copgHsContFM}
+\alias{copgHsCountFM}
 
 \title{Internal Function}
 

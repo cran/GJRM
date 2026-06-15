@@ -1,4 +1,5 @@
 bprobgHsDiscr1ROY <- function(params, respvec, VC, ps, AT = FALSE){
+Cop1 <- Cop2 <- nC1 <- nC2 <- teta.ind1 <- teta.ind2 <- teta1 <- teta2 <- NA
 
  p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- l.par <- dl.dbe1 <- d2l.be1.be1 <- NA
 
@@ -97,8 +98,8 @@ bprobgHsDiscr1ROY <- function(params, respvec, VC, ps, AT = FALSE){
   ########################################################################################################
      
 
-    dH1F.M2 <- copgHs(p0[VC$inde0], p2.M2,                                                       eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)  
-    dH2F.M2 <- copgHs(p0[VC$inde0], mm(p2.M2 - pdf2.M2, min.pr = VC$min.pr, max.pr = VC$max.pr), eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
+    dH1F.M2 <- copgHs(p0[VC$inde0], p2.M2,                                                       eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)  
+    dH2F.M2 <- copgHs(p0[VC$inde0], mm(p2.M2 - pdf2.M2, min.pr = VC$min.pr, max.pr = VC$max.pr), eta1=NULL, eta2=NULL, teta1, teta.st1, Cop1, VC$dof1, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD) 
     
     c.copula.be1.C1.M2   <- dH1F.M2$c.copula.be1 
     c.copula.be1.C2.M2   <- dH2F.M2$c.copula.be1 
@@ -121,8 +122,8 @@ bprobgHsDiscr1ROY <- function(params, respvec, VC, ps, AT = FALSE){
 
 
 
-    dH1F.M3 <- copgHs(p0[VC$inde1], p2.M3,                                                       eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)  
-    dH2F.M3 <- copgHs(p0[VC$inde1], mm(p2.M3 - pdf2.M3, min.pr = VC$min.pr, max.pr = VC$max.pr), eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr) 
+    dH1F.M3 <- copgHs(p0[VC$inde1], p2.M3,                                                       eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)  
+    dH2F.M3 <- copgHs(p0[VC$inde1], mm(p2.M3 - pdf2.M3, min.pr = VC$min.pr, max.pr = VC$max.pr), eta1=NULL, eta2=NULL, teta2, teta.st2, Cop2, VC$dof2, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD) 
     
     c.copula.be1.C1.M3   <- dH1F.M3$c.copula.be1 
     c.copula.be1.C2.M3   <- dH2F.M3$c.copula.be1 
@@ -369,8 +370,8 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
               dl.dbe1 = dl.dbe1, dl.dbe2 = dl.dbe2, dl.dbe3 = dl.dbe3, dl.dteta1.st = dl.dteta1.st, dl.dteta2.st = dl.dteta2.st,
               BivD1 = VC$BivD1, BivD2 = VC$BivD2,                              
               p1 = p1, p0 = p0, pdf1 = pdf2.M2, pdf2 = pdf2.M3, c.copula2.be1be2 = c(c.copula2.be1be2.C1.M2, c.copula2.be1be2.C2.M2, c.copula2.be1be2.C1.M3, c.copula2.be1be2.C2.M3),         
-              teta.st1 = teta.st1, teta.st2 = teta.st2,
-              Cop1 = Cop1, Cop2 = Cop2, teta1 = teta1, teta2 = teta2)      
+teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,
+              Cop1 = Cop1, Cop2 = Cop2, nC1 = nC1, nC2 = nC2, teta1 = teta1, teta2 = teta2)      
 
 }
 

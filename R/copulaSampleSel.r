@@ -52,7 +52,7 @@ copulaSampleSel <- function(formula, data = list(), weights = NULL, subset = NUL
   m2   <- c("tN","N","GU","rGU","LO","LN","WEI","IG","GA","BE","FISK","GP","GPII","GPo")
   m3   <- c("DAGUM","SM","TW")
   m1d  <- c("P", "tP","DGP0")
-  m2d  <- c("tNBI","tNBII","tPIG","NBI","NBII","PIG","DGP", "DGPII")
+  m2d  <- c("tNBI","tNBII","tPIG","NBI","NBII","PIG","DGP", "DGPII","BB")
   m3d  <- NULL
   bl   <- c("probit", "logit", "cloglog")
 
@@ -394,7 +394,7 @@ if(missing(parscale)) parscale <- 1
   lsgam9 <- length(gam9$smooth)
 
 
-  VC <- list(lsgam1 = lsgam1, robust = FALSE, K1 = NULL,
+  VC <- list(lsgam1 = lsgam1, robust = FALSE, K1 = NULL, fixed.margins = FALSE,
              lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
              lsgam3 = lsgam3, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
              lsgam4 = lsgam4,
@@ -440,7 +440,7 @@ if(missing(parscale)) parscale <- 1
              weights = weights,
              fp = fp,
              hess = NULL, univ.gamls = FALSE,
-             Model = "B", 
+             Model = "BSS", 
              end = end,
              BivD = BivD, dof.st = log(dof - 2), dof = dof,
              nC = nC, gc.l = gc.l, n = n, extra.regI = extra.regI,
@@ -458,7 +458,6 @@ if(missing(parscale)) parscale <- 1
   ##########################################################################################################################
   # model fitting
   ##########################################################################################################################
-  signind <- 1
 
   func.opt <- func.OPT(margins, M, type = "copSS") 
 
@@ -466,7 +465,6 @@ if(missing(parscale)) parscale <- 1
                          rinit = rinit, rmax = rmax, iterlim = 100, iterlimsp = iterlimsp, tolsp = tolsp,
                          respvec = respvec, VC = VC, sp = sp, qu.mag = qu.mag) 
    
-  if(BivD %in% BivD2) rm(signind, envir = .GlobalEnv)
  
   ##########################################################################################################################
   # post estimation
@@ -555,7 +553,7 @@ L <- list(fit = SemiParFit$fit, dataset = dataset, formula = formula, mice.formu
           X4s = X4s,
           X5s = X5s,
           p1n=SemiParFit.p$p1n , p2n = SemiParFit.p$p2n, 
-          VC = VC, Model = "B", magpp = SemiParFit$magpp, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
+          VC = VC, Model = "BSS", magpp = SemiParFit$magpp, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
           gamlss = gamlss, Cont = "NO", tau = SemiParFit.p$tau, tau.a = SemiParFit.p$tau.a, 
           l.flist = l.flist, v1 = v1, v2 = v2, triv = FALSE, univar.gamlss = FALSE, BivD2 = BivD2, dof = dof, dof.a = dof, call = cl,
           surv = FALSE, surv.flex = surv.flex, gam2AUX = gam2AUX, end.surv = FALSE)

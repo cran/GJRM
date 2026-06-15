@@ -1,5 +1,5 @@
 bcontSurvGunivInform <- function(params, respvec, VC, ps, AT = FALSE){
-p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- p <- NA
 
 etad <- etas1 <- etas2 <- l.ln <- NULL
 
@@ -225,7 +225,7 @@ if(VC$extra.regI == "sED") H <- regH(H, type = 2)
 
          list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2,
               l=S.res, l.ln = l.ln, l.par=l.par, ps = ps, params1 = params1, params2 = params2,
-              eta1=eta1, eta2 = eta2, 
+              eta1=eta1, eta2 = eta2, p = p,
                                    p1 = p1, p2 = p2, pdf1 = -dS1eta1, pdf2 = -dS2eta2,          
 	      	                           c.copula.be2 = c.copula.be2,
 	      	                           c.copula.be1 = c.copula.be1,

@@ -106,10 +106,10 @@ theta <- teta.tr(VC, dep)$teta
 
 if(VC$BivD %in% VC$BivD2){
 
-Reg2CopostR <- Reg2Copost(SemiParFit, VC, theta)
+#Reg2CopostR <- Reg2Copost(SemiParFit, VC, theta)
 
-theta   <- Reg2CopostR$theta
-theta.a <- Reg2CopostR$theta.a
+#theta   <- Reg2CopostR$theta
+theta.a <- mean(theta) # Reg2CopostR$theta.a
 #tau     <- Reg2CopostR$tau  
 #tau.a   <- Reg2CopostR$tau.a
 
@@ -138,6 +138,8 @@ if(BivD == "T" && VC$margins[1] %in% c(VC$m2,VC$m3) && VC$margins[2] %in% c(VC$m
 
 dof.a <- mean(dof) 
 
+if(VC$fixed.margins == TRUE) dof <- dof.a <- VC$dof
+
 #if( is.null(VC$X3) ) names(dof) <- "dof" 
 
 }else{  dof.a <- dof <- VC$dof }
@@ -163,7 +165,7 @@ if(!is.null(sigma2.2.a)) names(sigma2.2.a) <- "sigma22.a"
 if(!is.null(sigma1.a))   names(sigma1.a)   <- "sigma1.a"
 if(!is.null(sigma2.a))   names(sigma2.a)   <- "sigma2.a"
 if(!is.null(nu1.a))      names(nu1.a)      <- "nu1.a"
-if(!is.null(nu1.a))      names(nu2.a)      <- "nu2.a"
+if(!is.null(nu2.a))      names(nu2.a)      <- "nu2.a"
 if(!is.null(dof.a))      names(dof.a)      <- "dof.a"
 
 

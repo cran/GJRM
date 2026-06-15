@@ -31,6 +31,8 @@ if(type == "copR"){
   if(x$margins[1]=="SM")                  cat("\nMARGIN 1: Singh-Maddala") 
   if(x$margins[1]=="FISK")                cat("\nMARGIN 1: Fisk") 
   if(x$margins[1]%in%c("NBI"))            cat("\nMARGIN 1: Negative Binomial - Type I") 
+  if(x$margins[1]%in%c("BB"))            cat("\nMARGIN 1: Beta Binomial") 
+  
   if(x$margins[1]%in%c("NBII"))           cat("\nMARGIN 1: Negative Binomial - Type II")  
   if(x$margins[1]=="PIG")                 cat("\nMARGIN 1: Poisson Inverse Gaussian")
   if(x$margins[1]%in%c("tNBI"))          cat("\nMARGIN 1: Truncated Negative Binomial - Type I") 
@@ -78,6 +80,8 @@ if(x$surv.flex == FALSE){
   if(x$margins[2]=="SM")     		  cat("\nMARGIN 2: Singh-Maddala") 
   if(x$margins[2]=="FISK")   		  cat("\nMARGIN 2: Fisk") 
   if(x$margins[2]%in%c("NBI"))            cat("\nMARGIN 2: Negative Binomial - Type I") 
+  if(x$margins[2]%in%c("BB"))            cat("\nMARGIN 2: Beta Binomial") 
+  
   if(x$margins[2]%in%c("NBII"))           cat("\nMARGIN 2: Negative Binomial - Type II")  
   if(x$margins[2]=="PIG")                 cat("\nMARGIN 2: Poisson Inverse Gaussian") 
   if(x$margins[2]%in%c("tNBI"))          cat("\nMARGIN 2: Truncated Negative Binomial - Type I") 
@@ -151,6 +155,8 @@ if(type == "gamlss"){
   
   if(x$margins[1]=="SM")               cat("\nDistribution: Singh-Maddala") 
   if(x$margins[1]%in%c("NBI"))         cat("\nDistribution: Negative Binomial - Type I") 
+  if(x$margins[1]%in%c("BB"))         cat("\nDistribution: Beta Binomial") 
+  
   if(x$margins[1]%in%c("NBII"))        cat("\nDistribution: Negative Binomial - Type II")
   if(x$margins[1]=="PIG")              cat("\nDistribution: Poisson inverse Gaussian")
   if(x$margins[1]%in%c("tNBI"))       cat("\nDistribution: Truncated Negative Binomial - Type I") 
@@ -213,6 +219,8 @@ if(x$margins[2]=="SM")                 cat("\nMARGIN 2: Singh-Maddala")
 if(x$margins[2]=="FISK")               cat("\nMARGIN 2: Fisk") 
 if(x$margins[2]=="FISK2")              cat("\nMARGIN 2: Fisk2") 
 if(x$margins[2] %in% c("NBI"))         cat("\nMARGIN 2: Negative Binomial - Type I") 
+if(x$margins[2] %in% c("BB"))         cat("\nMARGIN 2: Beta Binomial") 
+
 if(x$margins[2]%in% c("NBII"))         cat("\nMARGIN 2: Negative Binomial - Type II")
 if(x$margins[2]=="PIG")    	       cat("\nMARGIN 2: Poisson inverse Gaussian") 
 if(x$margins[2] %in% c("tNBI"))        cat("\nMARGIN 2: Truncated Negative Binomial - Type I") 
@@ -273,6 +281,8 @@ if(x$margins[2] == "SM")                cat("\nMARGIN 2: Regime 0 - Singh-Maddal
 if(x$margins[2] == "FISK")              cat("\nMARGIN 2: Regime 0 - Fisk") 
 if(x$margins[2] == "FISK2")             cat("\nMARGIN 2: Regime 0 - Fisk2") 
 if(x$margins[2] %in% c("NBI"))          cat("\nMARGIN 2: Regime 0 - Negative Binomial - Type I") 
+if(x$margins[2] %in% c("BB"))          cat("\nMARGIN 2: Regime 0 - Beta Binomial") 
+
 if(x$margins[2] %in% c("NBII"))         cat("\nMARGIN 2: Regime 0 - Negative Binomial - Type II")
 if(x$margins[2] == "PIG")    	        cat("\nMARGIN 2: Regime 0 - Poisson Inverse Gaussian") 
 if(x$margins[2] %in% c("tNBI"))        cat("\nMARGIN 2: Regime 0 - Truncated Negative Binomial - Type I") 
@@ -305,6 +315,8 @@ if(x$margins[3] == "SM")                cat("\nMARGIN 3: Regime 1 - Singh-Maddal
 if(x$margins[3] == "FISK")              cat("\nMARGIN 3: Regime 1 - Fisk") 
 if(x$margins[3] == "FISK2")             cat("\nMARGIN 3: Regime 1 - Fisk2") 
 if(x$margins[3] %in% c("NBI"))          cat("\nMARGIN 3: Regime 1 - Negative Binomial - Type I") 
+if(x$margins[3] %in% c("BB"))          cat("\nMARGIN 3: Regime 1 - Beta Binomial") 
+
 if(x$margins[3] %in% c("NBII"))         cat("\nMARGIN 3: Regime 1 - Negative Binomial - Type II")
 if(x$margins[3] == "PIG")    	        cat("\nMARGIN 3: Regime 1 - Poisson Inverse Gaussian") 
 if(x$margins[3] %in% c("tNBI"))        cat("\nMARGIN 3: Regime 1 - Truncated Negative Binomial - Type I") 

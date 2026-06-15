@@ -1,5 +1,6 @@
 bprobgHsContSS <- function(params, respvec, VC, ps, AT = FALSE){
 p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+Cop1 <- Cop2 <- nC1 <- nC2 <- teta.ind1 <- teta.ind2 <- teta1 <- teta2 <- NA
 
   eta1 <- VC$X1%*%params[1:VC$X1.d2]
   eta2 <- VC$X2%*%params[(VC$X1.d2+1):(VC$X1.d2+VC$X2.d2)]
@@ -57,7 +58,7 @@ teta    <- resT$teta
 
 ########################################################################################################
 
-dH <- copgHs(p1[VC$inde], p2, eta1 = NULL, eta2 = NULL, teta, teta.st, VC$BivD, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+dH <- copgHs(p1[VC$inde], p2, eta1 = NULL, eta2 = NULL, teta, teta.st, VC$BivD, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
 
 h <- dH$c.copula.be2  
 
@@ -91,7 +92,7 @@ l.par <- VC$weights*l.par1
  
 ######################################################################################################## 
  
-  BITS <- copgHsCont(p1[VC$inde], p2, teta, teta.st, VC$BivD, par2 = VC$dof, nu.st = log(VC$dof-2))
+  BITS <- copgHsCont(p1[VC$inde], p2, teta, teta.st, VC$BivD, par2 = VC$dof, nu.st = log(VC$dof-2), T.BivD = VC$BivD)
   
   der2h.derp2p2              <- BITS$der2h.derp2p2 
   der2h.derteta.teta.st      <- BITS$der2h.derteta.teta.st  

@@ -1,6 +1,6 @@
 bprobgHsContUniv3 <- function(params, respvec, VC, ps, AT = FALSE){
 
-p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- p <- NA
 
 bcorR <- NULL
 
@@ -25,15 +25,20 @@ sstr1 <- enu.tr(nu.st, VC$margins[1])
 nu.st <- sstr1$vrb.st 
 nu    <- sstr1$vrb           
   
-if(VC$surv == TRUE) naiveind <- FALSE else naiveind <- TRUE   
+#if(VC$surv == TRUE) naiveind <- FALSE else naiveind <- TRUE   
+#
+#naiveind <- FALSE
  
-if(VC$margins[1] %in% VC$m3)  dHs <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[1], naive = naiveind, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
-if(VC$margins[1] %in% VC$m3d) dHs <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[2], naive = TRUE, 
-                                                  y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
+if(VC$margins[1] %in% VC$m3)  dHs <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[1], naive = TRUE,               min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
+if(VC$margins[1] %in% VC$m3d) dHs <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[2], naive = TRUE, y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc) # never used
 
 
 ########################################################################################################
 
+if(VC$margins[1] %in% VC$m3)  p <-      distrHsAT(respvec$y1, eta2, sigma2, nu, margin2 = VC$margins[1],               min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)$p2                      
+if(VC$margins[1] %in% VC$m3d) p <- distrHsATDiscr(respvec$y1, eta2, sigma2, nu, margin2 = VC$margins[1], y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)$p2                      
+ 
+#p                            <- dHs$p2
 pdf2                         <- dHs$pdf2
 derpdf2.dereta2              <- dHs$derpdf2.dereta2 
 derpdf2.dersigma2.st         <- dHs$derpdf2.dersigma2.st  
@@ -49,8 +54,11 @@ der2pdf2.dernu.st2          <- dHs$der2pdf2.dernu.st2
 
 
 
-if(VC$surv == TRUE){
+if(VC$surv == TRUE){ # never used but kept at the moment for checks etc
 
+if(VC$margins[1] %in% VC$m3)  dHs <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[1], naive = FALSE,               min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
+if(VC$margins[1] %in% VC$m3d) dHs <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu, nu.st, margin2=VC$margins[2], naive = FALSE, y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
+                                                  
 p2                           <- dHs$p2
 derp2.dereta2                <- dHs$derp2.dereta2 
 derp2.dersigma2.st           <- dHs$derp2.dersigma.st  
@@ -281,6 +289,6 @@ list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l
                                  p1 = p1, p2 = p2, pdf1 = pdf1, pdf2 = pdf2,          
 	      	                    c.copula.be2 = c.copula.be2,
 	      	                    c.copula.be1 = c.copula.be1,
-              c.copula2.be1be2 = c.copula2.be1be2)      
+              c.copula2.be1be2 = c.copula2.be1be2, p = p)      
 
 }

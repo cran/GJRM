@@ -1,6 +1,25 @@
 print.gjrm <- function(x, ...){
 
    
+if(x$VC$fixed.margins == TRUE){
+
+
+  ppR <- pp(x)  
+  cp <- "\ntheta = "; as.p <- x$theta.a
+
+  cat("\nCOPULA:",ppR$cop)
+  
+  cat("\n\nLink function for theta:",ppR$lind,"\n") 
+  if( !is.null(x$X5) ){ cat("Formula: "); print(x$formula[[5]]) } 
+  
+  cat( cp, format(as.p, digits=3),"\nn = ",x$n,"  total edf = ",format(x$t.edf, digits=3),"\n\n", sep="")  
+
+
+
+}else{
+
+
+   
  ppR <- pp(x)  
  
  cont1par <- ppR$cont1par
@@ -463,6 +482,10 @@ if(x$BivD == "T" && x$VC$margins[1] %in% c(x$VC$m2,x$VC$m3) && x$VC$margins[2] %
  
 
 }
+
+
+
+} # else condition
 
 
 invisible(x)

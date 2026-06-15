@@ -2,14 +2,18 @@ susu <- function(object, SE, Vb, informative = "no", K1 = NULL, K2 = NULL){
 
   tableN <- table <- list(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
 
-  testStat <- getFromNamespace("testStat", "mgcv")
-  liu2   <- getFromNamespace("liu2", "mgcv") 
-
   index <- 1:2
   
   if(informative == "yes") index <- 1
   
   
+  
+   cms <- 0
+   if(object$VC$fixed.margins == TRUE) cms <- 4
+   
+   
+   
+   
 is_ordcon <- !is.null(K1) & is.null(K2)
 is_ordord <- !is.null(K1) & !is.null(K2)
 
@@ -46,7 +50,7 @@ if (is_ordcon) {
        }
                                 
        if(!is.null(object$X5) ) {
-       ind5 <- object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + (1:object$gp5) + CLM.shift3
+       ind5 <- (object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + (1:object$gp5) + CLM.shift3) - cms 
        index <- 1:5  
        }     
                                 
@@ -134,7 +138,7 @@ if (is_ordcon) {
                         if(i==2){ gam <- object$gam2; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift2 + object$X1.d2                } 
                         if(i==3){ gam <- object$gam3; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + object$X1.d2 + object$X2.d2 }
                         if(i==4){ gam <- object$gam4; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + object$X1.d2 + object$X2.d2 + object$X3.d2 }
-                        if(i==5){ gam <- object$gam5; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 }
+                        if(i==5){ gam <- object$gam5; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 - cms }
                         if(i==6){ gam <- object$gam6; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 }
                         if(i==7){ gam <- object$gam7; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 }
                         if(i==8){ gam <- object$gam8; ind <- (gam$smooth[[k]]$first.para:gam$smooth[[k]]$last.para) + CLM.shift3 + object$X1.d2 + object$X2.d2 + object$X3.d2 + object$X4.d2 + object$X5.d2 + object$X6.d2 + object$X7.d2 }

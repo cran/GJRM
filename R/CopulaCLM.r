@@ -48,7 +48,7 @@ mb   <- c("B", "BSS", "BPO", "BPO0")
 m2   <- c("tN","N", "GU", "rGU", "LO", "LN", "WEI", "IG", "GA", "BE", "FISK","GP","GPII","GPo")
 m3   <- c("DAGUM", "SM","TW")
 m1d  <- c("P", "tP","DGP0") 
-m2d  <- c("tNBI", "tNBII", "tPIG","NBI", "NBII", "PIG","DGP","DGPII") 
+m2d  <- c("tNBI", "tNBII", "tPIG","NBI", "NBII", "PIG","DGP","DGPII","BB") 
 bl   <- c("probit", "logit", "cloglog") # , "cauchit")   
 M    <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, BivD = BivD, 
              opc = opc, extra.regI = extra.regI, margins = margins, bl = bl, intf = intf,
@@ -470,8 +470,6 @@ if (is_ordord) {
 
 ### 
 
-my.env <- new.env()
-my.env$signind <- 1
 
 lsgam1 <- length(gam1$smooth)
 lsgam2 <- length(gam2$smooth)
@@ -484,7 +482,7 @@ lsgam8 <- length(gam8$smooth)
 lsgam9 <- length(gam9$smooth)
 
 
-VC <- list(lsgam1 = lsgam1, robust = FALSE,  
+VC <- list(lsgam1 = lsgam1, robust = FALSE, fixed.margins = FALSE,
            lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
            lsgam3 = lsgam3, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
            lsgam4 = lsgam4,
@@ -496,7 +494,7 @@ VC <- list(lsgam1 = lsgam1, robust = FALSE,
            sel2 = sel2, sel2.p = sel2.p, sel2.m = sel2.m, sel2.mm = sel2.mm, sel2.pm = sel2.pm, c2 = c2, D21 = D21, D22 = D22, # added for CopulaCLM
            K1 = K1, # added for CopulaCLM
            K2 = K2, # added for CopulaCLM
-           X1 = X1, inde = inde, my.env = my.env,
+           X1 = X1, inde = inde,
            X2 = X2, 
            X3 = X3,
            X4 = X4, 

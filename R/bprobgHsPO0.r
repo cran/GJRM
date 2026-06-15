@@ -1,5 +1,6 @@
 bprobgHsPO0 <- function(params, respvec, VC, ps){
 p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+Cop1 <- Cop2 <- nC1 <- nC2 <- teta.ind1 <- teta.ind2 <- teta1 <- teta2 <- NA
 
 
   eta1 <- VC$X1%*%params[1:VC$X1.d2]

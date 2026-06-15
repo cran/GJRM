@@ -1,5 +1,6 @@
 bCopulaCLMgHsCont <- function(params, respvec, VC, ps, AT = FALSE){
 p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+Cop1 <- Cop2 <- nC1 <- nC2 <- teta.ind1 <- teta.ind2 <- teta1 <- teta2 <- NA
 
 n <- VC$n
 y1 <- respvec$y1
@@ -13,7 +14,7 @@ eta1 <- VC$X1%*%params[VC$K1:(VC$K1 + VC$X1.d2 - 1)]
 eta2 <- VC$X2%*%params[(VC$K1 + VC$X1.d2):(VC$K1 + VC$X1.d2 + VC$X2.d2 - 1)]
 etad <- etas <- l.ln <- NULL
 
-epsilon <-  sqrt(.Machine$double.eps) # RECALL: results are sensible to the choice of epsilon (try also 0.00001)
+epsilon <-  sqrt(.Machine$double.eps) # RECALL: results might be sensible to the choice of epsilon (try also 0.00001)
 
 if ( is.null(VC$X3) ) {
 sigma2.st <- etas <- params[VC$K1 + VC$X1.d2 + VC$X2.d2    ]
@@ -100,12 +101,13 @@ teta1 <- teta2 <- teta <- resT$teta
 #### 
 
 Cop1 <- Cop2 <- VC$BivD 
+nC1 <- nC2 <- VC$nC 
 
-teta.ind1 <- as.logical(c(1, 0, round(runif(VC$n-2)))) 
+teta.ind1 <- as.logical(c(1,0,round(runif(VC$n-2))) ) # just random split here
 teta.ind2 <- teta.ind1 == FALSE 
 
 
-if(!(VC$BivD %in% VC$BivD2) && length(teta.st) > 1){
+if(!(VC$BivD %in% VC$BivD2) && length(teta.st) > 1){ # not the best choice but implemented like this many years ago...for clarity
 
 teta.st1 <- teta.st[teta.ind1]
 teta.st2 <- teta.st[teta.ind2]
@@ -116,25 +118,51 @@ teta2 <- teta[teta.ind2]
 }
 
 
-if(VC$BivD %in% VC$BivD2){
-
-if(VC$BivD %in% VC$BivD2[c(1:4,13:16) ]) teta.ind1 <- ifelse(VC$my.env$signind * teta > exp(VC$zerov)    , TRUE, FALSE)
-if(VC$BivD %in% VC$BivD2[5 : 12]) teta.ind1 <- ifelse(VC$my.env$signind * teta > exp(VC$zerov) + 1, TRUE, FALSE) 
-teta.ind2 <- teta.ind1 == FALSE 
-
-VC$my.env$signind <- ifelse(teta.ind1 == TRUE,  1, -1) 
-
-teta1 <-   teta[teta.ind1]
-teta2 <- - teta[teta.ind2]
-
-teta.st1 <- teta.st[teta.ind1]
-teta.st2 <- teta.st[teta.ind2]
-
-if(length(teta) == 1) teta.ind2 <- teta.ind1 <- rep(TRUE, VC$n)  
+ 
+if(VC$BivD %in% VC$BivD2 && length(teta.st) > 1){
 
 Cop1Cop2R <- Cop1Cop2(VC$BivD)
 Cop1 <- Cop1Cop2R$Cop1
 Cop2 <- Cop1Cop2R$Cop2
+nC1  <- VC$ct[which(VC$ct[,1] == Cop1), 2] 
+nC2  <- VC$ct[which(VC$ct[,1] == Cop2), 2]
+
+teta.ind1 <- as.logical( etad >= 0 ) # for + coefs
+teta.ind2 <- teta.ind1 == FALSE      # for - coefs
+
+
+if(VC$BivD %in% VC$BivD2[c(1:4,13:16)]){
+  teta1 <- teta.st1 <- etad[teta.ind1]
+  teta2 <- teta.st2 <- etad[teta.ind2]
+                                       }
+
+if(VC$BivD %in% VC$BivD2[5:12]){
+  teta1 <- teta.st1 <- sign(etad[teta.ind1]) * (abs(etad[teta.ind1]) + 1)
+  teta2 <- teta.st2 <- sign(etad[teta.ind2]) * (abs(etad[teta.ind2]) + 1)
+                                       }
+
+} 
+
+if(VC$BivD %in% VC$BivD2 && length(teta.st) == 1){
+
+
+Cop1Cop2R <- Cop1Cop2(VC$BivD)
+Cop1 <- Cop1Cop2R$Cop1
+Cop2 <- Cop1Cop2R$Cop2
+nC1  <- VC$ct[which(VC$ct[,1] == Cop1), 2] 
+nC2  <- VC$ct[which(VC$ct[,1] == Cop2), 2]
+
+teta.i1 <- as.logical( etad >= 0 ) # this becomes an index for + and - coefs
+
+if(teta.i1 == TRUE){  Cop2 <- Cop1; nC2 <- nC1}
+if(teta.i1 == FALSE){ Cop1 <- Cop2; nC1 <- nC2}   
+
+if(VC$BivD %in% VC$BivD2[c(1:4,13:16)]) teta1 <- teta.st1 <- teta2 <- teta.st2 <- etad                                     
+if(VC$BivD %in% VC$BivD2[5:12])         teta1 <- teta.st1 <- teta2 <- teta.st2 <- sign(etad) * (abs(etad) + 1)
+
+
+teta.ind1 <- as.logical(c(1,0,round(runif(VC$n-2))) ) # again not the best choice but to make things run
+teta.ind2 <- teta.ind1 == FALSE 
 
 } 
 
@@ -145,8 +173,8 @@ h.p <- h.m <- NA
 
 if(length(teta1) != 0){
 
-dH1.p <- copgHs(p1.p[teta.ind1], p2[teta.ind1], eta1 = NULL, eta2 = NULL, teta1, teta.st1, Cop1, VC$dof, CLM = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-dH1.m <- copgHs(p1.m[teta.ind1], p2[teta.ind1], eta1 = NULL, eta2 = NULL, teta1, teta.st1, Cop1, VC$dof, CLM = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+dH1.p <- copgHs(p1.p[teta.ind1], p2[teta.ind1], eta1 = NULL, eta2 = NULL, teta1, teta.st1, Cop1, VC$dof, CLM = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+dH1.m <- copgHs(p1.m[teta.ind1], p2[teta.ind1], eta1 = NULL, eta2 = NULL, teta1, teta.st1, Cop1, VC$dof, CLM = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
 
 h.p[teta.ind1]  <- dH1.p$c.copula.be2 ; h.m[teta.ind1] <- dH1.m$c.copula.be2
 
@@ -154,8 +182,8 @@ h.p[teta.ind1]  <- dH1.p$c.copula.be2 ; h.m[teta.ind1] <- dH1.m$c.copula.be2
 
 if(length(teta2) != 0){
 
-dH2.p <- copgHs(p1.p[teta.ind2], p2[teta.ind2], eta1 = NULL, eta2 = NULL, teta2, teta.st2, Cop2, VC$dof, CLM = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
-dH2.m <- copgHs(p1.m[teta.ind2], p2[teta.ind2], eta1 = NULL, eta2 = NULL, teta2, teta.st2, Cop2, VC$dof, CLM = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+dH2.p <- copgHs(p1.p[teta.ind2], p2[teta.ind2], eta1 = NULL, eta2 = NULL, teta2, teta.st2, Cop2, VC$dof, CLM = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
+dH2.m <- copgHs(p1.m[teta.ind2], p2[teta.ind2], eta1 = NULL, eta2 = NULL, teta2, teta.st2, Cop2, VC$dof, CLM = TRUE, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
 
 h.p[teta.ind2]  <- dH2.p$c.copula.be2 ; h.m[teta.ind2] <- dH2.m$c.copula.be2
 
@@ -165,6 +193,33 @@ h.pm <- pmax(epsilon, h.p - h.m)
 
 
 l.par <- VC$weights * (log(h.pm) + log(pdf2))
+
+
+
+
+######### *********
+
+C11 <- C01 <- NA
+
+if (length(teta1) != 0){
+
+C11[teta.ind1] <- BiCDF(p1.p[teta.ind1], p2[teta.ind1], family = nC1, par1 = teta1, par2 = VC$dof, test = TRUE)
+C01[teta.ind1] <- BiCDF(p1.m[teta.ind1], p2[teta.ind1], family = nC1, par1 = teta1, par2 = VC$dof, test = TRUE)
+
+                        }
+
+if (length(teta2) != 0){
+
+C11[teta.ind2] <- BiCDF(p1.p[teta.ind2], p2[teta.ind2], family = nC2, par1 = teta2, par2 = VC$dof, test = TRUE)
+C01[teta.ind2] <- BiCDF(p1.m[teta.ind2], p2[teta.ind2], family = nC2, par1 = teta2, par2 = VC$dof, test = TRUE)
+
+                       }
+
+# for joint residuals
+######### *********
+
+
+
 
 
 ##### Score vector #####
@@ -297,8 +352,8 @@ der2p1.dereta1eta1.m <- - pd1.m$der2p1.dereta1eta1
 
 if(length(teta1) != 0){
 
-BITS1.p <- copgHsCont(p1.p[teta.ind1], p2[teta.ind1], teta1, teta.st1, Cop1, par2 = VC$dof, nu.st = log(VC$dof - 2))
-BITS1.m <- copgHsCont(p1.m[teta.ind1], p2[teta.ind1], teta1, teta.st1, Cop1, par2 = VC$dof, nu.st = log(VC$dof - 2))
+BITS1.p <- copgHsCont(p1.p[teta.ind1], p2[teta.ind1], teta1, teta.st1, Cop1, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)
+BITS1.m <- copgHsCont(p1.m[teta.ind1], p2[teta.ind1], teta1, teta.st1, Cop1, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)
 
 der2h.derp1p1.p[teta.ind1]         <- BITS1.p$der2h.derp1p1         ; der2h.derp1p1.m[teta.ind1]         <- BITS1.m$der2h.derp1p1
 der2h.derp1p2.p[teta.ind1]         <- BITS1.p$der2h.derp1p2         ; der2h.derp1p2.m[teta.ind1]         <- BITS1.m$der2h.derp1p2
@@ -311,8 +366,8 @@ der2h.derteta.teta.st.p[teta.ind1] <- BITS1.p$der2h.derteta.teta.st ; der2h.dert
 
 if(length(teta2) != 0){
 
-BITS2.p <- copgHsCont(p1.p[teta.ind2], p2[teta.ind2], teta2, teta.st2, Cop2, par2 = VC$dof, nu.st = log(VC$dof - 2)) #
-BITS2.m <- copgHsCont(p1.m[teta.ind2], p2[teta.ind2], teta2, teta.st2, Cop2, par2 = VC$dof, nu.st = log(VC$dof - 2)) # teta2 & teta.st2 or teta1 & teta.st1?
+BITS2.p <- copgHsCont(p1.p[teta.ind2], p2[teta.ind2], teta2, teta.st2, Cop2, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD) #
+BITS2.m <- copgHsCont(p1.m[teta.ind2], p2[teta.ind2], teta2, teta.st2, Cop2, par2 = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD) # teta2 & teta.st2 or teta1 & teta.st1?
 
 der2h.derp1p1.p[teta.ind2]         <- BITS2.p$der2h.derp1p1         ; der2h.derp1p1.m[teta.ind2]         <- BITS2.m$der2h.derp1p1
 der2h.derp1p2.p[teta.ind2]         <- BITS2.p$der2h.derp1p2         ; der2h.derp1p2.m[teta.ind2]         <- BITS2.m$der2h.derp1p2
@@ -343,6 +398,8 @@ derteta.derteta.st[teta.ind2]         <- BITS2.p$derteta.derteta.st # RECALL: th
 der2teta.derteta.stteta.st[teta.ind2] <- BITS2.p$der2teta.derteta.stteta.st
 
 }
+
+
 
 
 der2h.dereta1.dereta1.p <- der2h.derp1p1.p * (derp1.dereta1.p^2) + c.copula2.be1be2.p * der2p1.dereta1eta1.p
@@ -689,7 +746,7 @@ list(value = res, gradient = G, hessian = H, S.h = S.h, S.h1 = S.h1, S.h2 = S.h2
      eta1 = eta1, eta2 = eta2, etad = etad, lp1 = lp1,
      dl.dbe1 = dl.dbe1, dl.dbe2 = dl.dbe2, dl.dsigma.st = dl.dsigma.st, dl.dteta.st = dl.dteta.st,
      BivD = VC$BivD, p1.p = p1.p, p1.m = p1.m, p2 = p2, theta.star = teta.st, # why 1-p1? Then p1 has been substituted with p1.p and p1.m
-     teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,
-     Cop1 = Cop1, Cop2 = Cop2, teta1 = teta1, teta2 = teta2)
+teta.ind2 = teta.ind2, teta.ind1 = teta.ind1,
+              Cop1 = Cop1, Cop2 = Cop2, nC1 = nC1, nC2 = nC2, teta1 = teta1, teta2 = teta2, C11 = C11, C01 = C01)
 
 }

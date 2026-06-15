@@ -1,6 +1,5 @@
 \name{rob.int}
 \alias{rob.int}
-\alias{rob.int}
 
 \title{Tool for tuning bounds of integral in robust models}
 

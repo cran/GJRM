@@ -1,5 +1,6 @@
-bprobgHstwoParC <- function(params, respvec, VC, ps, AT = FALSE){
+bprobgHstwoParC <- function(params, respvec, VC, ps, AT = FALSE){ #*** never really followed up but test case ****# 
 p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+Cop1 <- Cop2 <- nC1 <- nC2 <- teta.ind1 <- teta.ind2 <- teta1 <- teta2 <- NA
 
 
   eta1 <- VC$X1%*%params[1:VC$X1.d2]
@@ -58,7 +59,7 @@ p11 <- mm(BiCDF(p1, p2, VC$nC, teta, nu), min.pr = VC$min.pr, max.pr = VC$max.pr
 
   l.par <- VC$weights*( respvec$y1.y2*log(p11) + respvec$y1.cy2*log(p10) + respvec$cy1.y2*log(p01) + respvec$cy1.cy2*log(p00) )
 
-dH <- copgHs(p1, p2, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, nu, nu.st, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+dH <- copgHs(p1, p2, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, nu, nu.st, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
 
 c.copula.be1   <- dH$c.copula.be1
 c.copula.be2   <- dH$c.copula.be2

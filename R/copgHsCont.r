@@ -1,6 +1,7 @@
-copgHsCont <- function(p1, p2, teta, teta.st, BivD, Cont = FALSE, par2 = NULL, nu.st = NULL){
+copgHsCont <- function(p1, p2, teta, teta.st, BivD, Cont = FALSE, par2 = NULL, nu.st = NULL, T.BivD = NULL){
      
      
+BivD2mixed <- c("C0C90","C0C270","C180C90","C180C270", "J0J90","J0J270","J180J90","J180J270", "G0G90","G0G270","G180G90","G180G270", "GAL0GAL90", "GAL0GAL270", "GAL180GAL90", "GAL180GAL270") 
 
 der2c.derp1.dernu <- der2c.derp2.dernu <- der2c.dernu.dernu <- der2c.derrho.dernu <- dernu.dernu.st <- der2nu.dernu.stnu.st <- der2h.derp1nu <- der2c.derrho.derrho <- der2c.derp1.derp1 <- der2c.derp2.derp2 <- der2c.derp1.derp2 <- der2c.derp1.derrho <- der2c.derp2.derrho <- 1     
      
@@ -44,7 +45,16 @@ der2teta.derteta.stteta.st <- -((1 - 2 * (exp(-teta.st)/(1 + exp(-teta.st)))) * 
 if(BivD %in% c("C0", "C180","GAL0","GAL180","J0", "J180","G0", "G180","PL") )   derteta.derteta.st <- der2teta.derteta.stteta.st <-  exp(teta.st) 
 if(BivD %in% c("C90","C270","GAL90","GAL270","J90","J270","G90","G270") )       derteta.derteta.st <- der2teta.derteta.stteta.st <- -exp(teta.st)  
 
-  
+
+if(BivD %in% c("C0", "C180","GAL0","GAL180","J0", "J180","G0", "G180")  && T.BivD %in% BivD2mixed){ derteta.derteta.st         <- 1 # der teta.st wrt teta.st  
+                                                                                                    der2teta.derteta.stteta.st <- 0} 
+
+if(BivD %in% c("C90","C270","GAL90","GAL270","J90","J270","G90","G270") && T.BivD %in% BivD2mixed){ derteta.derteta.st         <- 1 # it should be -1 but it works with 1 'cause of other signs at the end of the function 
+                                                                                                    der2teta.derteta.stteta.st <- 0}
+
+
+
+# so teta.st is on R, it is then transformed and then we add the sign  
 
 ########################################################################################
 ########################################################################################

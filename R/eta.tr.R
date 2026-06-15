@@ -4,7 +4,7 @@ eta.tr <- function(vrb.st, margin, zero.tol = 1e-02){
 
 
 mupos  <- c("LN","WEI","GO","IG","GA","GA2","GGA","DAGUM","SM","FISK","TW","NBI","NBII","tNBI","tNBII","P","tP","PIG","tPIG","DGP0")
-mub    <- c("BE","logit")
+mub    <- c("BE","logit","BB")
 # muNpos <- c("GP","DGP") # nothing done here for now
 
 

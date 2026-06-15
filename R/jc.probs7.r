@@ -3,7 +3,13 @@ jc.probs7 <- function(x, y1, y2, newdata, type, cond, intervals, n.sim, prob.lev
 if(!(y1 >= range(x$y1)[1] && y1 <= range(x$y1)[2])) stop("y1 is not within its observed range.") 
 if(!(y2 >= range(x$y2)[1] && y2 <= range(x$y2)[2])) stop("y2 is not within its observed range.") 
 
-if(x$BivD %in% x$BivD2) stop("The chosen copula is not supported by this function.")
+
+
+nC   <- x$nC
+BivD <- x$BivD
+
+
+
 
 
 # Ordinal-Continuous case
@@ -55,6 +61,12 @@ if( is.null(x$X3) ){
 
 
 
+if(x$BivD %in% x$BivD2){ 
+
+if(theta >= 0){ nC <- x$fit$nC1; BivD <- x$fit$Cop1 } else{ nC <- x$fit$nC2; BivD <- x$fit$Cop2} 
+
+}
+
 
 
 
@@ -63,11 +75,11 @@ if(cond == 0 || cond == 1 ){
 p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2
 
 if(y1 > 1){
-            p12.f <- mm(BiCDF(pk,  p2, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr)
-            p12.s <- mm(BiCDF(pk1, p2, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr)
+            p12.f <- mm(BiCDF(pk,  p2, nC, theta, dof), min.pr = min.pr, max.pr = max.pr)
+            p12.s <- mm(BiCDF(pk1, p2, nC, theta, dof), min.pr = min.pr, max.pr = max.pr)
           }
           
-if(y1 == 1) p12.f <- mm(BiCDF(pk,  p2, x$nC, theta, dof), min.pr = min.pr, max.pr = max.pr)
+if(y1 == 1) p12.f <- mm(BiCDF(pk,  p2, nC, theta, dof), min.pr = min.pr, max.pr = max.pr)
          
 p12 <- p12.f - p12.s          
 
@@ -85,12 +97,12 @@ if(cond == 2){
 p2  <- distrHsAT(y2, eta2, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2
 
 if(y1 > 1){
-            p12.f <- copgHsCond(pk,  p2, theta, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
-            p12.s <- copgHsCond(pk1, p2, theta, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+            p12.f <- copgHsCond(pk,  p2, theta, dof = dof, BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+            p12.s <- copgHsCond(pk1, p2, theta, dof = dof, BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
             
           }
 
-if(y1 == 1) p12.f <- copgHsCond(pk,  p2, theta, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if(y1 == 1) p12.f <- copgHsCond(pk,  p2, theta, dof = dof, BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
 
 
 p12 <- p12.f - p12.s
@@ -105,8 +117,8 @@ p12 <- p12.f - p12.s
 #######################################################################################
 ### kendalls' tau and theta ###
 
-if(tau.res == TRUE) tau   <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = tau.res)$tau
-                    theta <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = FALSE)$theta
+if(tau.res == TRUE) tau   <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = tau.res, t.theta = theta)$tau
+                    theta <- theta2tau(x$VC$BivD, x$VC$nCa, theta, tau.res = FALSE,   t.theta = theta)$theta
      
 
 
@@ -213,7 +225,7 @@ if(!is.null(x$X3) ){
                     est.RHOb <- teta.tr(x$VC, epds)$teta   
 
 
-                    ass.msR <- theta2tau(x$VC$BivD, x$VC$nCa, est.RHOb, tau.res = tau.res)
+                    ass.msR <- theta2tau(x$VC$BivD, x$VC$nCa, est.RHOb, tau.res = tau.res, t.theta = theta)
 if(tau.res == TRUE) taus    <- ass.msR$tau
                     thetas  <- ass.msR$theta
 
@@ -254,12 +266,12 @@ if(cond == 0 || cond == 1){
 p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr = min.pr, max.pr = max.pr, left.trunc = x$VC$left.trunc2)$p2
 
 if(y1 > 1){ 
-            p12s.f <- mm(BiCDF(pks,  p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr )
-            p12s.s <- mm(BiCDF(pks1, p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr )
+            p12s.f <- mm(BiCDF(pks,  p2s, nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr )
+            p12s.s <- mm(BiCDF(pks1, p2s, nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr )
 
            }
            
-if(y1 == 1) p12s.f <- mm(BiCDF(pks,  p2s, x$nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr )
+if(y1 == 1) p12s.f <- mm(BiCDF(pks,  p2s, nC, est.RHOb, dof, test = FALSE), min.pr = min.pr, max.pr = max.pr )
           
           
 p12s <- p12s.f - p12s.s          
@@ -279,12 +291,12 @@ p2s  <- distrHsAT(y2, eta2s, sigma2, nu, x$margins[2], min.dn = min.pr, min.pr =
 
 
 if(y1 > 1){
-            p12s.f <- copgHsCond(pks,  p2s, est.RHOb, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
-            p12s.s <- copgHsCond(pks1, p2s, est.RHOb, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+            p12s.f <- copgHsCond(pks,  p2s, est.RHOb, dof = dof, BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+            p12s.s <- copgHsCond(pks1, p2s, est.RHOb, dof = dof, BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
             
           }
 
-if(y1 == 1) p12s.f <- copgHsCond(pks,  p2s, est.RHOb, dof = dof, x$BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
+if(y1 == 1) p12s.f <- copgHsCond(pks,  p2s, est.RHOb, dof = dof, BivD, min.pr = min.pr, max.pr = max.pr)$c.copula.be2
 
 
 p12s <- p12s.f - p12s.s

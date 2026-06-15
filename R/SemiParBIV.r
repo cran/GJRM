@@ -40,7 +40,7 @@ SemiParBIV <- function(formula, data = list(), weights = NULL, subset = NULL,
   m2   <- c("tN","N","GU","rGU","LO","LN","WEI","IG","GA","BE","FISK","GP","GPII","GPo")
   m3   <- c("DAGUM","SM","TW")
   m1d  <- c("P", "tP","DGP0") 
-  m2d  <- c("tNBI", "tNBII", "tPIG","NBI", "NBII", "PIG","DGP","DGPII") 
+  m2d  <- c("tNBI", "tNBII", "tPIG","NBI", "NBII", "PIG","DGP","DGPII","BB") 
   bl   <- c("probit", "logit", "cloglog") # , "cauchit")   
   M    <- list(m1d = m1d, m2 = m2, m2d = m2d, m3 = m3, BivD = BivD, 
                opc = opc, extra.regI = extra.regI, margins = margins, bl = bl, intf = intf,
@@ -444,8 +444,6 @@ if(missing(parscale)) parscale <- 1
                   cy = cy, univ = 0,
                   y00 = y00, y10 = y10, y0p = y0p, y1p = y1p)
 
-  my.env <- new.env()
-  my.env$signind <- 1
 
   lsgam1 <- length(gam1$smooth)
   lsgam2 <- length(gam2$smooth)
@@ -458,7 +456,7 @@ if(missing(parscale)) parscale <- 1
   lsgam9 <- length(gam9$smooth)
 
 
-  VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL,K1 = NULL,
+  VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL,K1 = NULL, fixed.margins = FALSE,
              lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
              lsgam3 = lsgam3, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
              lsgam4 = lsgam4,
@@ -466,7 +464,7 @@ if(missing(parscale)) parscale <- 1
              lsgam6 = lsgam6,
              lsgam7 = lsgam7,
              lsgam8 = lsgam8, lsgam9 = lsgam9, 
-             X1 = X1, inde = inde,my.env=my.env,
+             X1 = X1, inde = inde,
              X2 = X2, 
              X3 = X3,
              X4 = X4, 

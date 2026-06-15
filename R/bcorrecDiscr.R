@@ -1,7 +1,7 @@
 bcorrecDiscr <- function(VC, params){
 
 m1d  <- c("P", "tP","DGP0")
-m2d  <- c("tNBI", "tNBII","tPIG", "NBI", "NBII","PIG","DGP","DGPII")
+m2d  <- c("tNBI", "tNBII","tPIG", "NBI", "NBII","PIG","DGP","DGPII" ,"BB")#  the robust approach needs to be adapted to the BB case, not done for now since not needed
 
 # below there are operations that can be 
 # simplified based on whether sigma2 has regressors or not
@@ -30,6 +30,10 @@ weights <- VC$weights
 
 no.splits <- ceiling(length(ygrid)*n/chs)
 if(no.splits > 1) num.ind <- cut(1:n, no.splits, labels = FALSE)
+
+
+if(margin %in% c("BB")) stop("BB distribution not available yet, Get in touch to check progress.")
+
 
 ###################################################################################################
 

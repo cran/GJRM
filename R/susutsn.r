@@ -3,7 +3,21 @@ susutsn <- function(object, bs, lf, cont1par, cont2par, cont3par, prob.lev, type
 
 CIrs1 <- CIrs2 <- CIrs <- CIkt <- CIkt1 <- CIkt2 <- CIsig21 <- CIsig22 <- CInu1 <- CInu2 <- CIdof <- CInu <- CIsig2 <- NULL
 est.RHOb <- mu <- CImu <- est.RHOb1 <- est.RHOb2 <- tau1 <- tau2 <- tau <- NULL
-CIsig1 <- CInu1 <- CIsig2 <- CInu2 <- NULL
+CIsig1 <- CInu1 <- CIsig2 <- CInu2 <- mu <- CImu <- est.RHOb1 <- est.RHOb2 <- NULL
+
+
+if(object$VC$fixed.margins == TRUE){
+
+    #bs <- rMVN(n.sim, mean = object$coefficients, sigma=object$Vb)
+
+    # ind.th <- ((object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2 + 1):(object$X1.d2+object$X2.d2+object$X3.d2+object$X4.d2+object$X5.d2)) - 4
+    if( !is.null(object$X5) ) epds <- object$X5%*%t(bs)
+    if(  is.null(object$X5) ) epds <- bs[, 1]
+
+
+
+
+}else{
 
 
 #if (!is.null(K1)) {
@@ -32,7 +46,7 @@ if (is_ordcon) {
 
 if(type == "ROY"){
 
-  bs  <- rMVN(n.sim, mean = object$coefficients, sigma = object$Vb)  
+  bs  <- rMVN(n.sim, mean = object$coefficients, sigma = object$Vb)  # maybe remove, double check why I out this a while back
 
   VC1 <- list(BivD = object$VC$BivD1, BivD2 = NULL)  
   VC2 <- list(BivD = object$VC$BivD2, BivD2 = NULL)  
@@ -94,8 +108,8 @@ if(type == "ROY"){
   est.RHOb1 <- teta.tr(VC1, epds1)$teta
   est.RHOb2 <- teta.tr(VC2, epds2)$teta
   
-  est.RES1  <- theta2tau(object$VC$BivD1, object$VC$nCa1, est.RHOb1)
-  est.RES2  <- theta2tau(object$VC$BivD2, object$VC$nCa2, est.RHOb2)
+  est.RES1  <- theta2tau(object$VC$BivD1, object$VC$nCa1, est.RHOb1, t.theta = object$theta)
+  est.RES2  <- theta2tau(object$VC$BivD2, object$VC$nCa2, est.RHOb2, t.theta = object$theta)
 
   est.RHOb1 <- est.RES1$theta
   est.RHOb2 <- est.RES2$theta  
@@ -133,7 +147,7 @@ if(type == "ROY"){
 
 if(type == "biv"){ 
 
-  bs <- NULL
+  bs <- NULL 
 
 
   if(object$VC$Model != "BPO0" && is.null(object$VC$theta.fx)) bs <- rMVN(n.sim, mean = object$coefficients, sigma=object$Vb)  
@@ -643,6 +657,13 @@ if(type == "copSS"){
 
 
 
+
+
+
+
+} ##### OK TO FINISH ELSE HERE? I THINK SO
+
+
 ##################################################################
 ################################################################## 
 
@@ -656,7 +677,7 @@ if( !is.null(object$VC$theta.fx) && type == "biv"){
   }else{
          est.RHOb <- teta.tr(object$VC, epds)$teta
          
-         est.RHOb <- theta2tau(object$VC$BivD, object$VC$nCa, est.RHOb)$theta
+         est.RHOb <- theta2tau(object$VC$BivD, object$VC$nCa, est.RHOb, t.theta = object$theta)$theta
 
          if( is.null(object$X3) ) est.RHOb <- t(as.matrix(est.RHOb))
        }
@@ -667,55 +688,29 @@ if( !is.null(object$VC$theta.fx) && type == "biv"){
 
 ##################################################################
 
-nCa   <- object$VC$nCa
-BivDt <- object$VC$BivD
-
-  if(object$BivD %in% object$BivD2){
-  
-  if(object$BivD %in% object$BivD2[c(1:4,13:16)]){  BivDt <- "C0"; nCa <- 3} 
-  if(object$BivD %in% object$BivD2[5:8]){  BivDt <- "J0"; nCa <- 6}
-  if(object$BivD %in% object$BivD2[9:12]){ BivDt <- "G0"; nCa <- 4}
-  
-                                   }
-  
-ass.msR <- theta2tau(BivDt, nCa, est.RHOb)
-#tau     <- ass.msR$tau
 
 
-if(!is.null(object$X3) && BivDt %in% c("AMH", "FGM")){
+if(!is.null(object$X3) && object$VC$BivD %in% c("AMH", "FGM")){ # ?what is this for?
 
 if(is.null(object$X3s)) x3ob <- object$X3 else x3ob <- object$X3s 
 
-#tau <- matrix(tau, nrow(x3ob), nrow(bs))
-
 
 }
 
 
-
-#CIkt <- rowQuantiles(tau, probs = c(prob.lev/2,1-prob.lev/2), na.rm = TRUE)
-#if( is.null(object$X3) ) CIkt <- t(CIkt) 
-
-
-
- if(object$BivD %in% object$BivD2){ 
- 
-   if(length(object$theta) > 1){
- 
-     if( length(object$teta2) != 0){ #CIkt[object$teta.ind2, ] <- -CIkt[object$teta.ind2, ]; CIkt[object$teta.ind2, c(1,2)] <- CIkt[object$teta.ind2, c(2,1)] 
-                                     CIrs[object$teta.ind2, ] <- -CIrs[object$teta.ind2, ]; CIrs[object$teta.ind2, c(1,2)] <- CIrs[object$teta.ind2, c(2,1)]} 
-                               }else{
- 
-     if( length(object$teta2) != 0){ #CIkt <- -CIkt; CIkt[, c(1,2)] <- CIkt[, c(2,1)]
-                                     CIrs <- -CIrs; CIrs[, c(1,2)] <- CIrs[, c(2,1)]} 
-                                    }
- }
 
 ##################################################################
 ##################################################################
 
 
 }
+
+
+
+
+
+
+
 
 
 

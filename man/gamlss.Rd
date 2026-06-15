@@ -56,7 +56,9 @@ gamlss(formula, data = list(), weights = NULL, subset = NULL, offset = NULL,
                binomial - type II ("NBII"), Poisson inverse Gaussian ("PIG"), truncated negative binomial - type I ("tNBI"), truncated negative 
                binomial - type II ("tNBII"), truncated Poisson inverse Gaussian ("tPIG"), generalised extreme value link function ("GEVlink", this 
                is used for binary responses and is more stable and faster than the \code{R} package \code{bgeva}). For survival models, \code{family} can 
-               be "-cloglog" (similar to generalised proportional hazards), "-logit" (similar to generalised proportional odds), "-probit" (generalised probit).}
+               be "-cloglog" (similar to generalised proportional hazards), "-logit" (similar to generalised proportional odds), "-probit" (generalised probit).
+               Another avaialble distribution is the Beta Binomial ("BB"). Here, note that the response variable should be a matrix containing two columns, the first 
+               with the count of successes and the second with the count of failures.}
 
 \item{cens}{This is required for a survival model. When \code{type.cens} is different from \code{mixed}, this variable can be equal to 1 if the event occurred 
             and 0 otherwise. If \code{type.cens = "mixed"} then \code{cens} is a mixed factor variable (made up of four possible 
@@ -258,7 +260,7 @@ fl    <- list(eq.mu, eq.s)
 out <- gamlss(fl, data = dataSim)
 
 conv.check(out)
-res.check(out)
+res.check(out, intervals = TRUE)
 
 plot(out, eq = 1, scale = 0, pages = 1, seWithMean = TRUE)
 plot(out, eq = 2, seWithMean = TRUE)
@@ -408,7 +410,7 @@ dataSim <- data.frame(u, delta, z1, z2)
 
 out <- gamlss(list(u ~ s(log(u), bs = "mpi") + z1 + s(z2) ), data = dataSim, 
               family = "-cloglog", cens = delta)
-res.check(out)
+res.check(out, intervals = TRUE)
 summary(out)
 AIC(out)
 BIC(out)
@@ -457,7 +459,7 @@ dataSim <- data.frame(u, delta, z)
 
 out <- gamlss(list(u ~ s(log(u), bs = "mpi") + z ), data = dataSim, 
               family = "-logit", cens = delta)
-res.check(out)
+res.check(out, intervals = TRUE)
 summary(out)
 AIC(out)
 BIC(out)
@@ -543,7 +545,7 @@ dataSim <- datagen(n, z1, z2, z3, z4, s1, s2, f1)
 
 out <- gamlss(list(eq1), data = dataSim, family = "-cloglog", 
               cens = cens, type.cen = "mixed", ub.t = "u2")
-
+res.check(out, intervals = TRUE)
 conv.check(out)
 summary(out)
 plot(out, eq = 1, scale = 0, pages = 1)             

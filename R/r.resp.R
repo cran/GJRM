@@ -1,4 +1,7 @@
-r.resp <- function(margin, rsim, eta1, eta2, eta3, left.trunc = 0){
+r.resp <- function(margin, rsim, eta1, eta2, eta3, left.trunc = 0, bd = NULL){
+
+if(margin == "BB" & is.null(bd)) stop("Vector of binomial denominators not supplied.") 
+
 
 if(margin %in% c("DGP","DGPII","DGP0")){
 
@@ -85,6 +88,9 @@ if(margin %in% c("GP","GPII","GPo")){
              }
 }
 
+
+
+if(margin == "BB")    y <- rBB(rsim, mu = plogis(eta1), sigma = esp.tr(eta2, margin)$vrb, bd = bd, fast = FALSE)
 
 if(margin == "DAGUM") y <- rGB2(  rsim,    mu = exp(eta1),    sigma = esp.tr(eta2, margin)$vrb, nu = exp(eta3), tau = 1) 
 if(margin == "SM")    y <- rGB2(  rsim,    mu = exp(eta1),    sigma = esp.tr(eta2, margin)$vrb, nu = 1 , tau = exp(eta3)) 

@@ -383,7 +383,7 @@ bcontSurvGunivMIXED_ExcessHazard_LeftTruncation <- function(params, respvec, VC,
   
   list(value = res, gradient = G, hessian = H, S.h = S.h, S.h1 = S.h1, S.h2 = S.h2, indN = indN, V = V, 
        l = S.res, l.ln = l.ln, l.par = l.par, ps = ps, k = VC$my.env$k, monP2 = monP2, params1 = params1,
-       eta1 = eta1, p1 = p1, p2 = p2, p3 = p3, 
+       eta1 = eta1, p1 = p1, p2 = p2, p3 = p3, p = NA,
        pdf1 = -dS1eta1, pdf2 = -dS2eta2, pdf3 = -dS3eta3,
        dl.dbe1 = NULL, dl.dbe2 = NULL, dl.dteta.st = NULL,
        hrate     = VC$hrate, 

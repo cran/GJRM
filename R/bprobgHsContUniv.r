@@ -1,6 +1,6 @@
 bprobgHsContUniv <- function(params, respvec, VC, ps, AT = FALSE){
 
-p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- p <- NA
 
 
 weights <- VC$weights
@@ -28,16 +28,21 @@ if(VC$margins[1] %in% VC$m1d) sigma2.st <- 0
     sigma2    <- sstr1$vrb 
 
 
-if(VC$surv == TRUE) naiveind <- FALSE else naiveind <- TRUE  
+#if(VC$surv == TRUE) naiveind <- FALSE else naiveind <- TRUE  
+#
+#naiveind <- FALSE # for two step approach, have to apply to discrete but ok for now
+# a bit inefficient to set naive = FALSE but clear at least
 
-if(VC$margins[1] %in% VC$m2)            dHs  <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = naiveind, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
-if(VC$margins[1] %in% c(VC$m1d,VC$m2d)) dHs  <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = TRUE, y2m = VC$y1m, min.dn = VC$min.dn, 
-                                                             min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
+if(VC$margins[1] %in% VC$m2)            dHs  <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = TRUE,               min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
+if(VC$margins[1] %in% c(VC$m1d,VC$m2d)) dHs  <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = TRUE, y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
 
 #########################################################################
 #########################################################################
 
-
+if(VC$margins[1] %in% VC$m2)            p <-      distrHsAT(respvec$y1, eta2, sigma2, nu = 1, margin2 = VC$margins[1],               min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)$p2                      
+if(VC$margins[1] %in% c(VC$m1d,VC$m2d)) p <- distrHsATDiscr(respvec$y1, eta2, sigma2, nu = 1, margin2 = VC$margins[1], y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)$p2                      
+                      
+#p                            <- dHs$p2
 pdf2                         <- dHs$pdf2
 derpdf2.dereta2              <- dHs$derpdf2.dereta2 
 derpdf2.dersigma2.st         <- dHs$derpdf2.dersigma2.st  
@@ -45,7 +50,10 @@ der2pdf2.dereta2             <- dHs$der2pdf2.dereta2
 der2pdf2.dersigma2.st2       <- dHs$der2pdf2.dersigma2.st2         
 der2pdf2.dereta2dersigma2.st <- dHs$der2pdf2.dereta2dersigma2.st  
 
-if(VC$surv == TRUE){
+if(VC$surv == TRUE){ # this is never used in practice 
+
+if(VC$margins[1] %in% VC$m2)            dHs  <-      distrHs(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = FALSE,               min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
+if(VC$margins[1] %in% c(VC$m1d,VC$m2d)) dHs  <- distrHsDiscr(respvec$y1, eta2, sigma2, sigma2.st, nu = 1, nu.st = 1, margin2=VC$margins[1], naive = FALSE, y2m = VC$y1m, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, left.trunc = VC$left.trunc)
 
 p2                           <- dHs$p2
 derp2.dereta2                <- dHs$derp2.dereta2 
@@ -272,6 +280,8 @@ if( VC$margins[1] == "LN"){
   if(VC$surv == FALSE) l.lnun <- -( sum(weights*log(dHs1$pdf2)) - bcorR$b )
   if(VC$surv == TRUE)  l.lnun <- -sum(weights*(VC$cens*log(dHs1$pdf2)+(1-VC$cens)*log(1-dHs1$p2) )      )
     
+  p <- dHs1$p2
+  
   }  
   
 
@@ -289,7 +299,7 @@ list(value=res, gradient=G, hessian=H, S.h=S.h, S.h1=S.h1, S.h2=S.h2, l=S.res, l
                                  p1 = p1, p2 = p2, pdf1 = pdf1, pdf2 = pdf2,          
 	      	                    c.copula.be2 = c.copula.be2,
 	      	                    c.copula.be1 = c.copula.be1,
-              c.copula2.be1be2 = c.copula2.be1be2)      
+              c.copula2.be1be2 = c.copula2.be1be2, p = p)      
 
 
 }

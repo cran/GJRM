@@ -1,5 +1,6 @@
 bprobgHsSS <- function(params, respvec, VC, ps){
 p1 <- p2 <- pdf1 <- pdf2 <- c.copula.be2 <- c.copula.be1 <- c.copula2.be1be2 <- NA
+Cop1 <- Cop2 <- nC1 <- nC2 <- teta.ind1 <- teta.ind2 <- teta1 <- teta2 <- NA
 
 
   
@@ -41,7 +42,7 @@ teta    <- resT$teta
   l.par           <- VC$weights*l.par1 
 
 
-dH <- copgHs(p1[VC$inde], p2, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr)
+dH <- copgHs(p1[VC$inde], p2, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, VC$dof, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, T.BivD = VC$BivD)
 
 c.copula.be1   <- dH$c.copula.be1
 c.copula.be2   <- dH$c.copula.be2
@@ -128,8 +129,8 @@ p2r <- probm(eta2a, VC$margins[2], only.pr = FALSE, min.dn = VC$min.dn, min.pr =
 p11a <- mm(BiCDF(p1, p2r, VC$nC, teta), min.pr = VC$min.pr, max.pr = VC$max.pr  )
 p10a <- mm(p1 - p11a, min.pr = VC$min.pr, max.pr = VC$max.pr)
 
-c.copula.be1a  <- copgHs(p1, p2r, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, nu = VC$dof, nu.st = log(VC$dof - 2))$c.copula.be1
-c.copula2.be1a <- copgHs(p1, p2r, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, nu = VC$dof, nu.st = log(VC$dof - 2))$c.copula2.be1
+c.copula.be1a  <- copgHs(p1, p2r, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, nu = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)$c.copula.be1
+c.copula2.be1a <- copgHs(p1, p2r, eta1=NULL, eta2=NULL, teta, teta.st, VC$BivD, min.dn = VC$min.dn, min.pr = VC$min.pr, max.pr = VC$max.pr, nu = VC$dof, nu.st = log(VC$dof - 2), T.BivD = VC$BivD)$c.copula2.be1
 
 bit1.b1b1a     <- c.copula2.be1a*d.n1^2 + c.copula.be1a*der2p1.dereta12 
 bit2.b1b1a     <- -c.copula2.be1a*d.n1^2  + (1-c.copula.be1a)*der2p1.dereta12

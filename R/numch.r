@@ -20,7 +20,7 @@ numch <- function(funcD, para1, para2){
 
 if( length(para2)==1 ) para2 <- as.numeric(rep(para2, length(para1)))
  
-grad(function(para2) grad(function(para1) funcD(para1, para2), para1), para2) 
+grad(function(para2) grad(function(para1) funcD(para1, para2), para1, method = "simple"), para2, method = "simple") 
 
 
 }

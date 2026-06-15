@@ -15,6 +15,20 @@
 \alias{bcontSurvG_extended}
 \alias{bcontSurvGBINROY}
 \alias{bcontSurvGBINss}
+\alias{bcontThetaOnly}
+\alias{bcountThetaOnly}
+\alias{bdiscrcontThetaOnly}
+\alias{cop.mod.sel}
+\alias{fix.fenv}
+\alias{mar.cond.var}
+\alias{cond.var.i}
+\alias{cdf.pcc}
+\alias{bcontSurvGBIN}
+\alias{gamlss.etamu} 
+\alias{gamlss.gH}
+\alias{ldTweedie}
+\alias{transform_bb}
+
 
 
 

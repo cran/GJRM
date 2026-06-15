@@ -10,7 +10,7 @@
 \usage{
 
 cond.mv(x, eq, y1 = NULL, y2 = NULL, newdata, fun = "mean", n.sim = 100, 
-        prob.lev = 0.05)
+        prob.lev = 0.05, method = "adaptive")
 
 }
 
@@ -31,12 +31,22 @@ cond.mv(x, eq, y1 = NULL, y2 = NULL, newdata, fun = "mean", n.sim = 100,
 
 \item{prob.lev}{Overall probability of the left and right tails of the simulated distribution used for interval calculations.} 
 
+\item{method}{Character string specifying the numerical integration method to use. Possible values 
+                  are: \code{"adaptive"} (default) and \code{"quad"}. \code{"adaptive"} performs integration using an 
+                  adaptive quadrature algorithm with automatic fallback to a Gauss-Legendre quadrature rule if 
+                  numerical issues occur. When the integration bounds are infinite, they are approximated using quantile-based 
+                  truncation of the distribution. \code{"quad"} (which is slower and tends to be less reliable) applies a transformation-based quadrature 
+                  method suitable for improper integrals on infinite intervals. It is specifically designed 
+                  to handle integrals with infinite or semi-infinite bounds and assumes that 
+                  the integrand decreases sufficiently fast at infinity. No fallback or truncation strategy is used in this case. \code{"quad"} is often used
+                  as sensitivity analysis tool.}
+
 }
 
 
 \details{
 
-cond.mv() calculates the conditional mean or variance of copula models. Posterior simulation 
+\code{cond.mv()} calculates the conditional mean or variance of copula models. Posterior simulation 
 is used to obtain a confidence/credible interval.
 
 }
@@ -63,7 +73,7 @@ Maintainer: Giampiero Marra \email{giampiero.marra@ucl.ac.uk}
 
 
 \seealso{
-\code{\link{GJRM-package}}, \code{\link{gjrm}} 
+\code{\link{GJRM-package}}, \code{\link{gjrm}}, \code{\link{cond.mv.pcc}} 
 }
 
 

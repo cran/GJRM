@@ -18,6 +18,20 @@ pdf2 <- dNBII(y2, mu = exp(eta2), sigma = sigma)
 
 }
 
+
+
+if(margin2 %in% c("BB")){
+
+pdf2 <- dBB(y2[, 1], mu = plogis(eta2), sigma = sigma, bd = y2[, 1] + y2[, 2])
+
+
+
+}
+
+
+
+
+
 if(margin2 == "PIG"){
 
 pdf2 <- dPIG(y2, mu = exp(eta2), sigma = sigma)  

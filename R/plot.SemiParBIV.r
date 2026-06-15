@@ -1,8 +1,17 @@
 plot.SemiParBIV <- function(x, eq, ...){
 
- if(missing(eq)) stop("You must provide the equation number.")
 
- if(eq > x$l.flist) stop("The fitted model has a smaller number of equations.") 
+ cms <- 0
+ if(missing(eq) && x$VC$fixed.margins == FALSE) stop("You must provide the equation number.")
+ 
+ if(missing(eq) && x$VC$fixed.margins == TRUE){ eq <- 5; cms <- 4 }
+ 
+ 
+ 
+
+ if(eq > x$l.flist && x$VC$fixed.margins == FALSE) stop("The fitted model has a smaller number of equations.")
+ if(eq > x$l.flist && x$VC$fixed.margins == TRUE) stop("No terms to plot.") 
+
 
 is_ordcon <- !is.null(x$VC$K1) & is.null(x$VC$K2)
 is_ordord <- !is.null(x$VC$K1) & !is.null(x$VC$K2)
@@ -41,7 +50,8 @@ if (is_ordcon) {
             ind <- (x$X1.d2 + x$X2.d2 + x$X3.d2 + 1 + CLM.shift3):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + CLM.shift3) }
             
  if(eq==5){ ss.plot <- x$gam5
-            ind <- (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1 + CLM.shift3):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + CLM.shift3) }
+            ind <- (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + 1 + CLM.shift3):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + CLM.shift3)
+            ind <- ind - cms}
             
  if(eq==6){ ss.plot <- x$gam6
             ind <- (x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + 1 + CLM.shift3):(x$X1.d2 + x$X2.d2 + x$X3.d2 + x$X4.d2 + x$X5.d2 + x$X6.d2 + CLM.shift3) }   

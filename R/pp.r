@@ -1,7 +1,7 @@
 pp <- function(x){
 
    cont1par <- c("P","tP","DGP0","probit","logit","cloglog","GEVlink")  
-   cont2par <- c("tN","N","N2","GU","rGU","LO","LN","WEI","GO","IG","GA","GA2","GAi","BE","FISK","tNBI", "tNBII","tPIG","NBI", "NBII","PIG","GP","GPII","GPo","DGP","DGPII")  
+   cont2par <- c("tN","N","N2","GU","rGU","LO","LN","WEI","GO","IG","GA","GA2","GAi","BE","FISK","tNBI", "tNBII","tPIG","NBI", "BB","NBII","PIG","GP","GPII","GPo","DGP","DGPII")  
    cont3par <- c("DAGUM","SM","DEL","SICHEL","GGA","TW")   
 
 if(x$univar.gamlss == TRUE) x$BivD <- "N" 
@@ -36,28 +36,28 @@ if(x$univar.gamlss == TRUE) x$BivD <- "N"
   if(x$BivD=="G180") {cop <- "180\u00B0 Gumbel"   ;lind <- "log(\u00B7 - 1)"} 
   if(x$BivD=="G270") {cop <- "270\u00B0 Gumbel"   ;lind <- "log(- \u00B7 - 1)"} 
   
-  if(x$BivD=="C0C90")    {cop <- "Clayton & 90\u00B0 Clayton"            ;lind <- "log & log(- \u00B7)"}   
-  if(x$BivD=="C0C270")   {cop <- "Clayton & 270\u00B0 Clayton"           ;lind <- "log & log(- \u00B7)"}                 
-  if(x$BivD=="C180C90")  {cop <- "180\u00B0 Clayton & 90\u00B0 Clayton"  ;lind <- "log & log(- \u00B7)"}                    
-  if(x$BivD=="C180C270") {cop <- "180\u00B0 Clayton & 270\u00B0 Clayton" ;lind <- "log & log(- \u00B7)"} 
+  if(x$BivD=="C0C90")    {cop <- "Clayton & 90\u00B0 Clayton"            ;lind <- "identity"}   
+  if(x$BivD=="C0C270")   {cop <- "Clayton & 270\u00B0 Clayton"           ;lind <- "identity"}                 
+  if(x$BivD=="C180C90")  {cop <- "180\u00B0 Clayton & 90\u00B0 Clayton"  ;lind <- "identity"}                    
+  if(x$BivD=="C180C270") {cop <- "180\u00B0 Clayton & 270\u00B0 Clayton" ;lind <- "identity"} 
   
   
-  if(x$BivD=="GAL0GAL90")    {cop <- "Galambos & 90\u00B0 Galambos"            ;lind <- "log & log(- \u00B7)"}   
-  if(x$BivD=="GAL0GAL270")   {cop <- "Galambos & 270\u00B0 Galambos"           ;lind <- "log & log(- \u00B7)"}                 
-  if(x$BivD=="GAL180GAL90")  {cop <- "180\u00B0 Galambos & 90\u00B0 Galambos"  ;lind <- "log & log(- \u00B7)"}                    
-  if(x$BivD=="GAL180GAL270") {cop <- "180\u00B0 Galambos & 270\u00B0 Galambos" ;lind <- "log & log(- \u00B7)"}    
+  if(x$BivD=="GAL0GAL90")    {cop <- "Galambos & 90\u00B0 Galambos"            ;lind <- "identity"}   
+  if(x$BivD=="GAL0GAL270")   {cop <- "Galambos & 270\u00B0 Galambos"           ;lind <- "identity"}                 
+  if(x$BivD=="GAL180GAL90")  {cop <- "180\u00B0 Galambos & 90\u00B0 Galambos"  ;lind <- "identity"}                    
+  if(x$BivD=="GAL180GAL270") {cop <- "180\u00B0 Galambos & 270\u00B0 Galambos" ;lind <- "identity"}    
   
   
  
-  if(x$BivD=="J0J90")    {cop <- "Joe & 90\u00B0 Joe"            ;lind <- "log(\u00B7 - 1) & log(- \u00B7 - 1)"}   
-  if(x$BivD=="J0J270")   {cop <- "Joe & 270\u00B0 Joe"           ;lind <- "log(\u00B7 - 1) & log(- \u00B7 - 1)"}                 
-  if(x$BivD=="J180J90")  {cop <- "180\u00B0 Joe & 90\u00B0 Joe"  ;lind <- "log(\u00B7 - 1) & log(- \u00B7 - 1)"}                    
-  if(x$BivD=="J180J270") {cop <- "180\u00B0 Joe & 270\u00B0 Joe" ;lind <- "log(\u00B7 - 1) & log(- \u00B7 - 1)"}  
+  if(x$BivD=="J0J90")    {cop <- "Joe & 90\u00B0 Joe"            ;lind <- "sign(\u00B7)(1 + |\u00B7|)"}   
+  if(x$BivD=="J0J270")   {cop <- "Joe & 270\u00B0 Joe"           ;lind <- "sign(\u00B7)(1 + |\u00B7|)"}                 
+  if(x$BivD=="J180J90")  {cop <- "180\u00B0 Joe & 90\u00B0 Joe"  ;lind <- "sign(\u00B7)(1 + |\u00B7|)"}                    
+  if(x$BivD=="J180J270") {cop <- "180\u00B0 Joe & 270\u00B0 Joe" ;lind <- "sign(\u00B7)(1 + |\u00B7|)"}  
   
-  if(x$BivD=="G0G90")    {cop <- "Gumbel & 90\u00B0 Gumbel"            ;lind <- "log(\u00B7 - 1) & log(- \u00B7 - 1)"}   
-  if(x$BivD=="G0G270")   {cop <- "Gumbel & 270\u00B0 Gumbel"           ;lind <- "log(\u00B7 - 1) & log(- \u00B7 - 1)"}                 
-  if(x$BivD=="G180G90")  {cop <- "180\u00B0 Gumbel & 90\u00B0 Gumbel"  ;lind <- "log(\u00B7 - 1) & log(- \u00B7 - 1)"}                    
-  if(x$BivD=="G180G270") {cop <- "180\u00B0 Gumbel & 270\u00B0 Gumbel" ;lind <- "log(\u00B7 - 1) & log(- \u00B7 - 1)"}    
+  if(x$BivD=="G0G90")    {cop <- "Gumbel & 90\u00B0 Gumbel"            ;lind <- "sign(\u00B7)(1 + |\u00B7|)"}   
+  if(x$BivD=="G0G270")   {cop <- "Gumbel & 270\u00B0 Gumbel"           ;lind <- "sign(\u00B7)(1 + |\u00B7|)"}                 
+  if(x$BivD=="G180G90")  {cop <- "180\u00B0 Gumbel & 90\u00B0 Gumbel"  ;lind <- "sign(\u00B7)(1 + |\u00B7|)"}                    
+  if(x$BivD=="G180G270") {cop <- "180\u00B0 Gumbel & 270\u00B0 Gumbel" ;lind <- "sign(\u00B7)(1 + |\u00B7|)"}    
  
 
   
@@ -83,8 +83,8 @@ if(x$univar.gamlss == TRUE) x$BivD <- "N"
   if(x$margins[1] %in% c("GPII","GPo") )                       m1l <- "log(\u00B7 + 0.5)"
   if(x$margins[2] %in% c("GPII","GPo") )                       m2l <- "log(\u00B7 + 0.5)"     
   
-  if(x$margins[1] %in% c("BE") )                            m1l <- "qlogis" 
-  if(x$margins[2] %in% c("BE") )                            m2l <- "qlogis"   
+  if(x$margins[1] %in% c("BE","BB") )                            m1l <- "qlogis" 
+  if(x$margins[2] %in% c("BE","BB") )                            m2l <- "qlogis"   
  
   if(x$margins[1]=="probit")  m1l <- "probit"
   if(x$margins[1]=="logit")   m1l <- "logit"

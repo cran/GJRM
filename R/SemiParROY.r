@@ -16,6 +16,14 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL, su
   y10.y20 <- y10.y21 <- y11.y30 <- y11.y31 <- NULL
   y10.y20R <- y10.y21R <- y11.y30R <- y11.y31R <- X2s <- X3s <- NULL
   
+  BivD2mixed <- c("C0C90","C0C270","C180C90","C180C270",
+                  "J0J90","J0J270","J180J90","J180J270",
+                  "G0G90","G0G270","G180G90","G180G270",
+                  "GAL0GAL90", "GAL0GAL270", "GAL180GAL90", "GAL180GAL270")
+             
+   
+  if(BivD1 %in% BivD2mixed || BivD2 %in% BivD2mixed) stop("Mixed copulae are currently not allowed.") 
+  
   left.trunc1 <- left.trunc2
   left.trunc2 <- left.trunc3
   
@@ -57,7 +65,7 @@ SemiParROY <- function(formula, data = list(), weights = NULL, subset = NULL, su
   m2   <- c("tN","N","GU","rGU","LO","LN","WEI","IG","GA","BE","FISK","GP","GPII","GPo")
   m3   <- c("DAGUM","SM","TW")
   m1d  <- c("P", "tP","DGP0") 
-  m2d  <- c("tNBI", "tNBII", "tPIG","NBI", "NBII", "PIG","DGP","DGPII") 
+  m2d  <- c("tNBI", "tNBII", "tPIG","NBI", "NBII", "PIG","DGP","DGPII","BB") 
   bl   <- c("probit", "logit", "cloglog")   
   
   
@@ -691,9 +699,6 @@ if(missing(parscale)) parscale <- 1
 
   respvec <- list(y1 = y1, y2 = y2, y3 = y3, cy = cy, univ = 0)
 
-  my.env <- new.env()
-  my.env$signind <- 1
-
   lsgam1 <- length(gam1$smooth)
   lsgam2 <- length(gam2$smooth)
   lsgam3 <- length(gam3$smooth)
@@ -705,7 +710,7 @@ if(missing(parscale)) parscale <- 1
   lsgam9 <- length(gam9$smooth)
 
 
-  VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL, K1 = NULL, 
+  VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL, K1 = NULL, fixed.margins = FALSE,
              lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
              lsgam3 = lsgam3, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
              lsgam4 = lsgam4, mono.sm.pos2 = mono.sm.pos2, mono.sm.pos3 = mono.sm.pos3, Xd3 = Xd3, Xd2 = Xd2,
@@ -714,7 +719,7 @@ if(missing(parscale)) parscale <- 1
              lsgam7 = lsgam7,
              lsgam8 = lsgam8, 
              lsgam9 = lsgam9,
-             X1 = X1, inde0 = inde0, n.se0 = n.se0, inde1 = inde1, n.se1 = n.se1, my.env=my.env,
+             X1 = X1, inde0 = inde0, n.se0 = n.se0, inde1 = inde1, n.se1 = n.se1, 
              X2 = X2, 
              X3 = X3,
              X4 = X4, 

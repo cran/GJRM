@@ -27,7 +27,21 @@ l.splist <- list( l.sp1 = l.sp1, l.sp2 = l.sp2, l.sp3 = l.sp3,
 if(!is.null(VC$sp.fixed)) sp <- VC$sp.fixed  
 
 
-if( ( l.sp1==0 && l.sp2==0 && l.sp3==0 && l.sp4==0 && l.sp5==0 && l.sp6==0 && l.sp7==0 && l.sp8==0 && l.sp9==0) || VC$fp==TRUE) ps <- ps1 <- list(S.h = 0, S.h1 = 0, S.h2 = 0, qu.mag = NULL) else ps <- ps1 <- pen(qu.mag, sp, VC, univ = respvec$univ, l.splist)
+if( ( l.sp1==0 && l.sp2==0 && l.sp3==0 && l.sp4==0 && l.sp5==0 && l.sp6==0 && l.sp7==0 && l.sp8==0 && l.sp9==0) || VC$fp==TRUE){ ps <- ps1 <- list(S.h = 0, S.h1 = 0, S.h2 = 0, qu.mag = NULL)} else {
+
+
+                                                                   ps <- ps1 <- pen(qu.mag, sp, VC, univ = respvec$univ, l.splist)
+
+									if(VC$fixed.margins == TRUE){
+
+									   ps$S.h <- ps$S.h[-c(1:4), -c(1:4)] 
+									   ps$qu.mag$off <- qu.mag$off <- ps$qu.mag$off - 4
+   
+									   ps1 <- ps
+
+												  }
+
+                                                                   } # else
 
 
 
@@ -137,11 +151,10 @@ if((inherits(fit, "try-error") || is.null(fit$l)) && VC$gamlssfit == TRUE  ) sto
              if( VC$triv == TRUE && VC$penCor %in% c("lasso", "alasso") ) VC$sp <- sp	
 
              ps <- pen(qu.mag, sp, VC, univ = respvec$univ, l.splist) # in triv case, I reset ridge penalty but ok
-               
              
-             #if(any( is.na(o.ests) ) == TRUE) {conv.sp <- FALSE; break} 
-
-             # VC$my.env$k <- VC$k, does not like it  
+               if(VC$fixed.margins == TRUE) ps$S.h <- ps$S.h[-c(1:4), -c(1:4)] 
+   
+                                                  #if(any( is.na(o.ests) ) == TRUE) {conv.sp <- FALSE; break} # VC$my.env$k <- VC$k, does not like it  
                
              fit <- try( trust(func.opt, o.ests, rinit=rinit, rmax = rmax,  parscale = parsc, respvec = respvec, VC = VC, ps = ps, blather = TRUE, iterlim = iterlim), silent = sc)                           
                           

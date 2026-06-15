@@ -17,7 +17,7 @@ der2p2.dereta2dernu.st      = 1
 der2p2.dersigma2.stdernu.st = 1
 
 cont1par <- c("P","tP","DGP0")
-cont2par <- c("tNBI","tNBII","tPIG", "NBI","NBII","NBIa","NBIIa","PIG","P","tP","DGP","DGPII","DGP0")
+cont2par <- c("tNBI","tNBII","tPIG", "NBI","NBII","NBIa","NBIIa","PIG","P","tP","DGP","DGPII","DGP0","BB")
 cont3par <- c("DEL","SICHEL")
 
 # library(Deriv); library(numDeriv)
@@ -39,7 +39,7 @@ cont3par <- c("DEL","SICHEL")
 
 
 
-if(margin2 %in% c("P","tP","PIG","NBI","NBII","tNBI","tNBII","tPIG")){
+if(margin2 %in% c("P","tP","PIG","NBI","NBII","tNBI","tNBII","tPIG","BB")){
 
 derpdf2.dermu2FUNC2p <- function(func, y2, mu2, sigma, left.trunc) numgh(func, mu2)
 derpdf2.sigma2FUNC2p <- function(func, y2, mu2, sigma, left.trunc) numgh(func, sigma)  
@@ -560,6 +560,61 @@ der2p2.derdermu2sigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma) pPIGt
 
 
 
+
+
+if(margin2 == "BB"){ 
+
+sigma <- sigma2 <- ifelse(sigma2 < 1e-04, 1e-04, sigma2) # related to gamma function
+sigma2.st <- log(sigma2) 
+
+dersigma2.dersigma2.st  <- exp(sigma2.st)  
+dersigma2.dersigma2.st2 <- exp(sigma2.st) 
+
+mu2   <- plogis(eta2)
+
+dermu2.dereta2      <- (1 - exp(eta2)/(1 + exp(eta2))) * exp(eta2)/(1 + exp(eta2))
+der2mu2.dereta2eta2 <-  (1 - (3 - 2 * (exp(eta2)/(1 + exp(eta2)))) * exp(eta2)/(1 + exp(eta2))) * 
+                        exp(eta2)/(1 + exp(eta2))
+         
+         
+
+
+pdf2 <- dBB(y2[, 1], mu = mu2, sigma = sigma, bd = y2[, 1] + y2[, 2])
+
+
+
+
+derpdf2.dermu2F <- derpdf2.dermu2FUNC2p(function(mu2) dBB(y2[, 1], mu = mu2, sigma = sigma, bd = y2[, 1] + y2[, 2]), y2, mu2, sigma) 
+derpdf2.dermu2  <- derpdf2.dermu2F$fi 
+der2pdf2.dermu2 <- derpdf2.dermu2F$se  
+
+
+derpdf2.sigma2F     <- derpdf2.sigma2FUNC2p(function(sigma) dBB(y2[, 1], mu = mu2, sigma = sigma, bd = y2[, 1] + y2[, 2]), y2, mu2, sigma) 
+derpdf2.sigma2      <- derpdf2.sigma2F$fi      
+der2pdf2.dersigma22 <- derpdf2.sigma2F$se    
+
+
+der2pdf2.mu2dersigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma) dBB(y2[, 1], mu = mu2, sigma = sigma, bd = y2[, 1] + y2[, 2]), y2, mu2, sigma)
+
+
+if(naive == FALSE){    # does not need y2m
+ 
+p2  <- pBB(y2[, 1], mu = mu2, sigma = sigma, bd = y2[, 1] + y2[, 2])  
+ 
+derp2.dermu2F  <- derpdf2.dermu2FUNC2p(function(mu2) pBB(y2[, 1], mu = mu2, sigma = sigma, bd = y2[, 1] + y2[, 2]), y2, mu2, sigma)
+derp2.dermu2   <- derp2.dermu2F$fi
+der2p2.dermu22 <- derp2.dermu2F$se
+
+derp2.dersigma2F <- derpdf2.sigma2FUNC2p(function(sigma) pBB(y2[, 1], mu = mu2, sigma = sigma, bd = y2[, 1] + y2[, 2]), y2, mu2, sigma) 
+derp2.dersigma2  <- derp2.dersigma2F$fi 
+der2p2.dersigma22<- derp2.dersigma2F$se 
+
+der2p2.derdermu2sigma2 <- der2pdf2.mu2dersigma2FUNC2p(function(mu2, sigma) pBB(y2[, 1], mu = mu2, sigma = sigma, bd = y2[, 1] + y2[, 2]), y2, mu2, sigma) 
+
+  
+                   }
+
+}
 
 
 

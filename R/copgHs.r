@@ -1,8 +1,9 @@
 copgHs <- function(p1, p2, eta1 = NULL, eta2 = NULL, teta, teta.st, BivD, nu = NULL, nu.st = NULL, CLM = FALSE,
-                   min.dn, min.pr, max.pr){
+                   min.dn, min.pr, max.pr, T.BivD = NULL){
 
 ########################################################################################
 
+BivD2mixed <- c("C0C90","C0C270","C180C90","C180C270", "J0J90","J0J270","J180J90","J180J270", "G0G90","G0G270","G180G90","G180G270", "GAL0GAL90", "GAL0GAL270", "GAL180GAL90", "GAL180GAL270") 
 
 
 c.copula.dof.st <- c.copula2.be1dof.st <- c.copula2.be2dof.st <- c.copula2.dof2.st <- c.copula2.thdof.st <- 1
@@ -41,6 +42,17 @@ derteta.derteta.st         <- exp(-teta.st)/(1 + exp(-teta.st))^2
 der2teta.derteta.stteta.st <- -((1 - 2 * (exp(-teta.st)/(1 + exp(-teta.st)))) * exp(-teta.st)/(1 + exp(-teta.st))^2) 
        
 } 
+
+
+
+if(BivD %in% c("C0", "C180","GAL0","GAL180","J0", "J180","G0", "G180")  && T.BivD %in% BivD2mixed){ derteta.derteta.st         <- 1 # der teta.st wrt teta.st  
+                                                                                                    der2teta.derteta.stteta.st <- 0} 
+
+if(BivD %in% c("C90","C270","GAL90","GAL270","J90","J270","G90","G270") && T.BivD %in% BivD2mixed){ derteta.derteta.st         <- -1 #  
+                                                                                                    der2teta.derteta.stteta.st <- 0}
+
+
+
 
 
 

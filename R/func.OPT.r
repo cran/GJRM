@@ -72,7 +72,13 @@ if(M$surv == FALSE){
   if(margins[1] %in% M$m3 && margins[2] %in% M$m2 && M$BivD != "T") func.opt <- bcont32 
   if(margins[1] %in% M$m3 && margins[2] %in% M$m2 && M$BivD == "T") func.opt <- bcont32twoParC 
   
-  if(M$h.margins == TRUE) func.opt <- bcontThetaOnly
+if (M$fixed.margins == TRUE) {
+
+    if(all(M$fixed.margins.type == "continuous")) func.opt <- bcontThetaOnly
+    if(all(M$fixed.margins.type == "count"))      func.opt <- bcountThetaOnly
+
+}
+  
   
   
 }  

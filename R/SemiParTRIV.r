@@ -420,7 +420,7 @@ if(missing(parscale)) parscale <- 1
   lsgam9 <- length(gam9$smooth)
 
    
-  VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL,
+  VC <- list(lsgam1 = lsgam1, robust = FALSE, sp.fixed = NULL, fixed.margins = FALSE,
              lsgam2 = lsgam2, Sl.sf = Sl.sf, sp.method = sp.method,
              lsgam3 = lsgam3, left.trunc1 = left.trunc1, left.trunc2 = left.trunc2,
              lsgam4 = lsgam4,
